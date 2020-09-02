@@ -42,7 +42,7 @@ class AuthenticateController extends Controller {
         if ($validator->fails()) {
             return response($validator->errors()->first(), 202);
         }
-
+     
         $user = $this->create($request->all())->toArray();
 
         return $this->login($user);
@@ -67,15 +67,14 @@ class AuthenticateController extends Controller {
         }
 
         $user = JWTAuth::user();
+
         $user['school_name'] = School::where('id',$user['school_id'])->select('name')->first()['name'];
         $user['token'] = $token;
         $this->setTokenToRedis($user->id, $token);
-        if($user['is_forbid'] != 1 ||$user['is_del'] != 1 ){
-              return response()->json(['code'=>403,'msg'=>'此用户已被禁用或删除，请联系管理员']);
+        if($user['is_forbid'] == 1 ||$user['is_del'] == 1 ){
+            return response()->json(['code'=>403,'msg'=>'此用户已被禁用或删除，请联系管理员']);
         }
-
         $AdminUser = new AdminUser();
-      
         $user['auth'] = [];     //5.14 该账户没有权限返回空  begin
         $teacher = Teacher::where(['id'=>$user['teacher_id'],'is_del'=>0,'is_forbid'=>0])->first();
         $user['teacher_type'] =0;
@@ -133,7 +132,7 @@ class AuthenticateController extends Controller {
 
     public function setTokenToRedis($userId, $token) {
         try {
-            Redis::set('longde:admin:' . env('APP_ENV') . ':user:token', $userId, $token);
+            Redis::set('longdeOa:admin:' . env('APP_ENV') . ':user:token', $userId, $token);
         } catch (Exception $e) {
             Log::error($e->getMessage());
             return false;
