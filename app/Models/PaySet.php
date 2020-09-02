@@ -13,7 +13,7 @@ use Illuminate\Support\Facades\DB;
 
 class PaySet extends Model {
     //指定别的表名
-    public $table = 'ld_pay_config';
+    public $table = 'pay_config';
     //时间戳设置
     public $timestamps = false;
 
@@ -23,6 +23,8 @@ class PaySet extends Model {
         return [
             'id.required'  => json_encode(['code'=>'201','msg'=>'列表标识不能为空']),
             'id.integer'   => json_encode(['code'=>'202','msg'=>'列表标识类型不合法']),
+            'aislename.required' => json_encode(['code'=>'201','msg'=>'通道名称不能为空']),
+            'aisletype.required'  => json_encode(['code'=>'201','msg'=>'通道类型不能为空']),
             'app_id.required' => json_encode(['code'=>'201','msg'=>'app_id不能为空']),
             'app_public_key.required'  => json_encode(['code'=>'201','msg'=>'应用公钥类型不能为空']),
             'zfb_public_key.required'  => json_encode(['code'=>'201','msg'=>'公钥类型不能为空']),

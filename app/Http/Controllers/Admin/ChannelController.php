@@ -14,7 +14,7 @@ use App\Tools\CurrentAdmin;
 use Illuminate\Support\Facades\Validator;
 use App\Models\AdminLog;
 use Illuminate\Support\Facades\DB;
-class PaySetController extends Controller {
+class ChannelController extends Controller {
 
      /*
      * @param  description   获取支付配置列表

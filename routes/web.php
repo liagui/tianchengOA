@@ -43,10 +43,25 @@ $router->group(['prefix' => 'admin' , 'namespace' => 'Admin', 'middleware'=> 'co
 
 });
 //后端登录权限认证相关接口
-$router->group(['prefix' => 'admin' , 'namespace' => 'Admin' , 'middleware'=> ['jwt.auth', 'cors','api']], function () use ($router) {
+//
+$router->group(['prefix' => 'admin' , 'namespace' => 'Admin' ], function () use ($router) {
 
+    $router->group(['prefix' => 'payset'], function () use ($router) {
+        $router->post('getList', 'PaySetController@getList');                                 //获取通道列表
+        $router->post('doAislePayInsert', 'PaySetController@doAislePayInsert');               //添加支付通道
+        $router->post('getAislePayById', 'PaySetController@getAislePayById');                 //编辑支付通道（获取）
+        $router->post('doUpdateAislePay', 'PaySetController@getAislePay');                   //编辑支付通道
+        $router->post('doUpdateWxState', 'PaySetController@doUpdateWxState');                 //更改微信状态
+        $router->post('doUpdateZfbState', 'PaySetController@doUpdateZfbState');               //更改支付宝状态
+        $router->post('doUpdateHjState', 'PaySetController@doUpdateHjState');                 //更改汇聚状态
+        $router->post('getZfbById', 'PaySetController@getZfbConfig');                       //添加支付宝配置(获取)
+        $router->post('getWxById', 'PaySetController@getWxConfig');                         //添加微信配置(获取)
+        $router->post('getHjById', 'PaySetController@getHjConfig');                         //添加汇聚配置(获取)
+        $router->post('doZfbUpdate', 'PaySetController@doZfbConfig');                       //添加/修改支付宝配置
+        $router->post('doWxUpdate', 'PaySetController@doWxConfig');                         //添加/修改微信配置
+        $router->post('doHjUpdate', 'PaySetController@doHjConfig');                         //添加/修改汇聚配置
 
-
+    });
 
 });
 /*****************end**********************/
