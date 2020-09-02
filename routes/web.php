@@ -42,11 +42,14 @@ $router->group(['prefix' => 'admin' , 'namespace' => 'Admin', 'middleware'=> 'co
 
 });
 //后端登录权限认证相关接口
-$router->group(['prefix' => 'admin' , 'namespace' => 'Admin' , 'middleware'=> ['jwt.auth', 'cors','api']], function () use ($router) {
- 
-
-
-
+$router->group(['prefix' => 'admin' , 'namespace' => 'Admin'], function () use ($router) {
+    //项目管理部分(dzj)
+    $router->group(['prefix' => 'project'], function () use ($router) {
+        $router->post('doInsertProjectSubject', 'ProjectController@doInsertProjectSubject');     //添加项目/学科的方法
+        $router->post('doUpdateProjectSubject', 'ProjectController@doUpdateProjectSubject');     //修改项目/学科的方法
+        $router->post('doInsertCourse', 'ProjectController@doInsertCourse');                     //添加课程的方法
+        $router->post('doUpdateCourse', 'ProjectController@doUpdateCourse');                     //修改课程的方法
+    });
 });
 /*****************end**********************/
 
