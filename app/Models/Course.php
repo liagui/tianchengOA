@@ -104,8 +104,6 @@ class Course extends Model {
      * @param  description   项目管理-修改课程方法
      * @param  参数说明       body包含以下参数[
      *     course_id         课程id
-     *     parent_id         项目id
-     *     child_id          学科id
      *     course_name       课程名称
      *     course_price      课程价格
      *     hide_flag         是否显示/隐藏
@@ -124,16 +122,6 @@ class Course extends Model {
         //判断课程id是否合法
         if(!isset($body['course_id']) || empty($body['course_id']) || $body['course_id'] <= 0){
             return ['code' => 202 , 'msg' => '课程id不合法'];
-        }
-        
-        //判断分类父级id是否合法
-        if(!isset($body['parent_id']) || empty($body['parent_id']) || $body['parent_id'] <= 0){
-            return ['code' => 202 , 'msg' => '项目id不合法'];
-        }
-        
-        //判断分类子级id是否合法
-        if(!isset($body['child_id']) || empty($body['child_id']) || $body['child_id'] <= 0){
-            return ['code' => 202 , 'msg' => '学科id不合法'];
         }
 
         //判断课程名称是否为空
@@ -156,38 +144,24 @@ class Course extends Model {
         if(!$is_exists_course || $is_exists_course <= 0){
             return ['code' => 203 , 'msg' => '此课程不存在'];
         }
-        
-        //判断父级id是否在表中是否存在
-        $is_exists_parentId = Project::where('id' , $body['parent_id'])->where('parent_id' , 0)->where('status' , 0)->count();
-        if(!$is_exists_parentId || $is_exists_parentId <= 0){
-            return ['code' => 203 , 'msg' => '此项目名称不存在'];
-        }
-        
-        //判断子级id是否在表中是否存在
-        $is_exists_childId = Project::where('id' , $body['child_id'])->where('parent_id' , $body['parent_id'])->where('status' , 0)->count();
-        if(!$is_exists_childId || $is_exists_childId <= 0){
-            return ['code' => 203 , 'msg' => '此学科名称不存在'];
-        }
 
         //判断课程名称是否存在
         $is_exists = self::where('course_name' , $body['course_name'])->where('del_flag' , 0)->count();
         if($is_exists && $is_exists > 0){
             //组装课程数组信息
             $course_array = [
-                'category_one_id'     =>   isset($body['parent_id']) && $body['parent_id'] > 0 ? $body['parent_id'] : 0 ,
-                'category_tow_id'     =>   isset($body['child_id']) && $body['child_id'] > 0 ? $body['child_id'] : 0 ,
                 'price'               =>   $body['course_price'] ,
                 'hide_flag'           =>   isset($body['hide_flag']) && $body['hide_flag'] == 1 ? 1 : 0 ,
+                'del_flag'            =>   isset($body['del_flag']) && $body['del_flag'] == 1 ? 1 : 0 ,
                 'update_time'         =>   date('Y-m-d H:i:s')
             ];
         } else {
             //组装课程数组信息
             $course_array = [
-                'category_one_id'     =>   isset($body['parent_id']) && $body['parent_id'] > 0 ? $body['parent_id'] : 0 ,
-                'category_tow_id'     =>   isset($body['child_id']) && $body['child_id'] > 0 ? $body['child_id'] : 0 ,
                 'course_name'         =>   $body['course_name'] ,
                 'price'               =>   $body['course_price'] ,
                 'hide_flag'           =>   isset($body['hide_flag']) && $body['hide_flag'] == 1 ? 1 : 0 ,
+                'del_flag'            =>   isset($body['del_flag']) && $body['del_flag'] == 1 ? 1 : 0 ,
                 'update_time'         =>   date('Y-m-d H:i:s')
             ];
         }
@@ -205,5 +179,32 @@ class Course extends Model {
             DB::rollBack();
             return ['code' => 203 , 'msg' => '修改失败'];
         }
+    }
+    
+        /*
+     * @param  description   项目管理-课程列表接口
+     * @param  参数说明       body包含以下参数[
+     *     parent_id        项目id
+     *     child_id         学科id
+     * ]
+     * @param author    dzj
+     * @param ctime     2020-09-03
+     * return string
+     */
+    public static function getCourseList($body=[]){
+        //判断项目的id是否为空
+        if(!isset($body['parent_id']) || $body['parent_id'] <= 0){
+            return ['code' => 202 , 'msg' => '项目id不合法'];
+        }
+        
+        //判断学科id是否传递
+        if(!isset($body['child_id']) || $body['child_id'] <= 0){
+            //通过项目的id获取课程列表
+            $course_list = self::select('id as course_id' , 'course_name')->where('category_one_id' , $body['parent_id'])->where('del_flag' , 0)->get();
+        } else {
+            //通过项目的id获取课程列表
+            $course_list = self::select('id as course_id' , 'course_name')->where('category_one_id' , $body['parent_id'])->where('category_tow_id' , $body['child_id'])->where('del_flag' , 0)->get();
+        }
+        return ['code' => 200 , 'msg' => '获取课程列表成功' , 'data' => $course_list];
     }
 }

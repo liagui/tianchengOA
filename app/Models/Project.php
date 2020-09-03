@@ -181,4 +181,31 @@ class Project extends Model {
             return ['code' => 203 , 'msg' => '修改失败'];
         }
     }
+    
+    /*
+     * @param  description   项目管理-项目筛选学科列表接口
+     * @param  参数说明       body包含以下参数[
+     *     project_id        项目id
+     * ]
+     * @param author    dzj
+     * @param ctime     2020-09-03
+     * return string
+     */
+    public static function getProjectSubjectList() {
+        //项目列表
+        $project_list = self::select('id','name')->where('parent_id' , 0)->where('status' , 0)->orderByDesc('create_time')->get()->toArray();
+        if($project_list && !empty($project_list)){
+            foreach($project_list as $k=>$v){
+                //获取学科得列表
+                $subject_list = self::select('id','name')->where('parent_id' , $v['id'])->where('status' , 0)->orderByDesc('create_time')->get()->toArray();
+                if($subject_list && !empty($subject_list)){
+                    //根据项目得id获取学科得列表
+                    $project_list[$k]['subject_list'] = $subject_list && !empty($subject_list) ? $subject_list : [];
+                }
+            }
+            return ['code' => 200 , 'msg' => '获取列表成功' , 'data' => $project_list];
+        } else {
+            return ['code' => 200 , 'msg' => '获取列表成功' , 'data' => []];
+        }
+    }
 }

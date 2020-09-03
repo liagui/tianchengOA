@@ -34,6 +34,8 @@ $router->group(['prefix' => 'admin' , 'namespace' => 'Admin', 'middleware'=> 'co
         $router->post('doUpdateProjectSubject', 'ProjectController@doUpdateProjectSubject');     //修改项目/学科的方法
         $router->post('doInsertCourse', 'ProjectController@doInsertCourse');                     //添加课程的方法
         $router->post('doUpdateCourse', 'ProjectController@doUpdateCourse');                     //修改课程的方法
+        $router->post('getProjectSubjectList', 'ProjectController@getProjectSubjectList');       //项目筛选学科列表接口
+        $router->post('getCourseList', 'ProjectController@getCourseList');                       //课程列表接口
     });
 });
 /*****************end**********************/
