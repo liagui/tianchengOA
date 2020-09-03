@@ -41,7 +41,7 @@ class Project extends Model {
             }
         
             //判断学科名称是否存在
-            $is_exists = self::where('name' , $body['name'])->where('parent_id' , $body['project_id'])->where('status' , 0)->count();
+            $is_exists = self::where('name' , $body['name'])->where('parent_id' , $body['project_id'])->where('is_del' , 0)->count();
             if($is_exists && $is_exists > 0){
                 return ['code' => 203 , 'msg' => '此学科名称已存在'];
             }
@@ -57,7 +57,7 @@ class Project extends Model {
             }
         
             //判断项目名称是否存在
-            $is_exists = self::where('name' , $body['name'])->where('parent_id' , 0)->where('status' , 0)->count();
+            $is_exists = self::where('name' , $body['name'])->where('parent_id' , 0)->where('is_del' , 0)->count();
             if($is_exists && $is_exists > 0){
                 return ['code' => 203 , 'msg' => '此项目名称已存在'];
             }
@@ -67,7 +67,7 @@ class Project extends Model {
         $project_array = [
             'parent_id'     =>   isset($body['project_id']) && $body['project_id'] > 0 ? $body['project_id'] : 0 ,
             'name'          =>   $body['name'] ,
-            'hide_flag'     =>   isset($body['hide_flag']) && $body['hide_flag'] == 1 ? 1 : 0 ,
+            'is_hide'       =>   isset($body['hide_flag']) && $body['hide_flag'] == 1 ? 1 : 0 ,
             'admin_id'      =>   0 ,
             'create_time'   =>   date('Y-m-d H:i:s')
         ];
@@ -129,39 +129,39 @@ class Project extends Model {
         //判断是项目还是学科
         if($info['parent_id'] && $info['parent_id'] > 0){
             //判断学科名称是否存在
-            $is_exists = self::where('name' , $body['name'])->where('parent_id' , $info['parent_id'])->where('status' , 0)->count();
+            $is_exists = self::where('name' , $body['name'])->where('parent_id' , $info['parent_id'])->where('is_del' , 0)->count();
             if($is_exists && $is_exists > 0){
                 //组装项目数组信息
                 $project_array = [
-                    'hide_flag'     =>   isset($body['hide_flag']) && $body['hide_flag'] == 1 ? 1 : 0 ,
-                    'status'        =>   isset($body['is_del']) && $body['is_del'] == 1 ? 1 : 0 ,
+                    'is_hide'       =>   isset($body['hide_flag']) && $body['hide_flag'] == 1 ? 1 : 0 ,
+                    'is_del'        =>   isset($body['is_del']) && $body['is_del'] == 1 ? 1 : 0 ,
                     'update_time'   =>   date('Y-m-d H:i:s')
                 ];
             } else {
                 //组装项目数组信息
                 $project_array = [
                     'name'          =>   $body['name'] ,
-                    'hide_flag'     =>   isset($body['hide_flag']) && $body['hide_flag'] == 1 ? 1 : 0 ,
-                    'status'        =>   isset($body['is_del']) && $body['is_del'] == 1 ? 1 : 0 ,
+                    'is_hide'       =>   isset($body['hide_flag']) && $body['hide_flag'] == 1 ? 1 : 0 ,
+                    'is_del'        =>   isset($body['is_del']) && $body['is_del'] == 1 ? 1 : 0 ,
                     'update_time'   =>   date('Y-m-d H:i:s')
                 ];
             }
         } else {
             //判断项目名称是否存在
-            $is_exists = self::where('name' , $body['name'])->where('parent_id' , 0)->where('status' , 0)->count();
+            $is_exists = self::where('name' , $body['name'])->where('parent_id' , 0)->where('is_del' , 0)->count();
             if($is_exists && $is_exists > 0){
                 //组装项目数组信息
                 $project_array = [
-                    'hide_flag'     =>   isset($body['hide_flag']) && $body['hide_flag'] == 1 ? 1 : 0 ,
-                    'status'        =>   isset($body['is_del']) && $body['is_del'] == 1 ? 1 : 0 ,
+                    'is_hide'       =>   isset($body['hide_flag']) && $body['hide_flag'] == 1 ? 1 : 0 ,
+                    'is_del'        =>   isset($body['is_del']) && $body['is_del'] == 1 ? 1 : 0 ,
                     'update_time'   =>   date('Y-m-d H:i:s')
                 ];
             } else {
                 //组装项目数组信息
                 $project_array = [
                     'name'          =>   $body['name'] ,
-                    'hide_flag'     =>   isset($body['hide_flag']) && $body['hide_flag'] == 1 ? 1 : 0 ,
-                    'status'        =>   isset($body['is_del']) && $body['is_del'] == 1 ? 1 : 0 ,
+                    'is_hide'       =>   isset($body['hide_flag']) && $body['hide_flag'] == 1 ? 1 : 0 ,
+                    'is_del'        =>   isset($body['is_del']) && $body['is_del'] == 1 ? 1 : 0 ,
                     'update_time'   =>   date('Y-m-d H:i:s')
                 ];
             }
@@ -193,11 +193,11 @@ class Project extends Model {
      */
     public static function getProjectSubjectList() {
         //项目列表
-        $project_list = self::select('id','name')->where('parent_id' , 0)->where('status' , 0)->orderByDesc('create_time')->get()->toArray();
+        $project_list = self::select('id','name')->where('parent_id' , 0)->where('is_del' , 0)->orderByDesc('create_time')->get()->toArray();
         if($project_list && !empty($project_list)){
             foreach($project_list as $k=>$v){
                 //获取学科得列表
-                $subject_list = self::select('id','name')->where('parent_id' , $v['id'])->where('status' , 0)->orderByDesc('create_time')->get()->toArray();
+                $subject_list = self::select('id','name')->where('parent_id' , $v['id'])->where('is_del' , 0)->orderByDesc('create_time')->get()->toArray();
                 if($subject_list && !empty($subject_list)){
                     //根据项目得id获取学科得列表
                     $project_list[$k]['subject_list'] = $subject_list && !empty($subject_list) ? $subject_list : [];

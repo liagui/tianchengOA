@@ -57,19 +57,19 @@ class Course extends Model {
         }
         
         //判断父级id是否在表中是否存在
-        $is_exists_parentId = Project::where('id' , $body['parent_id'])->where('parent_id' , 0)->where('status' , 0)->count();
+        $is_exists_parentId = Project::where('id' , $body['parent_id'])->where('parent_id' , 0)->where('is_del' , 0)->count();
         if(!$is_exists_parentId || $is_exists_parentId <= 0){
             return ['code' => 203 , 'msg' => '此项目名称不存在'];
         }
         
         //判断子级id是否在表中是否存在
-        $is_exists_childId = Project::where('id' , $body['child_id'])->where('parent_id' , $body['parent_id'])->where('status' , 0)->count();
+        $is_exists_childId = Project::where('id' , $body['child_id'])->where('parent_id' , $body['parent_id'])->where('is_del' , 0)->count();
         if(!$is_exists_childId || $is_exists_childId <= 0){
             return ['code' => 203 , 'msg' => '此学科名称不存在'];
         }
 
         //判断课程名称是否存在
-        $is_exists = self::where('course_name' , $body['course_name'])->where('del_flag' , 0)->count();
+        $is_exists = self::where('course_name' , $body['course_name'])->where('is_del' , 0)->count();
         if($is_exists && $is_exists > 0){
             return ['code' => 203 , 'msg' => '此课程名称已存在'];
         }
@@ -80,7 +80,7 @@ class Course extends Model {
             'category_tow_id'     =>   isset($body['child_id']) && $body['child_id'] > 0 ? $body['child_id'] : 0 ,
             'course_name'         =>   $body['course_name'] ,
             'price'               =>   $body['course_price'] ,
-            'hide_flag'           =>   isset($body['hide_flag']) && $body['hide_flag'] == 1 ? 1 : 0 ,
+            'is_hide'             =>   isset($body['hide_flag']) && $body['hide_flag'] == 1 ? 1 : 0 ,
             'admin_id'            =>   0 ,
             'create_time'         =>   date('Y-m-d H:i:s')
         ];
@@ -146,13 +146,13 @@ class Course extends Model {
         }
 
         //判断课程名称是否存在
-        $is_exists = self::where('course_name' , $body['course_name'])->where('del_flag' , 0)->count();
+        $is_exists = self::where('course_name' , $body['course_name'])->where('is_del' , 0)->count();
         if($is_exists && $is_exists > 0){
             //组装课程数组信息
             $course_array = [
                 'price'               =>   $body['course_price'] ,
-                'hide_flag'           =>   isset($body['hide_flag']) && $body['hide_flag'] == 1 ? 1 : 0 ,
-                'del_flag'            =>   isset($body['del_flag']) && $body['del_flag'] == 1 ? 1 : 0 ,
+                'is_hide'             =>   isset($body['hide_flag']) && $body['hide_flag'] == 1 ? 1 : 0 ,
+                'is_del'              =>   isset($body['del_flag']) && $body['del_flag'] == 1 ? 1 : 0 ,
                 'update_time'         =>   date('Y-m-d H:i:s')
             ];
         } else {
@@ -160,8 +160,8 @@ class Course extends Model {
             $course_array = [
                 'course_name'         =>   $body['course_name'] ,
                 'price'               =>   $body['course_price'] ,
-                'hide_flag'           =>   isset($body['hide_flag']) && $body['hide_flag'] == 1 ? 1 : 0 ,
-                'del_flag'            =>   isset($body['del_flag']) && $body['del_flag'] == 1 ? 1 : 0 ,
+                'is_hide'             =>   isset($body['hide_flag']) && $body['hide_flag'] == 1 ? 1 : 0 ,
+                'is_del'              =>   isset($body['del_flag']) && $body['del_flag'] == 1 ? 1 : 0 ,
                 'update_time'         =>   date('Y-m-d H:i:s')
             ];
         }
@@ -200,10 +200,10 @@ class Course extends Model {
         //判断学科id是否传递
         if(!isset($body['child_id']) || $body['child_id'] <= 0){
             //通过项目的id获取课程列表
-            $course_list = self::select('id as course_id' , 'course_name')->where('category_one_id' , $body['parent_id'])->where('del_flag' , 0)->get();
+            $course_list = self::select('id as course_id' , 'course_name')->where('category_one_id' , $body['parent_id'])->where('is_del' , 0)->get();
         } else {
             //通过项目的id获取课程列表
-            $course_list = self::select('id as course_id' , 'course_name')->where('category_one_id' , $body['parent_id'])->where('category_tow_id' , $body['child_id'])->where('del_flag' , 0)->get();
+            $course_list = self::select('id as course_id' , 'course_name')->where('category_one_id' , $body['parent_id'])->where('category_tow_id' , $body['child_id'])->where('is_del' , 0)->get();
         }
         return ['code' => 200 , 'msg' => '获取课程列表成功' , 'data' => $course_list];
     }
