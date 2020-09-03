@@ -31,16 +31,16 @@ class Pay_order_inside extends Model
          */
     public static function orderList($data){
         //判断是否是分校
-        $school_id = isset(AdminLog::getAdminInfo()->admin_user->school_id) ? AdminLog::getAdminInfo()->admin_user->school_id : 0;
-        if($school_id != 0){
-            //只查询分校订单
-            $where['school_id'] = $school_id;
-        }else{
-            //判断总校传来的学校id
-            if(!empty($data['school_id'])){
-                $where['school_id'] = $data['school_id'];
-            }
-        }
+//        $school_id = isset(AdminLog::getAdminInfo()->admin_user->school_id) ? AdminLog::getAdminInfo()->admin_user->school_id : 0;
+//        if($school_id != 0){
+//            //只查询分校订单
+//            $where['school_id'] = $school_id;
+//        }else{
+//            //判断总校传来的学校id
+//            if(!empty($data['school_id'])){
+//                $where['school_id'] = $data['school_id'];
+//            }
+//        }
         //判断时间
         $begindata="2020-03-04";
         $enddate = date('Y-m-d');
