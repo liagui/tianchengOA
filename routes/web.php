@@ -21,6 +21,7 @@ $router->post('/', function () use ($router) {
 //无需任何验证 操作接口
 $router->group(['prefix' => 'admin' , 'namespace' => 'Admin'], function () use ($router) {
     $router->get('orderForExceil', 'OrderController@orderForExceil');//导出订单exceil
+
 });
 //后端登录注册接口
 $router->group(['prefix' => 'admin' , 'namespace' => 'Admin', 'middleware'=> 'cors'], function () use ($router) {
@@ -39,11 +40,36 @@ $router->group(['prefix' => 'admin' , 'namespace' => 'Admin', 'middleware'=> 'co
     $router->post('schoolLists', 'ArticleController@schoolLists');//学校列表
     $router->post('courseType', 'CourseController@courseType');//根据分类查课程
     $router->post('orderForStudent', 'OrderController@orderForStudent');//订单通过学员查询
+    /*** 物料管理start ***/
+    //获取物料列表
+    $router->post('getMaterialList', 'MaterialController@getMaterialList');
+    //创建物料需求
+    $router->post('Materialadd', 'MaterialController@Materialadd');
+    //确认物料信息
+    $router->post('Materialupdate', 'MaterialController@Materialupdate');
+    //获取确认物料信息
+    $router->post('getMaterial', 'MaterialController@getMaterial');
+    //获取物料提交人信息
+    $router->post('getsubmit', 'MaterialController@getsubmit');
+
+    /*** 学员管理start ***/
+
+    /*** 学员管理end ***/
+
+    /*** 班主任管理start ***/
+    //创建班主任
+    $router->post('createTeacher', 'TeacherController@createTeacher');
+    //获取班主任列表
+    $router->post('getTeacherList', 'TeacherController@getTeacherList');
+    //更改班主任值班状态
+    $router->post('updateTeacherStatus', 'TeacherController@updateTeacherStatus');
+
+    /*** 班主任管理end ***/
 
 });
 //后端登录权限认证相关接口
 $router->group(['prefix' => 'admin' , 'namespace' => 'Admin' , 'middleware'=> ['jwt.auth', 'cors','api']], function () use ($router) {
- 
+
 
 
 
