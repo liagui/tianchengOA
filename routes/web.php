@@ -22,6 +22,7 @@ $router->post('/', function () use ($router) {
 $router->group(['prefix' => 'admin' , 'namespace' => 'Admin'], function () use ($router) {
     $router->get('orderForExceil', 'OrderController@orderForExceil');//导出订单exceil
     $router->post('orderlist', 'OrderController@orderList');//ceshijiekou
+    $router->post('handOrder', 'OrderController@handOrder');//手动报单
 });
 //后端登录注册接口
 $router->group(['prefix' => 'admin' , 'namespace' => 'Admin', 'middleware'=> 'cors'], function () use ($router) {
