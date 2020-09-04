@@ -69,7 +69,7 @@ class Course extends Model {
         }
 
         //判断课程名称是否存在
-        $is_exists = self::where('course_name' , $body['course_name'])->where('is_del' , 0)->count();
+        $is_exists = self::where('category_one_id' , $body['parent_id'])->where('category_tow_id' , $body['child_id'])->where('course_name' , $body['course_name'])->where('is_del' , 0)->count();
         if($is_exists && $is_exists > 0){
             return ['code' => 203 , 'msg' => '此课程名称已存在'];
         }
@@ -146,7 +146,7 @@ class Course extends Model {
         }
 
         //判断课程名称是否存在
-        $is_exists = self::where('course_name' , $body['course_name'])->where('is_del' , 0)->count();
+        /*$is_exists = self::where('course_name' , $body['course_name'])->where('is_del' , 0)->count();
         if($is_exists && $is_exists > 0){
             //组装课程数组信息
             $course_array = [
@@ -164,7 +164,15 @@ class Course extends Model {
                 'is_del'              =>   isset($body['is_del']) && $body['is_del'] == 1 ? 1 : 0 ,
                 'update_time'         =>   date('Y-m-d H:i:s')
             ];
-        }
+        }*/
+        //组装课程数组信息
+        $course_array = [
+            'course_name'         =>   $body['course_name'] ,
+            'price'               =>   $body['course_price'] ,
+            'is_hide'             =>   isset($body['is_hide']) && $body['is_hide'] == 1 ? 1 : 0 ,
+            'is_del'              =>   isset($body['is_del']) && $body['is_del'] == 1 ? 1 : 0 ,
+            'update_time'         =>   date('Y-m-d H:i:s')
+        ];
         
         //开启事务
         DB::beginTransaction();

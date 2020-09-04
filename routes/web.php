@@ -40,6 +40,9 @@ $router->group(['prefix' => 'admin' , 'namespace' => 'Admin', 'middleware'=> 'co
         $router->post('doInsertRegion', 'ProjectController@doInsertRegion');                     //添加地区的方法
         $router->post('doUpdateRegion', 'ProjectController@doUpdateRegion');                     //修改地区的方法
         $router->post('getRegionList', 'ProjectController@getRegionList');                       //地区列表接口
+        $router->post('doInsertEducation', 'ProjectController@doInsertEducation');               //添加院校的方法
+        $router->post('doUpdateEducation', 'ProjectController@doUpdateEducation');               //修改院校的方法
+        $router->post('getEducationList', 'ProjectController@getEducationList');                 //院校列表接口
     });
     $router->post('diff', 'TestController@diff');
     $router->post('test', 'TestController@index');

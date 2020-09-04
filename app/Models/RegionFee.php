@@ -132,7 +132,7 @@ class RegionFee extends Model {
         }
 
         //判断地区名称是否存在
-        $is_exists = self::where('region_name' , $body['region_name'])->where('is_del' , 0)->count();
+        /*$is_exists = self::where('region_name' , $body['region_name'])->where('is_del' , 0)->count();
         if($is_exists && $is_exists > 0){
             //组装地区数组信息
             $region_array = [
@@ -150,7 +150,15 @@ class RegionFee extends Model {
                 'is_del'              =>   isset($body['is_del']) && $body['is_del'] == 1 ? 1 : 0 ,
                 'update_time'         =>   date('Y-m-d H:i:s')
             ];
-        }
+        }*/
+        //组装地区数组信息
+        $region_array = [
+            'region_name'         =>   $body['region_name'] ,
+            'cost'                =>   $body['cost'] ,
+            'is_hide'             =>   isset($body['is_hide']) && $body['is_hide'] == 1 ? 1 : 0 ,
+            'is_del'              =>   isset($body['is_del']) && $body['is_del'] == 1 ? 1 : 0 ,
+            'update_time'         =>   date('Y-m-d H:i:s')
+        ];
         
         //开启事务
         DB::beginTransaction();
