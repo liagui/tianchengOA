@@ -37,6 +37,9 @@ $router->group(['prefix' => 'admin' , 'namespace' => 'Admin', 'middleware'=> 'co
         $router->post('doUpdateCourse', 'ProjectController@doUpdateCourse');                     //修改课程的方法
         $router->post('getProjectSubjectList', 'ProjectController@getProjectSubjectList');       //项目筛选学科列表接口
         $router->post('getCourseList', 'ProjectController@getCourseList');                       //课程列表接口
+        $router->post('doInsertRegion', 'ProjectController@doInsertRegion');                     //添加地区的方法
+        $router->post('doUpdateRegion', 'ProjectController@doUpdateRegion');                     //修改地区的方法
+        $router->post('getRegionList', 'ProjectController@getRegionList');                       //地区列表接口
     });
     $router->post('diff', 'TestController@diff');
     $router->post('test', 'TestController@index');
