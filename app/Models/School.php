@@ -14,7 +14,7 @@ use Illuminate\Support\Facades\DB;
 use App\Tools\CurrentAdmin;
 class School extends Model {
     //指定别的表名
-    public $table = 'ld_school';
+    public $table = 'school';
     //时间戳设置
     public $timestamps = false;
 
