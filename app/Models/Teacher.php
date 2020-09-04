@@ -5,7 +5,9 @@ use Illuminate\Database\Eloquent\Model;
 use App\Models\MaterialListing;
 use App\Models\TeacherSchool;
 use App\Models\TeacherCategory;
+use App\Models\Pay_order_inside;
 use Illuminate\Support\Facades\DB;
+
 class Teacher extends Model {
     //指定别的表名
     public $table = 'admin';
@@ -110,6 +112,138 @@ class Teacher extends Model {
             return ['code' => 202 , 'msg' => '更新值班状态失败'];
         }
     }
+
+    public static function getTeacherPerformance($data){
+        //每页显示的条数
+        $pagesize = (int)isset($data['pageSize']) && $data['pageSize'] > 0 ? $data['pageSize'] : 20;
+        $page     = isset($data['page']) && $data['page'] > 0 ? $data['page'] : 1;
+        $offset   = ($page - 1) * $pagesize;
+        //查询所有班主任
+        //搜索条件  时间区间   开始时间和结束时间
+        //对比订单  comfirm_time 是否在这个时间区间内
+        $count = self::where('role_id',3)->count();
+        $teacher = self::select("real_name","mobile","wx","id")->where('role_id',3)->offset($offset)->limit($pagesize)->get()->toArray();
+
+        foreach($teacher as $k =>&$v){
+            //已回访单数
+            $v['yet_singular'] = Pay_order_inside::where(['return_visit'=>1,'have_user_id'=>$v['id']])->where(function($query) use ($data){
+                if(isset($data['start_time']) && !empty(isset($data['start_time']))  && isset($data['end_time']) && !empty(isset($data['end_time']))){
+                    $query->whereBetween('comfirm_time',[date("Y-m-d H:i:s",strtotime($data['start_time'])),date("Y-m-d H:i:s",strtotime($data['end_time']))]);
+                }
+            })->count();
+            //未回放单数
+            $v['not_singular'] = Pay_order_inside::where(['return_visit'=>0,'have_user_id'=>$v['id']])->where(function($query) use ($data){
+                if(isset($data['start_time']) && !empty(isset($data['start_time']))  && isset($data['end_time']) && !empty(isset($data['end_time']))){
+                    $query->whereBetween('comfirm_time',[date("Y-m-d H:i:s",strtotime($data['start_time'])),date("Y-m-d H:i:s",strtotime($data['end_time']))]);
+                }
+            })->count();
+            //总回放单数
+            $v['sum_singular'] = $v['yet_singular'] + $v['not_singular'];
+            //已完成业绩
+            $v['completed_performance'] = Pay_order_inside::select("course_Price")->where(['have_user_id'=>$v['id']])
+            ->where(function($query) use ($data){
+                if(isset($data['start_time']) && !empty(isset($data['start_time']))  && isset($data['end_time']) && !empty(isset($data['end_time']))){
+                    $query->whereBetween('comfirm_time',[date("Y-m-d H:i:s",strtotime($data['start_time'])),date("Y-m-d H:i:s",strtotime($data['end_time']))]);
+                }
+            })->sum("course_Price");
+
+            //退费业绩
+            $v['return_premium'] = DB::table("refund_order")->where(["teacher_id"=>$v['id'],"refund_plan"=>2,"confirm_status"=>1])->where(function($query) use ($data){
+                if(isset($data['start_time']) && !empty(isset($data['start_time']))  && isset($data['end_time']) && !empty(isset($data['end_time']))){
+                    $query->whereBetween('refund_time',[date("Y-m-d H:i:s",strtotime($data['start_time'])),date("Y-m-d H:i:s",strtotime($data['end_time']))]);
+                }
+            })->sum("refund_Price");
+        }
+            $one = [
+                //总退费金额
+               'return_premium' => number_format(array_sum(array_column($teacher , 'return_premium')) , 2),
+               //已完成业绩
+               'completed_performance' => number_format(array_sum(array_column($teacher , 'completed_performance')) , 2),
+               //总回放单数
+               'sum_singular' => array_sum(array_column($teacher , 'sum_singular')),
+               //已回访单数
+               'yet_singular' => array_sum(array_column($teacher , 'yet_singular')),
+               //未回访单数
+               'not_singular' => array_sum(array_column($teacher , 'not_singular')),
+            ];
+
+        $page=[
+            'pageSize'=>$pagesize,
+            'page' =>$page,
+            'total'=>$count
+        ];
+        if($teacher){
+            return ['code' => 200, 'msg' => '查询成功', 'data' => $teacher,'page'=>$page,'one'=>$one];
+        }else{
+            return ['code' => 202, 'msg' => '查询暂无数据'];
+        }
+    }
+    public static function getTeacherPerformanceOne($data){
+        //搜索条件 项目 所属分校 开课状态 回访状态 手机号/姓名/微信号
+        $pagesize = (int)isset($data['pageSize']) && $data['pageSize'] > 0 ? $data['pageSize'] : 20;
+        $page     = isset($data['page']) && $data['page'] > 0 ? $data['page'] : 1;
+        $offset   = ($page - 1) * $pagesize;
+        //班主任姓名
+        $one = self::select("real_name")->where("id",$data['teacher_id'])->first()->toArray();
+        //退费金额
+        $one['return_premium'] = DB::table("refund_order")->where(["teacher_id"=>$data['teacher_id'],"refund_plan"=>2,"confirm_status"=>1])->sum("refund_Price");
+        //已回访单数
+        $one['yet_singular'] = Pay_order_inside::where(['return_visit'=>1,'have_user_id'=>$data['teacher_id']])->count();
+        //未回访单数
+        $one['not_singular'] = Pay_order_inside::where(['return_visit'=>0,'have_user_id'=>$data['teacher_id']])->count();
+        //总回放单数
+        $one['sum_singular'] = $one['yet_singular'] + $one['not_singular'];
+        //已完成业绩
+        $one['completed_performance'] = Pay_order_inside::select("course_Price")->where(['have_user_id'=>$data['teacher_id']])->sum("course_Price");
+
+        //查询详细数据
+        $count = Pay_order_inside::where(['have_user_id'=>$data['teacher_id'],'classes'=>1,'seas_status'=>0])->where(function($query) use ($data){
+            if(isset($data['school_id']) && !empty(isset($data['school_id']))){
+                $query->where('school_id','like','%'.$data['school_id'].'%');
+            }
+            if(isset($data['classes']) && $data['classes'] != -1){
+                $query->where(['classes'=>$data['classes']]);
+            }
+            if(isset($data['project_id']) && $data['project_id'] != -1){
+                $query->where(['project_id'=>$data['project_id']]);
+            }
+            if(isset($data['return_visit']) && $data['return_visit'] != -1){
+                $query->where(['return_visit'=>$data['return_visit']]);
+            }
+            if(isset($data['keyword']) && !empty(isset($data['keyword']))){
+                $query->where('name','like','%'.$data['keyword'].'%')->orWhere('mobile','like','%'.$data['keyword'].'%');
+            }
+        })->count();
+        $data = Pay_order_inside::where(['have_user_id'=>$data['teacher_id'],'classes'=>1,'seas_status'=>0])->where(function($query) use ($data){
+            if(isset($data['school_id']) && !empty(isset($data['school_id']))){
+                $query->where('school_id','like','%'.$data['school_id'].'%');
+            }
+            if(isset($data['classes']) && $data['classes'] != -1){
+                $query->where(['classes'=>$data['classes']]);
+            }
+            if(isset($data['project_id']) && $data['project_id'] != -1){
+                $query->where(['project_id'=>$data['project_id']]);
+            }
+            if(isset($data['return_visit']) && $data['return_visit'] != -1){
+                $query->where(['return_visit'=>$data['return_visit']]);
+            }
+            if(isset($data['keyword']) && !empty(isset($data['keyword']))){
+                $query->where('name','like','%'.$data['keyword'].'%')->orWhere('mobile','like','%'.$data['keyword'].'%');
+            }
+        })->offset($offset)->limit($pagesize)->get();
+        $page=[
+            'pageSize'=>$pagesize,
+            'page' =>$page,
+            'total'=>$count
+        ];
+        if($one){
+            return ['code' => 200, 'msg' => '查询成功', 'data' => $data,'one'=>$one,'page'=>$page];
+        }else{
+            return ['code' => 202, 'msg' => '查询暂无数据'];
+        }
+
+    }
+
 
 
 }

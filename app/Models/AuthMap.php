@@ -11,7 +11,7 @@ use Illuminate\Support\Facades\DB;
 
 class AuthMap extends Model {
     //指定别的表名
-    public $table      = 'ld_auth_map';
+    public $table      = 'auth_map';
     //时间戳设置
     public $timestamps = false;
 

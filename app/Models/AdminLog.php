@@ -5,7 +5,7 @@ use Illuminate\Database\Eloquent\Model;
 
 class AdminLog extends Model {
     //指定别的表名
-    public $table      = 'ld_admin_operate_log';
+    public $table      = 'admin_operate_log';
     //时间戳设置
     public $timestamps = false;
     public static $admin_user;
