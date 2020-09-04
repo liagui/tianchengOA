@@ -19,7 +19,7 @@ class Course extends Model {
      *     child_id          学科id
      *     course_name       课程名称
      *     course_price      课程价格
-     *     hide_flag         是否显示/隐藏
+     *     is_hide           是否显示/隐藏
      * ]
      * @param author    dzj
      * @param ctime     2020-09-02
@@ -52,7 +52,7 @@ class Course extends Model {
         }
 
         //判断是否展示是否选择
-        if(isset($body['hide_flag']) && !in_array($body['hide_flag'] , [0,1])){
+        if(isset($body['is_hide']) && !in_array($body['is_hide'] , [0,1])){
             return ['code' => 202 , 'msg' => '展示方式不合法'];
         }
         
@@ -80,7 +80,7 @@ class Course extends Model {
             'category_tow_id'     =>   isset($body['child_id']) && $body['child_id'] > 0 ? $body['child_id'] : 0 ,
             'course_name'         =>   $body['course_name'] ,
             'price'               =>   $body['course_price'] ,
-            'is_hide'             =>   isset($body['hide_flag']) && $body['hide_flag'] == 1 ? 1 : 0 ,
+            'is_hide'             =>   isset($body['is_hide']) && $body['is_hide'] == 1 ? 1 : 0 ,
             'admin_id'            =>   0 ,
             'create_time'         =>   date('Y-m-d H:i:s')
         ];
@@ -106,8 +106,8 @@ class Course extends Model {
      *     course_id         课程id
      *     course_name       课程名称
      *     course_price      课程价格
-     *     hide_flag         是否显示/隐藏
-     *     del_flag          是否删除(是否删除1已删除)
+     *     is_hide           是否显示/隐藏
+     *     is_del            是否删除(是否删除1已删除)
      * ]
      * @param author    dzj
      * @param ctime     2020-09-02
@@ -135,7 +135,7 @@ class Course extends Model {
         }
 
         //判断是否展示是否选择
-        if(isset($body['hide_flag']) && !in_array($body['hide_flag'] , [0,1])){
+        if(isset($body['is_hide']) && !in_array($body['is_hide'] , [0,1])){
             return ['code' => 202 , 'msg' => '展示方式不合法'];
         }
         
@@ -151,8 +151,8 @@ class Course extends Model {
             //组装课程数组信息
             $course_array = [
                 'price'               =>   $body['course_price'] ,
-                'is_hide'             =>   isset($body['hide_flag']) && $body['hide_flag'] == 1 ? 1 : 0 ,
-                'is_del'              =>   isset($body['del_flag']) && $body['del_flag'] == 1 ? 1 : 0 ,
+                'is_hide'             =>   isset($body['is_hide']) && $body['is_hide'] == 1 ? 1 : 0 ,
+                'is_del'              =>   isset($body['is_del']) && $body['is_del'] == 1 ? 1 : 0 ,
                 'update_time'         =>   date('Y-m-d H:i:s')
             ];
         } else {
@@ -160,8 +160,8 @@ class Course extends Model {
             $course_array = [
                 'course_name'         =>   $body['course_name'] ,
                 'price'               =>   $body['course_price'] ,
-                'is_hide'             =>   isset($body['hide_flag']) && $body['hide_flag'] == 1 ? 1 : 0 ,
-                'is_del'              =>   isset($body['del_flag']) && $body['del_flag'] == 1 ? 1 : 0 ,
+                'is_hide'             =>   isset($body['is_hide']) && $body['is_hide'] == 1 ? 1 : 0 ,
+                'is_del'              =>   isset($body['is_del']) && $body['is_del'] == 1 ? 1 : 0 ,
                 'update_time'         =>   date('Y-m-d H:i:s')
             ];
         }

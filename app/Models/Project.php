@@ -16,7 +16,7 @@ class Project extends Model {
      * @param  参数说明       body包含以下参数[
      *     project_id        项目id
      *     name              项目/学科名称
-     *     hide_flag         是否显示/隐藏
+     *     is_hide           是否显示/隐藏
      * ]
      * @param author    dzj
      * @param ctime     2020-09-02
@@ -36,7 +36,7 @@ class Project extends Model {
             }
 
             //判断是否展示是否选择
-            if(isset($body['hide_flag']) && !in_array($body['hide_flag'] , [0,1])){
+            if(isset($body['is_hide']) && !in_array($body['is_hide'] , [0,1])){
                 return ['code' => 202 , 'msg' => '展示方式不合法'];
             }
         
@@ -52,7 +52,7 @@ class Project extends Model {
             }
 
             //判断是否展示是否选择
-            if(isset($body['hide_flag']) && !in_array($body['hide_flag'] , [0,1])){
+            if(isset($body['is_hide']) && !in_array($body['is_hide'] , [0,1])){
                 return ['code' => 202 , 'msg' => '展示方式不合法'];
             }
         
@@ -67,7 +67,7 @@ class Project extends Model {
         $project_array = [
             'parent_id'     =>   isset($body['project_id']) && $body['project_id'] > 0 ? $body['project_id'] : 0 ,
             'name'          =>   $body['name'] ,
-            'is_hide'       =>   isset($body['hide_flag']) && $body['hide_flag'] == 1 ? 1 : 0 ,
+            'is_hide'       =>   isset($body['is_hide']) && $body['is_hide'] == 1 ? 1 : 0 ,
             'admin_id'      =>   0 ,
             'create_time'   =>   date('Y-m-d H:i:s')
         ];
@@ -92,7 +92,7 @@ class Project extends Model {
      * @param  参数说明       body包含以下参数[
      *     prosub_id         项目/学科id
      *     name              项目/学科名称
-     *     hide_flag         是否显示/隐藏(前台隐藏0正常 1隐藏)
+     *     is_hide           是否显示/隐藏(前台隐藏0正常 1隐藏)
      *     is_del            是否删除(是否删除1已删除)
      * ]
      * @param author    dzj
@@ -116,7 +116,7 @@ class Project extends Model {
         }
 
         //判断是否展示是否选择
-        if(isset($body['hide_flag']) && !in_array($body['hide_flag'] , [0,1])){
+        if(isset($body['is_hide']) && !in_array($body['is_hide'] , [0,1])){
             return ['code' => 202 , 'msg' => '展示方式不合法'];
         }
         
@@ -133,7 +133,7 @@ class Project extends Model {
             if($is_exists && $is_exists > 0){
                 //组装项目数组信息
                 $project_array = [
-                    'is_hide'       =>   isset($body['hide_flag']) && $body['hide_flag'] == 1 ? 1 : 0 ,
+                    'is_hide'       =>   isset($body['is_hide']) && $body['is_hide'] == 1 ? 1 : 0 ,
                     'is_del'        =>   isset($body['is_del']) && $body['is_del'] == 1 ? 1 : 0 ,
                     'update_time'   =>   date('Y-m-d H:i:s')
                 ];
@@ -141,7 +141,7 @@ class Project extends Model {
                 //组装项目数组信息
                 $project_array = [
                     'name'          =>   $body['name'] ,
-                    'is_hide'       =>   isset($body['hide_flag']) && $body['hide_flag'] == 1 ? 1 : 0 ,
+                    'is_hide'       =>   isset($body['is_hide']) && $body['is_hide'] == 1 ? 1 : 0 ,
                     'is_del'        =>   isset($body['is_del']) && $body['is_del'] == 1 ? 1 : 0 ,
                     'update_time'   =>   date('Y-m-d H:i:s')
                 ];
@@ -152,7 +152,7 @@ class Project extends Model {
             if($is_exists && $is_exists > 0){
                 //组装项目数组信息
                 $project_array = [
-                    'is_hide'       =>   isset($body['hide_flag']) && $body['hide_flag'] == 1 ? 1 : 0 ,
+                    'is_hide'       =>   isset($body['is_hide']) && $body['is_hide'] == 1 ? 1 : 0 ,
                     'is_del'        =>   isset($body['is_del']) && $body['is_del'] == 1 ? 1 : 0 ,
                     'update_time'   =>   date('Y-m-d H:i:s')
                 ];
@@ -160,7 +160,7 @@ class Project extends Model {
                 //组装项目数组信息
                 $project_array = [
                     'name'          =>   $body['name'] ,
-                    'is_hide'       =>   isset($body['hide_flag']) && $body['hide_flag'] == 1 ? 1 : 0 ,
+                    'is_hide'       =>   isset($body['is_hide']) && $body['is_hide'] == 1 ? 1 : 0 ,
                     'is_del'        =>   isset($body['is_del']) && $body['is_del'] == 1 ? 1 : 0 ,
                     'update_time'   =>   date('Y-m-d H:i:s')
                 ];
