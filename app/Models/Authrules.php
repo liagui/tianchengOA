@@ -5,7 +5,7 @@ use Illuminate\Database\Eloquent\Model;
 
 class Authrules extends Model {
     //指定别的表名   权限表
-    public $table = 'ld_auth_rules';
+    public $table = 'auth_rules';
     //时间戳设置
     public $timestamps = false;
         /*
@@ -33,7 +33,6 @@ class Authrules extends Model {
             return ['code'=>202,'msg'=>'参数类型有误'];
         }
         $auth_id_arr = explode(',',$auth_id);
-
         if(!$auth_id_arr){
              $auth_id_arr = [$auth_id];
         }
@@ -54,7 +53,6 @@ class Authrules extends Model {
                 }
             }
         }
-
         if(!empty($arr)){
             foreach($arr as $kk=>&$vv){
                 $vv['name']  = !isset($authData[$vv['auth_id']]) ?'':substr(substr($authData[$vv['auth_id']],5),0,-8);

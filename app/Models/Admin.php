@@ -76,8 +76,8 @@ class Admin extends Model implements AuthenticatableContract, AuthorizableContra
          * @param  ctime   2020/4/25 15:44
          * return  array
          */
-    // public static function GetUserOne($id){
-    //     $return = self::where(['id'=>$id])->first();
+    // public static function GetUserOne($id,$field = ['*']){
+    //     $return = self::where(['id'=>$id])->select($field)->first();
     //     return $return;
     // }
     
@@ -92,9 +92,9 @@ class Admin extends Model implements AuthenticatableContract, AuthorizableContra
          * @param  ctime   2020/4/25 15:44
          * return  array
          */
-    public static function getUserOne($where){
+    public static function getUserOne($where,$field = ['*']){
 
-        $userInfo = self::where($where)->first();
+        $userInfo = self::where($where)->select($field)->first();
         if($userInfo){
             return ['code'=>200,'msg'=>'获取后台用户信息成功','data'=>$userInfo];
         }else{
@@ -172,56 +172,70 @@ class Admin extends Model implements AuthenticatableContract, AuthorizableContra
      */
     public static function getAdminUserList($body=[]){
         //判断传过来的数组数据是否为空
-        if(!$body || !is_array($body)){
+        if(!is_array($body)){
             return ['code' => 202 , 'msg' => '传递数据不合法'];
         }
         $adminUserInfo  = CurrentAdmin::user();  //当前登录用户所有信息
-        $school_id = $adminUserInfo['school_id'];//学校
-        if($adminUserInfo['school_status'] == 1){ //总校
-            //判断学校id是否合法
-            $school_id = !isset($body['school_id']) && empty($body['school_id']) ?$school_id:$body['school_id'];
-        }
-        //判断搜索条件是否合法、
-        $body['search'] = !isset($body['search']) && empty($body['search']) ?'':$body['search'];  
-       
-        if(!empty($body['school_id'])){
-            $school_id = $body['school_id'];//根据搜索条件查询
-        }
-
         $pagesize = isset($body['pagesize']) && $body['pagesize'] > 0 ? $body['pagesize'] : 15;
         $page     = isset($body['page']) && $body['page'] > 0 ? $body['page'] : 1;
         $offset   = ($page - 1) * $pagesize;
-        if($adminUserInfo['school_status'] == 1){       //
-            $SchoolInfo = School::where('is_del',1)->get(); //获取分校列表
-        }else{
-            $SchoolInfo = [];
-        }
-        $admin_count = self::where(['is_del'=>1,'school_id'=>$school_id])
-                        ->where(function($query) use ($body){
-                            if(!empty($body['search'])){
-                                $query->where('realname','like','%'.$body['search'].'%')
-                                    ->orWhere('username','like','%'.$body['search'].'%')
-                                    ->orWhere('mobile','like','%'.$body['search'].'%');
+        $admin_count = self::where(function($query) use ($body){
+                            if(isset($body['search']) && !empty($body['search'])){
+                                $query->where('username','like','%'.$body['search'].'%')
+                                      ->orWhere('mobile','like','%'.$body['search'].'%');
                             }
+                            if(isset($body['use']) && !empty($body['use'])){
+                                $query->where('is_use',$body['use']);     
+                            }
+                            if(isset($body['forbid']) && !empty($body['forbid'])){
+                                $query->where('is_forbid',$body['forbid']);     
+                            }
+                            if(isset($body['school']) && !empty($body['school'])){
+                                $query->where('school_id','like','%'.$body['school'].'%');     
+                            }
+                            $query->where('is_del',1); 
                         })->count();
+
         $sum_page = ceil($admin_count/$pagesize);
         $adminUserData = [];
         if($admin_count >0){
-            $adminUserData =  self::leftjoin('ld_role_auth','ld_role_auth.id', '=', 'ld_admin.role_id')
-                ->where(['ld_admin.is_del'=>1,'ld_admin.school_id'=>$school_id])
-                ->where(function($query) use ($body,$school_id){
-                    if(!empty($body['search'])){
-                        $query->where('ld_admin.realname','like','%'.$body['search'].'%')
-                        ->orWhere('ld_admin.username','like','%'.$body['search'].'%')
-                        ->orWhere('ld_admin.mobile','like','%'.$body['search'].'%');
+            $adminUserData =  self::where(function($query) use ($body){
+                            if(isset($body['search']) && !empty($body['search'])){
+                                $query->where('username','like','%'.$body['search'].'%')
+                                      ->orWhere('mobile','like','%'.$body['search'].'%');
+                            }
+                            if(isset($body['use']) && !empty($body['use'])){
+                                $query->where('is_use',$body['use']);     
+                            }
+                            if(isset($body['forbid']) && !empty($body['forbid'])){
+                                $query->where('is_forbid',$body['forbid']);     
+                            }
+                            if(isset($body['school']) && !empty($body['school'])){
+                                $query->where('school_id','like','%'.$body['school'].'%');     
+                            }
+                            $query->where('is_del',1); 
+                })->select('username','real_name','mobile','wx','role_id','school_id','is_use','is_forbid','create_time')->offset($offset)->limit($pagesize)->get()->toArray();
+            $roleArr = Roleauth::where('is_del',0)->select('id','role_name')->get()->toArray();
+            $roleArr = array_column($roleArr,'role_name','id');
+  
+            foreach($adminUserData as $key=>&$v){
+                $v['role_name'] = !isset($roleArr[$v['role_id']])?'':$roleArr[$v['role_id']];
+                $school =  empty($v['school_id'])?[]:explode(",",$v['school_id']);
+                $schoolData = School::whereIn('id',$school)->select('school_name')->get()->toArray();
+                $str = '';
+                if(!empty($schoolData)){
+                    foreach ($schoolData as $k => &$school) {
+                        $str .= $school['school_name'].',';
                     }
-                })->select('ld_admin.id as adminid','ld_admin.username','ld_admin.realname','ld_admin.sex','ld_admin.mobile','ld_role_auth.role_name','ld_role_auth.auth_desc','ld_admin.is_forbid')->offset($offset)->limit($pagesize)->get();
-               
+                    $v['schoolname'] =  rtrim($str,',');
+                }else{
+                    $v['schoolname'] =  $str;
+                }
+            }
         }
         $arr['code']= 200;
         $arr['msg'] = 'Success';
-
-        $arr['data'] = ['admin_list' => $adminUserData ,'school_list'=>$SchoolInfo, 'total' => $admin_count , 'pagesize' =>$pagesize , 'page' => $page,'search'=>$body['search'],'sum_page'=>$sum_page,'school_id'=>$school_id];
+        $arr['data'] = ['admin_list' => $adminUserData , 'total' => $admin_count ,'sum_page'=>$sum_page];
         return $arr;
     }
 

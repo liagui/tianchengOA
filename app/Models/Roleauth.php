@@ -5,7 +5,7 @@ use Illuminate\Database\Eloquent\Model;
 
 class Roleauth extends Model {
     //指定别的表名
-    public $table = 'ld_role_auth';
+    public $table = 'role_auth';
     //时间戳设置
     public $timestamps = false;
 
