@@ -68,9 +68,20 @@ $router->group(['prefix' => 'admin' , 'namespace' => 'Admin', 'middleware'=> 'co
 
     /*** 学员管理start ***/
 
+    //业绩查询
+    //学员总览
+    //学员公海
+
     /*** 学员管理end ***/
 
     /*** 班主任管理start ***/
+
+    //业绩总览
+    $router->post('getTeacherPerformance', 'TeacherController@getTeacherPerformance');
+    //业绩详情
+    $router->post('getTeacherPerformanceOne', 'TeacherController@getTeacherPerformanceOne');
+    //学员状态
+
     //创建班主任
     $router->post('createTeacher', 'TeacherController@createTeacher');
     //获取班主任列表
