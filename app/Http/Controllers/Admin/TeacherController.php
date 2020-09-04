@@ -39,4 +39,25 @@ class TeacherController extends Controller
             return response()->json(['code' => 500 , 'msg' => $ex->getMessage()]);
         }
     }
+
+    //获取班主任业绩
+    public function getTeacherPerformance(){
+        //获取提交的参数
+        try{
+            $data = Teacher::getTeacherPerformance(self::$accept_data);
+            return response()->json($data);
+        } catch (Exception $ex) {
+            return response()->json(['code' => 500 , 'msg' => $ex->getMessage()]);
+        }
+    }
+    //获取班主任业绩详情
+    public function getTeacherPerformanceOne(){
+        //获取提交的参数
+        try{
+            $data = Teacher::getTeacherPerformanceOne(self::$accept_data);
+            return response()->json($data);
+        } catch (Exception $ex) {
+            return response()->json(['code' => 500 , 'msg' => $ex->getMessage()]);
+        }
+    }
 }
