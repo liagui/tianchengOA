@@ -64,11 +64,6 @@ class OrderController extends Controller {
         $list = Pay_order_inside::DoSubmitted(self::$accept_data);
         return response()->json($list);
     }
-    //分校已提交订单
-    public function submittedOrder(){
-        $list = Pay_order_inside::submittedOrder(self::$accept_data);
-        return response()->json($list);
-    }
     //分校已提交订单进行取消提交
     public function submittedOrderCancel(){
         $list = Pay_order_inside::submittedOrderCancel(self::$accept_data);

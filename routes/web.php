@@ -25,6 +25,7 @@ $router->group(['prefix' => 'admin' , 'namespace' => 'Admin', 'middleware'=> 'co
     $router->group(['prefix' => 'order'], function () use ($router) {
         //总校&分校
         $router->post('orderlist', 'OrderController@orderList');//订单总览
+        $router->post('awaitOrder', 'OrderController@awaitOrder');//总校待确认订单&&分校已提交
         $router->post('unsubmittedOrderDetail', 'OrderController@unsubmittedOrderDetail');//分校未提交&总校未确认（订单详情）
         $router->post('handOrder', 'OrderController@handOrder');//手动报单
         $router->post('orderVoucher', 'OrderController@orderVoucher');//订单查看支付凭证
@@ -32,12 +33,10 @@ $router->group(['prefix' => 'admin' , 'namespace' => 'Admin', 'middleware'=> 'co
         $router->post('rejectOrder', 'OrderController@rejectOrder');//分校&总校被驳回订单列表
         $router->post('anewOrder', 'OrderController@anewOrder');//驳回订单进行操作
         //总校
-        $router->post('awaitOrder', 'OrderController@awaitOrder');//总校待确认订单
         $router->post('notarizeOrder', 'OrderController@notarizeOrder');//总校确认&取消订单
         //分校
         $router->post('unsubmittedOrder', 'OrderController@unsubmittedOrder');//分校未提交订单
         $router->post('DoSubmitted', 'OrderController@DoSubmitted');//分校未提交订单进行提交
-        $router->post('submittedOrder', 'OrderController@submittedOrder');//分校已提交订单
         $router->post('submittedOrderCancel', 'OrderController@submittedOrderCancel');//分校已提交订单进行取消
     });
     //项目管理部分(dzj)

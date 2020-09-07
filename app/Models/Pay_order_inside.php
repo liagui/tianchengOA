@@ -29,18 +29,18 @@ class Pay_order_inside extends Model
          * return  array
          */
     public static function orderList($data){
-        //判断是否是分校
-//        $school_id = isset(AdminLog::getAdminInfo()->admin_user->school_id) ? AdminLog::getAdminInfo()->admin_user->school_id : 0;
-//        if($school_id != 0){
-//            //只查询分校订单
-//            $where['school_id'] = $school_id;
-//        }else{
-//            //判断总校传来的学校id
-//            if(!empty($data['school_id'])){
-//                $where['school_id'] = $data['school_id'];
-//            }
-//        }
         $where=[];
+        //判断是否是分校
+        $school_id = isset(AdminLog::getAdminInfo()->admin_user->school_id) ? AdminLog::getAdminInfo()->admin_user->school_id : 0;
+        if($school_id != 0){
+            //只查询分校订单
+            $where['school_id'] = $school_id;
+        }else{
+            //判断总校传来的学校id
+            if(!empty($data['school_id'])){
+                $where['school_id'] = $data['school_id'];
+            }
+        }
         //判断时间
         $begindata="2020-03-04";
         $enddate = date('Y-m-d');
@@ -109,12 +109,27 @@ class Pay_order_inside extends Model
             ->orderByDesc('id')
             ->offset($offset)->limit($pagesize)->get()->toArray();
         //循环查询分类
-//        if(!empty($order)){
-//            foreach ($order as $k=>$v){
-//                //course  课程
-//                //
-//            }
-//        }
+        if(!empty($order)){
+            foreach ($order as $k=>&$v){
+                //course  课程
+                $course = Course::select('course_name')->where(['id'=>$v['course_id']])->first();
+                $v['course_name'] = $course['course_name'];
+                //Project  项目
+                $project = Project::select('name')->where(['id'=>$v['project_id']])->first();
+                $v['project_name'] = $project['name'];
+                //Subject  学科
+                $subject = Project::select('name')->where(['id'=>$v['subject_id']])->first();
+                $v['subject_name'] = $subject['name'];
+                if(!empty($v['education_id']) && $v['education_id'] != 0){
+                    //查院校
+                    $education = Education::select('education_name')->where(['id'=>$v['education_id']])->first();
+                    $v['education_name'] = $education['education_name'];
+                    //查专业
+                    $major = Major::where(['id'=>$v['major_id']])->first();
+                    $v['major_name'] = $major['major_name'];
+                }
+            }
+        }
         $page=[
             'pageSize'=>$pagesize,
             'page' =>$page,
@@ -141,6 +156,7 @@ class Pay_order_inside extends Model
          * return  array
          */
     public static function handOrder($data){
+        $admin = isset(AdminLog::getAdminInfo()->admin_user) ? AdminLog::getAdminInfo()->admin_user : [];
         if(!isset($data['project_id']) || empty($data['project_id'])){
             return ['code' => 201 , 'msg' => '未选择项目'];
         }
@@ -172,8 +188,10 @@ class Pay_order_inside extends Model
         $data['create_time'] =date('Y-m-d H:i:s');
         $data['pay_time'] =date('Y-m-d H:i:s');
         $data['pay_status'] = 1;
-        $data['collecting_data'] = 1;
-        $data['admin_id'] = 1;
+        $data['confirm_status'] = 0;
+        $data['pay_voucher_user_id'] = $admin['id']; //上传凭证人
+        $data['pay_voucher_time'] = date('Y-m-d H:i:s');//上传凭证时间
+        $data['admin_id'] = $admin['id'];
         $add = self::insert($data);
         if($add){
             return ['code' => 200 , 'msg' => '报单成功'];
@@ -239,7 +257,7 @@ class Pay_order_inside extends Model
 
     }
     /*
-         * @param  总校待确认订单列表
+         * @param  总校待确认订单列表   分校已提交订单
          * @param  subject_id  学科id
          * @param  school_id  分校id
          * @param  pay_type  支付方式（1支付宝扫码2微信扫码3银联快捷支付4微信小程序5线下录入）
@@ -254,6 +272,15 @@ class Pay_order_inside extends Model
     public static function awaitOrder($data){
         $where['del_flag'] = 0;  //未删除
         $where['confirm_status'] = 0;  //未确认
+        //判断学校
+        $admin = isset(AdminLog::getAdminInfo()->admin_user) ? AdminLog::getAdminInfo()->admin_user : [];
+        if($admin['school_id'] != 0){
+            $where['school_id'] = $admin['school_id'];
+        }else{
+            if(!empty($data['school_id']) && $data['school_id'] == 0){
+                $where['school_id'] = $data['school_id'];
+            }
+        }
         if(isset($data['subject_id']) || !empty($data['subject_id'])){
             $where['subject_id'] = $data['subject_id'];
         }
@@ -300,9 +327,27 @@ class Pay_order_inside extends Model
         ->orderByDesc('id')
         ->offset($offset)->limit($pagesize)->get()->toArray();
          //循环查询分类
-//        if(!empty($order)){
-//
-//        }
+        if(!empty($order)){
+            foreach ($order as $k=>&$v){
+                //course  课程
+                $course = Course::select('course_name')->where(['id'=>$v['course_id']])->first();
+                $v['course_name'] = $course['course_name'];
+                //Project  项目
+                $project = Project::select('name')->where(['id'=>$v['project_id']])->first();
+                $v['project_name'] = $project['name'];
+                //Subject  学科
+                $subject = Project::select('name')->where(['id'=>$v['subject_id']])->first();
+                $v['subject_name'] = $subject['name'];
+                if(!empty($v['education_id']) && $v['education_id'] != 0){
+                    //查院校
+                    $education = Education::select('education_name')->where(['id'=>$v['education_id']])->first();
+                    $v['education_name'] = $education['education_name'];
+                    //查专业
+                    $major = Major::where(['id'=>$v['major_id']])->first();
+                    $v['major_name'] = $major['major_name'];
+                }
+            }
+        }
         $page=[
             'pageSize'=>$pagesize,
             'page' =>$page,
@@ -366,6 +411,23 @@ class Pay_order_inside extends Model
         }
         $res = Pay_order_external::where(['order_on'=>$data['order_on'],'status'=>0])->first();
         if(!empty($res)){
+            //course  课程
+            $course = Course::select('course_name')->where(['id'=>$res['course_id']])->first();
+            $res['course_name'] = $course['course_name'];
+            //Project  项目
+            $project = Project::select('name')->where(['id'=>$res['project_id']])->first();
+            $res['project_name'] = $project['name'];
+            //Subject  学科
+            $subject = Project::select('name')->where(['id'=>$res['subject_id']])->first();
+            $res['subject_name'] = $subject['name'];
+            if(!empty($res['education_id']) && $res['education_id'] != 0){
+                //查院校
+                $education = Education::select('education_name')->where(['id'=>$res['education_id']])->first();
+                $res['education_name'] = $education['education_name'];
+                //查专业
+                $major = Major::where(['id'=>$res['major_id']])->first();
+                $res['major_name'] = $major['major_name'];
+            }
             return ['code' => 200 , 'msg' => '获取成功','data'=>$res];
         }else{
             return ['code' => 201 , 'msg' => '无此订单'];
@@ -382,14 +444,29 @@ class Pay_order_inside extends Model
         if(!isset($data['id']) || empty($data['id'])){
             return ['code' => 201 , 'msg' => '参数有误'];
         }
-        $find = Pay_order_external::where(['id'=>$data['id'],'del_flag'=>0])->first();
-        //循环查询分类
-
-
-        if(!$find){
+        $res = Pay_order_external::where(['id'=>$data['id'],'del_flag'=>0])->first();
+        if(!$res){
+            //查询分类
+            //course  课程
+            $course = Course::select('course_name')->where(['id'=>$res['course_id']])->first();
+            $res['course_name'] = $course['course_name'];
+            //Project  项目
+            $project = Project::select('name')->where(['id'=>$res['project_id']])->first();
+            $res['project_name'] = $project['name'];
+            //Subject  学科
+            $subject = Project::select('name')->where(['id'=>$res['subject_id']])->first();
+            $res['subject_name'] = $subject['name'];
+            if(!empty($res['education_id']) && $res['education_id'] != 0){
+                //查院校
+                $education = Education::select('education_name')->where(['id'=>$res['education_id']])->first();
+                $res['education_name'] = $education['education_name'];
+                //查专业
+                $major = Major::where(['id'=>$res['major_id']])->first();
+                $res['major_name'] = $major['major_name'];
+            }
             return ['code' => 201 , 'msg' => '查无此订单'];
         }
-        return ['code' => 200 , 'msg' => '查询成功','data'=>$find];
+        return ['code' => 200 , 'msg' => '查询成功','data'=>$res];
     }
     /*
          * @param  分校未提交订单进行提交
@@ -484,75 +561,6 @@ class Pay_order_inside extends Model
         }
     }
     /*
-         * @param 分校已提交订单
-         * @param  subject_id    学科id
-         * @param  pay_type    支付方式（1支付宝扫码2微信扫码3银联快捷支付4微信小程序5线下录入）
-         * @param  confirm_order_type    订单类型 1课程订单 2报名订单3课程+报名订单
-         * @param  return_visit    是否回访0未回访 1 已回访
-         * @param  classes    是否开课 0不开课 1开课
-         * @param  order_no    订单号/手机号/姓名
-         * @param  pageSize    每页条数
-         * @param  page    页码
-         * @param  author  苏振文
-         * @param  ctime   2020/9/4 14:34
-         * return  array
-         */
-    public static function submittedOrder($data){
-        //获取学校id
-        //$school_id = isset(AdminLog::getAdminInfo()->admin_user->school_id) ? AdminLog::getAdminInfo()->admin_user->school_id : 0;
-//        $where['school_id'] = $school_id;
-        $where=[];
-        if(isset($data['subject_id'])||!empty($data['subject_id'])){
-            $where['subject_id'] = $data['subject_id'];
-        }
-        if(isset($data['pay_type'])||!empty($data['pay_type'])){
-            $where['pay_type'] = $data['pay_type'];
-        }
-        if(isset($data['confirm_order_type'])||!empty($data['confirm_order_type'])){
-            $where['confirm_order_type'] = $data['confirm_order_type'];
-        }
-        if(isset($data['return_visit'])||!empty($data['return_visit'])){
-            $where['return_visit'] = $data['return_visit'];
-        }
-        if(isset($data['classes'])||!empty($data['classes'])){
-            $where['classes'] = $data['classes'];
-        }
-        //每页显示的条数
-        $pagesize = (int)isset($data['pageSize']) && $data['pageSize'] > 0 ? $data['pageSize'] : 20;
-        $page     = isset($data['page']) && $data['page'] > 0 ? $data['page'] : 1;
-        $offset   = ($page - 1) * $pagesize;
-        //計算總數
-        $count = self::where(function($query) use ($data) {
-            if(isset($data['order_no']) && !empty($data['order_no'])){
-                $query->where('order_no',$data['order_on'])
-                    ->orwhere('name',$data['order_on'])
-                    ->orwhere('mobile',$data['order_on']);
-            }
-        })
-        ->where($where)
-        ->where(['del_flag'=>0,'confirm_status'=>1])
-        ->count();
-
-        //数据
-        $order = self::where(function($query) use ($data) {
-            if(isset($data['order_no']) && !empty($data['order_no'])){
-                $query->where('order_no',$data['order_on'])
-                    ->orwhere('name',$data['order_on'])
-                    ->orwhere('mobile',$data['order_on']);
-            }
-        })
-        ->where($where)
-        ->where(['del_flag'=>0,'confirm_status'=>1])
-        ->orderByDesc('id')
-        ->offset($offset)->limit($pagesize)->get()->toArray();
-        $page=[
-            'pageSize'=>$pagesize,
-            'page' =>$page,
-            'total'=>$count
-        ];
-        return ['code' => 200 , 'msg' => '查询成功','data'=>$order,'where'=>$data,'page'=>$page];
-    }
-    /*
          * @param  分校已提交订单进行取消
          * @param  id 订单id
          * @param  author  苏振文
@@ -641,9 +649,27 @@ class Pay_order_inside extends Model
         ->orderByDesc('id')
         ->offset($offset)->limit($pagesize)->get()->toArray();
         //循环查询分类
-//        if(!empty($order)){
-//
-//        }
+        if(!empty($order)){
+            foreach ($order as $k=>&$v){
+                //course  课程
+                $course = Course::select('course_name')->where(['id'=>$v['course_id']])->first();
+                $v['course_name'] = $course['course_name'];
+                //Project  项目
+                $project = Project::select('name')->where(['id'=>$v['project_id']])->first();
+                $v['project_name'] = $project['name'];
+                //Subject  学科
+                $subject = Project::select('name')->where(['id'=>$v['subject_id']])->first();
+                $v['subject_name'] = $subject['name'];
+                if(!empty($v['education_id']) && $v['education_id'] != 0){
+                    //查院校
+                    $education = Education::select('education_name')->where(['id'=>$v['education_id']])->first();
+                    $v['education_name'] = $education['education_name'];
+                    //查专业
+                    $major = Major::where(['id'=>$v['major_id']])->first();
+                    $v['major_name'] = $major['major_name'];
+                }
+            }
+        }
         $page=[
             'pageSize'=>$pagesize,
             'page' =>$page,
