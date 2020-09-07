@@ -62,6 +62,52 @@ class School extends Model {
 
     }
 
+    public static function getList($body){
+            $pagesize = isset($body['pagesize']) && $body['pagesize'] > 0 ? $body['pagesize'] : 20;
+            $page     = isset($body['page']) && $body['page'] > 0 ? $body['page'] : 1;
+            $offset   = ($page - 1) * $pagesize;
+            $where['name'] = !isset($body['search']) || empty($body['search']) ?'':$body['search'];
+
+            $school_count = self::where(function($query) use ($where){
+                    if($where['name'] != ''){
+                        $query->where('school_name','like','%'.$where['name'].'%');
+                    }
+                    $query->where('is_del',0);
+                })->count();
+            
+            $sum_page = ceil($school_count/$pagesize);
+            if($school_count > 0){
+                $schoolArr = self::where(function($query) use ($where){
+                    if($where['name'] != ''){
+                        $query->where('school_name','like','%'.$where['name'].'%');
+                    }
+                    $query->where('is_del','=',0);
+                })->select('id','school_name','create_id','level','parent_id','tax_point','commission','deposit','is_open','is_look')->offset($offset)->limit($pagesize)->get();
+                $adminData = Admin::where(['is_del'=>1,'is_forbid'=>1])->select('id','username')->get()->toArray();
+                $adminData = empty($adminData) ?[]:array_column($adminData, 'username','id');
+                foreach ($schoolArr as $k => &$val) {
+                    switch ($val['level']) {
+                        case '1':
+                            $val['level'] = '';
+                            break;
+                        case '2':
+                            $val['level'] = $this->getSchoolOne(['id'=>$val['parent_id'],'school_name'])['data']['school_name'];
+                            break;
+                        case '3':
+                            $twoSchoolArr = $this->getSchoolOne(['id'=>$val['parent_id'],'school_name'])['data'];
+                            $OneSchoolArr = $this->getSchoolOne(['id'=>$val['parent_id'],'school_name'])['data'];
+                            $val['level'] = $OneSchoolArr['school_name'].'-'.$twoSchoolArr['school_name'];
+                            break;    
+                    }
+                    $val['tax_point'] = $val['tax_point'] <= 0 ?0:sprintf("%.2f",(int)$val['tax_point']/100);
+                    $val['commission'] = $val['commission'] <= 0 ?0:sprintf("%.2f",(int)$val['commission']/100);
+                    $val['deposit'] = $val['deposit'] <= 0 ?0:sprintf("%.2f",(int)$val['deposit']/100);
+                    $val['create_name'] = isset($adminData[$val['create_id']]) ? $adminData[$val['create_id']]:'';
+                }
+                return ['code'=>200,'msg'=>'Success','data'=>['school_list' => $schoolArr ,'total' => $school_count]];           
+            }
+            return ['code'=>200,'msg'=>'Success','data'=>['school_list' => [] , 'total' => 0 ]];       
+    }
 
     /*
          * @param  descriptsion 获取学校信息
