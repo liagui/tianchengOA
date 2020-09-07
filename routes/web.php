@@ -74,6 +74,8 @@ $router->group(['prefix' => 'admin' , 'namespace' => 'Admin', 'middleware'=> 'co
         $router->post('doInsertSchool', 'SchoolController@doInsertSchool');                      //添加分校接口
         $router->post('doUpdateSchool', 'SchoolController@doUpdateSchool');                      //修改分校接口
         $router->post('getSchoolInfoById', 'SchoolController@getSchoolInfoById');                //分校详情接口
+        $router->post('getSchoolListByLevel', 'SchoolController@getSchoolListByLevel');          //上级分校列表接口
+        $router->post('getSchoolList', 'SchoolController@getSchoolList');                        //分校列表接口
     });
     
     $router->post('diff', 'TestController@diff');

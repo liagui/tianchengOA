@@ -256,6 +256,113 @@ class School extends Model {
             return ['code' => 203 , 'msg' => '此分校不存在或已删除'];
         }
     }
+    
+    /*
+     * @param  description   分校管理-上级分校列表方法
+     * @param  参数说明       body包含以下参数[
+     *     level         分校级别[1,2,3]
+     * ]
+     * @param author    dzj
+     * @param ctime     2020-09-07
+     * return string
+     */
+    public static function getSchoolListByLevel($body=[]){
+        //判断传过来的数组数据是否为空
+        if(!$body || !is_array($body)){
+            return ['code' => 202 , 'msg' => '传递数据不合法'];
+        }
+        
+        //判断分校级别是否合法
+        if(!isset($body['level']) || !in_array($body['level'] , [1,2,3])){
+            return ['code' => 202 , 'msg' => '分校级别不合法'];
+        }
+        
+        //根据分校的级别获取分校列表
+        if($body['level'] > 1){
+            $level = $body['level'] - 1;
+            $school_list = self::select('id as school_id' , 'school_name')->where('level' , $level)->where('is_del' , 0)->get();
+            return ['code' => 200 , 'msg' => '获取列表成功' , 'data' => $school_list];
+        } else {
+            return ['code' => 200 , 'msg' => '获取列表成功' , 'data' => []];
+        }
+    }
+    
+    
+    /*
+     * @param  description   分校管理列表接口
+     * @param  参数说明       body包含以下参数[
+     *     school_name       分校名称
+     * ]
+     * @param author    dzj
+     * @param ctime     2020-09-07
+     * return string
+     */
+    public static function getSchoolList($body=[]) {
+        //每页显示的条数
+        $pagesize = isset($body['pagesize']) && $body['pagesize'] > 0 ? $body['pagesize'] : 20;
+        $page     = isset($body['page']) && $body['page'] > 0 ? $body['page'] : 1;
+        $offset   = ($page - 1) * $pagesize;
+
+        //获取分校的总数量
+        $school_count = self::where(function($query) use ($body){
+            //判断分校名称是否为空
+            if(isset($body['school_name']) && !empty($body['school_name'])){
+                $query->where('school_name','like','%'.$body['school_name'].'%');
+            }
+        })->where('is_del' , 0)->count();
+        
+        if($school_count > 0){
+            //新数组赋值
+            $school_array = [];
+            
+            //获取分校列表
+            $school_list = self::select('id as school_id' , 'parent_id' , 'school_name' , 'tax_point' , 'commission' , 'deposit' , 'level' , 'look_all_flag' , 'is_open')->where(function($query) use ($body){
+                //判断分校名称是否为空
+                if(isset($body['school_name']) && !empty($body['school_name'])){
+                    $query->where('school_name','like','%'.$body['school_name'].'%');
+                }
+            })->where('is_del' , 0)->orderByDesc('create_time')->offset($offset)->limit($pagesize)->get()->toArray();
+            
+            //循环获取相关信息
+            foreach($school_list as $k=>$v){
+                //获取上级分校的名称
+                if($v['level'] == 2){
+                    $prev_school_name =  self::where('id' , $v['parent_id'])->value('school_name');   
+                } else if($v['level'] == 3){
+                    //2级的id
+                    $two_parent_id = $v['parent_id'];
+                    //获取1级的id
+                    $one_parent_id = self::where('id' , $two_parent_id)->value('parent_id');  
+                    
+                    //通过1级的id获取名称
+                    $one_school_name =  self::where('id' , $one_parent_id)->value('school_name');   
+                    //通过2级的id获取名称
+                    $two_school_name =  self::where('id' , $two_parent_id)->value('school_name');   
+                    $prev_school_name=  $one_school_name.'-'.$two_school_name;
+                } else {
+                    $prev_school_name = '';
+                }
+                 
+                //分校数组管理赋值
+                $school_array[] = [
+                    'school_id'        =>  $v['school_id'] ,
+                    'school_name'      =>  $v['school_name'] ,
+                    'tax_point'        =>  $v['tax_point'] && $v['tax_point'] > 0 ? $v['tax_point'].'%' : 0 ,
+                    'commission'       =>  $v['commission'] && $v['commission'] > 0 ? $v['commission'].'%' : 0 ,
+                    'deposit'          =>  $v['deposit'] && $v['deposit'] > 0 ? $v['deposit'].'%' : 0 ,
+                    'level'            =>  (int)$v['level'] ,
+                    'prev_school_name' =>  $prev_school_name ,
+                    'look_all_name'    =>  $v['look_all_flag'] && $v['look_all_flag'] > 0 ? '开启' : '关闭' ,
+                    'look_all_flag'    =>  $v['look_all_flag'] ,
+                    'is_open'          =>  $v['is_open'] ,
+                    'is_open_name'     =>  $v['is_open'] && $v['is_open'] > 0 ? '关闭' : '开启' , 
+                    'admin_name'       =>  'admin'
+                ];
+            }
+            return ['code' => 200 , 'msg' => '获取分校列表成功' , 'data' => ['school_list' => $school_array , 'total' => $school_count , 'pagesize' => $pagesize , 'page' => $page]];
+        }
+        return ['code' => 200 , 'msg' => '获取分校列表成功' , 'data' => ['school_list' => [] , 'total' => 0 , 'pagesize' => $pagesize , 'page' => $page]];
+    }
 }
 
 
