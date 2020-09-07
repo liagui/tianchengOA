@@ -67,33 +67,21 @@ class AuthenticateController extends Controller {
         }
 
         $user = JWTAuth::user();
-
-        $user['school_name'] = School::where('id',$user['school_id'])->select('name')->first()['name'];
         $user['token'] = $token;
         $this->setTokenToRedis($user->id, $token);
-        if($user['is_forbid'] == 1 ||$user['is_del'] == 1 ){
+        if($user['is_forbid'] == 0 ||$user['is_del'] == 0 ){
             return response()->json(['code'=>403,'msg'=>'此用户已被禁用或删除，请联系管理员']);
         }
         $AdminUser = new AdminUser();
         $user['auth'] = [];     //5.14 该账户没有权限返回空  begin
-        $teacher = Teacher::where(['id'=>$user['teacher_id'],'is_del'=>0,'is_forbid'=>0])->first();
-        $user['teacher_type'] =0;
-        if($teacher['type'] == 1){
-            $user['teacher_type'] =1;
-        }
-        if($teacher['type'] == 2 ){
-            $user['teacher_type'] =2;
-        }
         if($user['role_id']>0){
-
-             $admin_user =  $AdminUser->getAdminUserLoginAuth($user['role_id']);  //获取后台用户菜单栏（lys 5.5）
+            $admin_user =  $AdminUser->getAdminUserLoginAuth($user['role_id']);  //获取后台用户菜单栏（lys 5.5）
 
             if($admin_user['code']!=200){
                 return response()->json(['code'=>$admin_user['code'],'msg'=>$admin_user['msg']]);
             }
-            
             $user['auth'] = $admin_user['data'];
-        }               //5.14 end
+        }   
         return $this->response($user);
     }
     /**

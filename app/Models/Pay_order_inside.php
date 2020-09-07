@@ -441,6 +441,6 @@ class Pay_order_inside extends Model
          */
     public static function submittedOrderCancel($data){
         //流转订单假删   第三方订单修改状态
-        
+
     }
 }
