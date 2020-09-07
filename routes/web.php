@@ -18,27 +18,27 @@ $router->post('/', function () use ($router) {
 });
 //后台端路由接口
 /*****************start**********************/
-//无需任何验证 操作接口
-$router->group(['prefix' => 'admin' , 'namespace' => 'Admin'], function () use ($router) {
-    $router->get('orderForExceil', 'OrderController@orderForExceil');//导出订单exceil
-
-    //*********************************************************************************
-    $router->post('orderlist', 'OrderController@orderList');//ceshijiekou
-    $router->post('handOrder', 'OrderController@handOrder');//手动报单
-    $router->post('orderVoucher', 'OrderController@orderVoucher');//手动报单
-    $router->post('orderDetail', 'OrderController@orderDetail');//备注驳回
-
-    $router->post('unsubmittedOrder', 'OrderController@unsubmittedOrder');//分校未提交订单
-    $router->post('unsubmittedOrderDetail', 'OrderController@unsubmittedOrderDetail');//分校未提交订单详情
-    $router->post('DoSubmitted', 'OrderController@DoSubmitted');//分校未提交订单进行提交
-    $router->post('submittedOrder', 'OrderController@submittedOrder');//分校已提交订单
-    $router->post('submittedOrderCancel', 'OrderController@submittedOrderCancel');//分校已提交订单进行取消
-    //******************************************************************************
-});
 //后端登录注册接口
 $router->group(['prefix' => 'admin' , 'namespace' => 'Admin', 'middleware'=> 'cors'], function () use ($router) {
     $router->post('login', 'AuthenticateController@postLogin');
-
+    //订单管理（szw）
+    $router->group(['prefix' => 'order'], function () use ($router) {
+        //总校&分校
+        $router->post('orderlist', 'OrderController@orderList');//订单总览
+        $router->post('awaitOrder', 'OrderController@awaitOrder');//总校待确认订单&&分校已提交
+        $router->post('unsubmittedOrderDetail', 'OrderController@unsubmittedOrderDetail');//分校未提交&总校未确认（订单详情）
+        $router->post('handOrder', 'OrderController@handOrder');//手动报单
+        $router->post('orderVoucher', 'OrderController@orderVoucher');//订单查看支付凭证
+        $router->post('orderDetail', 'OrderController@orderDetail');//订单备注或驳回信息
+        $router->post('rejectOrder', 'OrderController@rejectOrder');//分校&总校被驳回订单列表
+        $router->post('anewOrder', 'OrderController@anewOrder');//驳回订单进行操作
+        //总校
+        $router->post('notarizeOrder', 'OrderController@notarizeOrder');//总校确认&取消订单
+        //分校
+        $router->post('unsubmittedOrder', 'OrderController@unsubmittedOrder');//分校未提交订单
+        $router->post('DoSubmitted', 'OrderController@DoSubmitted');//分校未提交订单进行提交
+        $router->post('submittedOrderCancel', 'OrderController@submittedOrderCancel');//分校已提交订单进行取消
+    });
     //项目管理部分(dzj)
     $router->group(['prefix' => 'project'], function () use ($router) {
         $router->post('doInsertProjectSubject', 'ProjectController@doInsertProjectSubject');     //添加项目/学科的方法
@@ -103,20 +103,27 @@ $router->group(['prefix' => 'admin' , 'namespace' => 'Admin', 'middleware'=> 'co
 
     /*** 学员管理start ***/
 
-    //业绩查询
-    //学员总览
-    //学员公海
-
+    //业绩查询 班主任自己的业绩
+    $router->post('getStudentPerformance', 'StudentController@getStudentPerformance');
+    //学员总览 班主任自己的学员
+    $router->post('getStudent', 'StudentController@getStudent');
+    //学员公海 被放入公海的所有学员订单
+    $router->post('getStudentSeas', 'StudentController@getStudentSeas');
     /*** 学员管理end ***/
 
     /*** 班主任管理start ***/
-
+    //学员状态
+    $router->post('getStudentStatus', 'StudentController@getStudentStatus');
+    //跟单
+    $router->post('documentary', 'StudentController@documentary');
+    //获取跟单记录
+    $router->post('getdocumentary', 'StudentController@getdocumentary');
+    //转单
+    $router->post('transferOrder', 'StudentController@transferOrder');
     //业绩总览
     $router->post('getTeacherPerformance', 'TeacherController@getTeacherPerformance');
     //业绩详情
     $router->post('getTeacherPerformanceOne', 'TeacherController@getTeacherPerformanceOne');
-    //学员状态
-
     //创建班主任
     $router->post('createTeacher', 'TeacherController@createTeacher');
     //获取班主任列表
