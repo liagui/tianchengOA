@@ -135,4 +135,125 @@ class SchoolController extends Controller {
             return response()->json(['code' => 500 , 'msg' => $ex->getMessage()]);
         }
     }
+    /*
+     * @param  description   分校删除列表
+     * @param  参数说明       body包含以下参数[
+     *     school_id      分校标识
+     * ]
+     * @param author    lys
+     * @param ctime     2020-09-07
+     * return string
+     */
+    public function doDelSchool(){
+        //获取提交的参数
+        try{
+            //获取分校列表
+            $data = self::$accept_data;
+            //判断分校id是否合法
+            if(!isset($data['school_id']) || data($body['school_id']) || $data['school_id'] <= 0){
+                return ['code' => 202 , 'msg' => '分校id不合法'];
+            }
+            $schoolData  = School::where(['id'=>$data['school_id'],'is_del'=>0])->first();
+            if(!empty($schoolData)){
+                DB::beginTransaction();
+                $res = School::where(['id'=>$data['school_id'],'is_del'=>0])->update(['is_del'=>1,'update_time'=>date('Y-m-d H:i:s')]);
+                if($res){
+                    DB::commit();
+                    return response()->json(['code' => 200 , 'msg' => '删除成功']);
+                }else{
+                    DB::rollBack();
+                    return response()->json(['code' => 203 , 'msg' => '删除失败，请重试']);
+                }
+            } else {
+                return response()->json(['code' => 201, 'msg' => '学校不存在或已删除');
+            }
+        } catch (Exception $ex) {
+            return response()->json(['code' => 500 , 'msg' => $ex->getMessage()]);
+        }
+    }
+    /*
+     * @param  description   是否启动关闭
+     * @param  参数说明       body包含以下参数[
+     *     school_id      分校标识
+     * ]
+     * @param author    lys
+     * @param ctime     2020-09-07
+     * return string
+     */
+    public function doOpenSchool(){
+        //获取提交的参数
+        try{
+            //获取分校列表
+            $data = self::$accept_data;
+            //判断分校id是否合法
+            if(!isset($data['school_id']) || data($body['school_id']) || $data['school_id'] <= 0){
+                return ['code' => 202 , 'msg' => '分校id不合法'];
+            }
+            $schoolData  = School::where(['id'=>$data['school_id'],'is_del'=>0])->select('id','is_open')->first();
+            if(!empty($schoolData)){
+                if($schoolData['is_open'] != 0){
+                    $is_open = 0;
+                }else{
+                    $is_open = 1;
+                }
+                DB::beginTransaction();         
+                $res = School::where(['id'=>$data['school_id'],'is_del'=>0])->update(['is_open'=>$is_open,'update_time'=>date('Y-m-d H:i:s')]);
+                if($res){
+                    DB::commit();
+                    return response()->json(['code' => 200 , 'msg' => '更新成功']);
+                }else{
+                    DB::rollBack();
+                    return response()->json(['code' => 203 , 'msg' => '更新失败，请重试']);
+                }
+            } else {
+                return response()->json(['code' => 201, 'msg' => '学校不存在或已删除');
+            }
+        } catch (Exception $ex) {
+            return response()->json(['code' => 500 , 'msg' => $ex->getMessage()]);
+        }
+    }    
+    /*
+     * @param  description  是否查看下属分校
+     * @param  参数说明       body包含以下参数[
+     *     school_id      分校标识
+     * ]
+     * @param author    lys
+     * @param ctime     2020-09-07
+     * return string
+     */
+    public function doLookSchool(){
+        //获取提交的参数
+        try{
+            //获取分校列表
+            $data = self::$accept_data;
+            //判断分校id是否合法
+            if(!isset($data['school_id']) || data($body['school_id']) || $data['school_id'] <= 0){
+                return ['code' => 202 , 'msg' => '分校id不合法'];
+            }
+            $schoolData  = School::where(['id'=>$data['school_id'],'is_del'=>0])->first();
+            if(!empty($schoolData)){
+                if($schoolData['look_all_flag'] != 0){
+                    $look_all_flag = 0;
+                }else{
+                    $look_all_flag = 1;
+                }
+                DB::beginTransaction();
+                $res = School::where(['id'=>$data['school_id'],'is_del'=>0])->update(['look_all_flag'=>$look_all_flag,'update_time'=>date('Y-m-d H:i:s')]);
+                if($res){
+                    DB::commit();
+                    return response()->json(['code' => 200 , 'msg' => '更新成功']);
+                }else{
+                    DB::rollBack();
+                    return response()->json(['code' => 203 , 'msg' => '更新失败，请重试']);
+                }
+            } else {
+                return response()->json(['code' => 201, 'msg' => '学校不存在或已删除');
+            }
+        } catch (Exception $ex) {
+            return response()->json(['code' => 500 , 'msg' => $ex->getMessage()]);
+        }
+    }        
+
+
+
 }

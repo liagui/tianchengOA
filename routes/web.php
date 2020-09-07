@@ -76,6 +76,10 @@ $router->group(['prefix' => 'admin' , 'namespace' => 'Admin', 'middleware'=> 'co
         $router->post('getSchoolInfoById', 'SchoolController@getSchoolInfoById');                //分校详情接口
         $router->post('getSchoolListByLevel', 'SchoolController@getSchoolListByLevel');          //上级分校列表接口
         $router->post('getSchoolList', 'SchoolController@getSchoolList');                        //分校列表接口
+        $router->post('doDelSchool', 'SchoolController@doDelSchool');                            //分校删除接口  （lys）
+        $router->post('doOpenSchool', 'SchoolController@doOpenSchool');                          //分校启用禁用接口（lys）
+        $router->post('doLookSchool', 'SchoolController@doLookSchool');                          //是否查看下属分校内容接口（lys）
+
     });
     
     $router->post('diff', 'TestController@diff');
