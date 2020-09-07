@@ -71,20 +71,27 @@ $router->group(['prefix' => 'admin' , 'namespace' => 'Admin', 'middleware'=> 'co
 
     /*** 学员管理start ***/
 
-    //业绩查询
-    //学员总览
-    //学员公海
-
+    //业绩查询 班主任自己的业绩
+    $router->post('getStudentPerformance', 'StudentController@getStudentPerformance');
+    //学员总览 班主任自己的学员
+    $router->post('getStudent', 'StudentController@getStudent');
+    //学员公海 被放入公海的所有学员订单
+    $router->post('getStudentSeas', 'StudentController@getStudentSeas');
     /*** 学员管理end ***/
 
     /*** 班主任管理start ***/
-
+    //学员状态
+    $router->post('getStudentStatus', 'StudentController@getStudentStatus');
+    //跟单
+    $router->post('documentary', 'StudentController@documentary');
+    //获取跟单记录
+    $router->post('getdocumentary', 'StudentController@getdocumentary');
+    //转单
+    $router->post('transferOrder', 'StudentController@transferOrder');
     //业绩总览
     $router->post('getTeacherPerformance', 'TeacherController@getTeacherPerformance');
     //业绩详情
     $router->post('getTeacherPerformanceOne', 'TeacherController@getTeacherPerformanceOne');
-    //学员状态
-
     //创建班主任
     $router->post('createTeacher', 'TeacherController@createTeacher');
     //获取班主任列表
@@ -126,15 +133,15 @@ $router->group(['prefix' => 'admin' , 'namespace' => 'Admin' ], function () use 
 
 
     $router->group(['prefix' => 'adminuser'], function () use ($router) {
-        $router->post('getAdminUserList', 'AdminUserController@getAdminUserList');            //获取后台用户列表方法 
-        $router->post('upUserForbidStatus', 'AdminUserController@upUserForbidStatus');        //更改账号状态方法（启用禁用） 
-        $router->post('upUserDelStatus', 'AdminUserController@upUserDelStatus');              //更改账号状态方法 (删除)  
-        $router->post('upUseStatus', 'AdminUserController@upUseStatus');                       //更改账号状态使用方法   
-        $router->post('getInsertAdminUser', 'AdminUserController@getInsertAdminUser');         //获取添加账号信息（school，roleAuth）方法 
-        $router->post('doInsertAdminUser', 'AdminUserController@doInsertAdminUser');          //添加账号方法 
-        $router->post('getAuthList', 'AdminUserController@getAuthList');                      //获取角色列表方法 
-        $router->post('getAdminUserUpdate', 'AdminUserController@getAdminUserUpdate');        //获取账号信息（编辑） 
-        $router->post('doAdminUserUpdate', 'AdminUserController@doAdminUserUpdate');          //编辑账号信息 
+        $router->post('getAdminUserList', 'AdminUserController@getAdminUserList');            //获取后台用户列表方法
+        $router->post('upUserForbidStatus', 'AdminUserController@upUserForbidStatus');        //更改账号状态方法（启用禁用）
+        $router->post('upUserDelStatus', 'AdminUserController@upUserDelStatus');              //更改账号状态方法 (删除)
+        $router->post('upUseStatus', 'AdminUserController@upUseStatus');                       //更改账号状态使用方法
+        $router->post('getInsertAdminUser', 'AdminUserController@getInsertAdminUser');         //获取添加账号信息（school，roleAuth）方法
+        $router->post('doInsertAdminUser', 'AdminUserController@doInsertAdminUser');          //添加账号方法
+        $router->post('getAuthList', 'AdminUserController@getAuthList');                      //获取角色列表方法
+        $router->post('getAdminUserUpdate', 'AdminUserController@getAdminUserUpdate');        //获取账号信息（编辑）
+        $router->post('doAdminUserUpdate', 'AdminUserController@doAdminUserUpdate');          //编辑账号信息
         $router->post('doAdminUserUpdatePwd', 'AdminUserController@doAdminUserUpdatePwd');    //修改用户密码的接口
     });
 
