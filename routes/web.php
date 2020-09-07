@@ -21,8 +21,19 @@ $router->post('/', function () use ($router) {
 //无需任何验证 操作接口
 $router->group(['prefix' => 'admin' , 'namespace' => 'Admin'], function () use ($router) {
     $router->get('orderForExceil', 'OrderController@orderForExceil');//导出订单exceil
+
+    //*********************************************************************************
     $router->post('orderlist', 'OrderController@orderList');//ceshijiekou
     $router->post('handOrder', 'OrderController@handOrder');//手动报单
+    $router->post('orderVoucher', 'OrderController@orderVoucher');//手动报单
+    $router->post('orderDetail', 'OrderController@orderDetail');//备注驳回
+
+    $router->post('unsubmittedOrder', 'OrderController@unsubmittedOrder');//分校未提交订单
+    $router->post('unsubmittedOrderDetail', 'OrderController@unsubmittedOrderDetail');//分校未提交订单详情
+    $router->post('DoSubmitted', 'OrderController@DoSubmitted');//分校未提交订单进行提交
+    $router->post('submittedOrder', 'OrderController@submittedOrder');//分校已提交订单
+    $router->post('submittedOrderCancel', 'OrderController@submittedOrderCancel');//分校已提交订单进行取消
+    //******************************************************************************
 });
 //后端登录注册接口
 $router->group(['prefix' => 'admin' , 'namespace' => 'Admin', 'middleware'=> 'cors'], function () use ($router) {
