@@ -21,9 +21,19 @@ $router->post('/', function () use ($router) {
 //无需任何验证 操作接口
 $router->group(['prefix' => 'admin' , 'namespace' => 'Admin'], function () use ($router) {
     $router->get('orderForExceil', 'OrderController@orderForExceil');//导出订单exceil
+
+    //*********************************************************************************
     $router->post('orderlist', 'OrderController@orderList');//ceshijiekou
     $router->post('handOrder', 'OrderController@handOrder');//手动报单
+    $router->post('orderVoucher', 'OrderController@orderVoucher');//手动报单
+    $router->post('orderDetail', 'OrderController@orderDetail');//备注驳回
 
+    $router->post('unsubmittedOrder', 'OrderController@unsubmittedOrder');//分校未提交订单
+    $router->post('unsubmittedOrderDetail', 'OrderController@unsubmittedOrderDetail');//分校未提交订单详情
+    $router->post('DoSubmitted', 'OrderController@DoSubmitted');//分校未提交订单进行提交
+    $router->post('submittedOrder', 'OrderController@submittedOrder');//分校已提交订单
+    $router->post('submittedOrderCancel', 'OrderController@submittedOrderCancel');//分校已提交订单进行取消
+    //******************************************************************************
 });
 //后端登录注册接口
 $router->group(['prefix' => 'admin' , 'namespace' => 'Admin', 'middleware'=> 'cors'], function () use ($router) {
@@ -134,15 +144,15 @@ $router->group(['prefix' => 'admin' , 'namespace' => 'Admin' ], function () use 
 
 
     $router->group(['prefix' => 'adminuser'], function () use ($router) {
-        $router->post('getAdminUserList', 'AdminUserController@getAdminUserList');            //获取后台用户列表方法 
-        $router->post('upUserForbidStatus', 'AdminUserController@upUserForbidStatus');        //更改账号状态方法（启用禁用） 
-        $router->post('upUserDelStatus', 'AdminUserController@upUserDelStatus');              //更改账号状态方法 (删除)  
-        $router->post('upUseStatus', 'AdminUserController@upUseStatus');                       //更改账号状态使用方法   
-        $router->post('getInsertAdminUser', 'AdminUserController@getInsertAdminUser');         //获取添加账号信息（school，roleAuth）方法 
-        $router->post('doInsertAdminUser', 'AdminUserController@doInsertAdminUser');          //添加账号方法 
-        $router->post('getAuthList', 'AdminUserController@getAuthList');                      //获取角色列表方法 
-        $router->post('getAdminUserUpdate', 'AdminUserController@getAdminUserUpdate');        //获取账号信息（编辑） 
-        $router->post('doAdminUserUpdate', 'AdminUserController@doAdminUserUpdate');          //编辑账号信息 
+        $router->post('getAdminUserList', 'AdminUserController@getAdminUserList');            //获取后台用户列表方法
+        $router->post('upUserForbidStatus', 'AdminUserController@upUserForbidStatus');        //更改账号状态方法（启用禁用）
+        $router->post('upUserDelStatus', 'AdminUserController@upUserDelStatus');              //更改账号状态方法 (删除)
+        $router->post('upUseStatus', 'AdminUserController@upUseStatus');                       //更改账号状态使用方法
+        $router->post('getInsertAdminUser', 'AdminUserController@getInsertAdminUser');         //获取添加账号信息（school，roleAuth）方法
+        $router->post('doInsertAdminUser', 'AdminUserController@doInsertAdminUser');          //添加账号方法
+        $router->post('getAuthList', 'AdminUserController@getAuthList');                      //获取角色列表方法
+        $router->post('getAdminUserUpdate', 'AdminUserController@getAdminUserUpdate');        //获取账号信息（编辑）
+        $router->post('doAdminUserUpdate', 'AdminUserController@doAdminUserUpdate');          //编辑账号信息
         $router->post('doAdminUserUpdatePwd', 'AdminUserController@doAdminUserUpdatePwd');    //修改用户密码的接口
     });
 
