@@ -2,12 +2,8 @@
 namespace App\Http\Controllers\Admin;
 
 use App\Http\Controllers\Controller;
-use App\Models\Teacher;
-use Illuminate\Http\Request;
-use App\Models\Admin as Adminuser;
-use App\Models\Roleauth;
-use App\Models\Authrules;
 use App\Models\School;
+
 use App\Models\PaySet;
 use Illuminate\Support\Facades\Redis;
 use Illuminate\Support\Facades\Validator;
@@ -19,84 +15,57 @@ use Illuminate\Support\Facades\DB;
 use App\Models\CouresSubject;
 use Log;
 class SchoolController extends Controller {
-  
 
-    public function schoolList(){
-        $arr = School::where(['is_del'=>0,'is_open'=>0])->select('id','school_name')->get()->toArray();
-        return response()->json(['code'=>200,'msg'=>'success','data'=>$arr]);
-    }
-     /*
-     * @param  description 获取分校列表  
-     * @param  参数说明       body包含以下参数[
-     *     school_name       搜索条件
-     *     school_dns        分校域名
-     *     page         当前页码  
-     *     limit        每页显示条数
-     * ]
-     * @param author    lys
-     * @param ctime     2020-05-05
-     */
-    public function getSchoolList(){
-        $schoolData = School::getList(self::$accept_data);
-        return response()->json($schoolData);      
-    }
     /*
-     * @param  description 修改分校状态 (删除)
+     * @param  description   分校管理-添加分校方法
      * @param  参数说明       body包含以下参数[
-     *     school_id      分校id
+     *     school_name       分校名称
+     *     commission        佣金比例
+     *     deposit           押金比例
+     *     tax_point         税点比例
+     *     look_all_flag     查看下属分校数据(0否1是)
+     *     level             分校级别
+     *     parent_id         父级分校id
      * ]
-     * @param author    lys
-     * @param ctime     2020-05-06
+     * @param author    dzj
+     * @param ctime     2020-09-07
+     * return string
      */
-    public function doSchoolDel(){
-        $data = self::$accept_data;
-        $validator = Validator::make($data, 
-                ['school_id' => 'required|integer'],
-                School::message());
-        if($validator->fails()) {
-            return response()->json(json_decode($validator->errors()->first(),1));
-        }
+    public function doInsertSchool() {
+        //获取提交的参数
         try{
+
             DB::beginTransaction();
-            $school = School::find($data['school_id']);
-            $school->is_del = 1; 
-            if(!$school->save()){
-                DB::rollBack();
-                return response()->json(['code' => 203 , 'msg' => '删除失败,请重试']);
-            }else{
-                 AdminLog::insertAdminLog([
-                'admin_id'       =>  isset(CurrentAdmin::user()['id'])?CurrentAdmin::user()['id']:0 ,
-                'module_name'    =>  'School' ,
-                'route_url'      =>  'admin/school/doSchoolDel' , 
-                'operate_method' =>  'update' ,
-                'content'        =>  json_encode($data),
-                'ip'             =>  $_SERVER["REMOTE_ADDR"] ,
-                    'create_at'      =>  date('Y-m-d H:i:s')
-                ]);
-                DB::commit();
-                return response()->json(['code' => 200 , 'msg' => '删除成功']);
+            $data = School::doInsertSchool(self::$accept_data);
+            if($data['code'] == 200){
+                return response()->json(['code' => 200 , 'msg' => '添加成功']);
+            } else {
+                return response()->json(['code' => $data['code'] , 'msg' => $data['msg']]);
+
             }
         } catch (Exception $ex) {
-            return response()->json(['code' => 203 , 'msg' => $ex->getMessage()]);
+            return response()->json(['code' => 500 , 'msg' => $ex->getMessage()]);
         }
     }
-
+    
     /*
-     * @param  description 修改分校状态 (启禁)
+     * @param  description   分校管理-修改分校方法
      * @param  参数说明       body包含以下参数[
-     *     school_id      分校id
+     *     school_id         分校id
+     *     school_name       分校名称
+     *     commission        佣金比例
+     *     deposit           押金比例
+     *     tax_point         税点比例
+     *     look_all_flag     查看下属分校数据(0否1是)
+     *     level             分校级别
+     *     parent_id         父级分校id
      * ]
-     * @param author    lys
-     * @param ctime     2020-05-06
+     * @param author    dzj
+     * @param ctime     2020-09-07
+     * return string
      */
-    public function doSchoolForbid(){
-        $data = self::$accept_data;
-        $validator = Validator::make($data, 
-                ['school_id' => 'required|integer'],
-                School::message());
-        if($validator->fails()) {
-            return response()->json(json_decode($validator->errors()->first(),1));
-        }
+    public function doUpdateSchool() {
+        //获取提交的参数
         try{
             DB::beginTransaction();
             $school = School::where(['id'=>$data['school_id'],'is_del'=>0])->first();
@@ -146,6 +115,9 @@ class SchoolController extends Controller {
         try{
             DB::beginTransaction();
             $school = School::where(['id'=>$data['school_id'],'is_del'=>0])->first();
+            if(empty($School)){
+                return response()->json(['code'=>201,'msg'=>'分校不存在或已删除']);
+            }
             if($school['is_look'] != 1){
                 $look = 1; 
             }else{
@@ -166,29 +138,29 @@ class SchoolController extends Controller {
                 ]);
                 DB::commit();
                 return response()->json(['code' => 200 , 'msg' => '更新成功']);
+
+            $data = School::doUpdateSchool(self::$accept_data);
+            if($data['code'] == 200){
+                return response()->json(['code' => 200 , 'msg' => '修改成功']);
+            } else {
+                return response()->json(['code' => $data['code'] , 'msg' => $data['msg']]);
             }
 
         } catch (Exception $ex) {
             return response()->json(['code' => 500 , 'msg' => $ex->getMessage()]);
         }
-
     }
+    
     /*
-     * @param  description 学校添加 
+     * @param  description   分校管理-分校详情方法
      * @param  参数说明       body包含以下参数[
-     *  'name' =>分校名称
-        'dns' =>分校域名
-        'logo_url' =>分校logo
-        'introduce' =>分校简介
-        'username' =>登录账号
-        'password' =>登录密码
-        'pwd' =>确认密码
-        'realname' =>联系人(真实姓名)
-        'mobile' =>联系方式
+     *     school_id         分校id
      * ]
-     * @param author    lys
-     * @param ctime     2020-05-06
+     * @param author    dzj
+     * @param ctime     2020-09-07
+     * return string
      */
+
     public function doInsertSchool(){
         $user_id = isset(AdminLog::getAdminInfo()->admin_user->id) ? AdminLog::getAdminInfo()->admin_user->id : 0;
         $data = self::$accept_data;
@@ -246,6 +218,17 @@ class SchoolController extends Controller {
                 ]);
                 DB::commit();
                 return response()->json(['code' => 200 , 'msg' => '创建学校成功']);
+
+    public function getSchoolInfoById(){
+        //获取提交的参数
+        try{
+            //获取分校详情
+            $data = School::getSchoolInfoById(self::$accept_data);
+            if($data['code'] == 200){
+                return response()->json(['code' => 200 , 'msg' => '获取详情成功' , 'data' => $data['data']]);
+            } else {
+                return response()->json(['code' => $data['code'] , 'msg' => $data['msg']]);
+
             }
           
          
@@ -254,14 +237,17 @@ class SchoolController extends Controller {
             return response()->json(['code' => 500 , 'msg' => $ex->getMessage()]);
         }
     }
+    
     /*
-     * @param  description 获取学校信息 
+     * @param  description   分校管理-上级分校列表方法
      * @param  参数说明       body包含以下参数[
-     *  'school_id' =>学校id
+     *     level         分校级别[1,2,3]
      * ]
-     * @param author    lys
-     * @param ctime     2020-05-06
+     * @param author    dzj
+     * @param ctime     2020-09-07
+     * return string
      */
+
     public function getSchoolUpdate(){
         $data = self::$accept_data;
         $validator = Validator::make(
@@ -347,4 +333,43 @@ class SchoolController extends Controller {
     }
    
 
+
+    public function getSchoolListByLevel(){
+        //获取提交的参数
+        try{
+            //获取分校列表
+            $data = School::getSchoolListByLevel(self::$accept_data);
+            if($data['code'] == 200){
+                return response()->json(['code' => 200 , 'msg' => '获取列表成功' , 'data' => $data['data']]);
+            } else {
+                return response()->json(['code' => $data['code'] , 'msg' => $data['msg']]);
+            }
+        } catch (Exception $ex) {
+            return response()->json(['code' => 500 , 'msg' => $ex->getMessage()]);
+        }
+    }
+    
+    /*
+     * @param  description   分校管理列表接口
+     * @param  参数说明       body包含以下参数[
+     *     school_name       分校名称
+     * ]
+     * @param author    dzj
+     * @param ctime     2020-09-07
+     * return string
+     */
+    public function getSchoolList(){
+        //获取提交的参数
+        try{
+            //获取分校列表
+            $data = School::getSchoolList(self::$accept_data);
+            if($data['code'] == 200){
+                return response()->json(['code' => 200 , 'msg' => '获取列表成功' , 'data' => $data['data']]);
+            } else {
+                return response()->json(['code' => $data['code'] , 'msg' => $data['msg']]);
+            }
+        } catch (Exception $ex) {
+            return response()->json(['code' => 500 , 'msg' => $ex->getMessage()]);
+        }
+    }
 }

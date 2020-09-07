@@ -183,6 +183,35 @@ class Project extends Model {
     }
     
     /*
+     * @param  description   项目管理-项目/学科详情方法
+     * @param  参数说明       body包含以下参数[
+     *     info_id         项目/学科id
+     * ]
+     * @param author    dzj
+     * @param ctime     2020-09-07
+     * return string
+     */
+    public static function getProjectSubjectInfoById($body=[]){
+        //判断传过来的数组数据是否为空
+        if(!$body || !is_array($body)){
+            return ['code' => 202 , 'msg' => '传递数据不合法'];
+        }
+        
+        //判断项目/学科id是否合法
+        if(!isset($body['info_id']) || empty($body['info_id']) || $body['info_id'] <= 0){
+            return ['code' => 202 , 'msg' => '项目或学科id不合法'];
+        }
+        
+        //根据id获取项目或者学科的详情
+        $info = self::select('name','is_hide','is_del')->where('id' , $body['info_id'])->where('is_del' , 0)->first();
+        if($info && !empty($info)){
+            return ['code' => 200 , 'msg' => '获取详情成功' , 'data' => $info];
+        } else {
+            return ['code' => 203 , 'msg' => '此项目不存在或已删除'];
+        }
+    }
+    
+    /*
      * @param  description   项目管理-项目筛选学科列表接口
      * @param  参数说明       body包含以下参数[
      *     project_id        项目id

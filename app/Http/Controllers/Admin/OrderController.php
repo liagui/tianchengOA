@@ -4,9 +4,14 @@ use App\Http\Controllers\Controller;
 use App\Models\Pay_order_inside;
 
 class OrderController extends Controller {
-    //总校&分校   订单总览******************************************************
+    //总校&分校
     public function orderList(){
         $list = Pay_order_inside::orderList(self::$accept_data);
+        return response()->json($list);
+    }
+    //未提交订单详情
+    public function unsubmittedOrderDetail(){
+        $list = Pay_order_inside::unsubmittedOrderDetail(self::$accept_data);
         return response()->json($list);
     }
     //手动报单
@@ -24,34 +29,95 @@ class OrderController extends Controller {
         $list = Pay_order_inside::orderDetail(self::$accept_data);
         return response()->json($list);
     }
+    //被驳回订单
+    public function rejectOrder(){
+        $list = Pay_order_inside::rejectOrder(self::$accept_data);
+        return response()->json($list);
+    }
+    //驳回订单进行操作
+    public function anewOrder(){
+        $list = Pay_order_inside::anewOrder(self::$accept_data);
+        return response()->json($list);
+    }
+
     //总校待确认订单*******************************************************
     public function awaitOrder(){
-
+        $list = Pay_order_inside::awaitOrder(self::$accept_data);
+        return response()->json($list);
     }
+    //总校确认订单
+    public function notarizeOrder(){
+        $list = Pay_order_inside::notarizeOrder(self::$accept_data);
+        return response()->json($list);
+    }
+
+
     //分校订单************************************************************
     //分校未提交订单查询
     public function unsubmittedOrder(){
         $list = Pay_order_inside::unsubmittedOrder(self::$accept_data);
         return response()->json($list);
     }
-    //未提交订单详情
-    public function unsubmittedOrderDetail(){
-        $list = Pay_order_inside::unsubmittedOrderDetail(self::$accept_data);
-        return response()->json($list);
-    }
+
     //分校进行提交
     public function DoSubmitted(){
         $list = Pay_order_inside::DoSubmitted(self::$accept_data);
         return response()->json($list);
     }
-    //分校已提交订单
-    public function submittedOrder(){
-        $list = Pay_order_inside::submittedOrder(self::$accept_data);
-        return response()->json($list);
-    }
-    //分校已提交订单进行取消
+    //分校已提交订单进行取消提交
     public function submittedOrderCancel(){
         $list = Pay_order_inside::submittedOrderCancel(self::$accept_data);
         return response()->json($list);
+    }
+    
+    /*
+     * @param  description   开课管理列表接口
+     * @param  参数说明       body包含以下参数[
+     *     category_id       项目-学科大小类(例如:[1,2])
+     *     school_id         分校id
+     *     order_type        订单类型(1.课程订单2.报名订单3.课程+报名订单)
+     *     open_class_status 开课状态(0不开课 1开课)
+     *     keywords          订单号/手机号/姓名
+     * ]
+     * @param author    dzj
+     * @param ctime     2020-09-07
+     * return string
+     */
+    public function getOpenCourseList(){
+        //获取提交的参数
+        try{
+            //获取专业列表
+            $data = Pay_order_inside::getOpenCourseList(self::$accept_data);
+            if($data['code'] == 200){
+                return response()->json(['code' => 200 , 'msg' => '获取列表成功' , 'data' => $data['data']]);
+            } else {
+                return response()->json(['code' => $data['code'] , 'msg' => $data['msg']]);
+            }
+        } catch (Exception $ex) {
+            return response()->json(['code' => 500 , 'msg' => $ex->getMessage()]);
+        }
+    }
+    
+    /*
+     * @param  description   开课管理-确认开课方法
+     * @param  参数说明       body包含以下参数[
+     *     order_id        订单id
+     * ]
+     * @param author    dzj
+     * @param ctime     2020-09-07
+     * return string
+     */
+    public function doMakeSureOpenCourse() {
+        //获取提交的参数
+        try{
+            $data = Pay_order_inside::doMakeSureOpenCourse(self::$accept_data);
+            if($data['code'] == 200){
+                return response()->json(['code' => 200 , 'msg' => '操作成功']);
+            } else {
+                return response()->json(['code' => $data['code'] , 'msg' => $data['msg']]);
+            }
+        } catch (Exception $ex) {
+            return response()->json(['code' => 500 , 'msg' => $ex->getMessage()]);
+        }
     }
 }

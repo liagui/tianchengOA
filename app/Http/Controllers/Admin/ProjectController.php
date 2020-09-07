@@ -6,6 +6,7 @@ use App\Models\Project;
 use App\Models\Course;
 use App\Models\RegionFee;
 use App\Models\Education;
+use App\Models\Major;
 
 class ProjectController extends Controller {
     /*
@@ -51,6 +52,30 @@ class ProjectController extends Controller {
             $data = Project::doUpdateProjectSubject(self::$accept_data);
             if($data['code'] == 200){
                 return response()->json(['code' => 200 , 'msg' => '修改成功']);
+            } else {
+                return response()->json(['code' => $data['code'] , 'msg' => $data['msg']]);
+            }
+        } catch (Exception $ex) {
+            return response()->json(['code' => 500 , 'msg' => $ex->getMessage()]);
+        }
+    }
+    
+    /*
+     * @param  description   项目管理-项目/学科详情方法
+     * @param  参数说明       body包含以下参数[
+     *     info_id         项目/学科id
+     * ]
+     * @param author    dzj
+     * @param ctime     2020-09-07
+     * return string
+     */
+    public function getProjectSubjectInfoById(){
+        //获取提交的参数
+        try{
+            //获取项目学科详情
+            $data = Project::getProjectSubjectInfoById(self::$accept_data);
+            if($data['code'] == 200){
+                return response()->json(['code' => 200 , 'msg' => '获取详情成功' , 'data' => $data['data']]);
             } else {
                 return response()->json(['code' => $data['code'] , 'msg' => $data['msg']]);
             }
@@ -106,6 +131,30 @@ class ProjectController extends Controller {
             $data = Course::doUpdateCourse(self::$accept_data);
             if($data['code'] == 200){
                 return response()->json(['code' => 200 , 'msg' => '修改成功']);
+            } else {
+                return response()->json(['code' => $data['code'] , 'msg' => $data['msg']]);
+            }
+        } catch (Exception $ex) {
+            return response()->json(['code' => 500 , 'msg' => $ex->getMessage()]);
+        }
+    }
+    
+    /*
+     * @param  description   项目管理-课程详情方法
+     * @param  参数说明       body包含以下参数[
+     *     course_id         课程id
+     * ]
+     * @param author    dzj
+     * @param ctime     2020-09-07
+     * return string
+     */
+    public function getCourseInfoById(){
+        //获取提交的参数
+        try{
+            //获取课程详情
+            $data = Course::getCourseInfoById(self::$accept_data);
+            if($data['code'] == 200){
+                return response()->json(['code' => 200 , 'msg' => '获取详情成功' , 'data' => $data['data']]);
             } else {
                 return response()->json(['code' => $data['code'] , 'msg' => $data['msg']]);
             }
@@ -214,6 +263,30 @@ class ProjectController extends Controller {
     }
     
     /*
+     * @param  description   项目管理-地区报名费详情方法
+     * @param  参数说明       body包含以下参数[
+     *     region_id         地区id
+     * ]
+     * @param author    dzj
+     * @param ctime     2020-09-07
+     * return string
+     */
+    public function getRegionInfoById(){
+        //获取提交的参数
+        try{
+            //获取地区报名费详情
+            $data = RegionFee::getRegionInfoById(self::$accept_data);
+            if($data['code'] == 200){
+                return response()->json(['code' => 200 , 'msg' => '获取详情成功' , 'data' => $data['data']]);
+            } else {
+                return response()->json(['code' => $data['code'] , 'msg' => $data['msg']]);
+            }
+        } catch (Exception $ex) {
+            return response()->json(['code' => 500 , 'msg' => $ex->getMessage()]);
+        }
+    }
+    
+    /*
      * @param  description   项目管理-地区列表接口
      * @param  参数说明       body包含以下参数[
      *     project_id        项目id
@@ -290,6 +363,30 @@ class ProjectController extends Controller {
         }
     }
     
+    /*
+     * @param  description   项目管理-院校详情方法
+     * @param  参数说明       body包含以下参数[
+     *     school_id         院校id
+     * ]
+     * @param author    dzj
+     * @param ctime     2020-09-07
+     * return string
+     */
+    public function getSchoolInfoById(){
+        //获取提交的参数
+        try{
+            //获取院校详情
+            $data = Education::getSchoolInfoById(self::$accept_data);
+            if($data['code'] == 200){
+                return response()->json(['code' => 200 , 'msg' => '获取详情成功' , 'data' => $data['data']]);
+            } else {
+                return response()->json(['code' => $data['code'] , 'msg' => $data['msg']]);
+            }
+        } catch (Exception $ex) {
+            return response()->json(['code' => 500 , 'msg' => $ex->getMessage()]);
+        }
+    }
+    
     
     /*
      * @param  description   项目管理-院校列表接口
@@ -305,6 +402,107 @@ class ProjectController extends Controller {
         try{
             //获取院校列表
             $data = Education::getEducationList(self::$accept_data);
+            if($data['code'] == 200){
+                return response()->json(['code' => 200 , 'msg' => '获取列表成功' , 'data' => $data['data']]);
+            } else {
+                return response()->json(['code' => $data['code'] , 'msg' => $data['msg']]);
+            }
+        } catch (Exception $ex) {
+            return response()->json(['code' => 500 , 'msg' => $ex->getMessage()]);
+        }
+    }
+    
+    /*
+     * @param  description   项目管理-添加专业方法
+     * @param  参数说明       body包含以下参数[
+     *     education_id        院校id
+     *     major_name          专业名称
+     *     price               成本价格
+     *     is_hide             是否隐藏(1是0否)
+     * ]
+     * @param author    dzj
+     * @param ctime     2020-09-07
+     * return string
+     */
+    public function doInsertMajor() {
+        //获取提交的参数
+        try{
+            $data = Major::doInsertMajor(self::$accept_data);
+            if($data['code'] == 200){
+                return response()->json(['code' => 200 , 'msg' => '添加成功']);
+            } else {
+                return response()->json(['code' => $data['code'] , 'msg' => $data['msg']]);
+            }
+        } catch (Exception $ex) {
+            return response()->json(['code' => 500 , 'msg' => $ex->getMessage()]);
+        }
+    }
+    
+    /*
+     * @param  description   项目管理-添加专业方法
+     * @param  参数说明       body包含以下参数[
+     *     education_id        院校id
+     *     major_name          专业名称
+     *     price               成本价格
+     *     is_hide             是否隐藏(1是0否)
+     *     is_del              是否删除(1是)
+     * ]
+     * @param author    dzj
+     * @param ctime     2020-09-07
+     * return string
+     */
+    public function doUpdateMajor() {
+        //获取提交的参数
+        try{
+            $data = Major::doUpdateMajor(self::$accept_data);
+            if($data['code'] == 200){
+                return response()->json(['code' => 200 , 'msg' => '修改成功']);
+            } else {
+                return response()->json(['code' => $data['code'] , 'msg' => $data['msg']]);
+            }
+        } catch (Exception $ex) {
+            return response()->json(['code' => 500 , 'msg' => $ex->getMessage()]);
+        }
+    }
+    
+    /*
+     * @param  description   项目管理-专业详情方法
+     * @param  参数说明       body包含以下参数[
+     *     major_id          专业id
+     * ]
+     * @param author    dzj
+     * @param ctime     2020-09-07
+     * return string
+     */
+    public function getNajorInfoById(){
+        //获取提交的参数
+        try{
+            //获取专业详情
+            $data = Major::getNajorInfoById(self::$accept_data);
+            if($data['code'] == 200){
+                return response()->json(['code' => 200 , 'msg' => '获取详情成功' , 'data' => $data['data']]);
+            } else {
+                return response()->json(['code' => $data['code'] , 'msg' => $data['msg']]);
+            }
+        } catch (Exception $ex) {
+            return response()->json(['code' => 500 , 'msg' => $ex->getMessage()]);
+        }
+    }
+    
+    /*
+     * @param  description   项目管理-专业列表接口
+     * @param  参数说明       body包含以下参数[
+     *     education_id         院校id
+     * ]
+     * @param author    dzj
+     * @param ctime     2020-09-07
+     * return string
+     */
+    public function getMajorList(){
+        //获取提交的参数
+        try{
+            //获取专业列表
+            $data = Major::getMajorList(self::$accept_data);
             if($data['code'] == 200){
                 return response()->json(['code' => 200 , 'msg' => '获取列表成功' , 'data' => $data['data']]);
             } else {

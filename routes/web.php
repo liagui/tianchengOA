@@ -18,42 +18,66 @@ $router->post('/', function () use ($router) {
 });
 //后台端路由接口
 /*****************start**********************/
-//无需任何验证 操作接口
-$router->group(['prefix' => 'admin' , 'namespace' => 'Admin'], function () use ($router) {
-    $router->get('orderForExceil', 'OrderController@orderForExceil');//导出订单exceil
-
-    //*********************************************************************************
-    $router->post('orderlist', 'OrderController@orderList');//ceshijiekou
-    $router->post('handOrder', 'OrderController@handOrder');//手动报单
-    $router->post('orderVoucher', 'OrderController@orderVoucher');//手动报单
-    $router->post('orderDetail', 'OrderController@orderDetail');//备注驳回
-
-    $router->post('unsubmittedOrder', 'OrderController@unsubmittedOrder');//分校未提交订单
-    $router->post('unsubmittedOrderDetail', 'OrderController@unsubmittedOrderDetail');//分校未提交订单详情
-    $router->post('DoSubmitted', 'OrderController@DoSubmitted');//分校未提交订单进行提交
-    $router->post('submittedOrder', 'OrderController@submittedOrder');//分校已提交订单
-    $router->post('submittedOrderCancel', 'OrderController@submittedOrderCancel');//分校已提交订单进行取消
-    //******************************************************************************
-});
 //后端登录注册接口
 $router->group(['prefix' => 'admin' , 'namespace' => 'Admin', 'middleware'=> 'cors'], function () use ($router) {
     $router->post('login', 'AuthenticateController@postLogin');
-
+    //订单管理（szw）
+    $router->group(['prefix' => 'order'], function () use ($router) {
+        //总校&分校
+        $router->post('orderlist', 'OrderController@orderList');//订单总览
+        $router->post('awaitOrder', 'OrderController@awaitOrder');//总校待确认订单&&分校已提交
+        $router->post('unsubmittedOrderDetail', 'OrderController@unsubmittedOrderDetail');//分校未提交&总校未确认（订单详情）
+        $router->post('handOrder', 'OrderController@handOrder');//手动报单
+        $router->post('orderVoucher', 'OrderController@orderVoucher');//订单查看支付凭证
+        $router->post('orderDetail', 'OrderController@orderDetail');//订单备注或驳回信息
+        $router->post('rejectOrder', 'OrderController@rejectOrder');//分校&总校被驳回订单列表
+        $router->post('anewOrder', 'OrderController@anewOrder');//驳回订单进行操作
+        //总校
+        $router->post('notarizeOrder', 'OrderController@notarizeOrder');//总校确认&取消订单
+        //分校
+        $router->post('unsubmittedOrder', 'OrderController@unsubmittedOrder');//分校未提交订单
+        $router->post('DoSubmitted', 'OrderController@DoSubmitted');//分校未提交订单进行提交
+        $router->post('submittedOrderCancel', 'OrderController@submittedOrderCancel');//分校已提交订单进行取消
+    });
     //项目管理部分(dzj)
     $router->group(['prefix' => 'project'], function () use ($router) {
         $router->post('doInsertProjectSubject', 'ProjectController@doInsertProjectSubject');     //添加项目/学科的方法
         $router->post('doUpdateProjectSubject', 'ProjectController@doUpdateProjectSubject');     //修改项目/学科的方法
+        $router->post('getProjectSubjectInfoById', 'ProjectController@getProjectSubjectInfoById'); //项目学科详情接口
         $router->post('doInsertCourse', 'ProjectController@doInsertCourse');                     //添加课程的方法
         $router->post('doUpdateCourse', 'ProjectController@doUpdateCourse');                     //修改课程的方法
+        $router->post('getCourseInfoById', 'ProjectController@getCourseInfoById');               //课程详情接口
         $router->post('getProjectSubjectList', 'ProjectController@getProjectSubjectList');       //项目筛选学科列表接口
         $router->post('getCourseList', 'ProjectController@getCourseList');                       //课程列表接口
         $router->post('doInsertRegion', 'ProjectController@doInsertRegion');                     //添加地区的方法
         $router->post('doUpdateRegion', 'ProjectController@doUpdateRegion');                     //修改地区的方法
+        $router->post('getRegionInfoById', 'ProjectController@getRegionInfoById');               //地区报名费详情方法
         $router->post('getRegionList', 'ProjectController@getRegionList');                       //地区列表接口
         $router->post('doInsertEducation', 'ProjectController@doInsertEducation');               //添加院校的方法
         $router->post('doUpdateEducation', 'ProjectController@doUpdateEducation');               //修改院校的方法
         $router->post('getEducationList', 'ProjectController@getEducationList');                 //院校列表接口
+        $router->post('getSchoolInfoById', 'ProjectController@getSchoolInfoById');               //院校详情接口
+        $router->post('doInsertMajor', 'ProjectController@doInsertMajor');                       //添加专业的方法
+        $router->post('doUpdateMajor', 'ProjectController@doUpdateMajor');                       //修改专业的方法
+        $router->post('getNajorInfoById', 'ProjectController@getNajorInfoById');                 //专业详情接口
+        $router->post('getMajorList', 'ProjectController@getMajorList');                         //专业列表接口
     });
+    
+    //开课管理部分(dzj)
+    $router->group(['prefix' => 'order'], function () use ($router) {
+        $router->post('getOpenCourseList', 'OrderController@getOpenCourseList');                 //开课管理列表接口
+        $router->post('doMakeSureOpenCourse', 'OrderController@doMakeSureOpenCourse');           //确认开课接口
+    });
+    
+    //分校管理部分(dzj)
+    $router->group(['prefix' => 'school'], function () use ($router) {
+        $router->post('doInsertSchool', 'SchoolController@doInsertSchool');                      //添加分校接口
+        $router->post('doUpdateSchool', 'SchoolController@doUpdateSchool');                      //修改分校接口
+        $router->post('getSchoolInfoById', 'SchoolController@getSchoolInfoById');                //分校详情接口
+        $router->post('getSchoolListByLevel', 'SchoolController@getSchoolListByLevel');          //上级分校列表接口
+        $router->post('getSchoolList', 'SchoolController@getSchoolList');                        //分校列表接口
+    });
+    
     $router->post('diff', 'TestController@diff');
     $router->post('test', 'TestController@index');
     $router->post('ArticleLead', 'ArticleController@ArticleLead');//文章导入
@@ -81,20 +105,27 @@ $router->group(['prefix' => 'admin' , 'namespace' => 'Admin', 'middleware'=> 'co
 
     /*** 学员管理start ***/
 
-    //业绩查询
-    //学员总览
-    //学员公海
-
+    //业绩查询 班主任自己的业绩
+    $router->post('getStudentPerformance', 'StudentController@getStudentPerformance');
+    //学员总览 班主任自己的学员
+    $router->post('getStudent', 'StudentController@getStudent');
+    //学员公海 被放入公海的所有学员订单
+    $router->post('getStudentSeas', 'StudentController@getStudentSeas');
     /*** 学员管理end ***/
 
     /*** 班主任管理start ***/
-
+    //学员状态
+    $router->post('getStudentStatus', 'StudentController@getStudentStatus');
+    //跟单
+    $router->post('documentary', 'StudentController@documentary');
+    //获取跟单记录
+    $router->post('getdocumentary', 'StudentController@getdocumentary');
+    //转单
+    $router->post('transferOrder', 'StudentController@transferOrder');
     //业绩总览
     $router->post('getTeacherPerformance', 'TeacherController@getTeacherPerformance');
     //业绩详情
     $router->post('getTeacherPerformanceOne', 'TeacherController@getTeacherPerformanceOne');
-    //学员状态
-
     //创建班主任
     $router->post('createTeacher', 'TeacherController@createTeacher');
     //获取班主任列表
@@ -154,14 +185,14 @@ $router->group(['prefix' => 'admin' , 'namespace' => 'Admin' ], function () use 
     });
 
     $router->group(['prefix' => 'school'], function () use ($router) { 
-        $router->post('getList', 'SchoolController@getSchoolList');              //学校列表
+        // $router->post('getList', 'SchoolController@getSchoolList');              //学校列表
         $router->post('doSchoolDel', 'SchoolController@doSchoolDel');          //软删除
         $router->post('doSchoolForbid', 'SchoolController@doSchoolForbid');  //启用禁用
         $router->post('doSchoolLook', 'SchoolController@doSchoolLook');  //是否观看其他网校数据
-        $router->post('getSchoolList', 'SchoolController@schoolList');    //网校列表（添加、修改）
-        $router->post('doInsertSchool', 'SchoolController@doInsertSchool');    //添加网校
-        $router->post('getSchoolById', 'SchoolController@getSchoolUpdate');  //编辑网校（获取）
-        $router->post('doSchoolUpdate', 'SchoolController@doSchoolUpdate');  //编辑网校
+        // $router->post('getSchoolList', 'SchoolController@schoolList');    //网校列表（添加、修改）
+        // $router->post('doInsertSchool', 'SchoolController@doInsertSchool');    //添加网校
+        // $router->post('getSchoolById', 'SchoolController@getSchoolUpdate');  //编辑网校（获取）
+        // $router->post('doSchoolUpdate', 'SchoolController@doSchoolUpdate');  //编辑网校
     });
 
 
