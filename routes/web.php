@@ -22,7 +22,7 @@ $router->post('/', function () use ($router) {
 $router->group(['prefix' => 'admin' , 'namespace' => 'Admin', 'middleware'=> 'cors'], function () use ($router) {
     $router->post('login', 'AuthenticateController@postLogin');
     //订单管理（szw）
-    $router->group(['prefix' => 'project'], function () use ($router) {
+    $router->group(['prefix' => 'order'], function () use ($router) {
         //总校&分校
         $router->post('orderlist', 'OrderController@orderList');//订单总览
         $router->post('unsubmittedOrderDetail', 'OrderController@unsubmittedOrderDetail');//分校未提交&总校未确认（订单详情）
