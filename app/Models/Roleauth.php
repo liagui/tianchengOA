@@ -97,6 +97,42 @@ class Roleauth extends Model {
           return self::insertGetId($insert);
     }
 
+    /*
+     * @param  descriptsion 获取角色列表
+     * @param  author  lys
+     * @param  ctime   2020/4/29
+     * return  int
+     */
+    public static function getList($body){
+        $channelArr = [];
+        $school_id = isset(AdminLog::getAdminInfo()->admin_user->school_id) ? AdminLog::getAdminInfo()->admin_user->school_id : 0;
+        $school_status = isset(AdminLog::getAdminInfo()->admin_user->school_status) ? AdminLog::getAdminInfo()->admin_user->school_status : 0;
+        $search = isset($body['search']) && !empty($body['search'])  ?$body['search'] :'';
+        $pagesize = (int)isset($body['pagesize']) && $body['pagesize'] > 0 ? $body['pagesize'] : 20;
+        $page     = isset($body['page']) && $body['page'] > 0 ? $body['page'] : 1;
+        $offset   = ($page - 1) * $pagesize;
+        
+        $count =  self::where(['is_del'=>0])->where('role_name','like','%'.$search.'%')->count(); 
+        $sum_page = ceil($count/$pagesize);
+        if($count>0){
+            $channelArr = self::where(function($query) use ($body){
+                        if(isset($body['search']) && !empty($body['search'])){
+                            $query->where('role_name','like','%'.$body['search'].'%');
+                        }   
+                        $query->where('is_del',0);
+                      })
+                  ->select('role_name as name','auth_desc','create_id','create_time')
+                  ->offset($offset)->limit($pagesize)->get();
+            $adminData  = Admin::where(['is_del'=>1,'is_forbid'=>1])->select('id','username')->get()->toArray();
+            $adminData = array_column($adminData,'username','id');
+            foreach($channelArr as $key =>&$v){
+                $v['auth_desc'] = !is_null($v['auth_desc']) ?$v['auth_desc'] :'';
+                $v['create_name'] = isset($adminData[$v['create_id']]) ?$adminData[$v['create_id']]:'';
+            }
+        }
+        return ['code'=>200,'msg'=>'Success','data'=>$channelArr,'total'=>$count];
+    }
+
 
 
 
