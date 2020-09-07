@@ -126,13 +126,13 @@ class RegionFee extends Model {
         }
         
         //判断此地区得id是否存在此地区
-        $is_exists_region = self::where('id' , $body['region_id'])->count();
-        if(!$is_exists_region || $is_exists_region <= 0){
+        $is_exists_region = self::where('id' , $body['region_id'])->first();
+        if(!$is_exists_region || empty($is_exists_region)){
             return ['code' => 203 , 'msg' => '此地区不存在'];
         }
 
         //判断地区名称是否存在
-        /*$is_exists = self::where('region_name' , $body['region_name'])->where('is_del' , 0)->count();
+        $is_exists = self::where('category_id' , $is_exists_region['category_id'])->where('region_name' , $body['region_name'])->where('is_del' , 0)->count();
         if($is_exists && $is_exists > 0){
             //组装地区数组信息
             $region_array = [
@@ -150,15 +150,7 @@ class RegionFee extends Model {
                 'is_del'              =>   isset($body['is_del']) && $body['is_del'] == 1 ? 1 : 0 ,
                 'update_time'         =>   date('Y-m-d H:i:s')
             ];
-        }*/
-        //组装地区数组信息
-        $region_array = [
-            'region_name'         =>   $body['region_name'] ,
-            'cost'                =>   $body['cost'] ,
-            'is_hide'             =>   isset($body['is_hide']) && $body['is_hide'] == 1 ? 1 : 0 ,
-            'is_del'              =>   isset($body['is_del']) && $body['is_del'] == 1 ? 1 : 0 ,
-            'update_time'         =>   date('Y-m-d H:i:s')
-        ];
+        }
         
         //开启事务
         DB::beginTransaction();
@@ -172,6 +164,35 @@ class RegionFee extends Model {
             //事务回滚
             DB::rollBack();
             return ['code' => 203 , 'msg' => '修改失败'];
+        }
+    }
+    
+    /*
+     * @param  description   项目管理-地区报名费详情方法
+     * @param  参数说明       body包含以下参数[
+     *     region_id         地区id
+     * ]
+     * @param author    dzj
+     * @param ctime     2020-09-07
+     * return string
+     */
+    public static function getRegionInfoById($body=[]){
+        //判断传过来的数组数据是否为空
+        if(!$body || !is_array($body)){
+            return ['code' => 202 , 'msg' => '传递数据不合法'];
+        }
+        
+        //判断地区id是否合法
+        if(!isset($body['region_id']) || empty($body['region_id']) || $body['region_id'] <= 0){
+            return ['code' => 202 , 'msg' => '地区id不合法'];
+        }
+        
+        //根据id获取地区报名费的详情
+        $info = self::select('region_name','cost','is_hide','is_del')->where('id' , $body['region_id'])->where('is_del' , 0)->first();
+        if($info && !empty($info)){
+            return ['code' => 200 , 'msg' => '获取详情成功' , 'data' => $info];
+        } else {
+            return ['code' => 203 , 'msg' => '此地区不存在或已删除'];
         }
     }
     

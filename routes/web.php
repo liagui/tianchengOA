@@ -33,16 +33,24 @@ $router->group(['prefix' => 'admin' , 'namespace' => 'Admin', 'middleware'=> 'co
     $router->group(['prefix' => 'project'], function () use ($router) {
         $router->post('doInsertProjectSubject', 'ProjectController@doInsertProjectSubject');     //添加项目/学科的方法
         $router->post('doUpdateProjectSubject', 'ProjectController@doUpdateProjectSubject');     //修改项目/学科的方法
+        $router->post('getProjectSubjectInfoById', 'ProjectController@getProjectSubjectInfoById'); //项目学科详情接口
         $router->post('doInsertCourse', 'ProjectController@doInsertCourse');                     //添加课程的方法
         $router->post('doUpdateCourse', 'ProjectController@doUpdateCourse');                     //修改课程的方法
+        $router->post('getCourseInfoById', 'ProjectController@getCourseInfoById');               //课程详情接口
         $router->post('getProjectSubjectList', 'ProjectController@getProjectSubjectList');       //项目筛选学科列表接口
         $router->post('getCourseList', 'ProjectController@getCourseList');                       //课程列表接口
         $router->post('doInsertRegion', 'ProjectController@doInsertRegion');                     //添加地区的方法
         $router->post('doUpdateRegion', 'ProjectController@doUpdateRegion');                     //修改地区的方法
+        $router->post('getRegionInfoById', 'ProjectController@getRegionInfoById');               //地区报名费详情方法
         $router->post('getRegionList', 'ProjectController@getRegionList');                       //地区列表接口
         $router->post('doInsertEducation', 'ProjectController@doInsertEducation');               //添加院校的方法
         $router->post('doUpdateEducation', 'ProjectController@doUpdateEducation');               //修改院校的方法
         $router->post('getEducationList', 'ProjectController@getEducationList');                 //院校列表接口
+        $router->post('getSchoolInfoById', 'ProjectController@getSchoolInfoById');               //院校详情接口
+        $router->post('doInsertMajor', 'ProjectController@doInsertMajor');                       //添加专业的方法
+        $router->post('doUpdateMajor', 'ProjectController@doUpdateMajor');                       //修改专业的方法
+        $router->post('getNajorInfoById', 'ProjectController@getNajorInfoById');                 //专业详情接口
+        $router->post('getMajorList', 'ProjectController@getMajorList');                         //专业列表接口
     });
     $router->post('diff', 'TestController@diff');
     $router->post('test', 'TestController@index');

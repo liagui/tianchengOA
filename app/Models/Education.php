@@ -60,7 +60,7 @@ class Education extends Model {
             return ['code' => 203 , 'msg' => '此学科名称不存在'];
         }
 
-        //判断课程名称是否存在
+        //判断院校名称是否存在
         $is_exists = self::where('parent_id' , $body['parent_id'])->where('child_id' , $body['child_id'])->where('education_name' , $body['education_name'])->where('is_del' , 0)->count();
         if($is_exists && $is_exists > 0){
             return ['code' => 203 , 'msg' => '此院校名称已存在'];
@@ -125,18 +125,29 @@ class Education extends Model {
         }
         
         //判断此院校得id是否存在此院校
-        $is_exists_school = self::where('id' , $body['school_id'])->count();
-        if(!$is_exists_school || $is_exists_school <= 0){
+        $is_exists_school = self::where('id' , $body['school_id'])->first();
+        if(!$is_exists_school || empty($is_exists_school)){
             return ['code' => 203 , 'msg' => '此院校不存在'];
         }
-
-        //组装院校数组信息
-        $school_array = [
-            'education_name'      =>   $body['education_name'] ,
-            'is_hide'             =>   isset($body['is_hide']) && $body['is_hide'] == 1 ? 1 : 0 ,
-            'is_del'              =>   isset($body['is_del']) && $body['is_del'] == 1 ? 1 : 0 ,
-            'update_time'         =>   date('Y-m-d H:i:s')
-        ];
+        
+        //判断院校名称是否存在
+        $is_exists = self::where('parent_id' , $is_exists_school['parent_id'])->where('child_id' , $is_exists_school['child_id'])->where('region_name' , $body['region_name'])->where('is_del' , 0)->count();
+        if($is_exists && $is_exists > 0){
+            //组装院校数组信息
+            $school_array = [
+                'is_hide'             =>   isset($body['is_hide']) && $body['is_hide'] == 1 ? 1 : 0 ,
+                'is_del'              =>   isset($body['is_del']) && $body['is_del'] == 1 ? 1 : 0 ,
+                'update_time'         =>   date('Y-m-d H:i:s')
+            ];
+        } else {
+            //组装院校数组信息
+            $school_array = [
+                'education_name'      =>   $body['education_name'] ,
+                'is_hide'             =>   isset($body['is_hide']) && $body['is_hide'] == 1 ? 1 : 0 ,
+                'is_del'              =>   isset($body['is_del']) && $body['is_del'] == 1 ? 1 : 0 ,
+                'update_time'         =>   date('Y-m-d H:i:s')
+            ];
+        }
         
         //开启事务
         DB::beginTransaction();
@@ -150,6 +161,35 @@ class Education extends Model {
             //事务回滚
             DB::rollBack();
             return ['code' => 203 , 'msg' => '修改失败'];
+        }
+    }
+    
+    /*
+     * @param  description   项目管理-院校详情方法
+     * @param  参数说明       body包含以下参数[
+     *     school_id         院校id
+     * ]
+     * @param author    dzj
+     * @param ctime     2020-09-07
+     * return string
+     */
+    public static function getSchoolInfoById($body=[]){
+        //判断传过来的数组数据是否为空
+        if(!$body || !is_array($body)){
+            return ['code' => 202 , 'msg' => '传递数据不合法'];
+        }
+        
+        //判断院校id是否合法
+        if(!isset($body['school_id']) || empty($body['school_id']) || $body['school_id'] <= 0){
+            return ['code' => 202 , 'msg' => '院校id不合法'];
+        }
+        
+        //根据id获取院校的详情
+        $info = self::select('education_name','is_hide','is_del')->where('id' , $body['school_id'])->where('is_del' , 0)->first();
+        if($info && !empty($info)){
+            return ['code' => 200 , 'msg' => '获取详情成功' , 'data' => $info];
+        } else {
+            return ['code' => 203 , 'msg' => '此院校不存在或已删除'];
         }
     }
     

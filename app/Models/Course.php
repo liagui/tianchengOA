@@ -140,13 +140,13 @@ class Course extends Model {
         }
         
         //判断此课程得id是否存在此课程
-        $is_exists_course = self::where('id' , $body['course_id'])->count();
-        if(!$is_exists_course || $is_exists_course <= 0){
+        $is_exists_course = self::where('id' , $body['course_id'])->first();
+        if(!$is_exists_course || empty($is_exists_course)){
             return ['code' => 203 , 'msg' => '此课程不存在'];
         }
 
         //判断课程名称是否存在
-        /*$is_exists = self::where('course_name' , $body['course_name'])->where('is_del' , 0)->count();
+        $is_exists = self::where('category_one_id' , $is_exists_course['category_one_id'])->where('category_tow_id' , $is_exists_course['category_tow_id'])->where('course_name' , $body['course_name'])->where('is_del' , 0)->count();
         if($is_exists && $is_exists > 0){
             //组装课程数组信息
             $course_array = [
@@ -164,15 +164,7 @@ class Course extends Model {
                 'is_del'              =>   isset($body['is_del']) && $body['is_del'] == 1 ? 1 : 0 ,
                 'update_time'         =>   date('Y-m-d H:i:s')
             ];
-        }*/
-        //组装课程数组信息
-        $course_array = [
-            'course_name'         =>   $body['course_name'] ,
-            'price'               =>   $body['course_price'] ,
-            'is_hide'             =>   isset($body['is_hide']) && $body['is_hide'] == 1 ? 1 : 0 ,
-            'is_del'              =>   isset($body['is_del']) && $body['is_del'] == 1 ? 1 : 0 ,
-            'update_time'         =>   date('Y-m-d H:i:s')
-        ];
+        }
         
         //开启事务
         DB::beginTransaction();
@@ -189,7 +181,36 @@ class Course extends Model {
         }
     }
     
-        /*
+    /*
+     * @param  description   项目管理-项目/学科详情方法
+     * @param  参数说明       body包含以下参数[
+     *     course_id         课程id
+     * ]
+     * @param author    dzj
+     * @param ctime     2020-09-07
+     * return string
+     */
+    public static function getCourseInfoById($body=[]){
+        //判断传过来的数组数据是否为空
+        if(!$body || !is_array($body)){
+            return ['code' => 202 , 'msg' => '传递数据不合法'];
+        }
+        
+        //判断课程id是否合法
+        if(!isset($body['course_id']) || empty($body['course_id']) || $body['course_id'] <= 0){
+            return ['code' => 202 , 'msg' => '课程id不合法'];
+        }
+        
+        //根据id获取课程的详情
+        $info = self::select('course_name','price','is_hide','is_del')->where('id' , $body['course_id'])->where('is_del' , 0)->first();
+        if($info && !empty($info)){
+            return ['code' => 200 , 'msg' => '获取详情成功' , 'data' => $info];
+        } else {
+            return ['code' => 203 , 'msg' => '此课程不存在或已删除'];
+        }
+    }
+    
+    /*
      * @param  description   项目管理-课程列表接口
      * @param  参数说明       body包含以下参数[
      *     parent_id        项目id
