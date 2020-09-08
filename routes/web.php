@@ -64,18 +64,18 @@ $router->group(['prefix' => 'admin' , 'namespace' => 'Admin', 'middleware'=> 'co
         $router->post('getNajorInfoById', 'ProjectController@getNajorInfoById');                 //专业详情接口
         $router->post('getMajorList', 'ProjectController@getMajorList');                         //专业列表接口
     });
-    
+
     //开课管理部分(dzj)
     $router->group(['prefix' => 'order'], function () use ($router) {
         $router->post('getOpenCourseList', 'OrderController@getOpenCourseList');                 //开课管理列表接口
         $router->post('doMakeSureOpenCourse', 'OrderController@doMakeSureOpenCourse');           //确认开课接口
     });
-    
+
     //财务管理部分(dzj)
     $router->group(['prefix' => 'finance'], function () use ($router) {
 
     });
-    
+
     //分校管理部分(dzj)
     $router->group(['prefix' => 'school'], function () use ($router) {
         $router->post('doInsertSchool', 'SchoolController@doInsertSchool');                      //添加分校接口
@@ -88,7 +88,7 @@ $router->group(['prefix' => 'admin' , 'namespace' => 'Admin', 'middleware'=> 'co
         $router->post('doLookSchool', 'SchoolController@doLookSchool');                          //是否查看下属分校内容接口（lys）
 
     });
-    
+
     $router->post('diff', 'TestController@diff');
     $router->post('test', 'TestController@index');
     $router->post('ArticleLead', 'ArticleController@ArticleLead');//文章导入
@@ -107,6 +107,10 @@ $router->group(['prefix' => 'admin' , 'namespace' => 'Admin', 'middleware'=> 'co
     $router->post('getMaterialList', 'MaterialController@getMaterialList');
     //创建物料需求
     $router->post('Materialadd', 'MaterialController@Materialadd');
+    //更新物料需求
+    $router->post('updateMaterialOne', 'MaterialController@updateMaterialOne');
+    //获取单条物料
+    $router->post('getMaterialOne', 'MaterialController@getMaterialOne');
     //确认物料信息
     $router->post('Materialupdate', 'MaterialController@Materialupdate');
     //获取确认物料信息
@@ -150,7 +154,7 @@ $router->group(['prefix' => 'admin' , 'namespace' => 'Admin', 'middleware'=> 'co
 //后端登录权限认证相关接口
 //
 $router->group(['prefix' => 'admin' , 'namespace' => 'Admin' ], function () use ($router) {
-    
+
     $router->group(['prefix' => 'payset'], function () use ($router) {
         $router->post('doUpdateWxState', 'PaySetController@doUpdateWxState');                 //更改微信状态
         $router->post('doUpdateZfbState', 'PaySetController@doUpdateZfbState');               //更改支付宝状态
@@ -186,7 +190,7 @@ $router->group(['prefix' => 'admin' , 'namespace' => 'Admin' ], function () use 
         $router->post('doAdminUserUpdatePwd', 'AdminUserController@doAdminUserUpdatePwd');    //修改用户密码的接口
     });
 
-    $router->group(['prefix' => 'role'], function () use ($router) { 
+    $router->group(['prefix' => 'role'], function () use ($router) {
         $router->post('getList', 'RoleController@getList');              //角色列表
         $router->post('doRoleDel', 'RoleController@doRoleDel');          //软删除
         $router->post('getRoleInsert', 'RoleController@getRoleInsert');  //添加角色（获取）
@@ -195,7 +199,7 @@ $router->group(['prefix' => 'admin' , 'namespace' => 'Admin' ], function () use 
         $router->post('doRoleUpdate', 'RoleController@doRoleUpdate');  //编辑角色
     });
 
-    $router->group(['prefix' => 'school'], function () use ($router) { 
+    $router->group(['prefix' => 'school'], function () use ($router) {
         // $router->post('getList', 'SchoolController@getSchoolList');              //学校列表
         $router->post('doSchoolDel', 'SchoolController@doSchoolDel');          //软删除
         $router->post('doSchoolForbid', 'SchoolController@doSchoolForbid');  //启用禁用
