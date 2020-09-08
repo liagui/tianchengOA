@@ -22,34 +22,7 @@ class School extends Model {
      public static function message(){
 
         return [
-            'page.required'  => json_encode(['code'=>'201','msg'=>'页码不能为空']),
-            'page.integer'   => json_encode(['code'=>'202','msg'=>'页码类型不合法']),
-            'limit.required' => json_encode(['code'=>'201','msg'=>'显示条数不能为空']),
-            'limit.integer'  => json_encode(['code'=>'202','msg'=>'显示条数类型不合法']),
-            'type.required' => json_encode(['code'=>'201','msg'=>'分类类型不能为空']),
-            'type.integer'  => json_encode(['code'=>'202','msg'=>'分类类型不合法']),
-            'school_id.required' => json_encode(['code'=>'201','msg'=>'学校标识不能为空']),
-            'school_id.integer'  => json_encode(['code'=>'202','msg'=>'学校标识类型不合法']),
-            'name.required' => json_encode(['code'=>'201','msg'=>'学校名称不能为空']),
-            'name.unique' => json_encode(['code'=>'205','msg'=>'学校名称已存在']),
-            'dns.required' => json_encode(['code'=>'201','msg'=>'学校域名不能为空']),
-            'logo_url.required' => json_encode(['code'=>'201','msg'=>'学校LOGO不能为空']),
-            'introduce.required' => json_encode(['code'=>'201','msg'=>'学校简介不能为空']),
-            'username.required' => json_encode(['code'=>'201','msg'=>'账号不能为空']),
-            'username.unique' => json_encode(['code'=>'205','msg'=>'账号已存在']),
-            'password.required' => json_encode(['code'=>'201','msg'=>'密码不能为空']),
-            'pwd.required' => json_encode(['code'=>'201','msg'=>'确认密码不能为空']),
-            'mobile.required' => json_encode(['code'=>'201','msg'=>'联系方式不能为空']),
-            'mobile.regex' => json_encode(['code'=>'202','msg'=>'联系方式类型不合法']),
-            'id.required' => json_encode(['code'=>'201','msg'=>'学校标识不能为空']),
-            'id.integer'  => json_encode(['code'=>'202','msg'=>'学校标识类型不合法']),
-            'user_id.required' => json_encode(['code'=>'201','msg'=>'用户标识不能为空']),
-            'user_id.integer'  => json_encode(['code'=>'202','msg'=>'用户标识类型不合法']),
-            'realname.required'=> json_encode(['code'=>'201','msg'=>'联系人不能为空']),
-            'role_id.required' => json_encode(['code'=>'201','msg'=>'角色标识不能为空']),
-            'role_id.integer'  => json_encode(['code'=>'202','msg'=>'角色标识类型不合法']),
-            'is_public.required' => json_encode(['code'=>'201','msg'=>'是否为公开课标识不能为空']),
-            'is_public.integer'  => json_encode(['code'=>'202','msg'=>'是否为公开课标识类型不合法']),    
+          
         ];
 
 
