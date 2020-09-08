@@ -893,6 +893,100 @@ class Pay_order_inside extends Model
         }
         return ['code' => 200 , 'msg' => '获取开课列表成功' , 'data' => ['open_class_list' => [] , 'total' => 0 , 'pagesize' => $pagesize , 'page' => $page]];
     }
+    
+    /*
+     * @param  description   开课管理订单详情接口
+     * @param  参数说明       body包含以下参数[
+     *
+     * ]
+     * @param author    dzj
+     * @param ctime     2020-09-08
+     * return string
+     */
+    public static function getOpenCourseInfo($body=[]) {
+        //每页显示的条数
+        $pagesize = isset($body['pagesize']) && $body['pagesize'] > 0 ? $body['pagesize'] : 20;
+        $page     = isset($body['page']) && $body['page'] > 0 ? $body['page'] : 1;
+        $offset   = ($page - 1) * $pagesize;
+
+        //获取订单的总数量
+        $order_count = self::where('del_flag' , 0)->count();
+        
+        //支付方式数组
+        $pay_type_array = [1=>'支付宝扫码',2=>'微信扫码',3=>'银联快捷支付',4=>'微信小程序',5=>'线下录入'];
+        
+        //支付状态数组
+        $pay_status_array = [0=>'未支付',1=>'已支付',2=>'支付失败',3=>'已退款'];
+        
+        //回访数组
+        $return_visit_array = [0=>'否',1=>'是'];
+        
+        //开课数组
+        $classes_array      = [0=>'否',1=>'是'];
+        
+        //订单类型数组
+        $order_type_array   = [1=>'课程订单',2=>'报名订单',3=>'课程+报名订单'];
+        
+        //订单状态数组
+        $order_status_array = [0=>'未确认',1=>'已确认',2=>'已驳回'];
+        
+        //缴费类型数组
+        $first_pay_array    = [1=>'全款',2=>'定金',3=>'部分尾款',4=>'最后一笔尾款'];
+
+        //判断订单总数量是否大于0
+        if($order_count > 0){
+            //新数组赋值
+            $order_array = [];
+
+            //获取订单列表
+            $order_list = self::select('order_no' , 'create_time' , 'mobile' , 'name' , 'course_id' , 'project_id' , 'subject_id' , 'school_id' , 'pay_type' , 'course_Price' , 'sign_Price' , 'sum_Price' , 'pay_status' , 'classes' , 'return_visit' , 'pay_time' , 'confirm_order_type' , 'first_pay' , 'confirm_status' , 'pay_voucher')->where('del_flag' , 0)->orderByDesc('create_time')->offset($offset)->limit($pagesize)->get()->toArray();
+
+            //循环获取相关信息
+            foreach($order_list as $k=>$v){
+                //分校的名称
+                $school_name  = School::where('id' , $v['school_id'])->value('school_name');
+                
+                //项目名称
+                $project_name = Project::where('id' , $v['project_id'])->value('name');
+
+                //学科名称
+                $subject_name = Project::where('parent_id' , $v['project_id'])->where('id' , $v['subject_id'])->value('name');
+
+                //课程名称
+                $course_name  = Course::where('id' , $v['course_id'])->value('course_name');
+                
+                //新数组信息赋值
+                $order_array[] = [
+                    'order_no'           =>  $v['order_no'] && !empty($v['order_no']) ? $v['order_no'] : '-' ,
+                    'create_time'        =>  $v['create_time'] && !empty($v['create_time']) ? $v['create_time'] : '-' ,
+                    'name'               =>  $v['name'] && !empty($v['name']) ? $v['name'] : '-' ,
+                    'mobile'             =>  $v['mobile'] && !empty($v['mobile']) ? $v['mobile'] : '-' ,
+                    'school_name'        =>  $school_name  && !empty($school_name)  ? $school_name  : '-' ,
+                    'project_name'       =>  $project_name && !empty($project_name) ? $project_name : '-' ,
+                    'subject_name'       =>  $subject_name && !empty($subject_name) ? $subject_name : '-' ,
+                    'course_name'        =>  $course_name  && !empty($course_name)  ? $course_name  : '-' ,
+                    'pay_type'           =>  $v['pay_type'] > 0 && isset($pay_type_array[$v['pay_type']]) ? $pay_type_array[$v['pay_type']] : '-' ,
+                    'course_price'       =>  !empty($v['course_Price']) && $v['course_Price'] > 0 ? $v['course_Price'] : '-' ,
+                    'sign_price'         =>  !empty($v['sign_Price']) && $v['sign_Price'] > 0 ? $v['sign_Price'] : '-' ,
+                    'sum_price'          =>  !empty($v['sum_Price']) && $v['sum_Price'] > 0 ? $v['sum_Price'] : '-' ,
+                    'pay_status'         =>  $v['pay_status'] > 0 && isset($pay_status_array[$v['pay_status']]) ? $pay_status_array[$v['pay_status']] : '-' ,
+                    'return_visit'       =>  $v['return_visit'] ,
+                    'return_visit_name'  =>  $v['return_visit'] > 0 && isset($return_visit_array[$v['return_visit']]) ? $return_visit_array[$v['return_visit']] : '-' ,
+                    'classes'            =>  (int)$v['classes'] ,
+                    'classes_name'       =>  $v['classes'] > 0 && isset($classes_array[$v['classes']]) ? $classes_array[$v['classes']] : '-' ,
+                    'pay_time'           =>  $v['pay_time'] && !empty($v['pay_time']) ? $v['pay_time'] : '-' ,
+                    'order_type'         =>  $v['confirm_order_type'] > 0 && isset($order_type_array[$v['confirm_order_type']]) ? $order_type_array[$v['confirm_order_type']] : '-' ,
+                    'first_pay'          =>  $v['first_pay'] > 0 && isset($first_pay_array[$v['first_pay']]) ? $first_pay_array[$v['first_pay']] : '-' ,
+                    'pay_voucher_name'   =>  $v['pay_voucher'] && !empty($v['pay_voucher']) ? '已上传' : '未上传' ,
+                    'pay_voucher'        =>  $v['pay_voucher'] && !empty($v['pay_voucher']) ? 1 : 0 ,
+                    'order_status_name'  =>  $v['confirm_status'] > 0 && isset($order_status_array[$v['confirm_status']]) ? $order_status_array[$v['confirm_status']] : '-' ,
+                    'order_status'       =>  $v['confirm_status'] 
+                ];
+            }
+            return ['code' => 200 , 'msg' => '获取订单详情成功' , 'data' => ['order_list' => $order_array , 'total' => $order_count , 'pagesize' => $pagesize , 'page' => $page]];
+        }
+        return ['code' => 200 , 'msg' => '获取订单详情成功' , 'data' => ['order_list' => [] , 'total' => 0 , 'pagesize' => $pagesize , 'page' => $page]];
+    }
 
     /*
      * @param  description   开课管理-确认开课方法
