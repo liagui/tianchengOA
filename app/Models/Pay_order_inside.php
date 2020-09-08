@@ -190,6 +190,7 @@ class Pay_order_inside extends Model
         if(!isset($data['pay_voucher']) || empty($data['pay_voucher'])){
             return ['code' => 201 , 'msg' => '未上传支付凭证'];
         }
+        unset($data['/admin/order/handOrder']);
         $data['order_no'] = date('YmdHis', time()) . rand(1111, 9999); //订单号  随机生成
         $data['create_time'] =date('Y-m-d H:i:s');
         $data['pay_time'] =date('Y-m-d H:i:s');
