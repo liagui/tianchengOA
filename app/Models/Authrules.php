@@ -39,35 +39,39 @@ class Authrules extends Model {
         $authData = self::where(['is_show'=>1,'is_del'=>1,'is_forbid'=>1])->select('id','name')->get()->toArray(); //全部路由数据
         $authData = array_column($authData,'name','id');
 
-        $authArr = AuthMap::whereIn('id',$auth_id_arr)->where(['is_del'=>0,'is_show'=>0,'is_forbid'=>0])->select('id','title','parent_id','auth_id')->get()->toArray();
-        $arr = [];
-        foreach($authArr as $k=>$v){
-            if($v['parent_id'] == 0){
-                $arr[] = $v;    
-            }else{
-                foreach ($arr as $key => $value) {
-                    if($v['parent_id'] == $value['id']){
-                        unset($v['id']);
-                        $arr[$key]['child_array'][] = $v;
-                    }
-                }
-            }
+        $authArr = AuthMap::whereIn('id',$auth_id_arr)->where(['is_del'=>1,'is_show'=>1,'is_forbid'=>1])->select('jump_url')->get()->toArray();
+        if(!empty($authArr)){
+            $authArr = array_column($authArr, 'jump_url');
         }
-        if(!empty($arr)){
-            foreach($arr as $kk=>&$vv){
-                $vv['name']  = !isset($authData[$vv['auth_id']]) ?'':substr(substr($authData[$vv['auth_id']],5),0,-8);
-                if(isset($vv['child_array'])){
-                    foreach ($vv['child_array'] as $kkk => &$vvv) {
-                        $vvv['name']  = !isset($authData[$vvv['auth_id']]) ?'':substr($authData[$vvv['auth_id']],5);
-                    }
-                }else{
-                    $vv['child_array'] = [];
-                }
-            }
-        }
+
+        // $arr = [];
+        // foreach($authArr as $k=>$v){
+        //     if($v['parent_id'] == 0){
+        //         $arr[] = $v;    
+        //     }else{
+        //         foreach ($arr as $key => $value) {
+        //             if($v['parent_id'] == $value['id']){
+        //                 unset($v['id']);
+        //                 $arr[$key]['child_array'][] = $v;
+        //             }
+        //         }
+        //     }
+        // }
+        // if(!empty($arr)){
+        //     foreach($arr as $kk=>&$vv){
+        //         $vv['name']  = !isset($authData[$vv['auth_id']]) ?'':substr(substr($authData[$vv['auth_id']],5),0,-8);
+        //         if(isset($vv['child_array'])){
+        //             foreach ($vv['child_array'] as $kkk => &$vvv) {
+        //                 $vvv['name']  = !isset($authData[$vvv['auth_id']]) ?'':substr($authData[$vvv['auth_id']],5);
+        //             }
+        //         }else{
+        //             $vv['child_array'] = [];
+        //         }
+        //     }
+        // }
        
-        if($arr){
-            return ['code'=>200,'msg'=>'获取权限信息成功','data'=>$arr];
+        if($authArr){
+            return ['code'=>200,'msg'=>'获取权限信息成功','data'=>$authArr];
         }else{
             return ['code'=>204,'msg'=>'权限信息不存在,请联系管理员'];
         }

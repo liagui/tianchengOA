@@ -20,7 +20,7 @@ $router->post('/', function () use ($router) {
 /*****************start**********************/
 //后端登录注册接口
 //$router->group(['prefix' => 'admin' , 'namespace' => 'Admin', 'middleware'=> 'cors'], function () use ($router) {
-$router->group(['prefix' => 'admin' , 'namespace' => 'Admin'], function () use ($router) {
+$router->group(['prefix' => 'admin' , 'namespace' => 'Admin','middleware'=> 'cors'], function () use ($router) {
     $router->post('login', 'AuthenticateController@postLogin');
     $router->post('bindMobile', 'AuthenticateController@bindMobile');//绑定手机号
     $router->post('doSendSms', 'AuthenticateController@doSendSms');//发送短信
