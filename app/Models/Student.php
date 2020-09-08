@@ -4,7 +4,7 @@ namespace App\Models;
 use Illuminate\Database\Eloquent\Model;
 use App\Models\Pay_order_inside;
 use App\Models\Orderdocumentary;
-use App\Models\teacher;
+use App\Models\Teacher;
 use Illuminate\Support\Facades\DB;
 use App\Models\School;
 class Student extends Model {
@@ -138,7 +138,7 @@ class Student extends Model {
         $admin = isset(AdminLog::getAdminInfo()->admin_user) ? AdminLog::getAdminInfo()->admin_user: [];
         $user_id  = $admin['id'];
         //获取班主任
-        $teacher = teacher::select("id","username")->where("id",$user_id)->first();
+        $teacher = Teacher::select("id","username")->where("id",$user_id)->first();
         //获取数据
         $one = array();
         //已回访单数
