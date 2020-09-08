@@ -99,6 +99,30 @@ class OrderController extends Controller {
     }
     
     /*
+     * @param  description   开课管理订单详情接口
+     * @param  参数说明       body包含以下参数[
+     *
+     * ]
+     * @param author    dzj
+     * @param ctime     2020-09-08
+     * return string
+     */
+    public function getOpenCourseInfo(){
+        //获取提交的参数
+        try{
+            //获取专业列表
+            $data = Pay_order_inside::getOpenCourseInfo(self::$accept_data);
+            if($data['code'] == 200){
+                return response()->json(['code' => 200 , 'msg' => '获取详情成功' , 'data' => $data['data']]);
+            } else {
+                return response()->json(['code' => $data['code'] , 'msg' => $data['msg']]);
+            }
+        } catch (Exception $ex) {
+            return response()->json(['code' => 500 , 'msg' => $ex->getMessage()]);
+        }
+    }
+    
+    /*
      * @param  description   开课管理-确认开课方法
      * @param  参数说明       body包含以下参数[
      *     order_id        订单id

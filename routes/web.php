@@ -66,6 +66,7 @@ $router->group(['prefix' => 'admin' , 'namespace' => 'Admin', 'middleware'=> 'co
     //开课管理部分(dzj)
     $router->group(['prefix' => 'order'], function () use ($router) {
         $router->post('getOpenCourseList', 'OrderController@getOpenCourseList');                 //开课管理列表接口
+        $router->post('getOpenCourseInfo', 'OrderController@getOpenCourseInfo');                 //订单详情列表接口
         $router->post('doMakeSureOpenCourse', 'OrderController@doMakeSureOpenCourse');           //确认开课接口
     });
     
