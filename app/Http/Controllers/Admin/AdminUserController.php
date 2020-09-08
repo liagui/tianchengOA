@@ -15,6 +15,13 @@ use App\Models\AdminLog;
 use Illuminate\Support\Facades\DB;
 
 class AdminUserController extends Controller {
+
+    public function bindMobile(){
+        $result = Adminuser::bindMobile(self::$accept_data);
+        return response()->json($result);
+    }
+
+
      /*
      * @param  description   获取用户列表
      * @param  参数说明       body包含以下参数[
@@ -408,7 +415,7 @@ class AdminUserController extends Controller {
         if(empty($admin_role_id) || !intval($admin_role_id)){
             return ['code'=>201,'msg'=>'参数值为空或参数类型错误'];
         }
-        $adminRole =  Roleauth::getRoleOne(['id'=>$admin_role_id,'is_del'=>1],['id','role_name','auth_id','map_auth_id']);
+        $adminRole =  Roleauth::getRoleOne(['id'=>$admin_role_id,'is_del'=>0],['id','role_name','auth_id','map_auth_id']);
 
         if($adminRole['code'] != 200){
             return ['code'=>$adminRole['code'],'msg'=>$adminRole['msg']];

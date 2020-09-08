@@ -3,10 +3,6 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Support\Facades\DB;
-use App\Models\Project;
-use App\Models\Course;
-use App\Models\School;
-use App\Models\StudentCourse;
 
 class Pay_order_inside extends Model
 {
@@ -85,11 +81,13 @@ class Pay_order_inside extends Model
                         ->orwhere('name',$data['order_on'])
                         ->orwhere('mobile',$data['order_on']);
                 }
-                if($admin['school_id'] == 0 && $data['school_id'] != ''){
+            if($admin['school_id'] == 0){
+                if(isset($data['school_id']) && $data['school_id'] != 0 && $data['school_id'] != '' ){
                     $query->where('school_id',$data['school_id']);
-                }else{
-                    $query->whereIn('school_id',explode(',',$admin['school_id']));
                 }
+            }else{
+                $query->whereIn('school_id',explode(',',$admin['school_id']));
+            }
             })
             ->where($where)
             ->where('del_flag',0)
@@ -103,11 +101,13 @@ class Pay_order_inside extends Model
                         ->orwhere('name',$data['order_on'])
                         ->orwhere('mobile',$data['order_on']);
                 }
-                if($admin['school_id'] == 0 && $data['school_id'] != ''){
+            if($admin['school_id'] == 0){
+                if(isset($data['school_id']) && $data['school_id'] != 0 && $data['school_id'] != '' ){
                     $query->where('school_id',$data['school_id']);
-                }else{
-                    $query->whereIn('school_id',explode(',',$admin['school_id']));
                 }
+            }else{
+                $query->whereIn('school_id',explode(',',$admin['school_id']));
+            }
             })
             ->where($where)
             ->where('del_flag',0)
@@ -263,6 +263,42 @@ class Pay_order_inside extends Model
 
     }
     /*
+         * @param  订单详情
+         * @param  id  订单id
+         * @param  author  苏振文
+         * @param  ctime   2020/9/8 15:58
+         * return  array
+         */
+    public static function sureOrder($data){
+        if(!isset($data['id']) || empty($data['id'])){
+            return ['code' => 201 , 'msg' => '参数有误'];
+        }
+        $res =self::where(['id'=>$data['id'],'del_flag'=>0])->first();
+        if($res){
+            //查询分类
+            //course  课程
+            $course = Course::select('course_name')->where(['id'=>$res['course_id']])->first();
+            $res['course_name'] = $course['course_name'];
+            //Project  项目
+            $project = Project::select('name')->where(['id'=>$res['project_id']])->first();
+            $res['project_name'] = $project['name'];
+            //Subject  学科
+            $subject = Project::select('name')->where(['id'=>$res['subject_id']])->first();
+            $res['subject_name'] = $subject['name'];
+            if(!empty($res['education_id']) && $res['education_id'] != 0){
+                //查院校
+                $education = Education::select('education_name')->where(['id'=>$res['education_id']])->first();
+                $res['education_name'] = $education['education_name'];
+                //查专业
+                $major = Major::where(['id'=>$res['major_id']])->first();
+                $res['major_name'] = $major['major_name'];
+            }
+            return ['code' => 200 , 'msg' => '查询成功','data'=>$res];
+        }else{
+            return ['code' => 201 , 'msg' => '查无此订单'];
+        }
+    }
+    /*
          * @param  总校待确认订单列表   分校已提交订单
          * @param  subject_id  学科id
          * @param  school_id  分校id
@@ -311,8 +347,10 @@ class Pay_order_inside extends Model
                     ->orwhere('name',$data['order_on'])
                     ->orwhere('mobile',$data['order_on']);
             }
-            if($admin['school_id'] == 0 && $data['school_id'] != ''){
-                $query->where('school_id',$data['school_id']);
+            if($admin['school_id'] == 0){
+                if(isset($data['school_id']) && $data['school_id'] != 0 && $data['school_id'] != '' ){
+                    $query->where('school_id',$data['school_id']);
+                }
             }else{
                 $query->whereIn('school_id',explode(',',$admin['school_id']));
             }
@@ -327,8 +365,10 @@ class Pay_order_inside extends Model
                     ->orwhere('name',$data['order_on'])
                     ->orwhere('mobile',$data['order_on']);
             }
-            if($admin['school_id'] == 0 && $data['school_id'] != ''){
-                $query->where('school_id',$data['school_id']);
+            if($admin['school_id'] == 0){
+                if(isset($data['school_id']) && $data['school_id'] != 0 && $data['school_id'] != '' ){
+                    $query->where('school_id',$data['school_id']);
+                }
             }else{
                 $query->whereIn('school_id',explode(',',$admin['school_id']));
             }
@@ -444,7 +484,7 @@ class Pay_order_inside extends Model
         }
     }
     /*
-         * @param  未提交订单详情
+         * @param  （分校）未提交订单详情
          * @param  id   订单id
          * @param  author  苏振文
          * @param  ctime   2020/9/4 15:07
@@ -637,8 +677,10 @@ class Pay_order_inside extends Model
                     ->orwhere('name',$data['order_on'])
                     ->orwhere('mobile',$data['order_on']);
             }
-            if($admin['school_id'] == 0 && $data['school_id'] != ''){
-                $query->where('school_id',$data['school_id']);
+            if($admin['school_id'] == 0){
+                if(isset($data['school_id']) && $data['school_id'] != 0 && $data['school_id'] != '' ){
+                    $query->where('school_id',$data['school_id']);
+                }
             }else{
                 $query->whereIn('school_id',explode(',',$admin['school_id']));
             }
@@ -652,8 +694,10 @@ class Pay_order_inside extends Model
                     ->orwhere('name',$data['order_on'])
                     ->orwhere('mobile',$data['order_on']);
             }
-            if($admin['school_id'] == 0 && $data['school_id'] != ''){
-                $query->where('school_id',$data['school_id']);
+            if($admin['school_id'] == 0){
+                if(isset($data['school_id']) && $data['school_id'] != 0 && $data['school_id'] != '' ){
+                    $query->where('school_id',$data['school_id']);
+                }
             }else{
                 $query->whereIn('school_id',explode(',',$admin['school_id']));
             }

@@ -19,14 +19,16 @@ $router->post('/', function () use ($router) {
 //后台端路由接口
 /*****************start**********************/
 //后端登录注册接口
-$router->group(['prefix' => 'admin' , 'namespace' => 'Admin', 'middleware'=> 'cors'], function () use ($router) {
+//$router->group(['prefix' => 'admin' , 'namespace' => 'Admin', 'middleware'=> 'cors'], function () use ($router) {
+$router->group(['prefix' => 'admin' , 'namespace' => 'Admin'], function () use ($router) {
     $router->post('login', 'AuthenticateController@postLogin');
+    $router->post('bindMobile', 'AdminUserController@bindMobile');//绑定手机号
+    $router->post('doSendSms', 'AuthenticateController@doSendSms');//发送短信
     //订单管理（szw）
     $router->group(['prefix' => 'order'], function () use ($router) {
         //总校&分校
         $router->post('orderlist', 'OrderController@orderList');//订单总览
         $router->post('awaitOrder', 'OrderController@awaitOrder');//总校待确认订单&&分校已提交
-        $router->post('unsubmittedOrderDetail', 'OrderController@unsubmittedOrderDetail');//分校未提交&总校未确认（订单详情）
         $router->post('handOrder', 'OrderController@handOrder');//手动报单
         $router->post('orderVoucher', 'OrderController@orderVoucher');//订单查看支付凭证
         $router->post('orderDetail', 'OrderController@orderDetail');//订单备注或驳回信息
@@ -34,8 +36,10 @@ $router->group(['prefix' => 'admin' , 'namespace' => 'Admin', 'middleware'=> 'co
         $router->post('anewOrder', 'OrderController@anewOrder');//驳回订单进行操作
         //总校
         $router->post('notarizeOrder', 'OrderController@notarizeOrder');//总校确认&取消订单
+        $router->post('sureOrder', 'OrderController@sureOrder');//总校确认订单详情
         //分校
         $router->post('unsubmittedOrder', 'OrderController@unsubmittedOrder');//分校未提交订单
+        $router->post('unsubmittedOrderDetail', 'OrderController@unsubmittedOrderDetail');//分校未提交详情
         $router->post('DoSubmitted', 'OrderController@DoSubmitted');//分校未提交订单进行提交
         $router->post('submittedOrderCancel', 'OrderController@submittedOrderCancel');//分校已提交订单进行取消
     });
@@ -62,19 +66,19 @@ $router->group(['prefix' => 'admin' , 'namespace' => 'Admin', 'middleware'=> 'co
         $router->post('getNajorInfoById', 'ProjectController@getNajorInfoById');                 //专业详情接口
         $router->post('getMajorList', 'ProjectController@getMajorList');                         //专业列表接口
     });
-    
+
     //开课管理部分(dzj)
     $router->group(['prefix' => 'order'], function () use ($router) {
         $router->post('getOpenCourseList', 'OrderController@getOpenCourseList');                 //开课管理列表接口
         $router->post('getOpenCourseInfo', 'OrderController@getOpenCourseInfo');                 //订单详情列表接口
         $router->post('doMakeSureOpenCourse', 'OrderController@doMakeSureOpenCourse');           //确认开课接口
     });
-    
+
     //财务管理部分(dzj)
     $router->group(['prefix' => 'finance'], function () use ($router) {
 
     });
-    
+
     //分校管理部分(dzj)
     $router->group(['prefix' => 'school'], function () use ($router) {
         $router->post('doInsertSchool', 'SchoolController@doInsertSchool');                      //添加分校接口
@@ -87,7 +91,7 @@ $router->group(['prefix' => 'admin' , 'namespace' => 'Admin', 'middleware'=> 'co
         $router->post('doLookSchool', 'SchoolController@doLookSchool');                          //是否查看下属分校内容接口（lys）
 
     });
-    
+
     $router->post('diff', 'TestController@diff');
     $router->post('test', 'TestController@index');
     $router->post('ArticleLead', 'ArticleController@ArticleLead');//文章导入
@@ -112,9 +116,9 @@ $router->group(['prefix' => 'admin' , 'namespace' => 'Admin', 'middleware'=> 'co
     $router->post('getMaterial', 'MaterialController@getMaterial');
     //获取物料提交人信息
     $router->post('getsubmit', 'MaterialController@getsubmit');
+    /*** 物料管理end ***/
 
     /*** 学员管理start ***/
-
     //业绩查询 班主任自己的业绩
     $router->post('getStudentPerformance', 'StudentController@getStudentPerformance');
     //学员总览 班主任自己的学员
@@ -149,7 +153,7 @@ $router->group(['prefix' => 'admin' , 'namespace' => 'Admin', 'middleware'=> 'co
 //后端登录权限认证相关接口
 //
 $router->group(['prefix' => 'admin' , 'namespace' => 'Admin' ], function () use ($router) {
-    $router->post('bindMobile', 'AdminController@bindMobile');//绑定手机号
+    
     $router->group(['prefix' => 'payset'], function () use ($router) {
         $router->post('doUpdateWxState', 'PaySetController@doUpdateWxState');                 //更改微信状态
         $router->post('doUpdateZfbState', 'PaySetController@doUpdateZfbState');               //更改支付宝状态
@@ -185,7 +189,7 @@ $router->group(['prefix' => 'admin' , 'namespace' => 'Admin' ], function () use 
         $router->post('doAdminUserUpdatePwd', 'AdminUserController@doAdminUserUpdatePwd');    //修改用户密码的接口
     });
 
-    $router->group(['prefix' => 'role'], function () use ($router) { 
+    $router->group(['prefix' => 'role'], function () use ($router) {
         $router->post('getList', 'RoleController@getList');              //角色列表
         $router->post('doRoleDel', 'RoleController@doRoleDel');          //软删除
         $router->post('getRoleInsert', 'RoleController@getRoleInsert');  //添加角色（获取）
@@ -194,7 +198,7 @@ $router->group(['prefix' => 'admin' , 'namespace' => 'Admin' ], function () use 
         $router->post('doRoleUpdate', 'RoleController@doRoleUpdate');  //编辑角色
     });
 
-    $router->group(['prefix' => 'school'], function () use ($router) { 
+    $router->group(['prefix' => 'school'], function () use ($router) {
         // $router->post('getList', 'SchoolController@getSchoolList');              //学校列表
         $router->post('doSchoolDel', 'SchoolController@doSchoolDel');          //软删除
         $router->post('doSchoolForbid', 'SchoolController@doSchoolForbid');  //启用禁用
