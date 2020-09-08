@@ -3,6 +3,7 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Support\Facades\DB;
+use App\Models\AdminLog;
 
 class Education extends Model {
     //指定别的表名
@@ -66,13 +67,16 @@ class Education extends Model {
             return ['code' => 203 , 'msg' => '此院校名称已存在'];
         }
         
+        //获取后端的操作员id
+        $admin_id = isset(AdminLog::getAdminInfo()->admin_user->id) ? AdminLog::getAdminInfo()->admin_user->id : 0;
+        
         //组装院校数组信息
         $school_array = [
             'parent_id'           =>   isset($body['parent_id']) && $body['parent_id'] > 0 ? $body['parent_id'] : 0 ,
             'child_id'            =>   isset($body['child_id']) && $body['child_id'] > 0 ? $body['child_id'] : 0 ,
             'education_name'      =>   $body['education_name'] ,
             'is_hide'             =>   isset($body['is_hide']) && $body['is_hide'] == 1 ? 1 : 0 ,
-            'admin_id'            =>   0 ,
+            'admin_id'            =>   $admin_id ,
             'create_time'         =>   date('Y-m-d H:i:s')
         ];
         

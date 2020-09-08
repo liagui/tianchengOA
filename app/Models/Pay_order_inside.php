@@ -6,6 +6,7 @@ use Illuminate\Support\Facades\DB;
 use App\Models\Project;
 use App\Models\Course;
 use App\Models\School;
+use App\Models\StudentCourse;
 
 class Pay_order_inside extends Model
 {
@@ -857,7 +858,7 @@ class Pay_order_inside extends Model
         
         //判断订单id是否合法
         if(!isset($body['order_id']) || empty($body['order_id']) || $body['order_id'] <= 0){
-            return ['code' => 202 , 'msg' => 'id不合法'];
+            return ['code' => 202 , 'msg' => '订单id不合法'];
         }
         
         //判断此订单是否存在
@@ -874,6 +875,8 @@ class Pay_order_inside extends Model
 
         //根据订单id更新信息
         if(false !== self::where('id',$body['order_id'])->update(['classes' => $classes_status])){
+            //更新学员开课状态
+            StudentCourse::doUpdateCourseStatus(['student_id' => $order_info['school_confirm_user_id'] , 'course_id' => $order_info['course_id']]);
             //事务提交
             DB::commit();
             return ['code' => 200 , 'msg' => '更新成功'];

@@ -5,6 +5,7 @@ use Illuminate\Database\Eloquent\Model;
 use Illuminate\Support\Facades\Redis;
 use Illuminate\Support\Facades\DB;
 use App\Models\Project;
+use App\Models\AdminLog;
 
 class Course extends Model {
     //指定别的表名
@@ -74,6 +75,9 @@ class Course extends Model {
             return ['code' => 203 , 'msg' => '此课程名称已存在'];
         }
         
+        //获取后端的操作员id
+        $admin_id = isset(AdminLog::getAdminInfo()->admin_user->id) ? AdminLog::getAdminInfo()->admin_user->id : 0;
+        
         //组装课程数组信息
         $course_array = [
             'category_one_id'     =>   isset($body['parent_id']) && $body['parent_id'] > 0 ? $body['parent_id'] : 0 ,
@@ -81,7 +85,7 @@ class Course extends Model {
             'course_name'         =>   $body['course_name'] ,
             'price'               =>   $body['course_price'] ,
             'is_hide'             =>   isset($body['is_hide']) && $body['is_hide'] == 1 ? 1 : 0 ,
-            'admin_id'            =>   0 ,
+            'admin_id'            =>   $admin_id ,
             'create_time'         =>   date('Y-m-d H:i:s')
         ];
         

@@ -4,6 +4,7 @@ namespace App\Models;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Support\Facades\Redis;
 use Illuminate\Support\Facades\DB;
+use App\Models\AdminLog;
 
 class RegionFee extends Model {
     //指定别的表名
@@ -61,13 +62,16 @@ class RegionFee extends Model {
             return ['code' => 203 , 'msg' => '此地区名称已存在'];
         }
         
+        //获取后端的操作员id
+        $admin_id = isset(AdminLog::getAdminInfo()->admin_user->id) ? AdminLog::getAdminInfo()->admin_user->id : 0;
+        
         //组装课程数组信息
         $region_array = [
             'category_id'         =>   isset($body['project_id']) && $body['project_id'] > 0 ? $body['project_id'] : 0 ,
             'region_name'         =>   $body['region_name'] ,
             'cost'                =>   $body['cost'] ,
             'is_hide'             =>   isset($body['is_hide']) && $body['is_hide'] == 1 ? 1 : 0 ,
-            'admin_id'            =>   0 ,
+            'admin_id'            =>   $admin_id ,
             'create_time'         =>   date('Y-m-d H:i:s')
         ];
         
