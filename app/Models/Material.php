@@ -62,9 +62,9 @@ class Material extends Model {
             $school_name = School::select("school_name")->where("id",$material['school_id'])->first();
             $material['school_name'] = $school_name['school_name'];
             if($material['status'] == 1){
-                $material['status'] = "已确认";
+                $material['status_s'] = "已确认";
             }else{
-                $material['status'] = "未确认";
+                $material['status_s'] = "未确认";
             }
 
         }
