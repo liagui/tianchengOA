@@ -22,6 +22,8 @@ $router->post('/', function () use ($router) {
 //$router->group(['prefix' => 'admin' , 'namespace' => 'Admin', 'middleware'=> 'cors'], function () use ($router) {
 $router->group(['prefix' => 'admin' , 'namespace' => 'Admin'], function () use ($router) {
     $router->post('login', 'AuthenticateController@postLogin');
+    $router->post('bindMobile', 'AdminUserController@bindMobile');//绑定手机号
+    $router->post('doSendSms', 'AuthenticateController@doSendSms');//发送短信
     //订单管理（szw）
     $router->group(['prefix' => 'order'], function () use ($router) {
         //总校&分校
@@ -73,7 +75,7 @@ $router->group(['prefix' => 'admin' , 'namespace' => 'Admin'], function () use (
 
     //财务管理部分(dzj)
     $router->group(['prefix' => 'finance'], function () use ($router) {
-        $router->post('getHeadMasterList', 'FinanceController@getHeadMasterList');               //班主任业绩列表接口
+
     });
 
     //分校管理部分(dzj)
@@ -113,9 +115,9 @@ $router->group(['prefix' => 'admin' , 'namespace' => 'Admin'], function () use (
     $router->post('getMaterial', 'MaterialController@getMaterial');
     //获取物料提交人信息
     $router->post('getsubmit', 'MaterialController@getsubmit');
+    /*** 物料管理end ***/
 
     /*** 学员管理start ***/
-
     //业绩查询 班主任自己的业绩
     $router->post('getStudentPerformance', 'StudentController@getStudentPerformance');
     //学员总览 班主任自己的学员
@@ -150,7 +152,7 @@ $router->group(['prefix' => 'admin' , 'namespace' => 'Admin'], function () use (
 //后端登录权限认证相关接口
 //
 $router->group(['prefix' => 'admin' , 'namespace' => 'Admin' ], function () use ($router) {
-    $router->post('bindMobile', 'AdminController@bindMobile');//绑定手机号
+    
     $router->group(['prefix' => 'payset'], function () use ($router) {
         $router->post('doUpdateWxState', 'PaySetController@doUpdateWxState');                 //更改微信状态
         $router->post('doUpdateZfbState', 'PaySetController@doUpdateZfbState');               //更改支付宝状态
