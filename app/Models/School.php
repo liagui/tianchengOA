@@ -4,6 +4,7 @@ namespace App\Models;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Support\Facades\Redis;
 use Illuminate\Support\Facades\DB;
+use App\Models\AdminLog;
 #use App\Tools\CurrentAdmin;
 class School extends Model {
     //指定别的表名
@@ -146,6 +147,9 @@ class School extends Model {
             }
         }
         
+        //获取后端的操作员id
+        $admin_id = isset(AdminLog::getAdminInfo()->admin_user->id) ? AdminLog::getAdminInfo()->admin_user->id : 0;
+        
         //组装分校数组信息
         $school_array = [
             'school_name'   =>   $body['school_name'] ,
@@ -155,7 +159,7 @@ class School extends Model {
             'commission'    =>   $body['commission'] ,
             'deposit'       =>   $body['deposit'] ,
             'look_all_flag' =>   isset($body['look_all_flag']) && $body['look_all_flag'] == 1 ? 1 : 0 ,
-            'create_id'     =>   0 ,
+            'create_id'     =>   $admin_id ,
             'create_time'   =>   date('Y-m-d H:i:s')
         ];
         

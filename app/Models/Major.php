@@ -4,6 +4,7 @@ namespace App\Models;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Support\Facades\Redis;
 use Illuminate\Support\Facades\DB;
+use App\Models\AdminLog;
 
 class Major extends Model {
     //指定别的表名
@@ -55,13 +56,16 @@ class Major extends Model {
             return ['code' => 203 , 'msg' => '此专业名称已存在'];
         }
         
+        //获取后端的操作员id
+        $admin_id = isset(AdminLog::getAdminInfo()->admin_user->id) ? AdminLog::getAdminInfo()->admin_user->id : 0;
+        
         //组装数组信息
         $major_array = [
             'education_id'        =>   isset($body['education_id']) && $body['education_id'] > 0 ? $body['education_id'] : 0 ,
             'major_name'          =>   $body['major_name'] ,
             'price'               =>   $body['price'] ,
             'is_hide'             =>   isset($body['is_hide']) && $body['is_hide'] == 1 ? 1 : 0 ,
-            'admin_id'            =>   0 ,
+            'admin_id'            =>   $admin_id ,
             'create_time'         =>   date('Y-m-d H:i:s')
         ];
         
@@ -81,7 +85,7 @@ class Major extends Model {
     }
     
     /*
-     * @param  description   项目管理-添加专业方法
+     * @param  description   项目管理-修改专业方法
      * @param  参数说明       body包含以下参数[
      *     education_id        院校id
      *     major_name          专业名称

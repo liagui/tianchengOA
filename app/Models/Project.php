@@ -4,6 +4,7 @@ namespace App\Models;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Support\Facades\Redis;
 use Illuminate\Support\Facades\DB;
+use App\Models\AdminLog;
 
 class Project extends Model {
     //指定别的表名
@@ -63,12 +64,15 @@ class Project extends Model {
             }
         }
         
+        //获取后端的操作员id
+        $admin_id = isset(AdminLog::getAdminInfo()->admin_user->id) ? AdminLog::getAdminInfo()->admin_user->id : 0;
+        
         //组装项目数组信息
         $project_array = [
             'parent_id'     =>   isset($body['project_id']) && $body['project_id'] > 0 ? $body['project_id'] : 0 ,
             'name'          =>   $body['name'] ,
             'is_hide'       =>   isset($body['is_hide']) && $body['is_hide'] == 1 ? 1 : 0 ,
-            'admin_id'      =>   0 ,
+            'admin_id'      =>   $admin_id ,
             'create_time'   =>   date('Y-m-d H:i:s')
         ];
         

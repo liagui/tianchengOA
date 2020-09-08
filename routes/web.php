@@ -69,6 +69,11 @@ $router->group(['prefix' => 'admin' , 'namespace' => 'Admin', 'middleware'=> 'co
         $router->post('doMakeSureOpenCourse', 'OrderController@doMakeSureOpenCourse');           //确认开课接口
     });
     
+    //财务管理部分(dzj)
+    $router->group(['prefix' => 'finance'], function () use ($router) {
+
+    });
+    
     //分校管理部分(dzj)
     $router->group(['prefix' => 'school'], function () use ($router) {
         $router->post('doInsertSchool', 'SchoolController@doInsertSchool');                      //添加分校接口
