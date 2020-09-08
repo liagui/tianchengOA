@@ -110,6 +110,10 @@ $router->group(['prefix' => 'admin' , 'namespace' => 'Admin'], function () use (
     $router->post('getMaterialList', 'MaterialController@getMaterialList');
     //创建物料需求
     $router->post('Materialadd', 'MaterialController@Materialadd');
+    //更新物料需求
+    $router->post('updateMaterialOne', 'MaterialController@updateMaterialOne');
+    //获取单条物料
+    $router->post('getMaterialOne', 'MaterialController@getMaterialOne');
     //确认物料信息
     $router->post('Materialupdate', 'MaterialController@Materialupdate');
     //获取确认物料信息
@@ -153,7 +157,7 @@ $router->group(['prefix' => 'admin' , 'namespace' => 'Admin'], function () use (
 //后端登录权限认证相关接口
 //
 $router->group(['prefix' => 'admin' , 'namespace' => 'Admin' ], function () use ($router) {
-    
+
     $router->group(['prefix' => 'payset'], function () use ($router) {
         $router->post('doUpdateWxState', 'PaySetController@doUpdateWxState');                 //更改微信状态
         $router->post('doUpdateZfbState', 'PaySetController@doUpdateZfbState');               //更改支付宝状态

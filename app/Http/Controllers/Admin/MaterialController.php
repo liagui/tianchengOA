@@ -30,6 +30,27 @@ class MaterialController extends Controller
             return response()->json(['code' => 500 , 'msg' => $ex->getMessage()]);
         }
     }
+    //更新物料需求
+    public function updateMaterialOne(){
+        //获取提交的参数
+        try{
+            $data = Material::updateMaterialOne(self::$accept_data);
+            return response()->json($data);
+        } catch (Exception $ex) {
+            return response()->json(['code' => 500 , 'msg' => $ex->getMessage()]);
+        }
+    }
+    //获取单条物料
+    public function getMaterialOne(){
+        //获取提交的参数
+        try{
+            $data = Material::getMaterialOne(self::$accept_data);
+            return response()->json($data);
+        } catch (Exception $ex) {
+            return response()->json(['code' => 500 , 'msg' => $ex->getMessage()]);
+        }
+    }
+
     //确认物料信息
     public function Materialupdate(){
         //获取提交的参数
