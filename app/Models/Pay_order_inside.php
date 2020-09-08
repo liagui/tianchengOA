@@ -36,16 +36,7 @@ class Pay_order_inside extends Model
     public static function orderList($data){
         $where=[];
         //判断是否是分校
-        $school_id = isset(AdminLog::getAdminInfo()->admin_user->school_id) ? AdminLog::getAdminInfo()->admin_user->school_id : 0;
-        if($school_id != 0){
-            //只查询分校订单
-            $where['school_id'] = $school_id;
-        }else{
-            //判断总校传来的学校id
-            if(!empty($data['school_id'])){
-                $where['school_id'] = $data['school_id'];
-            }
-        }
+        $admin = isset(AdminLog::getAdminInfo()->admin_user) ? AdminLog::getAdminInfo()->admin_user: [];
         //判断时间
         $begindata="2020-03-04";
         $enddate = date('Y-m-d');
@@ -88,11 +79,16 @@ class Pay_order_inside extends Model
         $offset   = ($page - 1) * $pagesize;
 
         //計算總數
-        $count = self::where(function($query) use ($data) {
+        $count = self::where(function($query) use ($data,$admin) {
                 if(isset($data['order_no']) && !empty($data['order_no'])){
                     $query->where('order_no',$data['order_on'])
                         ->orwhere('name',$data['order_on'])
                         ->orwhere('mobile',$data['order_on']);
+                }
+                if($admin['school_id'] == 0 && $data['school_id'] != ''){
+                    $query->where('school_id',$data['school_id']);
+                }else{
+                    $query->whereIn('school_id',explode(',',$admin['school_id']));
                 }
             })
             ->where($where)
@@ -101,11 +97,16 @@ class Pay_order_inside extends Model
             ->count();
 
         //数据
-        $order = self::where(function($query) use ($data) {
+        $order = self::where(function($query) use ($data,$admin) {
                 if(isset($data['order_no']) && !empty($data['order_no'])){
                     $query->where('order_no',$data['order_on'])
                         ->orwhere('name',$data['order_on'])
                         ->orwhere('mobile',$data['order_on']);
+                }
+                if($admin['school_id'] == 0 && $data['school_id'] != ''){
+                    $query->where('school_id',$data['school_id']);
+                }else{
+                    $query->whereIn('school_id',explode(',',$admin['school_id']));
                 }
             })
             ->where($where)
@@ -279,13 +280,6 @@ class Pay_order_inside extends Model
         $where['confirm_status'] = 0;  //未确认
         //判断学校
         $admin = isset(AdminLog::getAdminInfo()->admin_user) ? AdminLog::getAdminInfo()->admin_user : [];
-        if($admin['school_id'] != 0){
-            $where['school_id'] = $admin['school_id'];
-        }else{
-            if(!empty($data['school_id']) && $data['school_id'] == 0){
-                $where['school_id'] = $data['school_id'];
-            }
-        }
         if(isset($data['subject_id']) || !empty($data['subject_id'])){
             $where['subject_id'] = $data['subject_id'];
         }
@@ -311,21 +305,32 @@ class Pay_order_inside extends Model
         $offset   = ($page - 1) * $pagesize;
 
         //計算總數
-        $count = self::where(function($query) use ($data) {
+        $count = self::where(function($query) use ($data,$admin) {
             if(isset($data['order_no']) && !empty($data['order_no'])){
                 $query->where('order_no',$data['order_on'])
                     ->orwhere('name',$data['order_on'])
                     ->orwhere('mobile',$data['order_on']);
             }
+            if($admin['school_id'] == 0 && $data['school_id'] != ''){
+                $query->where('school_id',$data['school_id']);
+            }else{
+                $query->whereIn('school_id',explode(',',$admin['school_id']));
+            }
+
         })
         ->where($where)
         ->count();
 
-        $order = self::where(function($query) use ($data) {
+        $order = self::where(function($query) use ($data,$admin) {
             if(isset($data['order_no']) && !empty($data['order_no'])){
                 $query->where('order_no',$data['order_on'])
                     ->orwhere('name',$data['order_on'])
                     ->orwhere('mobile',$data['order_on']);
+            }
+            if($admin['school_id'] == 0 && $data['school_id'] != ''){
+                $query->where('school_id',$data['school_id']);
+            }else{
+                $query->whereIn('school_id',explode(',',$admin['school_id']));
             }
         })
         ->where($where)
@@ -602,13 +607,6 @@ class Pay_order_inside extends Model
          */
     public static function rejectOrder($data){
         $admin = isset(AdminLog::getAdminInfo()->admin_user) ? AdminLog::getAdminInfo()->admin_user: [];
-        if($admin['school_id'] != 0){
-            $where['school_id'] = $admin['schoiol_id'];
-        }else{
-            if(isset($data['school_id']) || empty($data['school_id'])){
-                $where['school_id'] = $data['schoiol_id'];
-            }
-        }
         $where['del_flag'] = 0;  //未删除
         $where['confirm_status'] = 2;  //已驳回
         if(isset($data['subject_id']) || !empty($data['subject_id'])){
@@ -633,21 +631,31 @@ class Pay_order_inside extends Model
         $offset   = ($page - 1) * $pagesize;
 
         //計算總數
-        $count = self::where(function($query) use ($data) {
+        $count = self::where(function($query) use ($data,$admin) {
             if(isset($data['order_no']) && !empty($data['order_no'])){
                 $query->where('order_no',$data['order_on'])
                     ->orwhere('name',$data['order_on'])
                     ->orwhere('mobile',$data['order_on']);
             }
+            if($admin['school_id'] == 0 && $data['school_id'] != ''){
+                $query->where('school_id',$data['school_id']);
+            }else{
+                $query->whereIn('school_id',explode(',',$admin['school_id']));
+            }
         })
         ->where($where)
         ->count();
 
-        $order = self::where(function($query) use ($data) {
+        $order = self::where(function($query) use ($data,$admin) {
             if(isset($data['order_no']) && !empty($data['order_no'])){
                 $query->where('order_no',$data['order_on'])
                     ->orwhere('name',$data['order_on'])
                     ->orwhere('mobile',$data['order_on']);
+            }
+            if($admin['school_id'] == 0 && $data['school_id'] != ''){
+                $query->where('school_id',$data['school_id']);
+            }else{
+                $query->whereIn('school_id',explode(',',$admin['school_id']));
             }
         })
         ->where($where)
@@ -702,8 +710,8 @@ class Pay_order_inside extends Model
             return ['code' => 201 , 'msg' => '操作失败'];
         }
     }
-    
-    
+
+
     /*
      * @param  description   开课管理列表接口
      * @param  参数说明       body包含以下参数[
@@ -730,28 +738,28 @@ class Pay_order_inside extends Model
                 $category_id= json_decode($body['category_id'] , true);
                 $project_id = $category_id[0];
                 $subject_id = $category_id[1];
-                
+
                 //判断项目id是否传递
                 if($project_id && $project_id > 0){
                     $query->where('project_id' , '=' , $project_id);
                 }
-                
+
                 //判断学科id是否传递
                 if($subject_id && $subject_id > 0){
                     $query->where('subject_id' , '=' , $subject_id);
                 }
             }
-            
+
             //判断分校id是否为空和合法
             if(isset($body['school_id']) && !empty($body['school_id']) && $body['school_id'] > 0){
                 $query->where('school_id' , '=' , $body['school_id']);
             }
-            
+
             //判断订单类型是否为空和合法
             if(isset($body['order_type']) && !empty($body['order_type']) && in_array($body['order_type'] , [1,2,3])){
                 $query->where('confirm_order_type' , '=' , $body['order_type']);
             }
-            
+
             //判断开课状态是否为空和合法
             if(isset($body['classes']) && in_array($body['classes'] , [0,1])){
                 $query->where('classes' , '=' , $body['classes']);
@@ -762,11 +770,11 @@ class Pay_order_inside extends Model
                 $query->where('name','like','%'.$body['keywords'].'%')->orWhere('mobile','like','%'.$body['keywords'].'%')->orWhere('order_no','like','%'.$body['keywords'].'%');
             }
         })->where('confirm_status' , 1)->where('begin_class' , 1)->count();
-        
+
         if($open_class_count > 0){
             //新数组赋值
             $order_array = [];
-            
+
             //获取开课列表
             $open_class_list = self::select('id as order_id' , 'order_no' , 'create_time' , 'mobile' , 'name' , 'course_id' , 'project_id' , 'subject_id' , 'school_id' , 'classes')->where(function($query) use ($body){
                 //判断项目-学科大小类是否为空
@@ -806,21 +814,21 @@ class Pay_order_inside extends Model
                     $query->where('name','like','%'.$body['keywords'].'%')->orWhere('mobile','like','%'.$body['keywords'].'%')->orWhere('order_no','like','%'.$body['keywords'].'%');
                 }
             })->where('confirm_status' , 1)->where('begin_class' , 1)->orderByDesc('create_time')->offset($offset)->limit($pagesize)->get()->toArray();
-            
+
             //循环获取相关信息
             foreach($open_class_list as $k=>$v){
                 //项目名称
                 $project_name = Project::where('id' , $v['project_id'])->value('name');
-                
+
                 //学科名称
                 $subject_name = Project::where('parent_id' , $v['project_id'])->where('id' , $v['subject_id'])->value('name');
-                
+
                 //课程名称
                 $course_name  = Course::where('id' , $v['course_id'])->value('course_name');
-                
+
                 //分校的名称
                 $school_name  = School::where('id' , $v['school_id'])->value('school_name');
-                
+
                 //开课数组管理赋值
                 $order_array[] = [
                     'order_id'      =>  $v['order_id'] ,
@@ -833,14 +841,14 @@ class Pay_order_inside extends Model
                     'project_name'  =>  $project_name && !empty($project_name) ? $project_name : '' ,
                     'subject_name'  =>  $subject_name && !empty($subject_name) ? $subject_name : '' ,
                     'course_name'   =>  $course_name  && !empty($course_name)  ? $course_name  : '' ,
-                    'school_name'   =>  $school_name  && !empty($school_name)  ? $school_name  : '' 
+                    'school_name'   =>  $school_name  && !empty($school_name)  ? $school_name  : ''
                 ];
             }
             return ['code' => 200 , 'msg' => '获取开课列表成功' , 'data' => ['open_class_list' => $order_array , 'total' => $open_class_count , 'pagesize' => $pagesize , 'page' => $page]];
         }
         return ['code' => 200 , 'msg' => '获取开课列表成功' , 'data' => ['open_class_list' => [] , 'total' => 0 , 'pagesize' => $pagesize , 'page' => $page]];
     }
-    
+
     /*
      * @param  description   开课管理-确认开课方法
      * @param  参数说明       body包含以下参数[
@@ -855,21 +863,21 @@ class Pay_order_inside extends Model
         if(!$body || !is_array($body)){
             return ['code' => 202 , 'msg' => '传递数据不合法'];
         }
-        
+
         //判断订单id是否合法
         if(!isset($body['order_id']) || empty($body['order_id']) || $body['order_id'] <= 0){
             return ['code' => 202 , 'msg' => '订单id不合法'];
         }
-        
+
         //判断此订单是否存在
         $order_info = self::where('id' , $body['order_id'])->first();
         if(!$order_info || empty($order_info)){
             return ['code' => 203 , 'msg' => '此订单不存在'];
         }
-        
+
         //获取当前订单的开课状态
         $classes_status = $order_info['classes'] > 0 ? 0 : 1;
-        
+
         //开启事务
         DB::beginTransaction();
 

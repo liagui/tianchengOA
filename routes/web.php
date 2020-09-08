@@ -81,6 +81,10 @@ $router->group(['prefix' => 'admin' , 'namespace' => 'Admin', 'middleware'=> 'co
         $router->post('getSchoolInfoById', 'SchoolController@getSchoolInfoById');                //分校详情接口
         $router->post('getSchoolListByLevel', 'SchoolController@getSchoolListByLevel');          //上级分校列表接口
         $router->post('getSchoolList', 'SchoolController@getSchoolList');                        //分校列表接口
+        $router->post('doDelSchool', 'SchoolController@doDelSchool');                            //分校删除接口  （lys）
+        $router->post('doOpenSchool', 'SchoolController@doOpenSchool');                          //分校启用禁用接口（lys）
+        $router->post('doLookSchool', 'SchoolController@doLookSchool');                          //是否查看下属分校内容接口（lys）
+
     });
     
     $router->post('diff', 'TestController@diff');
@@ -167,10 +171,6 @@ $router->group(['prefix' => 'admin' , 'namespace' => 'Admin' ], function () use 
         $router->post('doUseChannelPay','ChannelController@doUseChannelPay');                 //选中支付通过
     });
 
-
-
-
-
     $router->group(['prefix' => 'adminuser'], function () use ($router) {
         $router->post('getAdminUserList', 'AdminUserController@getAdminUserList');            //获取后台用户列表方法
         $router->post('upUserForbidStatus', 'AdminUserController@upUserForbidStatus');        //更改账号状态方法（启用禁用）
@@ -183,6 +183,28 @@ $router->group(['prefix' => 'admin' , 'namespace' => 'Admin' ], function () use 
         $router->post('doAdminUserUpdate', 'AdminUserController@doAdminUserUpdate');          //编辑账号信息
         $router->post('doAdminUserUpdatePwd', 'AdminUserController@doAdminUserUpdatePwd');    //修改用户密码的接口
     });
+
+    $router->group(['prefix' => 'role'], function () use ($router) { 
+        $router->post('getList', 'RoleController@getList');              //角色列表
+        $router->post('doRoleDel', 'RoleController@doRoleDel');          //软删除
+        $router->post('getRoleInsert', 'RoleController@getRoleInsert');  //添加角色（获取）
+        $router->post('doRoleInsert', 'RoleController@doRoleInsert');    //添加角色
+        $router->post('getRoleById', 'RoleController@getRoleUpdate');  //编辑角色（获取）
+        $router->post('doRoleUpdate', 'RoleController@doRoleUpdate');  //编辑角色
+    });
+
+    $router->group(['prefix' => 'school'], function () use ($router) { 
+        // $router->post('getList', 'SchoolController@getSchoolList');              //学校列表
+        $router->post('doSchoolDel', 'SchoolController@doSchoolDel');          //软删除
+        $router->post('doSchoolForbid', 'SchoolController@doSchoolForbid');  //启用禁用
+        $router->post('doSchoolLook', 'SchoolController@doSchoolLook');  //是否观看其他网校数据
+        // $router->post('getSchoolList', 'SchoolController@schoolList');    //网校列表（添加、修改）
+        // $router->post('doInsertSchool', 'SchoolController@doInsertSchool');    //添加网校
+        // $router->post('getSchoolById', 'SchoolController@getSchoolUpdate');  //编辑网校（获取）
+        // $router->post('doSchoolUpdate', 'SchoolController@doSchoolUpdate');  //编辑网校
+    });
+
+
 
 
 });
