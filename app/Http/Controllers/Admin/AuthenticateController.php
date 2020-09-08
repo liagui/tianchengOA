@@ -9,6 +9,7 @@ use Illuminate\Http\Request;
 use App\Models\Admin;
 use App\Models\School;
 use App\Models\Teacher;
+use Lysice\Sms\Facade\SmsFacade;
 use Log;
 use JWTAuth;
 use Validator;
@@ -72,15 +73,24 @@ class AuthenticateController extends Controller {
         if($user['is_forbid'] == 0 ||$user['is_del'] == 0 ){
             return response()->json(['code'=>403,'msg'=>'此用户已被禁用或删除，请联系管理员']);
         }
+
+        if($user['is_use']  == 0 && empty($user['mobile'])){  //未使用 
+            $user['auth'] = [];
+            return $this->response($user);
+        }
+        if($user['is_use']  == 2 && !empty($user['mobile'])){  //待审核
+            $user['auth'] = [];
+            return $this->response($user);
+        }
+
         $AdminUser = new AdminUser();
         $user['auth'] = [];     //5.14 该账户没有权限返回空  begin
         if($user['role_id']>0){
-            $admin_user =  $AdminUser->getAdminUserLoginAuth($user['role_id']);  //获取后台用户菜单栏（lys 5.5）
-
-            if($admin_user['code']!=200){
-                return response()->json(['code'=>$admin_user['code'],'msg'=>$admin_user['msg']]);
+            $admin_user_atuh =  $AdminUser->getAdminUserLoginAuth($user['role_id']);  //获取后台用户菜单栏（lys 5.5）
+            if($admin_user_atuh['code']!=200){
+                return response()->json(['code'=>$admin_user_atuh['code'],'msg'=>$admin_user_atuh['msg']]);
             }
-            $user['auth'] = $admin_user['data'];
+            $user['auth'] = $admin_user_atuh['data'];
         }   
         return $this->response($user);
     }
@@ -127,4 +137,123 @@ class AuthenticateController extends Controller {
         }
         return true;
     }
+
+    /*
+     * @param  description   获取验证码方法
+     * @param  参数说明       body包含以下参数[
+     * 
+     * ]
+     * @param author   lys
+     * @param ctime     2020-09-08
+     * return string
+     */
+    public function doSendSms(){
+        $body = self::$accept_data;
+        //判断传过来的数组数据是否为空
+        if(!$body || !is_array($body)){
+            return response()->json(['code' => 202 , 'msg' => '传递数据不合法']);
+        }
+      
+        //判断手机号是否为空
+        if(!isset($body['phone']) || empty($body['phone'])){
+            return response()->json(['code' => 201 , 'msg' => '请输入手机号']);
+        } else if(!preg_match('#^13[\d]{9}$|^14[\d]{9}$|^15[\d]{9}$|^17[\d]{9}$|^18[\d]{9}|^16[\d]{9}|^19[\d]{9}$#', $body['phone'])) {
+            return response()->json(['code' => 202 , 'msg' => '手机号不合法']);
+        }
+
+        //设置key值
+        $key = 'oadminuser:bind:'.$body['phone'];
+        //保存时间(5分钟)
+        $time= 300;
+        //短信模板code码
+        $template_code = 'SMS_180053367';
+        // $AdminUser = new AdminUser();
+        //判断用户手机号是否注册过
+        $student_info = Admin::where(["mobile" =>$body['phone'],'is_del'=>1])->first();
+        if($student_info && !empty($student_info)){
+            return response()->json(['code' => 205 , 'msg' => '此手机号已被绑定']);
+        }
+        //判断验证码是否过期
+        $code = Redis::get($key);
+        if(!$code || empty($code)){
+            //随机生成验证码数字,默认为6位数字
+            $code = rand(100000,999999);
+        }
+        //发送验证信息流
+        $data = ['mobile' => $body['phone'] , 'TemplateParam' => ['code' => $code] , 'template_code' => $template_code];
+        $send_data = SmsFacade::send($data);
+        //判断发送验证码是否成功
+        if($send_data->Code == 'OK'){
+            //存储学员的id值
+            Redis::setex($key , $time , $code);
+            return response()->json(['code' => 200 , 'msg' => '发送短信成功']);
+        } else {
+            return response()->json(['code' => 203 , 'msg' => '发送短信失败' , 'data' => $send_data->Message]);
+        }
+    }
+
+
+    /*
+     * @param  description   绑定手机号
+     * @param  参数说明       body包含以下参数[
+     *      phone 手机号
+     *      user_id  用户id
+     *      verifycode 验证码
+     *      wx  微信 
+     *      license     营业执照 
+     *      hand_card   手持身份证照片 
+     *      card_front  身份证正面 
+     *      card_side   身份证反面 
+     * ]
+     * @param author    lys
+     * @param ctime     2020-09-08
+     */
+    public function bindMobile(){
+        try {
+            $body = self::$accept_data;
+            //判断传过来的数组数据是否为空
+            if(!$body || !is_array($body)){
+                return response()->json(['code' => 202 , 'msg' => '传递数据不合法']);
+            }
+            //判断手机号是否为空
+            if(!isset($body['phone']) || empty($body['phone'])){
+                return response()->json(['code' => 201 , 'msg' => '请输入手机号']);
+            } else if(!preg_match('#^13[\d]{9}$|^14[\d]{9}$|^15[\d]{9}$|^17[\d]{9}$|^18[\d]{9}|^16[\d]{9}|^19[\d]{9}$#', $body['phone'])) {
+                return response()->json(['code' => 202 , 'msg' => '手机号不合法']);
+            }
+            //判断验证码是否为空
+            if(!isset($body['verifycode']) || empty($body['verifycode'])){
+                return response()->json(['code' => 201 , 'msg' => '请输入验证码']);
+            }
+
+            //验证码合法验证
+            $verify_code = Redis::get('oadminuser:bind:'.$body['phone']);
+            if(!$verify_code || empty($verify_code)){
+                return ['code' => 201 , 'msg' => '请先获取短信验证码'];
+            }
+
+            //判断验证码是否一致
+            if($verify_code != $body['verifycode']){
+                return ['code' => 202 , 'msg' => '短信验证码错误'];
+            }
+            $key = 'oauser:bind:'.$body['mobile'];
+            //判断此学员是否被请求过一次(防止重复请求,且数据信息存在)
+            if(Redis::get($key)){
+                return response()->json(['code' => 205 , 'msg' => '此手机号已被注册']);
+            } else {
+                //判断用户手机号是否注册过
+                $student_count = Admin::where(["mobile" =>$body['phone'],'is_del'=>1])->count();
+                if($student_count > 0){
+                    //存储学员的手机号值并且保存60s
+                    Redis::setex($key , 60 , $body['phone']);
+                    return response()->json(['code' => 205 , 'msg' => '此手机号已被绑定']);
+                }
+            }
+            return response()->json(['code' => 200 , 'msg' => '验证成功']);
+        } catch (Exception $ex) {
+            return response()->json(['code' => 500 , 'msg' => $ex->getMessage()]);
+        }
+    }
+
+
 }
