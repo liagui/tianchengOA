@@ -88,6 +88,7 @@ class Student extends Model {
     }
     //跟单
     public static function documentary($data){
+        unset($data['/admin/documentary']);
         $order = Pay_order_inside::where("id",$data['order_id'])->first();
         if(empty($order)){
             return ['code' => 202 , 'msg' => '订单记录不存在，请检查'];
@@ -115,6 +116,7 @@ class Student extends Model {
     }
     //转单
     public static function transferOrder($data){
+        unset($data['/admin/transferOrder']);
         $update['have_user_id'] = $data['teacher_id'];
         $update['have_user_name'] = $data['teacher_name'];
         $order = Pay_order_inside::where("id",$data['order_id'])->first();

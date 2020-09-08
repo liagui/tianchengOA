@@ -72,7 +72,7 @@ class Material extends Model {
 
     }
     public static function Materialadd($data){
-
+        unset($data['/admin/Materialadd']);
         //获取登录id
         $admin = isset(AdminLog::getAdminInfo()->admin_user) ? AdminLog::getAdminInfo()->admin_user: [];
         $material = [
@@ -119,6 +119,7 @@ class Material extends Model {
     }
     //更新单条信息
     public static function updateMaterialOne($data){
+        unset($data['/admin/updateMaterialOne']);
         $material_id = $data['material_id'];
         $res = json_decode($data['data'],true);
         foreach($res as $key=>$material_list){
@@ -163,7 +164,7 @@ class Material extends Model {
     }
     //更新物料
     public static function Materialupdate($data){
-
+        unset($data['/admin/Materialupdate']);
         //获取登录id
         $admin = isset(AdminLog::getAdminInfo()->admin_user) ? AdminLog::getAdminInfo()->admin_user: [];
         //物料id
