@@ -86,9 +86,9 @@ $router->group(['prefix' => 'admin' , 'namespace' => 'Admin', 'middleware'=> 'co
     $router->post('getMaterial', 'MaterialController@getMaterial');
     //获取物料提交人信息
     $router->post('getsubmit', 'MaterialController@getsubmit');
+    /*** 物料管理end ***/
 
     /*** 学员管理start ***/
-
     //业绩查询 班主任自己的业绩
     $router->post('getStudentPerformance', 'StudentController@getStudentPerformance');
     //学员总览 班主任自己的学员
