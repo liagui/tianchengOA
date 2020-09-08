@@ -72,6 +72,7 @@ class Teacher extends Model {
     }
     public static function createTeacher($data){
         //创建班主任账号
+        unset($data['/admin/createTeacher']);
         if($data['password'] != $data['verifypassword']){
             return ['code' => 202, 'msg' => '两次密码输入不一致'];
         }
@@ -96,6 +97,7 @@ class Teacher extends Model {
         }
     }
     public static function updateTeacherStatus($data){
+        unset($data['/admin/updateTeacherStatus']);
         $teacher = self::where(['id'=>$data['teacher_id'],'role_id'=>3])->first();
         if(empty($teacher)){
             return ['code' => 202 , 'msg' => '请检查账号是否存在'];

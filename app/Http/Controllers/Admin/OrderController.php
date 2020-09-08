@@ -9,11 +9,6 @@ class OrderController extends Controller {
         $list = Pay_order_inside::orderList(self::$accept_data);
         return response()->json($list);
     }
-    //未提交订单详情
-    public function unsubmittedOrderDetail(){
-        $list = Pay_order_inside::unsubmittedOrderDetail(self::$accept_data);
-        return response()->json($list);
-    }
     //手动报单
     public function handOrder(){
         $list = Pay_order_inside::handOrder(self::$accept_data);
@@ -45,6 +40,11 @@ class OrderController extends Controller {
         $list = Pay_order_inside::awaitOrder(self::$accept_data);
         return response()->json($list);
     }
+    //订单详情
+    public function sureOrder(){
+        $list = Pay_order_inside::sureOrder(self::$accept_data);
+        return response()->json($list);
+    }
     //总校确认订单
     public function notarizeOrder(){
         $list = Pay_order_inside::notarizeOrder(self::$accept_data);
@@ -58,7 +58,11 @@ class OrderController extends Controller {
         $list = Pay_order_inside::unsubmittedOrder(self::$accept_data);
         return response()->json($list);
     }
-
+    //未提交订单详情
+    public function unsubmittedOrderDetail(){
+        $list = Pay_order_inside::unsubmittedOrderDetail(self::$accept_data);
+        return response()->json($list);
+    }
     //分校进行提交
     public function DoSubmitted(){
         $list = Pay_order_inside::DoSubmitted(self::$accept_data);
@@ -69,7 +73,7 @@ class OrderController extends Controller {
         $list = Pay_order_inside::submittedOrderCancel(self::$accept_data);
         return response()->json($list);
     }
-    
+
     /*
      * @param  description   开课管理列表接口
      * @param  参数说明       body包含以下参数[
@@ -90,6 +94,30 @@ class OrderController extends Controller {
             $data = Pay_order_inside::getOpenCourseList(self::$accept_data);
             if($data['code'] == 200){
                 return response()->json(['code' => 200 , 'msg' => '获取列表成功' , 'data' => $data['data']]);
+            } else {
+                return response()->json(['code' => $data['code'] , 'msg' => $data['msg']]);
+            }
+        } catch (Exception $ex) {
+            return response()->json(['code' => 500 , 'msg' => $ex->getMessage()]);
+        }
+    }
+
+    /*
+     * @param  description   开课管理订单详情接口
+     * @param  参数说明       body包含以下参数[
+     *
+     * ]
+     * @param author    dzj
+     * @param ctime     2020-09-08
+     * return string
+     */
+    public function getOpenCourseInfo(){
+        //获取提交的参数
+        try{
+            //获取专业列表
+            $data = Pay_order_inside::getOpenCourseInfo(self::$accept_data);
+            if($data['code'] == 200){
+                return response()->json(['code' => 200 , 'msg' => '获取详情成功' , 'data' => $data['data']]);
             } else {
                 return response()->json(['code' => $data['code'] , 'msg' => $data['msg']]);
             }

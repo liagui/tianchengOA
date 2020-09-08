@@ -9,7 +9,7 @@ class AdminLog extends Model {
     //时间戳设置
     public $timestamps = false;
     public static $admin_user;
-    
+
     /*
      * @param  description   获取后端用户基本信息
      * @param  data          数组数据

@@ -88,6 +88,7 @@ class Student extends Model {
     }
     //跟单
     public static function documentary($data){
+        unset($data['/admin/documentary']);
         $order = Pay_order_inside::where("id",$data['order_id'])->first();
         if(empty($order)){
             return ['code' => 202 , 'msg' => '订单记录不存在，请检查'];
@@ -115,6 +116,7 @@ class Student extends Model {
     }
     //转单
     public static function transferOrder($data){
+        unset($data['/admin/transferOrder']);
         $update['have_user_id'] = $data['teacher_id'];
         $update['have_user_name'] = $data['teacher_name'];
         $order = Pay_order_inside::where("id",$data['order_id'])->first();
@@ -133,7 +135,8 @@ class Student extends Model {
         //查询条件  时间区间 项目  分校 开课状态  回访状态  手机号/姓名
         //已完成业绩：145135.65元 总回放单数：1000 已回访单数：1900 未回访单数：100
         //获取登录id
-        $user_id  = 2;
+        $admin = isset(AdminLog::getAdminInfo()->admin_user) ? AdminLog::getAdminInfo()->admin_user: [];
+        $user_id  = $admin['id'];
         //获取班主任
         $teacher = teacher::select("id","username")->where("id",$user_id)->first();
         //获取数据
@@ -234,7 +237,8 @@ class Student extends Model {
     public static function getStudent($data){
         //查询条件   项目-学科  分校 开课状态  回访状态  手机号/姓名 订单状态 付款形式
         //获取登录id
-        $user_id  = 2;
+        $admin = isset(AdminLog::getAdminInfo()->admin_user) ? AdminLog::getAdminInfo()->admin_user: [];
+        $user_id  = $admin['id'];
         //每页显示的条数
         $pagesize = (int)isset($data['pageSize']) && $data['pageSize'] > 0 ? $data['pageSize'] : 20;
         $page     = isset($data['page']) && $data['page'] > 0 ? $data['page'] : 1;

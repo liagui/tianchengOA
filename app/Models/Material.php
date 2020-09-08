@@ -3,7 +3,7 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Model;
 use App\Models\MaterialListing;
-
+use App\Models\teacher;
 class Material extends Model {
     //指定别的表名
     public $table = 'material';
@@ -72,15 +72,18 @@ class Material extends Model {
 
     }
     public static function Materialadd($data){
+        unset($data['/admin/Materialadd']);
+        //获取登录id
+        $admin = isset(AdminLog::getAdminInfo()->admin_user) ? AdminLog::getAdminInfo()->admin_user: [];
         $material = [
             //物料发起人id
-            'create_id' => 1,//$data['create_id'],
+            'create_id' => $admin['id'],
             //物料发起人名称
-            'create_name' =>'kun',//$data['create_name'],
+            'create_name' =>$admin['username'],
             //物料需求提交时间
             'submit_time' => date("Y-m-d H:i:s",time()),//$data['submit_time'],
             //分校id
-            'school_id' => 1,//$data['school_id'],
+            'school_id' => $data['school_id'],
         ];
         $res = json_decode($data['data'],true);
         $material_id = self::insertGetId($material);
@@ -114,7 +117,56 @@ class Material extends Model {
             return ['code' => 202 , 'msg' => '创建物料需求失败'];
         }
     }
+    //更新单条信息
+    public static function updateMaterialOne($data){
+        unset($data['/admin/updateMaterialOne']);
+        $material_id = $data['material_id'];
+        $res = json_decode($data['data'],true);
+        foreach($res as $key=>$material_list){
+            if($material_list['type']  == 1){
+                $material_listing1['material_id'] = $material_id;
+                $material_listing1['material_type'] = 1;
+                $material_listing1['project_name'] = $material_list['project_name'];
+                $material_listing1['subject_name'] = $material_list['subject_name'];
+                $material_listing1['course_name'] = $material_list['course_name'];
+                $material_listing1['contract_number'] = $material_list['contract_number'];
+                $res = MaterialListing::where("material_id",$material_id)->update($material_listing1);
+            }else if($material_list['type']  == 2){
+                $material_listing2['material_id'] = $material_id;
+                $material_listing2['invoice'] = $material_list['invoice'];
+                $material_listing2['invoice_number'] = $material_list['invoice_number'];
+                $material_listing2['invoice_price'] = $material_list['invoice_price'];
+                $material_listing2['material_type'] = 2;
+                $res = MaterialListing::where("material_id",$material_id)->update($material_listing2);
+            }else{
+                $material_listing3['material_id'] = $material_id;
+                $material_listing3['receipt_desc'] = $material_list['receipt_desc'];
+                $material_listing3['receipt_number'] = $material_list['receipt_number'];
+                $material_listing3['material_type'] = 3;
+                $res = MaterialListing::where("material_id",$material_id)->update($material_listing3);
+            }
+        }
+        if($res){
+            return ['code' => 200 , 'msg' => '更新物料需求成功'];
+        }else{
+            return ['code' => 202 , 'msg' => '更新物料需求失败'];
+        }
+    }
+    //获取单条物料
+    public static function getMaterialOne($data){
+        $material_id = $data['material_id'];
+        $res = MaterialListing::where("material_id",$material_id)->get();
+        if($res){
+            return ['code' => 200, 'msg' => '查询成功', 'data' => $res];
+        }else{
+            return ['code' => 202, 'msg' => '查询暂无数据'];
+        }
+    }
+    //更新物料
     public static function Materialupdate($data){
+        unset($data['/admin/Materialupdate']);
+        //获取登录id
+        $admin = isset(AdminLog::getAdminInfo()->admin_user) ? AdminLog::getAdminInfo()->admin_user: [];
         //物料id
         $update = [
             //快递公司
@@ -128,9 +180,9 @@ class Material extends Model {
             //物料提交状态0未确认1已确认
             'status' => 1,
             //物料提交人id
-            'submit_id' => 1,
+            'submit_id' => $admin['id'],
             //物料提交人姓名
-            'submit_name' => 'kunkun',
+            'submit_name' => $admin['username'],
             //物料提交时间
             'status_time' => date("Y-m-d H:i:s",time()),
         ];
@@ -141,9 +193,15 @@ class Material extends Model {
             return ['code' => 202 , 'msg' => '确认物料信息失败'];
         }
     }
+
     public static function getsubmit($data){
-        dd($data);
         //用户系统完善
+        $res = teacher::select("real_name","mobile","wx")->where("id",$data['submit_id'])->first();
+        if($res){
+            return ['code' => 200, 'msg' => '查询成功', 'data' => $res];
+        }else{
+            return ['code' => 202, 'msg' => '查询暂无数据'];
+        }
     }
     //获取确认物料信息
     public static function getMaterial($data){

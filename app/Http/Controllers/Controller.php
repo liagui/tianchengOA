@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\Admin;
 use http\Client\Response;
 use Laravel\Lumen\Routing\Controller as BaseController;
 use Maatwebsite\Excel\Facades\Excel;
@@ -91,7 +92,7 @@ class Controller extends BaseController {
             return ['code' => 500 , 'msg' => $ex->getMessage()];
         }
     }
-    
+
     /*
      * @param  description   导入功能方法
      * @param  参数说明[
