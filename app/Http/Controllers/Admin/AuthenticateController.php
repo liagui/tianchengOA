@@ -215,6 +215,10 @@ class AuthenticateController extends Controller {
             if(!$body || !is_array($body)){
                 return response()->json(['code' => 202 , 'msg' => '传递数据不合法']);
             }
+             //判断用户标识是否为空
+            if(!isset($body['user_id']) || empty($body['user_id']) || $body['user_id'] <0){
+                return response()->json(['code' => 201 , 'msg' => '用户标识不合法']);
+            }
             //判断手机号是否为空
             if(!isset($body['phone']) || empty($body['phone'])){
                 return response()->json(['code' => 201 , 'msg' => '请输入手机号']);
@@ -236,10 +240,10 @@ class AuthenticateController extends Controller {
             if($verify_code != $body['verifycode']){
                 return ['code' => 202 , 'msg' => '短信验证码错误'];
             }
-            $key = 'oauser:bind:'.$body['mobile'];
+            $key = 'oauser:bind:'.$body['phone'];
             //判断此学员是否被请求过一次(防止重复请求,且数据信息存在)
             if(Redis::get($key)){
-                return response()->json(['code' => 205 , 'msg' => '此手机号已被注册']);
+                return response()->json(['code' => 205 , 'msg' => '此手机号已被绑定！']);
             } else {
                 //判断用户手机号是否注册过
                 $student_count = Admin::where(["mobile" =>$body['phone'],'is_del'=>1])->count();
@@ -249,7 +253,15 @@ class AuthenticateController extends Controller {
                     return response()->json(['code' => 205 , 'msg' => '此手机号已被绑定']);
                 }
             }
-            return response()->json(['code' => 200 , 'msg' => '验证成功']);
+            $body['wx'] = isset($body['wx']) && !empty($body['wx']) ?$body['wx']:''; 
+            $body['license'] = isset($body['license']) && !empty($body['license']) ?$body['license']:''; 
+            $body['hand_card'] = isset($body['hand_card']) && !empty($body['hand_card']) ?$body['hand_card']:''; 
+            $body['card_front'] = isset($body['card_front']) && !empty($body['card_front']) ?$body['card_front']:''; 
+            $body['card_side'] = isset($body['card_side']) && !empty($body['card_side']) ?$body['card_side']:''; 
+            
+        
+
+            return response()->json(['code' => 200 , 'msg' => 'Success']);
         } catch (Exception $ex) {
             return response()->json(['code' => 500 , 'msg' => $ex->getMessage()]);
         }

@@ -21,9 +21,15 @@ $router->post('/', function () use ($router) {
 //后端登录注册接口
 $router->group(['prefix' => 'admin' , 'namespace' => 'Admin', 'middleware'=> 'cors'], function () use ($router) {
     $router->post('login', 'AuthenticateController@postLogin');
-    $router->post('bindMobile', 'AdminUserController@bindMobile');//绑定手机号
+    $router->post('bindMobile', 'AuthenticateController@bindMobile');//绑定手机号
     $router->post('doSendSms', 'AuthenticateController@doSendSms');//发送短信
-    //订单管理（szw）
+   
+
+});
+//后端登录权限认证相关接口
+//
+$router->group(['prefix' => 'admin' , 'namespace' => 'Admin','middleware'=> ['jwt.auth', 'cors'] ], function () use ($router) {
+     //订单管理（szw）
     $router->group(['prefix' => 'order'], function () use ($router) {
         //总校&分校
         $router->post('orderlist', 'OrderController@orderList');//订单总览
@@ -146,10 +152,7 @@ $router->group(['prefix' => 'admin' , 'namespace' => 'Admin', 'middleware'=> 'co
 
     /*** 班主任管理end ***/
 
-});
-//后端登录权限认证相关接口
-//
-$router->group(['prefix' => 'admin' , 'namespace' => 'Admin' ], function () use ($router) {
+
     
     $router->group(['prefix' => 'payset'], function () use ($router) {
         $router->post('doUpdateWxState', 'PaySetController@doUpdateWxState');                 //更改微信状态
