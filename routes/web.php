@@ -145,6 +145,8 @@ $router->group(['prefix' => 'admin' , 'namespace' => 'Admin','middleware'=> ['jw
     $router->post('getStudent', 'StudentController@getStudent');
     //学员公海 被放入公海的所有学员订单
     $router->post('getStudentSeas', 'StudentController@getStudentSeas');
+    //更新资料收集状态
+    $router->post('updateConsigneeStatsu', 'StudentController@updateConsigneeStatsu');
     /*** 学员管理end ***/
 
     /*** 班主任管理start ***/
