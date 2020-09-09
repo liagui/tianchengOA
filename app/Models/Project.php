@@ -4,6 +4,9 @@ namespace App\Models;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Support\Facades\Redis;
 use Illuminate\Support\Facades\DB;
+use App\Models\Course;
+use App\Models\RegionFee;
+use App\Models\Education;
 use App\Models\AdminLog;
 
 class Project extends Model {
@@ -173,6 +176,49 @@ class Project extends Model {
         
         //开启事务
         DB::beginTransaction();
+        
+        //判断此项目学科是否删除
+        if(isset($body['is_del']) && $body['is_del'] == 1){
+            //根据id获取详情
+            $parent_id = $info['parent_id'];
+            if($parent_id && $parent_id > 0){ //学科
+                //删除学科下面所有得课程
+                $course_count = Course::where('category_one_id' , $parent_id)->where('category_tow_id' , $body['prosub_id'])->where('is_del' , 0)->count();
+                if($course_count && $course_count > 0){
+                    Course::where('category_one_id' , $parent_id)->where('category_tow_id' , $body['prosub_id'])->update(['is_del' => 1 , 'update_time' => date('Y-m-d H:i:s')]);
+                }
+                
+                //删除学科下面所有得院校
+                $education_count = Education::where('parent_id' , $parent_id)->where('child_id' , $body['prosub_id'])->where('is_del' , 0)->count();
+                if($education_count && $education_count > 0){
+                    Education::where('parent_id' , $parent_id)->where('child_id' , $body['prosub_id'])->update(['is_del' => 1 , 'update_time' => date('Y-m-d H:i:s')]);
+                }
+            } else { //项目
+                //删除项目下面所有得学科
+                $subject_count = self::where('parent_id' , $body['prosub_id'])->where('is_del' , 0)->count();
+                if($subject_count && $subject_count > 0){
+                    self::where('parent_id' , $body['prosub_id'])->update(['is_del' => 1 , 'update_time' => date('Y-m-d H:i:s')]);
+                }
+                
+                //删除项目下面所有得地区报名费
+                $region_count = RegionFee::where('category_id' , $body['prosub_id'])->where('is_del' , 0)->count();
+                if($region_count && $region_count > 0){
+                    RegionFee::where('category_id' , $body['prosub_id'])->update(['is_del' => 1 , 'update_time' => date('Y-m-d H:i:s')]);
+                }
+
+                //删除项目下面所有得课程
+                $course_count = Course::where('category_one_id' , $body['prosub_id'])->where('is_del' , 0)->count();
+                if($course_count && $course_count > 0){
+                    Course::where('category_one_id' , $body['prosub_id'])->update(['is_del' => 1 , 'update_time' => date('Y-m-d H:i:s')]);
+                }
+                
+                //删除学科下面所有得院校
+                $education_count = Education::where('parent_id' , $body['prosub_id'])->where('is_del' , 0)->count();
+                if($education_count && $education_count > 0){
+                    Education::where('parent_id' , $body['prosub_id'])->update(['is_del' => 1 , 'update_time' => date('Y-m-d H:i:s')]);
+                }
+            }
+        }
 
         //根据项目/学科id更新信息
         if(false !== self::where('id',$body['prosub_id'])->update($project_array)){

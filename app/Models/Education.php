@@ -3,6 +3,7 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Support\Facades\DB;
+use App\Models\Major;
 use App\Models\AdminLog;
 
 class Education extends Model {
@@ -155,6 +156,15 @@ class Education extends Model {
         
         //开启事务
         DB::beginTransaction();
+        
+        //判断此项目学科是否删除
+        if(isset($body['is_del']) && $body['is_del'] == 1){
+            //删除院校下面所有得专业
+            $major_count = Major::where('education_id' , $body['school_id'])->where('is_del' , 0)->count();
+            if($major_count && $major_count > 0){
+                Major::where('education_id' , $body['school_id'])->update(['is_del' => 1 , 'update_time' => date('Y-m-d H:i:s')]);
+            }
+        }
 
         //根据院校id更新信息
         if(false !== self::where('id',$body['school_id'])->update($school_array)){
