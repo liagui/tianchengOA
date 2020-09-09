@@ -32,16 +32,14 @@ class SchoolController extends Controller {
      * return string
      */
     public function doInsertSchool() {
+     
         //获取提交的参数
         try{
-
-            DB::beginTransaction();
             $data = School::doInsertSchool(self::$accept_data);
             if($data['code'] == 200){
                 return response()->json(['code' => 200 , 'msg' => '添加成功']);
             } else {
                 return response()->json(['code' => $data['code'] , 'msg' => $data['msg']]);
-
             }
         } catch (Exception $ex) {
             return response()->json(['code' => 500 , 'msg' => $ex->getMessage()]);

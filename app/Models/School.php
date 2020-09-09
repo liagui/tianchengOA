@@ -103,7 +103,7 @@ class School extends Model {
         //获取后端的操作员id
         $admin_id = isset(AdminLog::getAdminInfo()->admin_user->id) ? AdminLog::getAdminInfo()->admin_user->id : 0;
 
-        //组装分校数组信息
+        // //组装分校数组信息
         $school_array = [
             'school_name'   =>   $body['school_name'] ,
             'level'         =>   isset($body['level']) && in_array($body['level'] , [1,2,3]) ? $body['level'] : 1 ,
@@ -115,12 +115,10 @@ class School extends Model {
             'create_id'     =>   $admin_id ,
             'create_time'   =>   date('Y-m-d H:i:s')
         ];
-
         //开启事务
         DB::beginTransaction();
-
         //将数据插入到表中
-        if(false !== self::insertGetId($school_array)){
+        if(self::insertGetId($school_array) >0){
             //事务提交
             DB::commit();
             return ['code' => 200 , 'msg' => '添加成功'];
