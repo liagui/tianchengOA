@@ -433,6 +433,7 @@ class Pay_order_inside extends Model
     public static function notarizeOrder($data){
         //获取操作人信息
         $admin = isset(AdminLog::getAdminInfo()->admin_user) ? AdminLog::getAdminInfo()->admin_user : [];
+        $order = self::where(['id'=>$data['id']])->first();
         if($data['confirm_status'] == 1){
             $data['comfirm_time'] = date('Y-m-d H:i:s');
             $data['have_user_id'] = $admin['id'];
@@ -448,8 +449,24 @@ class Pay_order_inside extends Model
             $student = Student::where(['user_name'=>$data['name'],'mobile'=>$data['mobile']])->first();
             if(!$student){
                 $add=[
-                    ''
+                    'user_name' => $data['name'],
+                    'mobile' => $data['mobile'],
+                    'create_time' => date('Y-m-d H:i:s'),
                 ];
+                Student::insert($add);
+                $student_course = [
+                    'order_no' => $order['order_no'],
+                    'student_name' => $data['name'],
+                    'phone' => $data['mobile'],
+                    'order_type' => $data['confirm_order_type'],
+                    'school_id' => $data['school_id'],
+                    'project_id' => $data['project_id'],
+                    'subject_id' => $data['subject_id'],
+                    'course_id' => $data['course_id'],
+                    'status' => 0,
+                    'create_time' => date('Y-m-d H:i:s')
+                ];
+                StudentCourse::insert($student_course);
             }
             return ['code' => 200 , 'msg' => '操作成功'];
         }else{
