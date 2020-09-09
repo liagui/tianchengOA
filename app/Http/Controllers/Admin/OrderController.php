@@ -3,6 +3,7 @@ namespace App\Http\Controllers\Admin;
 use App\Http\Controllers\Controller;
 use App\Models\Pay_order_external;
 use App\Models\Pay_order_inside;
+use App\Models\Refund_order;
 
 class OrderController extends Controller {
     //总校&分校
@@ -76,6 +77,33 @@ class OrderController extends Controller {
     //分校已提交订单进行取消提交
     public function submittedOrderCancel(){
         $list = Pay_order_inside::submittedOrderCancel(self::$accept_data);
+        return response()->json($list);
+    }
+
+    /*=============================================*/
+    //退费订单list
+    public function returnOrder(){
+        $list = Refund_order::returnOrder(self::$accept_data);
+        return response()->json($list);
+    }
+    //add
+    public function initOrder(){
+        $list = Refund_order::initOrder(self::$accept_data);
+        return response()->json($list);
+    }
+    //退款凭证
+    public function seeOrder(){
+        $list = Refund_order::seeOrder(self::$accept_data);
+        return response()->json($list);
+    }
+    //修改退费状态
+    public function amendOrder(){
+        $list = Refund_order::amendOrder(self::$accept_data);
+        return response()->json($list);
+    }
+    //修改打款状态
+    public function remitOrder(){
+        $list = Refund_order::remitOrder(self::$accept_data);
         return response()->json($list);
     }
     //oa支付
