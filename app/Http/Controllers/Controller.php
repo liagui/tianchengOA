@@ -308,4 +308,45 @@ class Controller extends BaseController {
         $str   = md5(uniqid(md5(microtime(true)),true));
         return sha1($str.$login_logo);
     }
+
+    /*
+     * @param  description   是否能查看下属信息的schoolids
+     * @param $login_logo    唯一标识符
+     * @param author     lys
+     * @param ctime     2020-9-9
+     * return arr
+     */
+    public static function underlingLook($school_id = ''){
+        $look_school =  $oneChildSchoolIdsArr =  $twoChildSchoolIdsArr = $oneSchoolIds = $twoSchoolIds =  [];
+        if(empty($school_id) && $school_id == ''){
+            return ['code'=>201,'msg'=>'学校id串为空'];
+        }
+        $schoolIds = explode(',',$school_id); 
+        $schoolData = \App\Models\School::whereIn('id',$schoolIds)->where(['is_del'=>0])->select('id','look_all_flag','level')->get()->toArray();
+        if(empty($schoolData)){
+            return ['code'=>201,'msg'=>'暂无学校信息'];
+        }else{
+            foreach($schoolData as $k=>$v){
+                if($v['look_all_flag'] == 1){
+                    if($v['level'] == 1){
+                        array_push($oneSchoolIds,$v['id']);
+                        $childOneSchoolData  = \App\Models\School::whereIn('parent_id',$oneSchoolIds)->where(['is_del'=>0])->select('id','look_all_flag','level')->get()->toArray();
+                        if(!empty($childOneSchoolData)){
+                             $oneChildSchoolIdsArr= array_column($childOneSchoolData,'id');
+                        }
+
+                    }else if($v['level'] == 2){
+                        array_push($twoSchoolIds,$v['id']);
+                        $childTwoSchoolData  = \App\Models\School::whereIn('parent_id',$twoSchoolIds)->where(['is_del'=>0])->select('id','look_all_flag','level')->get()->toArray();
+                        if(!empty($childTwoSchoolData)){
+                            $twoChildSchoolIdsArr= array_column($childTwoSchoolData,'id');
+                        }
+                    }
+                }
+            }
+            $look_school = array_merge($oneChildSchoolIdsArr,$twoChildSchoolIdsArr);
+            return ['code'=>200,'msg'=>'Success','data'=>$look_school];
+        }
+    }
+
 }

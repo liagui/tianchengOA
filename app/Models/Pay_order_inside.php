@@ -3,6 +3,8 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Support\Facades\DB;
+use App\Models\StudentCourse;
+use App\Models\AdminLog;
 
 class Pay_order_inside extends Model
 {
@@ -763,7 +765,7 @@ class Pay_order_inside extends Model
      *     category_id       项目-学科大小类(例如:[1,2])
      *     school_id         分校id
      *     order_type        订单类型(1.课程订单2.报名订单3.课程+报名订单)
-     *     classes           开课状态(0不开课 1开课)
+     *     status            开课状态(0不开课 1开课)
      *     keywords          订单号/手机号/姓名
      * ]
      * @param author    dzj
@@ -777,7 +779,7 @@ class Pay_order_inside extends Model
         $offset   = ($page - 1) * $pagesize;
 
         //获取开课管理的总数量
-        $open_class_count = self::where(function($query) use ($body){
+        $open_class_count = StudentCourse::where(function($query) use ($body){
             //判断项目-学科大小类是否为空
             if(isset($body['category_id']) && !empty($body['category_id'])){
                 $category_id= json_decode($body['category_id'] , true);
@@ -802,26 +804,26 @@ class Pay_order_inside extends Model
 
             //判断订单类型是否为空和合法
             if(isset($body['order_type']) && !empty($body['order_type']) && in_array($body['order_type'] , [1,2,3])){
-                $query->where('confirm_order_type' , '=' , $body['order_type']);
+                $query->where('order_type' , '=' , $body['order_type']);
             }
 
             //判断开课状态是否为空和合法
-            if(isset($body['classes']) && in_array($body['classes'] , [0,1])){
-                $query->where('classes' , '=' , $body['classes']);
+            if(isset($body['status']) && in_array($body['status'] , [0,1])){
+                $query->where('status' , '=' , $body['status']);
             }
         })->where(function($query) use ($body){
             //判断订单号/手机号/姓名是否为空
             if(isset($body['keywords']) && !empty($body['keywords'])){
-                $query->where('name','like','%'.$body['keywords'].'%')->orWhere('mobile','like','%'.$body['keywords'].'%')->orWhere('order_no','like','%'.$body['keywords'].'%');
+                $query->where('name','like','%'.$body['keywords'].'%')->orWhere('phone','like','%'.$body['keywords'].'%')->orWhere('order_no','like','%'.$body['keywords'].'%');
             }
-        })->where('confirm_status' , 1)->where('begin_class' , 1)->count();
+        })->count();
 
         if($open_class_count > 0){
             //新数组赋值
             $order_array = [];
 
             //获取开课列表
-            $open_class_list = self::select('id as order_id' , 'order_no' , 'create_time' , 'mobile' , 'name' , 'course_id' , 'project_id' , 'subject_id' , 'school_id' , 'classes')->where(function($query) use ($body){
+            $open_class_list = StudentCourse::select('id as open_id' , 'create_time' , 'phone' , 'student_name' , 'course_id' , 'project_id' , 'subject_id' , 'school_id' , 'status')->where(function($query) use ($body){
                 //判断项目-学科大小类是否为空
                 if(isset($body['category_id']) && !empty($body['category_id'])){
                     $category_id= json_decode($body['category_id'] , true);
@@ -846,19 +848,19 @@ class Pay_order_inside extends Model
 
                 //判断订单类型是否为空和合法
                 if(isset($body['order_type']) && !empty($body['order_type']) && in_array($body['order_type'] , [1,2,3])){
-                    $query->where('confirm_order_type' , '=' , $body['order_type']);
+                    $query->where('order_type' , '=' , $body['order_type']);
                 }
 
                 //判断开课状态是否为空和合法
-                if(isset($body['classes']) && in_array($body['classes'] , [0,1])){
-                    $query->where('classes' , '=' , $body['classes']);
+                if(isset($body['status']) && in_array($body['status'] , [0,1])){
+                    $query->where('status' , '=' , $body['status']);
                 }
             })->where(function($query) use ($body){
                 //判断订单号/手机号/姓名是否为空
                 if(isset($body['keywords']) && !empty($body['keywords'])){
                     $query->where('name','like','%'.$body['keywords'].'%')->orWhere('mobile','like','%'.$body['keywords'].'%')->orWhere('order_no','like','%'.$body['keywords'].'%');
                 }
-            })->where('confirm_status' , 1)->where('begin_class' , 1)->orderByDesc('create_time')->offset($offset)->limit($pagesize)->get()->toArray();
+            })->orderByDesc('create_time')->offset($offset)->limit($pagesize)->get()->toArray();
 
             //循环获取相关信息
             foreach($open_class_list as $k=>$v){
@@ -876,13 +878,12 @@ class Pay_order_inside extends Model
 
                 //开课数组管理赋值
                 $order_array[] = [
-                    'order_id'      =>  $v['order_id'] ,
-                    'order_no'      =>  $v['order_no'] ,
+                    'open_id'       =>  $v['open_id'] ,
                     'create_time'   =>  $v['create_time'] ,
-                    'mobile'        =>  $v['mobile'] ,
-                    'name'          =>  $v['name'] ,
-                    'classes_status'=>  (int)$v['classes'] ,
-                    'classes_name'  =>  $v['classes'] > 0 ? '已开课' : '未开课' ,
+                    'phone'         =>  $v['phone'] ,
+                    'student_name'  =>  $v['student_name'] ,
+                    'status'        =>  (int)$v['status'] ,
+                    'status_name'   =>  $v['status'] > 0 ? '已开课' : '未开课' ,
                     'project_name'  =>  $project_name && !empty($project_name) ? $project_name : '' ,
                     'subject_name'  =>  $subject_name && !empty($subject_name) ? $subject_name : '' ,
                     'course_name'   =>  $course_name  && !empty($course_name)  ? $course_name  : '' ,
@@ -897,20 +898,49 @@ class Pay_order_inside extends Model
     /*
      * @param  description   开课管理订单详情接口
      * @param  参数说明       body包含以下参数[
-     *
+     *       open_id         开课得管理id
      * ]
      * @param author    dzj
      * @param ctime     2020-09-08
      * return string
      */
     public static function getOpenCourseInfo($body=[]) {
+        //判断传过来的数组数据是否为空
+        if(!$body || !is_array($body)){
+            return ['code' => 202 , 'msg' => '传递数据不合法'];
+        }
+        
         //每页显示的条数
         $pagesize = isset($body['pagesize']) && $body['pagesize'] > 0 ? $body['pagesize'] : 20;
         $page     = isset($body['page']) && $body['page'] > 0 ? $body['page'] : 1;
         $offset   = ($page - 1) * $pagesize;
 
+        //判断开课得管理id是否合法
+        if(!isset($body['open_id']) || empty($body['open_id']) || $body['open_id'] <= 0){
+            return ['code' => 202 , 'msg' => '开课得管理id不合法'];
+        }
+        
+        //根据开课管理得id获取信息
+        $info = StudentCourse::where('id' , $body['open_id'])->first();
+        if(!$info || empty($info)){
+            return ['code' => 203 , 'msg' => '此开课管理信息不存在'];
+        }
+        
+        //学员名称
+        $name   = $info['student_name'];
+        //手机号
+        $mobile = $info['phone'];
+        //所属分校
+        $school_id = $info['school_id'];
+        //项目
+        $project_id= $info['project_id'];
+        //学科
+        $subject_id= $info['subject_id'];
+        //课程
+        $course_id = $info['course_id'];
+
         //获取订单的总数量
-        $order_count = self::where('del_flag' , 0)->count();
+        $order_count = self::where('name' , $name)->where('mobile' , $mobile)->where('school_id' , $school_id)->where('project_id' , $project_id)->where('subject_id' , $subject_id)->where('course_id' , $course_id)->where('del_flag' , 0)->count();
         
         //支付方式数组
         $pay_type_array = [1=>'支付宝扫码',2=>'微信扫码',3=>'银联快捷支付',4=>'微信小程序',5=>'线下录入'];
@@ -939,7 +969,7 @@ class Pay_order_inside extends Model
             $order_array = [];
 
             //获取订单列表
-            $order_list = self::select('order_no' , 'create_time' , 'mobile' , 'name' , 'course_id' , 'project_id' , 'subject_id' , 'school_id' , 'pay_type' , 'course_Price' , 'sign_Price' , 'sum_Price' , 'pay_status' , 'classes' , 'return_visit' , 'pay_time' , 'confirm_order_type' , 'first_pay' , 'confirm_status' , 'pay_voucher')->where('del_flag' , 0)->orderByDesc('create_time')->offset($offset)->limit($pagesize)->get()->toArray();
+            $order_list = self::select('order_no' , 'create_time' , 'mobile' , 'name' , 'course_id' , 'project_id' , 'subject_id' , 'school_id' , 'pay_type' , 'course_Price' , 'sign_Price' , 'sum_Price' , 'pay_status' , 'classes' , 'return_visit' , 'pay_time' , 'confirm_order_type' , 'first_pay' , 'confirm_status' , 'pay_voucher')->where('name' , $name)->where('mobile' , $mobile)->where('school_id' , $school_id)->where('project_id' , $project_id)->where('subject_id' , $subject_id)->where('course_id' , $course_id)->where('del_flag' , 0)->orderByDesc('create_time')->offset($offset)->limit($pagesize)->get()->toArray();
 
             //循环获取相关信息
             foreach($order_list as $k=>$v){
@@ -991,7 +1021,12 @@ class Pay_order_inside extends Model
     /*
      * @param  description   开课管理-确认开课方法
      * @param  参数说明       body包含以下参数[
-     *     order_id        订单id
+     *     open_id           开课id
+     *     project_id        项目id
+     *     subject_id        学科id
+     *     course_id         课程id
+     *     student_name      学员名称
+     *     phone             手机号
      * ]
      * @param author    dzj
      * @param ctime     2020-09-07
@@ -1002,28 +1037,90 @@ class Pay_order_inside extends Model
         if(!$body || !is_array($body)){
             return ['code' => 202 , 'msg' => '传递数据不合法'];
         }
-
-        //判断订单id是否合法
-        if(!isset($body['order_id']) || empty($body['order_id']) || $body['order_id'] <= 0){
-            return ['code' => 202 , 'msg' => '订单id不合法'];
+        
+        //判断开课id是否合法
+        if(!isset($body['open_id']) || empty($body['open_id']) || $body['open_id'] <= 0){
+            return ['code' => 202 , 'msg' => '开课id不合法'];
+        }
+        
+        //根据开课管理得id获取信息
+        $info = StudentCourse::where('id' , $body['open_id'])->first();
+        if(!$info || empty($info)){
+            return ['code' => 203 , 'msg' => '此开课管理信息不存在'];
         }
 
-        //判断此订单是否存在
-        $order_info = self::where('id' , $body['order_id'])->first();
-        if(!$order_info || empty($order_info)){
-            return ['code' => 203 , 'msg' => '此订单不存在'];
+        //判断项目id是否合法
+        if(!isset($body['project_id']) || empty($body['project_id']) || $body['project_id'] <= 0){
+            return ['code' => 202 , 'msg' => '项目id不合法'];
+        }
+        
+        //判断学科id是否合法
+        if(!isset($body['subject_id']) || empty($body['subject_id']) || $body['subject_id'] <= 0){
+            return ['code' => 202 , 'msg' => '学科id不合法'];
+        }
+        
+        //判断课程id是否合法
+        if(!isset($body['course_id']) || empty($body['course_id']) || $body['course_id'] <= 0){
+            return ['code' => 202 , 'msg' => '课程id不合法'];
+        }
+        
+        //判断学员名称是否合法
+        if(!isset($body['student_name']) || empty($body['student_name'])){
+            return ['code' => 202 , 'msg' => '学员名称为空'];
+        }
+        
+        //判断学员手机号是否合法
+        if(!isset($body['phone']) || empty($body['phone'])){
+            return ['code' => 202 , 'msg' => '手机号为空'];
         }
 
-        //获取当前订单的开课状态
-        $classes_status = $order_info['classes'] > 0 ? 0 : 1;
+        //判断此开课记录是否存在
+        $info = self::where('id' , $body['open_id'])->first();
+        if(!$info || empty($info)){
+            return ['code' => 203 , 'msg' => '此开课记录不存在'];
+        }
+        
+        //获取后端的操作员id
+        $admin_id = isset(AdminLog::getAdminInfo()->admin_user->id) ? AdminLog::getAdminInfo()->admin_user->id : 0;
+        
+        //获取当前开课记录的状态
+        $status = $info['status'] > 0 ? 0 : 1;
+        
+        //判断是否是取消状态
+        if($status == 1){
+            //封装成数组
+            $array = [
+                'student_name'   =>   $body['student_name'] ,
+                'phone'          =>   $body['phone'] ,
+                'project_id'     =>   $body['project_id'] ,
+                'subject_id'     =>   $body['subject_id'] ,
+                'course_id'      =>   $body['course_id'] ,
+                'status'         =>   1 ,
+                'create_id'      =>   $admin_id ,
+                'open_time'      =>   date('Y-m-d H:i:s') ,
+                'update_time'    =>   date('Y-m-d H:i:s')
+            ];
+        } else {
+            //封装成数组
+            $array = [
+                'student_name'   =>   $body['student_name'] ,
+                'phone'          =>   $body['phone'] ,
+                'project_id'     =>   $body['project_id'] ,
+                'subject_id'     =>   $body['subject_id'] ,
+                'course_id'      =>   $body['course_id'] ,
+                'status'         =>   0 ,
+                'create_id'      =>   $admin_id ,
+                'update_time'    =>   date('Y-m-d H:i:s')
+            ];
+        }
 
         //开启事务
         DB::beginTransaction();
 
-        //根据订单id更新信息
-        if(false !== self::where('id',$body['order_id'])->update(['classes' => $classes_status])){
+        //根据开课id更新信息
+        if(false !== StudentCourse::where('id',$body['open_id'])->update($array)){
             //更新学员开课状态
-            StudentCourse::doUpdateCourseStatus(['student_id' => $order_info['school_confirm_user_id'] , 'course_id' => $order_info['course_id']]);
+            self::where('id',$info['order_id'])->update(['classes' => $status]);
             //事务提交
             DB::commit();
             return ['code' => 200 , 'msg' => '更新成功'];
@@ -1031,6 +1128,35 @@ class Pay_order_inside extends Model
             //事务回滚
             DB::rollBack();
             return ['code' => 203 , 'msg' => '更新失败'];
+        }
+    }
+    
+    /*
+     * @param  description   确认开课详情接口
+     * @param  参数说明       body包含以下参数[
+     *       open_id         开课得管理id
+     * ]
+     * @param author    dzj
+     * @param ctime     2020-09-08
+     * return string
+     */
+    public static function getStudentCourseInfoById($body=[]){
+        //判断传过来的数组数据是否为空
+        if(!$body || !is_array($body)){
+            return ['code' => 202 , 'msg' => '传递数据不合法'];
+        }
+        
+        //判断开课id是否合法
+        if(!isset($body['open_id']) || empty($body['open_id']) || $body['open_id'] <= 0){
+            return ['code' => 202 , 'msg' => '开课id不合法'];
+        }
+        
+        //根据开课管理得id获取信息
+        $info = StudentCourse::select('student_name' , 'phone' , 'project_id' , 'subject_id' , 'course_id')->where('id' , $body['open_id'])->first();
+        if(!$info || empty($info)){
+            return ['code' => 203 , 'msg' => '此开课管理信息不存在'];
+        } else {
+            return ['code' => 200 , 'msg' => '获取详情成功' , 'data' => $info];
         }
     }
 }

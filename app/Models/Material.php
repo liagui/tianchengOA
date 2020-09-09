@@ -101,8 +101,11 @@ class Material extends Model {
             if($material_list['type']  == 1){
                 $material_listing1['material_id'] = $material_id;
                 $material_listing1['material_type'] = 1;
+                $material_listing1['project_id'] = $material_list['project_id'];
                 $material_listing1['project_name'] = $material_list['project_name'];
+                $material_listing1['subject_id'] = $material_list['subject_id'];
                 $material_listing1['subject_name'] = $material_list['subject_name'];
+                $material_listing1['course_id'] = $material_list['course_id'];
                 $material_listing1['course_name'] = $material_list['course_name'];
                 $material_listing1['contract_number'] = $material_list['contract_number'];
                 $res = MaterialListing::insert($material_listing1);
@@ -136,24 +139,27 @@ class Material extends Model {
             if($material_list['type']  == 1){
                 $material_listing1['material_id'] = $material_id;
                 $material_listing1['material_type'] = 1;
+                $material_listing1['project_id'] = $material_list['project_id'];
                 $material_listing1['project_name'] = $material_list['project_name'];
+                $material_listing1['subject_id'] = $material_list['subject_id'];
                 $material_listing1['subject_name'] = $material_list['subject_name'];
+                $material_listing1['course_id'] = $material_list['course_id'];
                 $material_listing1['course_name'] = $material_list['course_name'];
                 $material_listing1['contract_number'] = $material_list['contract_number'];
-                $res = MaterialListing::where("material_id",$material_id)->update($material_listing1);
+                $res = MaterialListing::where(["material_id"=>$material_id,"material_type"=>1])->update($material_listing1);
             }else if($material_list['type']  == 2){
                 $material_listing2['material_id'] = $material_id;
                 $material_listing2['invoice'] = $material_list['invoice'];
                 $material_listing2['invoice_number'] = $material_list['invoice_number'];
                 $material_listing2['invoice_price'] = $material_list['invoice_price'];
                 $material_listing2['material_type'] = 2;
-                $res = MaterialListing::where("material_id",$material_id)->update($material_listing2);
+                $res = MaterialListing::where(["material_id"=>$material_id,"material_type"=>2])->update($material_listing2);
             }else{
                 $material_listing3['material_id'] = $material_id;
                 $material_listing3['receipt_desc'] = $material_list['receipt_desc'];
                 $material_listing3['receipt_number'] = $material_list['receipt_number'];
                 $material_listing3['material_type'] = 3;
-                $res = MaterialListing::where("material_id",$material_id)->update($material_listing3);
+                $res = MaterialListing::where(["material_id"=>$material_id,"material_type"=>3])->update($material_listing3);
             }
         }
         if($res){

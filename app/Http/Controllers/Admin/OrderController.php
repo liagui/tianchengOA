@@ -142,7 +142,7 @@ class OrderController extends Controller {
     /*
      * @param  description   开课管理订单详情接口
      * @param  参数说明       body包含以下参数[
-     *
+     *      open_id        开课得管理id   
      * ]
      * @param author    dzj
      * @param ctime     2020-09-08
@@ -166,7 +166,12 @@ class OrderController extends Controller {
     /*
      * @param  description   开课管理-确认开课方法
      * @param  参数说明       body包含以下参数[
-     *     order_id        订单id
+     *     open_id           开课id
+     *     project_id        项目id
+     *     subject_id        学科id
+     *     course_id         课程id
+     *     student_name      学员名称
+     *     phone             手机号
      * ]
      * @param author    dzj
      * @param ctime     2020-09-07
@@ -178,6 +183,29 @@ class OrderController extends Controller {
             $data = Pay_order_inside::doMakeSureOpenCourse(self::$accept_data);
             if($data['code'] == 200){
                 return response()->json(['code' => 200 , 'msg' => '操作成功']);
+            } else {
+                return response()->json(['code' => $data['code'] , 'msg' => $data['msg']]);
+            }
+        } catch (Exception $ex) {
+            return response()->json(['code' => 500 , 'msg' => $ex->getMessage()]);
+        }
+    }
+    
+    /*
+     * @param  description   确认开课详情接口
+     * @param  参数说明       body包含以下参数[
+     *       open_id         开课得管理id
+     * ]
+     * @param author    dzj
+     * @param ctime     2020-09-08
+     * return string
+     */
+    public function getStudentCourseInfoById(){
+        //获取提交的参数
+        try{
+            $data = Pay_order_inside::getStudentCourseInfoById(self::$accept_data);
+            if($data['code'] == 200){
+                return response()->json(['code' => 200 , 'msg' => '获取详情成功' , 'data' => $data['data']]);
             } else {
                 return response()->json(['code' => $data['code'] , 'msg' => $data['msg']]);
             }
