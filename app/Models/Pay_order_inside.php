@@ -3,6 +3,8 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Support\Facades\DB;
+use App\Models\StudentCourse;
+use App\Models\AdminLog;
 
 class Pay_order_inside extends Model
 {
@@ -991,7 +993,12 @@ class Pay_order_inside extends Model
     /*
      * @param  description   开课管理-确认开课方法
      * @param  参数说明       body包含以下参数[
-     *     order_id        订单id
+     *     open_id           开课id
+     *     project_id        项目id
+     *     subject_id        学科id
+     *     course_id         课程id
+     *     student_name      学员名称
+     *     phone             手机号
      * ]
      * @param author    dzj
      * @param ctime     2020-09-07
@@ -1002,28 +1009,84 @@ class Pay_order_inside extends Model
         if(!$body || !is_array($body)){
             return ['code' => 202 , 'msg' => '传递数据不合法'];
         }
-
-        //判断订单id是否合法
-        if(!isset($body['order_id']) || empty($body['order_id']) || $body['order_id'] <= 0){
-            return ['code' => 202 , 'msg' => '订单id不合法'];
+        
+        //判断开课id是否合法
+        if(!isset($body['open_id']) || empty($body['open_id']) || $body['open_id'] <= 0){
+            return ['code' => 202 , 'msg' => '开课id不合法'];
         }
 
-        //判断此订单是否存在
-        $order_info = self::where('id' , $body['order_id'])->first();
-        if(!$order_info || empty($order_info)){
-            return ['code' => 203 , 'msg' => '此订单不存在'];
+        //判断项目id是否合法
+        if(!isset($body['project_id']) || empty($body['project_id']) || $body['project_id'] <= 0){
+            return ['code' => 202 , 'msg' => '项目id不合法'];
+        }
+        
+        //判断学科id是否合法
+        if(!isset($body['subject_id']) || empty($body['subject_id']) || $body['subject_id'] <= 0){
+            return ['code' => 202 , 'msg' => '学科id不合法'];
+        }
+        
+        //判断课程id是否合法
+        if(!isset($body['course_id']) || empty($body['course_id']) || $body['course_id'] <= 0){
+            return ['code' => 202 , 'msg' => '课程id不合法'];
+        }
+        
+        //判断学员名称是否合法
+        if(!isset($body['student_name']) || empty($body['student_name'])){
+            return ['code' => 202 , 'msg' => '学员名称为空'];
+        }
+        
+        //判断学员手机号是否合法
+        if(!isset($body['phone']) || empty($body['phone'])){
+            return ['code' => 202 , 'msg' => '手机号为空'];
         }
 
-        //获取当前订单的开课状态
-        $classes_status = $order_info['classes'] > 0 ? 0 : 1;
+        //判断此开课记录是否存在
+        $info = self::where('id' , $body['open_id'])->first();
+        if(!$info || empty($info)){
+            return ['code' => 203 , 'msg' => '此开课记录不存在'];
+        }
+        
+        //获取后端的操作员id
+        $admin_id = isset(AdminLog::getAdminInfo()->admin_user->id) ? AdminLog::getAdminInfo()->admin_user->id : 0;
+        
+        //获取当前开课记录的状态
+        $status = $info['status'] > 0 ? 0 : 1;
+        
+        //判断是否是取消状态
+        if($status == 1){
+            //封装成数组
+            $array = [
+                'student_name'   =>   $body['student_name'] ,
+                'phone'          =>   $body['phone'] ,
+                'project_id'     =>   $body['project_id'] ,
+                'subject_id'     =>   $body['subject_id'] ,
+                'course_id'      =>   $body['course_id'] ,
+                'status'         =>   1 ,
+                'create_id'      =>   $admin_id ,
+                'open_time'      =>   date('Y-m-d H:i:s') ,
+                'update_time'    =>   date('Y-m-d H:i:s')
+            ];
+        } else {
+            //封装成数组
+            $array = [
+                'student_name'   =>   $body['student_name'] ,
+                'phone'          =>   $body['phone'] ,
+                'project_id'     =>   $body['project_id'] ,
+                'subject_id'     =>   $body['subject_id'] ,
+                'course_id'      =>   $body['course_id'] ,
+                'status'         =>   0 ,
+                'create_id'      =>   $admin_id ,
+                'update_time'    =>   date('Y-m-d H:i:s')
+            ];
+        }
 
         //开启事务
         DB::beginTransaction();
 
-        //根据订单id更新信息
-        if(false !== self::where('id',$body['order_id'])->update(['classes' => $classes_status])){
+        //根据开课id更新信息
+        if(false !== StudentCourse::where('id',$body['open_id'])->update($array)){
             //更新学员开课状态
-            StudentCourse::doUpdateCourseStatus(['student_id' => $order_info['school_confirm_user_id'] , 'course_id' => $order_info['course_id']]);
+            self::where('id',$info['order_id'])->update(['classes' => $status]);
             //事务提交
             DB::commit();
             return ['code' => 200 , 'msg' => '更新成功'];

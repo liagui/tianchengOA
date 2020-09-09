@@ -138,7 +138,12 @@ class OrderController extends Controller {
     /*
      * @param  description   开课管理-确认开课方法
      * @param  参数说明       body包含以下参数[
-     *     order_id        订单id
+     *     open_id           开课id
+     *     project_id        项目id
+     *     subject_id        学科id
+     *     course_id         课程id
+     *     student_name      学员名称
+     *     phone             手机号
      * ]
      * @param author    dzj
      * @param ctime     2020-09-07
