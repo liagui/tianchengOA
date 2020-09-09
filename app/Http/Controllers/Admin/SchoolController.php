@@ -88,11 +88,9 @@ class SchoolController extends Controller {
                 DB::commit();
                 return response()->json(['code' => 200 , 'msg' => '更新成功']);
             }
-
         } catch (Exception $ex) {
             return response()->json(['code' => 500 , 'msg' => $ex->getMessage()]);
         }
-
     }
     
 
@@ -106,11 +104,7 @@ class SchoolController extends Controller {
                 return response()->json(['code' => 200 , 'msg' => '获取详情成功' , 'data' => $data['data']]);
             } else {
                 return response()->json(['code' => $data['code'] , 'msg' => $data['msg']]);
-
-            }
-          
-         
-                
+            }  
         } catch (Exception $ex) {
             return response()->json(['code' => 500 , 'msg' => $ex->getMessage()]);
         }
@@ -191,7 +185,6 @@ class SchoolController extends Controller {
             'is_look' => $data['look'],
             'level' => $data['level'],
             'parent_id'=>!isset($data['parent_id']) && $data['parent_id'] <=0 ?0:$data['parent_id']
-
         ];
         $data['update_time'] = date('Y-m-d H:i:s');
         if(School::where('id',$data['id'])->update($update)){
