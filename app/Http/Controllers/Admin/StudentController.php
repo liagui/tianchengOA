@@ -76,4 +76,14 @@ class StudentController extends Controller {
             return response()->json(['code' => 500 , 'msg' => $ex->getMessage()]);
         }
     }
+    //更新资料收集状态
+    public function updateConsigneeStatsu(){
+        //获取提交的参数
+        try{
+            $data = Student::updateConsigneeStatsu(self::$accept_data);
+            return response()->json($data);
+        } catch (Exception $ex) {
+            return response()->json(['code' => 500 , 'msg' => $ex->getMessage()]);
+        }
+    }
 }

@@ -375,4 +375,42 @@ class Student extends Model {
         }
 
     }
+    public static function updateConsigneeStatsu($data){
+        unset($data['/admin/updateConsigneeStatsu']);
+        //consignee_statsu料收集状态 1收集中
+        //initiator_name资料发起人姓名
+        //获取登录id
+        $admin = isset(AdminLog::getAdminInfo()->admin_user) ? AdminLog::getAdminInfo()->admin_user: [];
+        $user_id  = $admin['id'];
+        $update['initiator_name'] = $admin['username'];;
+        $update['consignee_status'] = 1;
+        $order = Pay_order_inside::where("id",$data['order_id'])->first();
+        if(empty($order)){
+            return ['code' => 202 , 'msg' => '订单记录不存在，请检查'];
+        }
+        $res = Pay_order_inside::where('id',$data['order_id'])->update($update);
+        if($res){
+            //查询是否存在
+            $order = Pay_order_inside::where("id",$data['order_id'])->first();
+            $student = self::where(["user_name"=>$order['name'],"mobile"=>$order['mobile']])->first();
+            $student_information = DB::table("student_information")->where(["student_id"=>$student['id'],"school_id"=>$order['school_id'],"project_id"=>$order['project_id'],"subject_id"=>$order['subject_id'],"course_id"=>$order['course_id']])->first();
+            if($student_information){
+                return ['code' => 202 , 'msg' => '数据已存在'];
+            }else{
+                //创建关联数据
+                $add['order_id'] = $data['order_id'];
+                $add['student_id'] = $student['id'];
+                $add['school_id'] = $order['school_id'];
+                $add['project_id'] = $order['project_id'];
+                $add['subject_id'] = $order['subject_id'];
+                $add['course_id'] = $order['course_id'];
+                $add['initiator_id'] = $admin['id'];
+                $add['create_time'] = date("Y-m-d H:i:s");
+                DB::table("student_information")->insert($add);
+                return ['code' => 200 , 'msg' => '更改资料收集状态成功'];
+            }
+        }else{
+            return ['code' => 202 , 'msg' => '更改资料收集状态失败'];
+        }
+    }
 }
