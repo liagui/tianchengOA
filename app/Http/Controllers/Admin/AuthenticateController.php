@@ -2,7 +2,7 @@
 
 namespace App\Http\Controllers\Admin;
 
-
+use Illuminate\Support\Facades\DB;
 use App\Http\Controllers\Controller;
 use Illuminate\Support\Facades\Redis;
 use Illuminate\Http\Request;
@@ -210,6 +210,7 @@ class AuthenticateController extends Controller {
      */
     public function bindMobile(){
         try {
+            DB::beginTransaction();
             $body = self::$accept_data;
             //判断传过来的数组数据是否为空
             if(!$body || !is_array($body)){
@@ -253,15 +254,23 @@ class AuthenticateController extends Controller {
                     return response()->json(['code' => 205 , 'msg' => '此手机号已被绑定']);
                 }
             }
-            $body['wx'] = isset($body['wx']) && !empty($body['wx']) ?$body['wx']:''; 
-            $body['license'] = isset($body['license']) && !empty($body['license']) ?$body['license']:''; 
-            $body['hand_card'] = isset($body['hand_card']) && !empty($body['hand_card']) ?$body['hand_card']:''; 
-            $body['card_front'] = isset($body['card_front']) && !empty($body['card_front']) ?$body['card_front']:''; 
-            $body['card_side'] = isset($body['card_side']) && !empty($body['card_side']) ?$body['card_side']:''; 
-            
-        
+            $update['wx'] = isset($body['wx']) && !empty($body['wx']) ?$body['wx']:''; 
+            $update['license'] = isset($body['license']) && !empty($body['license']) ?$body['license']:''; 
+            $update['hand_card'] = isset($body['hand_card']) && !empty($body['hand_card']) ?$body['hand_card']:''; 
+            $update['card_front'] = isset($body['card_front']) && !empty($body['card_front']) ?$body['card_front']:''; 
+            $update['card_side'] = isset($body['card_side']) && !empty($body['card_side']) ?$body['card_side']:''; 
+            $update['mobile'] = $body['phone'];
+            $update['updated_at'] = date('Y-m-d H:i:s');
+            $update['is_use'] = 2; 
 
-            return response()->json(['code' => 200 , 'msg' => 'Success']);
+            $result = Admin::where('id',$body['user_id'])->update($update);
+            if($result){
+                DB::commit();
+                return response()->json(['code' => 200 , 'msg' => '绑定成功']);
+            }else{
+                DB::rollBack();
+                return response()->json(['code' => 203 , 'msg' => '绑定失败']);
+            }
         } catch (Exception $ex) {
             return response()->json(['code' => 500 , 'msg' => $ex->getMessage()]);
         }

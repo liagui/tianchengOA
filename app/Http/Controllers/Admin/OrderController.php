@@ -1,6 +1,7 @@
 <?php
 namespace App\Http\Controllers\Admin;
 use App\Http\Controllers\Controller;
+use App\Models\Pay_order_external;
 use App\Models\Pay_order_inside;
 
 class OrderController extends Controller {
@@ -50,7 +51,11 @@ class OrderController extends Controller {
         $list = Pay_order_inside::notarizeOrder(self::$accept_data);
         return response()->json($list);
     }
-
+    //总校未支付订单列表
+    public function unpaidOrder(){
+        $list = Pay_order_external::unpaidOrder(self::$accept_data);
+        return response()->json($list);
+    }
 
     //分校订单************************************************************
     //分校未提交订单查询
@@ -72,6 +77,10 @@ class OrderController extends Controller {
     public function submittedOrderCancel(){
         $list = Pay_order_inside::submittedOrderCancel(self::$accept_data);
         return response()->json($list);
+    }
+    //oa支付
+    public function oapay(){
+
     }
 
     /*
@@ -125,7 +134,7 @@ class OrderController extends Controller {
             return response()->json(['code' => 500 , 'msg' => $ex->getMessage()]);
         }
     }
-    
+
     /*
      * @param  description   开课管理-确认开课方法
      * @param  参数说明       body包含以下参数[

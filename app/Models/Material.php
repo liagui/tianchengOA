@@ -3,7 +3,8 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Model;
 use App\Models\MaterialListing;
-use App\Models\teacher;
+use App\Models\Teacher;
+use App\Models\School;
 class Material extends Model {
     //指定别的表名
     public $table = 'material';
@@ -42,6 +43,7 @@ class Material extends Model {
             }
         })->offset($offset)->limit($pagesize)->get()->toArray();
         $desc = "";
+        $school_name = "";
         foreach($data as $key =>&$material){
             if($material['status'] == 1){
                 $material['status_desc'] = "快递公司：".$material['courier_company']."-快递单号：".$material['courier_number']."-快递备注：".$material['courier_note']."-邮寄时间：".$material['delivery_time'];
@@ -57,6 +59,14 @@ class Material extends Model {
                 }
             }
             $material['desc'] = $desc;
+            $school_name = School::select("school_name")->where("id",$material['school_id'])->first();
+            $material['school_name'] = $school_name['school_name'];
+            if($material['status'] == 1){
+                $material['status_s'] = "已确认";
+            }else{
+                $material['status_s'] = "未确认";
+            }
+
         }
 
         $page=[
@@ -196,7 +206,7 @@ class Material extends Model {
 
     public static function getsubmit($data){
         //用户系统完善
-        $res = teacher::select("real_name","mobile","wx")->where("id",$data['submit_id'])->first();
+        $res = Teacher::select("real_name","mobile","wx")->where("id",$data['submit_id'])->first();
         if($res){
             return ['code' => 200, 'msg' => '查询成功', 'data' => $res];
         }else{

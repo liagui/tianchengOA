@@ -20,11 +20,11 @@ $router->post('/', function () use ($router) {
 /*****************start**********************/
 //后端登录注册接口
 //$router->group(['prefix' => 'admin' , 'namespace' => 'Admin', 'middleware'=> 'cors'], function () use ($router) {
-$router->group(['prefix' => 'admin' , 'namespace' => 'Admin'], function () use ($router) {
+$router->group(['prefix' => 'admin' , 'namespace' => 'Admin','middleware'=> 'cors'], function () use ($router) {
     $router->post('login', 'AuthenticateController@postLogin');
     $router->post('bindMobile', 'AuthenticateController@bindMobile');//绑定手机号
     $router->post('doSendSms', 'AuthenticateController@doSendSms');//发送短信
-   
+
 
 });
 //后端登录权限认证相关接口
@@ -43,11 +43,14 @@ $router->group(['prefix' => 'admin' , 'namespace' => 'Admin','middleware'=> ['jw
         //总校
         $router->post('notarizeOrder', 'OrderController@notarizeOrder');//总校确认&取消订单
         $router->post('sureOrder', 'OrderController@sureOrder');//总校确认订单详情
+        $router->post('unpaidOrder', 'OrderController@unpaidOrder');//总校未支付订单
         //分校
         $router->post('unsubmittedOrder', 'OrderController@unsubmittedOrder');//分校未提交订单
         $router->post('unsubmittedOrderDetail', 'OrderController@unsubmittedOrderDetail');//分校未提交详情
         $router->post('DoSubmitted', 'OrderController@DoSubmitted');//分校未提交订单进行提交
         $router->post('submittedOrderCancel', 'OrderController@submittedOrderCancel');//分校已提交订单进行取消
+
+        $router->post('oapay', 'OrderController@oapay');//oa支付
     });
     //项目管理部分(dzj)
     $router->group(['prefix' => 'project'], function () use ($router) {
