@@ -81,6 +81,7 @@ $router->group(['prefix' => 'admin' , 'namespace' => 'Admin','middleware'=> ['jw
         $router->post('getOpenCourseList', 'OrderController@getOpenCourseList');                 //开课管理列表接口
         $router->post('getOpenCourseInfo', 'OrderController@getOpenCourseInfo');                 //订单详情列表接口
         $router->post('doMakeSureOpenCourse', 'OrderController@doMakeSureOpenCourse');           //确认开课接口
+        $router->post('getStudentCourseInfoById', 'OrderController@getStudentCourseInfoById');   //确认开课详情接口
     });
 
     //财务管理部分(dzj)
