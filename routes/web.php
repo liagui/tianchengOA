@@ -49,6 +49,12 @@ $router->group(['prefix' => 'admin' , 'namespace' => 'Admin','middleware'=> ['jw
         $router->post('unsubmittedOrderDetail', 'OrderController@unsubmittedOrderDetail');//分校未提交详情
         $router->post('DoSubmitted', 'OrderController@DoSubmitted');//分校未提交订单进行提交
         $router->post('submittedOrderCancel', 'OrderController@submittedOrderCancel');//分校已提交订单进行取消
+        //退费订单操作
+        $router->post('returnOrder', 'OrderController@returnOrder');//退款订单列表
+        $router->post('initOrder', 'OrderController@initOrder');//添加退款订单
+        $router->post('seeOrder', 'OrderController@seeOrder');//查看退款凭证
+        $router->post('amendOrder', 'OrderController@amendOrder');//修改退费状态
+        $router->post('remitOrder', 'OrderController@remitOrder');//修改打款状态
 
         $router->post('oapay', 'OrderController@oapay');//oa支付
     });
