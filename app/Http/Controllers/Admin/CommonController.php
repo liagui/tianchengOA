@@ -318,4 +318,175 @@ class CommonController extends BaseController {
             return response()->json(['code' => 500 , 'msg' => $ex->getMessage()]);
         }
     }
+    
+    /*
+     * @param  description   OA项目公共参数接口
+     * @param author    dzj
+     * @param ctime     2020-09-10
+     * return string
+     */
+    public function getCommonList(){
+        //支付方式
+        $payMethod = [
+            [
+                'label'   =>  '支付宝扫码' ,
+                'value'   =>  1
+            ] ,
+            [
+                'label'   =>  '微信扫码' ,
+                'value'   =>  2
+            ] ,
+            [
+                'label'   =>  '银联快捷支付' ,
+                'value'   =>  3
+            ] ,
+            [
+                'label'   =>  '微信小程序' ,
+                'value'   =>  4
+            ] ,
+            [
+                'label'   =>  '线下录入' ,
+                'value'   =>  5
+            ]
+        ];
+        
+        //支付状态
+        $payStatus = [
+            [
+                'label'   =>  '未支付' ,
+                'value'   =>  0
+            ] ,
+            [
+                'label'   =>  '已支付' ,
+                'value'   =>  1
+            ] ,
+            [
+                'label'   =>  '支付失败' ,
+                'value'   =>  2
+            ] ,
+            [
+                'label'   =>  '已退款' ,
+                'value'   =>  3
+            ] 
+        ];
+        
+        //订单类型
+        $orderType = [
+            [
+                'label'   =>  '课程订单' ,
+                'value'   =>  1
+            ] ,
+            [
+                'label'   =>  '报名订单' ,
+                'value'   =>  2
+            ] ,
+            [
+                'label'   =>  '课程+报名订单' ,
+                'value'   =>  3
+            ] 
+        ];
+        
+        //订单状态
+        $orderStatus = [
+            [
+                'label'   =>  '未确认' ,
+                'value'   =>  0
+            ] ,
+            [
+                'label'   =>  '确认' ,
+                'value'   =>  1
+            ] ,
+            [
+                'label'   =>  '驳回' ,
+                'value'   =>  2
+            ] 
+        ];
+        
+        //是否回访
+        $returnVisit = [
+            [
+                'label'   =>  '未回访' ,
+                'value'   =>  0
+            ] ,
+            [
+                'label'   =>  '已回访' ,
+                'value'   =>  1
+            ]
+        ];
+        
+        //是否开课
+        $classOpen = [
+            [
+                'label'   =>  '不开课' ,
+                'value'   =>  0
+            ] ,
+            [
+                'label'   =>  '开课' ,
+                'value'   =>  1
+            ]
+        ];
+        
+        //物料类型
+        $materialTypeList = [
+            [
+                'label'   =>  '合同' ,
+                'value'   =>  1
+            ] ,
+            [
+                'label'   =>  '发票' ,
+                'value'   =>  2
+            ] ,
+            [
+                'label'   =>  '收据' ,
+                'value'   =>  3
+            ]
+        ];
+        
+        //确认状态
+        $confirmStatus = [
+            [
+                'label'   =>  '未确认' ,
+                'value'   =>  0
+            ] ,
+            [
+                'label'   =>  '已确认' ,
+                'value'   =>  1
+            ]
+        ];
+        
+        //收集状态
+        $consigneeStatusList = [
+            [
+                'label'   =>  '待收集' ,
+                'value'   =>  0
+            ] ,
+            [
+                'label'   =>  '收集中' ,
+                'value'   =>  1
+            ] ,
+            [
+                'label'   =>  '已收集' ,
+                'value'   =>  2
+            ] ,
+            [
+                'label'   =>  '重新收集' ,
+                'value'   =>  3
+            ]
+        ];
+        
+        //封装成数组
+        $arr = [
+            'payMethod'   =>   $payMethod ,
+            'payStatus'   =>   $payStatus ,
+            'orderType'   =>   $orderType ,
+            'orderStatus' =>   $orderStatus ,
+            'returnVisit' =>   $returnVisit ,
+            'classOpen'   =>   $classOpen ,
+            'materialTypeList' => $materialTypeList ,
+            'confirmStatus'    => $confirmStatus ,
+            'consigneeStatusList' => $consigneeStatusList
+        ];
+                
+        return ['code'=>200,'msg'=>'获取列表成功','data'=>$arr];
+    }
 }

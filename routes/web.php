@@ -107,6 +107,7 @@ $router->group(['prefix' => 'admin' , 'namespace' => 'Admin','middleware'=> ['jw
         $router->post('doLookSchool', 'SchoolController@doLookSchool');                          //是否查看下属分校内容接口（lys）
 
     });
+    $router->post('getCommonList', 'CommonController@getCommonList');  //OA项目公共参数接口
 
     $router->post('diff', 'TestController@diff');
     $router->post('test', 'TestController@index');
