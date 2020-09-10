@@ -100,7 +100,7 @@ class StudentDatum extends Model {
             return ['code' => 201 , 'msg' => 'datum_id不合法'];
         }
         //判断学员资料关系表的id是否为空
-        if((!isset($body['branch_school']) || empty($body['branch_school'])) && $body['branch_school'] <= 0 ){
+        if(!isset($body['branch_school']) || empty($body['branch_school']) || $body['branch_school'] <= 0 ){
             return ['code' => 201 , 'msg' => '学校标识不合法'];
         }
          //判断学员姓名是否为空
@@ -194,25 +194,37 @@ class StudentDatum extends Model {
         unset($body['id']);
         $body['create_time']=date('Y-m-d H:i:s');
         DB::beginTransaction();
-        $datumId = Datum::insertGetId($body);
-        if($datumId<=0){
-             DB::rollBack();
-            return ['code'=>203,'msg'=>'资料提交失败，请重试'];
-        }
-        $update = [
-            'information_id'=>$datumId,
-            'gather_id' => isset(AdminLog::getAdminInfo()->admin_user->id) ? AdminLog::getAdminInfo()->admin_user->id : 0,
-            'datum_create_time'=>$body['create_time'],
-            'update_time'=> date('Y-m-d H:i:s')
-        ];
-        $res = self::where('id',$id)->update($update);
-        if($res){
-            DB::commit();
-            return ['code'=>200,'msg'=>'资料提交成功'];
+        $StudentDatumArr = self::where(['id'=>$id])->first();
+        if(empty($StudentDatumArr)){
+            return ['code'=>201,'msg'=>'暂无数据信息'];
         }else{
-            DB::rollBack();
-            return ['code'=>203,'msg'=>'资料提交失败'];
-        }
+            $datumId = Datum::insertGetId($body);
+            if($datumId<=0){
+                 DB::rollBack();
+                return ['code'=>203,'msg'=>'资料提交失败，请重试'];
+            }
+            $update = [
+                'information_id'=>$datumId,
+                'gather_id' => isset(AdminLog::getAdminInfo()->admin_user->id) ? AdminLog::getAdminInfo()->admin_user->id : 0,
+                'datum_create_time'=>$body['create_time'],
+                'update_time'=> date('Y-m-d H:i:s')
+            ];
+            $res = self::where('id',$id)->update($update);
+            if(!$res){
+                DB::rollBack();
+                return ['code'=>203,'msg'=>'资料提交失败,请重试！'];
+            }
+            $admin_name = isset(AdminLog::getAdminInfo()->admin_user->real_name) ? AdminLog::getAdminInfo()->admin_user->real_name : '';
+            $orderRes = pay_order_inside::where('id',$StudentDatumArr['order_id'])->update(['consignee_name'=>$admin_name]);
+            if($orderRes){
+                DB::commit();
+                return ['code'=>200,'msg'=>'资料提交成功'];
+            }else{
+                DB::rollBack();
+                return ['code'=>203,'msg'=>'资料提交失败,请重试！！'];
+            }
+        }   
+        
     }
 
     public static function getDatumById($body){
@@ -221,11 +233,15 @@ class StudentDatum extends Model {
         if(!isset($body['datum_id']) || empty($body['datum_id']) || $body['datum_id'] <= 0){
             return ['code' => 202 , 'msg' => 'datum_id不合法'];
         }
-        $datumArr = Datum::where('id',$datum_id)->first();
+        $datumArr = Datum::where('id',$body['datum_id'])->first();
+        if(is_null($datumArr)){
+            $datumArr = [];
+        }
         return ['code'=>200,'msg'=>'Success','data'=>$datumArr];
     }
-
+    //审核状态
     public static function doUpdateAudit($body){
+        $admin_id = isset(AdminLog::getAdminInfo()->admin_user->id) ? AdminLog::getAdminInfo()->admin_user->id : 0;
         if(!isset($body['id']) || empty($body['id']) || $body['id'] <= 0){
             return ['code' => 202 , 'msg' => 'id不合法'];
         }
@@ -233,23 +249,47 @@ class StudentDatum extends Model {
         if(!isset($body['audit_state']) || empty($body['audit_state'])){
             return ['code' => 201 , 'msg' => '请选择审核状态'];
         }
+        DB::beginTransaction();
         $update['audit_desc'] = isset($body['audit_desc']) && !empty($body['audit_desc'])?$body['audit_desc']:'';
         $update['audit_id']  =  $admin_id;
         $update['audit_status'] = $body['audit_state'];
         $udpate['update_time'] =date('Y-m-d H:i:s');
         $res = self::where('id',$body['id'])->update($update);
         if(!$res){
+            DB::rollBack();
             return ['code'=>203,'msg'=>'审核失败,请重试'];
         }
         $studentDatumArr  = self::where('id',$body['id'])->select('order_id')->first();
         $consignee_status = $body['audit_state']  == 1 ? 2:3;
         $orderRes = Pay_order_inside::where('id',$studentDatumArr['order_id'])->update(['consignee_status'=>$consignee_status]);
         if($orderRes){
+            AdminLog::insertAdminLog([
+                'admin_id'       =>   $admin_id ,
+                'module_name'    =>  'datum' ,
+                'route_url'      =>  'admin/datum/doUpdateAudit' , 
+                'operate_method' =>  'update' ,
+                'content'        =>  json_encode($body),
+                'ip'             =>  $_SERVER["REMOTE_ADDR"] ,
+                'create_at'      =>  date('Y-m-d H:i:s')
+            ]);
+            DB::commit();
             return ['code'=>200,'msg'=>'审核成功'];
         }else{
+            DB::rollBack();
             return ['code'=>203,'msg'=>'审核失败,请重试!'];    
         }
 
+    }
+    //发起人信息
+    public static function getInitiatorById($body){
+        if(!isset($body['id']) || empty($body['id']) || $body['id'] <= 0){
+            return ['code' => 202 , 'msg' => 'id不合法'];
+        }
+        $info = Admin::where(['is_del'=>1,'is_forbid'=>1])->selet('real_name','mobile','wx')->first();
+        if(is_null($info)){
+            $info = [];
+        }
+        return ['code'=>200,'msg'=>'Success','data'=>$info];
     }
 
 

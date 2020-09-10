@@ -15,7 +15,19 @@ use Illuminate\Support\Facades\DB;
 use App\Models\CouresSubject;
 use Log;
 class SchoolController extends Controller {
-
+    public function getList(){
+            //获取提交的参数
+        try{
+            $data = School::getList(self::$accept_data);
+            if($data['code'] == 200){
+                return response()->json($data);
+            } else {
+                return response()->json($data);
+            }
+        } catch (Exception $ex) {
+            return response()->json(['code' => 500 , 'msg' => $ex->getMessage()]);
+        }
+    }
     /*
      * @param  description   分校管理-添加分校方法
      * @param  参数说明       body包含以下参数[

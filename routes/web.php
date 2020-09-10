@@ -230,7 +230,7 @@ $router->group(['prefix' => 'admin' , 'namespace' => 'Admin','middleware'=> ['jw
     });
 
     $router->group(['prefix' => 'school'], function () use ($router) {
-        // $router->post('getList', 'SchoolController@getSchoolList');              //学校列表
+        $router->post('getList', 'SchoolController@getList');              //学校列表（仅限搜索用）
         $router->post('doSchoolDel', 'SchoolController@doSchoolDel');          //软删除
         $router->post('doSchoolForbid', 'SchoolController@doSchoolForbid');  //启用禁用
         $router->post('doSchoolLook', 'SchoolController@doSchoolLook');  //是否观看其他网校数据
@@ -244,6 +244,8 @@ $router->group(['prefix' => 'admin' , 'namespace' => 'Admin','middleware'=> ['jw
         $router->post('getList', 'StudentDatumController@getList');              //资料列表
         $router->post('doDatumInsert', 'StudentDatumController@doDatumInsert');        //资料添加
         $router->post('getDatumById', 'StudentDatumController@getDatumById');  //资料查看
+        $router->post('doUpdateAudit', 'StudentDatumController@doUpdateAudit');  //审核状态 
+        $router->post('getInitiatorById', 'StudentDatumController@getInitiatorById');  //获取发起人信息
     }); 
 
 
