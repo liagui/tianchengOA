@@ -254,6 +254,7 @@ class Refund_order extends Model
         if($order['confirm_status'] == 0){
             $data['confirm_status'] = 1;
         }
+        unset($data['/admin/order/remitOrder']);
         $up = self::where(['id' => $data['id']])->update($data);
         if($up){
             return ['code' => 200, 'msg' => '上传成功'];
