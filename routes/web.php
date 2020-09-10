@@ -223,7 +223,15 @@ $router->group(['prefix' => 'admin' , 'namespace' => 'Admin','middleware'=> ['jw
         // $router->post('doInsertSchool', 'SchoolController@doInsertSchool');    //添加网校
         // $router->post('getSchoolById', 'SchoolController@getSchoolUpdate');  //编辑网校（获取）
         // $router->post('doSchoolUpdate', 'SchoolController@doSchoolUpdate');  //编辑网校
-    });
+    }); 
+
+    $router->group(['prefix' => 'datum'], function () use ($router) {
+        $router->post('getList', 'StudentDatumController@getSchoolList');              //资料列表
+        $router->post('doDatumInsert', 'StudentDatumController@doDatumInsert');        //资料添加
+        $router->post('getDatumById', 'StudentDatumController@getDatumById');  //资料查看
+    }); 
+
+
 
 });
 
