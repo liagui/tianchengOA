@@ -224,7 +224,7 @@ class Refund_order extends Model
         }else{
             $up['confirm_status'] = 1;
             $up['refund_time'] = date('Y-m-d H:i:s');
-            if($order['refund_plan'] = 0){
+            if($order['refund_plan'] == 0){
                 $up['refund_plan'] = 1;
             }
             $date = self::where(['id'=>$data['id']])->update($up);
