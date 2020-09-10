@@ -26,6 +26,7 @@ class StudentDatumController extends Controller {
             return response()->json(['code' => 500 , 'msg' => $ex->getMessage()]);
         }
 	}
+
 	public function doDatumInsert(){
         //获取提交的参数
 		try{
@@ -35,6 +36,16 @@ class StudentDatumController extends Controller {
             return response()->json(['code' => 500 , 'msg' => $ex->getMessage()]);
         }
 	}
+
+    public function getDatumById(){
+        //获取提交的参数
+        try{
+            $data = StudentDatum::getDatumById(self::$accept_data);
+            return response()->json($data);
+        }catch (Exception $ex) {
+            return response()->json(['code' => 500 , 'msg' => $ex->getMessage()]);
+        }
+    }
 
 
 

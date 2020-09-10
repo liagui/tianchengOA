@@ -10,7 +10,7 @@ class StudentDatum extends Model {
     //时间戳设置
     public $timestamps = false;
 
-    public static function getList($body){
+    public static function getStudentDatumList($body){
     	$StudentDatumArr = [];
     	 //每页显示的条数
         $pagesize = (int)isset($body['pageSize']) && $body['pageSize'] > 0 ? $body['pageSize'] : 20;
@@ -21,8 +21,9 @@ class StudentDatum extends Model {
         	$oneSubject = $subject[0];
         	$twoSubject = isset($subject[1]) && $subject[1]>0 ?$subject[1]:0;
     	}
-        $count = self::leftJoin('student_information.order_id','=','pay_order_inside.id')
-        	->leftJoin('student.id','=','student_information.student_id')
+        DB::connection()->enableQueryLog();
+        $count = self::leftJoin('pay_order_inside','student_information.order_id','=','pay_order_inside.id')
+        	->leftJoin('student','student.id','=','student_information.student_id')
         	->where(function($query) use ($body) {
         		if(isset($body['school_id']) && !empty($body['school_id'])){ //所属学校
                 	$query->where('student_information.school_id',$body['school_id']);
@@ -55,8 +56,8 @@ class StudentDatum extends Model {
     		if(!empty($schoolArr)){
     			$schoolArr  = array_column($schoolArr,'school_name','id');
     		}
-    		$StudentDatumArr  = self::leftJoin('student_information.order_id','=','pay_order_inside.id')
-	        	->leftJoin('student.id','=','student_information.student_id')
+    		$StudentDatumArr  = self::leftJoin('pay_order_inside','student_information.order_id','=','pay_order_inside.id')
+	        	->leftJoin('student','student.id','=','student_information.student_id')
 	        	->where(function($query) use ($body) {
 	        		if(isset($body['school_id']) && !empty($body['school_id'])){ //所属学校
 	                	$query->where('student_information.school_id',$body['school_id']);
@@ -75,14 +76,14 @@ class StudentDatum extends Model {
 	                	$query->where('student_information.project_id',$oneSubject);
 	                	$query->where('student_information.subject_id',$twoSubject);
 	            	}
-	        	})->offset($offset)->limit($limit)->get();
-	        foreach($StudentDatum as $k=>&$v){
+	        	})->select('student_information.student_id','student_information.project_id','student_information.subject_id','student_information.audit_id','student_information.gather_id','student_information.initiator_id','student_information.datum_create_time','student.mobile','student.user_name as student_name','pay_order_inside.consignee_status','student_information.audit_status','student_information.id')->offset($offset)->limit($pagesize)->get();
+	        foreach($StudentDatumArr as $k=>&$v){
 	        	$v['school_name'] = isset($schoolArr[$v['school_id']]) ? $schoolArr[$v['school_id']] :'';
 	        	$v['project_name'] = isset($courseArr[$v['project_id']]) ? $courseArr[$v['project_id']] :'';
 	        	$v['subject_name'] = isset($courseArr[$v['subject_id']]) ? $courseArr[$v['subject_id']] :'';
 	        	$v['audit_name'] = isset($adminArr[$v['audit_id']]) ? $adminArr[$v['audit_id']] :'';
 	        	$v['gather_name'] = isset($adminArr[$v['gather_id']]) ? $adminArr[$v['gather_id']] :'';
-	        	$v['initiator_name'] = isset($adminArr[$v['initiator_name']]) ? $adminArr[$v['initiator_name']] :'';
+	        	$v['initiator_name'] = isset($adminArr[$v['initiator_id']]) ? $adminArr[$v['initiator_id']] :'';
 	        } 
     	}
     	return ['code'=>200,'msg'=>'success','data'=>$StudentDatumArr,'total'=>$count];
@@ -127,7 +128,6 @@ class StudentDatum extends Model {
         if(!isset($body['month']) || empty($body['month'])){
             return ['code' => 201 , 'msg' => '请输入报考月份'];
         }
-        
         //判断报考地区是否为空
         if(!isset($body['sign_region']) || empty($body['sign_region'])){
             return ['code' => 201 , 'msg' => '请输入报考地区'];
@@ -180,7 +180,7 @@ class StudentDatum extends Model {
         }
          //判断毕业证照片是否为空
         if(!isset($body['diploma_photo']) || empty($body['diploma_photo'])){
-            return ['code' => 201 , 'msg' => '请上传业证照片'];
+            return ['code' => 201 , 'msg' => '请上传毕业证照片'];
         }
          //判断毕业证扫描是否为空
         if(!isset($body['diploma_scanning']) || empty($body['diploma_scanning'])){
@@ -202,6 +202,7 @@ class StudentDatum extends Model {
         $update = [
             'information_id'=>$datumId,
             'gather_id' => isset(AdminLog::getAdminInfo()->admin_user->id) ? AdminLog::getAdminInfo()->admin_user->id : 0,
+            'datum_create_time'=>$body['create_time'],
             'update_time'=> date('Y-m-d H:i:s')
         ];
         $res = self::where('id',$id)->update($update);
@@ -213,5 +214,44 @@ class StudentDatum extends Model {
             return ['code'=>203,'msg'=>'资料提交失败'];
         }
     }
+
+    public static function getDatumById($body){
+        $admin_id = isset(AdminLog::getAdminInfo()->admin_user->id) ? AdminLog::getAdminInfo()->admin_user->id : 0;
+        //判断学员资料id是否为空
+        if(!isset($body['datum_id']) || empty($body['datum_id']) || $body['datum_id'] <= 0){
+            return ['code' => 202 , 'msg' => 'datum_id不合法'];
+        }
+        $datumArr = Datum::where('id',$datum_id)->first();
+        return ['code'=>200,'msg'=>'Success','data'=>$datumArr];
+    }
+
+    public static function doUpdateAudit($body){
+        if(!isset($body['id']) || empty($body['id']) || $body['id'] <= 0){
+            return ['code' => 202 , 'msg' => 'id不合法'];
+        }
+         //判断毕业证照片是否为空
+        if(!isset($body['audit_state']) || empty($body['audit_state'])){
+            return ['code' => 201 , 'msg' => '请选择审核状态'];
+        }
+        $update['audit_desc'] = isset($body['audit_desc']) && !empty($body['audit_desc'])?$body['audit_desc']:'';
+        $update['audit_id']  =  $admin_id;
+        $update['audit_status'] = $body['audit_state'];
+        $udpate['update_time'] =date('Y-m-d H:i:s');
+        $res = self::where('id',$body['id'])->update($update);
+        if(!$res){
+            return ['code'=>203,'msg'=>'审核失败,请重试'];
+        }
+        $studentDatumArr  = self::where('id',$body['id'])->select('order_id')->first();
+        $consignee_status = $body['audit_state']  == 1 ? 2:3;
+        $orderRes = Pay_order_inside::where('id',$studentDatumArr['order_id'])->update(['consignee_status'=>$consignee_status]);
+        if($orderRes){
+            return ['code'=>200,'msg'=>'审核成功'];
+        }else{
+            return ['code'=>203,'msg'=>'审核失败,请重试!'];    
+        }
+
+    }
+
+
 
 }
