@@ -270,9 +270,17 @@ class Project extends Model {
      * @param ctime     2020-09-03
      * return string
      */
-    public static function getProjectSubjectList() {
-        //项目列表
-        $project_list = self::select('id','name','is_del','is_hide')->where('parent_id' , 0)->where('is_del' , 0)->orderByDesc('create_time')->get()->toArray();
+    public static function getProjectSubjectList($body=[]) {
+        //判断项目名称是否传递
+        if(!isset($body['project_name']) && !empty($body['project_name'])){
+            //项目列表
+            $project_list = self::select('id','name','is_del','is_hide')->where('name','like','%'.$body['project_name'].'%')->where('parent_id' , 0)->where('is_del' , 0)->orderByDesc('create_time')->get()->toArray();
+        } else {
+            //项目列表
+            $project_list = self::select('id','name','is_del','is_hide')->where('parent_id' , 0)->where('is_del' , 0)->orderByDesc('create_time')->get()->toArray();
+        }
+
+        //判断是否为空
         if($project_list && !empty($project_list)){
             foreach($project_list as $k=>$v){
                 //获取学科得列表

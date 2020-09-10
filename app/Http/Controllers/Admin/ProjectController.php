@@ -173,7 +173,7 @@ class ProjectController extends Controller {
         //获取提交的参数
         try{
             //获取全部项目列表
-            $data = Project::getProjectSubjectList();
+            $data = Project::getProjectSubjectList(self::$accept_data);
             if($data['code'] == 200){
                 return response()->json(['code' => 200 , 'msg' => '获取列表成功' , 'data' => $data['data']]);
             } else {
