@@ -26,6 +26,9 @@ $router->group(['prefix' => 'admin' , 'namespace' => 'Admin','middleware'=> 'cor
     $router->post('doSendSms', 'AuthenticateController@doSendSms');//发送短信
 
 
+
+
+
 });
 //后端登录权限认证相关接口
 //
@@ -95,6 +98,12 @@ $router->group(['prefix' => 'admin' , 'namespace' => 'Admin','middleware'=> ['jw
 
     });
 
+
+
+
+
+
+
     //分校管理部分(dzj)
     $router->group(['prefix' => 'school'], function () use ($router) {
         $router->post('doInsertSchool', 'SchoolController@doInsertSchool');                      //添加分校接口
@@ -107,6 +116,11 @@ $router->group(['prefix' => 'admin' , 'namespace' => 'Admin','middleware'=> ['jw
         $router->post('doLookSchool', 'SchoolController@doLookSchool');                          //是否查看下属分校内容接口（lys）
 
     });
+
+        //上传到OSS图片接口
+    $router->post('doUploadOssImage', 'CommonController@doUploadOssImage');
+
+
 
     $router->post('diff', 'TestController@diff');
     $router->post('test', 'TestController@index');
@@ -226,7 +240,7 @@ $router->group(['prefix' => 'admin' , 'namespace' => 'Admin','middleware'=> ['jw
     }); 
 
     $router->group(['prefix' => 'datum'], function () use ($router) {
-        $router->post('getList', 'StudentDatumController@getSchoolList');              //资料列表
+        $router->post('getList', 'StudentDatumController@getList');              //资料列表
         $router->post('doDatumInsert', 'StudentDatumController@doDatumInsert');        //资料添加
         $router->post('getDatumById', 'StudentDatumController@getDatumById');  //资料查看
     }); 
