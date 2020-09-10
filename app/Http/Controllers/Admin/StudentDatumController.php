@@ -27,8 +27,9 @@ class StudentDatumController extends Controller {
         }
 	}
 	public function doDatumInsert(){
+        //获取提交的参数
 		try{
-            $data = StudentDatum::doStudentDatumList(self::$accept_data);
+            $data = StudentDatum::doStudentDatumInsert(self::$accept_data);
             return response()->json($data);
         }catch (Exception $ex) {
             return response()->json(['code' => 500 , 'msg' => $ex->getMessage()]);

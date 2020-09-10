@@ -2,6 +2,7 @@
 namespace App\Models;
 
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Support\Facades\DB;
 
 class StudentDatum extends Model {
  	//指定别的表名   权限表
@@ -38,7 +39,7 @@ class StudentDatum extends Model {
             	}
             	if(isset($body['subject']) && !empty($body['subject'])){
                 	$query->where('student_information.project_id',$oneSubject);
-                	$query->where('student_information.subject_id',$twoSubject)
+                	$query->where('student_information.subject_id',$twoSubject);
             	}
         	})->count();
     	if($count >0){
@@ -72,7 +73,7 @@ class StudentDatum extends Model {
 	            	}
 	            	if(isset($body['subject']) && !empty($body['subject'])){
 	                	$query->where('student_information.project_id',$oneSubject);
-	                	$query->where('student_information.subject_id',$twoSubject)
+	                	$query->where('student_information.subject_id',$twoSubject);
 	            	}
 	        	})->offset($offset)->limit($limit)->get();
 	        foreach($StudentDatum as $k=>&$v){
@@ -92,13 +93,34 @@ class StudentDatum extends Model {
         if(!$body || !is_array($body)){
             return ['code' => 202 , 'msg' => '传递数据不合法'];
         }
-        //判断分校id是否为空
-        if((!isset($body['datum_id']) || empty($body['datum_id'])) && $body['datum_id'] <= 0 ){
+
+        //判断学员资料关系表的id是否为空
+        if((!isset($body['id']) || empty($body['id'])) && $body['id'] <= 0 ){
             return ['code' => 201 , 'msg' => 'datum_id不合法'];
         }
-        //判断分校id是否为空
-        if((!isset($body['school_id']) || empty($body['school_id'])) && $body['school_id'] <= 0 ){
-            return ['code' => 201 , 'msg' => '学校id不合法'];
+        //判断学员资料关系表的id是否为空
+        if((!isset($body['branch_school']) || empty($body['branch_school'])) && $body['branch_school'] <= 0 ){
+            return ['code' => 201 , 'msg' => '学校标识不合法'];
+        }
+         //判断学员姓名是否为空
+        if(!isset($body['student_name']) || empty($body['student_name'])){
+            return ['code' => 201 , 'msg' => '请输入学员姓名'];
+        }
+          //判断是否查看下属分校数据
+        if(!isset($body['student_sex']) || !in_array($body['student_sex'] , [0,1])){
+            return ['code' => 202 , 'msg' => '请选择性别'];
+        }
+         //判断学员手机号是否为空
+        if(!isset($body['student_phone']) || empty($body['student_phone'])){
+            return ['code' => 201 , 'msg' => '请输入学员手机号'];
+        }
+         //判断学员身份证号是否为空
+        if(!isset($body['student_card']) || empty($body['student_card'])){
+            return ['code' => 201 , 'msg' => '请输入学员身份证号'];
+        }
+         //判断户籍地址是否为空
+        if(!isset($body['address']) || empty($body['address'])){
+            return ['code' => 201 , 'msg' => '请输入户籍地址'];
         }
         
         //判断报考月份是否为空
@@ -132,81 +154,63 @@ class StudentDatum extends Model {
             return ['code' => 201 , 'msg' => '请输入毕业年月'];
         }
     
-        //判断毕业年月是否为空
+        //判断学信网账号是否为空
         if(!isset($body['xx_account']) || empty($body['xx_account'])){
-            return ['code' => 201 , 'msg' => '请输入税点比例'];
-        }
-        //判断毕业年月是否为空
-        if(!isset($body['years']) || empty($body['years'])){
-            return ['code' => 201 , 'msg' => '请输入税点比例'];
-        }
-        //判断学信网账户是否为空
-        if(!isset($body['xx_account']) || empty($body['xx_account'])){
-            return ['code' => 201 , 'msg' => '请输入税点比例'];
+            return ['code' => 201 , 'msg' => '请输入学信网账号'];
         }
         //判断学信网密码是否为空
         if(!isset($body['xx_password']) || empty($body['xx_password'])){
-            return ['code' => 201 , 'msg' => '请输入税点比例'];
+            return ['code' => 201 , 'msg' => '请输入学信网密码'];
         }
         //判断2寸白底照片是否为空
         if(!isset($body['photo']) || empty($body['photo'])){
-            return ['code' => 201 , 'msg' => '请输入税点比例'];
+            return ['code' => 201 , 'msg' => '请上传2寸白底照片'];
         }
         //判断身份证正面照片是否为空
         if(!isset($body['card_photo_front']) || empty($body['card_photo_front'])){
-            return ['code' => 201 , 'msg' => '请输入税点比例'];
+            return ['code' => 201 , 'msg' => '请上传身份证正面照片'];
         }
         //判断身份证背面照片是否为空
         if(!isset($body['card_photo_contrary']) || empty($body['card_photo_contrary'])){
-            return ['code' => 201 , 'msg' => '请输入税点比例'];
+            return ['code' => 201 , 'msg' => '请上传身份证背面照片'];
         }
         //判断身份证正反面扫描是否为空
         if(!isset($body['card_photo_scanning']) || empty($body['card_photo_scanning'])){
-            return ['code' => 201 , 'msg' => '请输入税点比例'];
+            return ['code' => 201 , 'msg' => '请上传份证正反面扫描'];
         }
          //判断毕业证照片是否为空
         if(!isset($body['diploma_photo']) || empty($body['diploma_photo'])){
-            return ['code' => 201 , 'msg' => '请输入税点比例'];
+            return ['code' => 201 , 'msg' => '请上传业证照片'];
         }
          //判断毕业证扫描是否为空
         if(!isset($body['diploma_scanning']) || empty($body['diploma_scanning'])){
-            return ['code' => 201 , 'msg' => '请输入税点比例'];
+            return ['code' => 201 , 'msg' => '请上传毕业证扫描'];
         }
          //判断本人手持身份证照片是否为空
         if(!isset($body['my_photo']) || empty($body['my_photo'])){
-            return ['code' => 201 , 'msg' => '请输入税点比例'];
+            return ['code' => 201 , 'msg' => '请上传本人手持身份证照片'];
         }
-         //判断毕业证扫描是否为空
-        if(!isset($body['diploma_scanning']) || empty($body['diploma_scanning'])){
-            return ['code' => 201 , 'msg' => '请输入税点比例'];
+        $id = $body['id'];
+        unset($body['id']);
+        $body['create_time']=date('Y-m-d H:i:s');
+        DB::beginTransaction();
+        $datumId = Datum::insertGetId($body);
+        if($datumId<=0){
+             DB::rollBack();
+            return ['code'=>203,'msg'=>'资料提交失败，请重试'];
         }
-         //判断学员姓名是否为空
-        if(!isset($body['student_name']) || empty($body['student_name'])){
-            return ['code' => 201 , 'msg' => '请输入税点比例'];
-        }
-         //判断学员手机号是否为空
-        if(!isset($body['student_phone']) || empty($body['student_phone'])){
-            return ['code' => 201 , 'msg' => '请输入税点比例'];
-        }
-         //判断学员身份证号是否为空
-        if(!isset($body['student_card']) || empty($body['student_card'])){
-            return ['code' => 201 , 'msg' => '请输入税点比例'];
-        }
-         //判断户籍地址是否为空
-        if(!isset($body['address']) || empty($body['address'])){
-            return ['code' => 201 , 'msg' => '请输入税点比例'];
-        }
-        //判断是否查看下属分校数据
-        if(!isset($body['student_sex']) || !in_array($body['student_sex'] , [0,1])){
-            return ['code' => 202 , 'msg' => '查看方式不合法'];
-        }
-        //判断分校级别是否合法
-        if(!isset($body['level']) || !in_array($body['level'] , [1,2,3])){
-            return ['code' => 202 , 'msg' => '分校级别不合法'];
-        }
-        //判断上级分校的数据是否合法
-        if((isset($body['level']) && $body['level'] > 1) && isset($body['parent_id']) && $body['parent_id'] <= 0){
-            return ['code' => 202 , 'msg' => '上级分校id不合法'];
+        $update = [
+            'information_id'=>$datumId,
+            'gather_id' => isset(AdminLog::getAdminInfo()->admin_user->id) ? AdminLog::getAdminInfo()->admin_user->id : 0,
+            'update_time'=> date('Y-m-d H:i:s')
+        ];
+        $res = self::where('id',$id)->update($update);
+        if($res){
+            DB::commit();
+            return ['code'=>200,'msg'=>'资料提交成功'];
+        }else{
+            DB::rollBack();
+            return ['code'=>203,'msg'=>'资料提交失败'];
         }
     }
 
