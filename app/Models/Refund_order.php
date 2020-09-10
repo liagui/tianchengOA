@@ -215,7 +215,7 @@ class Refund_order extends Model
          * return  array
          */
     public static function amendOrder($data){
-        $order = self::select('confirm_status')->where(['id' => $data['id']])->first();
+        $order = self::select('confirm_status','refund_plan')->where(['id' => $data['id']])->first();
         if(!$order){
             return ['code' => 201 , 'msg' => '参数不对'];
         }
