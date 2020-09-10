@@ -45,7 +45,10 @@ class Refund_order extends Model
         if(!isset($data['refund_price']) || empty($data['refund_price'])){
             return ['code' => 201 , 'msg' => '未填写退费金额'];
         }
+        //根据学生名和手机号查询用户
+        $student = Student::where(['user_name'=>$data['student_name'],'mobile'=>$data['phone']])->first();
         $res = [
+            'student_id' => isset($student)?$student['id']:'',
             'student_name' => $data['student_name'],
             'phone' => $data['phone'],
             'refund_no' => 'TF'.date('YmdHis', time()) . rand(1111, 9999),
