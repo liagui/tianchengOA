@@ -144,6 +144,11 @@ class Refund_order extends Model
         //循环查询分类
         if(!empty($order)){
             foreach ($order as $k=>&$v){
+                //查学校
+                $school = School::where(['id'=>$v['school_id']])->first();
+                if($school){
+                    $v['school_name'] = $school['school_name'];
+                }
                 if($v['confirm_status'] == 0){
                     $v['confirm_status_text'] = '未确认';
                 }else{

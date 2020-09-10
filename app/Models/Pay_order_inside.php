@@ -5,6 +5,7 @@ use Illuminate\Database\Eloquent\Model;
 use Illuminate\Support\Facades\DB;
 use App\Models\StudentCourse;
 use App\Models\AdminLog;
+use Illuminate\Support\Facades\Redis;
 
 class Pay_order_inside extends Model
 {
@@ -443,9 +444,19 @@ class Pay_order_inside extends Model
             $data['reject_time'] = date('Y-m-d H:i:s');
             $data['reject_admin_id'] = $admin['id'];
         }
+//        $classlead = Admin::where(['is_del'=>1,'is_forbid'=>1,'status'=>1,'is_use'=>1])->get()->toArray();
+//        if(!empty($classlead)){
+//            $leadid = Redis::get('classlead');
+//            if(empty($leadid)){
+//                $data['have_user_id'] = $classlead[0]['id'];
+//            }else{
+//
+//            }
+////            Redis::setex('classlead' ,  $body['phone']);
+//        }
         $up = self::where(['id'=>$data['id']])->update($data);
         if($up){
-            //确认订单之后 将用户信息加入学生表中    在学生与课程关联表中加数据
+            //确认订单之后 将用户信息加入学生表中    在学生与课程关联表中加数据   班主任排课
             $student = Student::where(['user_name'=>$data['name'],'mobile'=>$data['mobile']])->first();
             if(!$student){
                 $add=[
