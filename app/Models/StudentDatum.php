@@ -111,9 +111,11 @@ class StudentDatum extends Model {
         if(!isset($body['student_sex']) || !in_array($body['student_sex'] , [0,1])){
             return ['code' => 202 , 'msg' => '请选择性别'];
         }
-         //判断学员手机号是否为空
+        //判断手机号是否为空
         if(!isset($body['student_phone']) || empty($body['student_phone'])){
-            return ['code' => 201 , 'msg' => '请输入学员手机号'];
+            return response()->json(['code' => 201 , 'msg' => '请输入手机号']);
+        } else if(!preg_match('#^13[\d]{9}$|^14[\d]{9}$|^15[\d]{9}$|^17[\d]{9}$|^18[\d]{9}|^16[\d]{9}|^19[\d]{9}$#', $body['student_phone'])) {
+            return response()->json(['code' => 202 , 'msg' => '手机号不合法']);
         }
          //判断学员身份证号是否为空
         if(!isset($body['student_card']) || empty($body['student_card'])){

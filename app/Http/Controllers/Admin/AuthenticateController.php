@@ -220,6 +220,10 @@ class AuthenticateController extends Controller {
             if(!isset($body['user_id']) || empty($body['user_id']) || $body['user_id'] <0){
                 return response()->json(['code' => 201 , 'msg' => '用户标识不合法']);
             }
+            //判断用户标识是否为空
+            if(!isset($body['real_name']) || empty($body['real_name'])){
+                return response()->json(['code' => 201 , 'msg' => '请输入真实姓名']);
+            }
             //判断手机号是否为空
             if(!isset($body['phone']) || empty($body['phone'])){
                 return response()->json(['code' => 201 , 'msg' => '请输入手机号']);
@@ -262,7 +266,8 @@ class AuthenticateController extends Controller {
             $update['mobile'] = $body['phone'];
             $update['updated_at'] = date('Y-m-d H:i:s');
             $update['is_use'] = 2; 
-
+            $update['real_name'] = $body['real_name'];
+            
             $result = Admin::where('id',$body['user_id'])->update($update);
             if($result){
                 DB::commit();
