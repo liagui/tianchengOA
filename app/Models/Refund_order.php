@@ -48,7 +48,7 @@ class Refund_order extends Model
         //根据学生名和手机号查询用户
         $student = Student::where(['user_name'=>$data['student_name'],'mobile'=>$data['phone']])->first();
         $res = [
-            'student_id' => isset($student)?$student['id']:'',
+            'student_id' => isset($student)?$student['id']:0,
             'student_name' => $data['student_name'],
             'phone' => $data['phone'],
             'refund_no' => 'TF'.date('YmdHis', time()) . rand(1111, 9999),
