@@ -97,7 +97,6 @@ class Refund_order extends Model
         $endtime = !empty($data['end_time'])?$data['end_time']:$enddate;
         $state_time = $statetime." 00:00:00";
         $end_time = $endtime." 23:59:59";
-
         //每页显示的条数
         $pagesize = (int)isset($data['pageSize']) && $data['pageSize'] > 0 ? $data['pageSize'] : 20;
         $page     = isset($data['page']) && $data['page'] > 0 ? $data['page'] : 1;
@@ -144,6 +143,11 @@ class Refund_order extends Model
         //循环查询分类
         if(!empty($order)){
             foreach ($order as $k=>&$v){
+                //查学校
+                $school = School::where(['id'=>$v['school_id']])->first();
+                if($school){
+                    $v['school_name'] = $school['school_name'];
+                }
                 if($v['confirm_status'] == 0){
                     $v['confirm_status_text'] = '未确认';
                 }else{
@@ -175,6 +179,8 @@ class Refund_order extends Model
                 }
             }
         }
+        $where['state_time'] = $state_time;
+        $where['end_time'] = $end_time;
         $page=[
             'pageSize'=>$pagesize,
             'page' =>$page,
