@@ -46,6 +46,15 @@ class StudentDatumController extends Controller {
             return response()->json(['code' => 500 , 'msg' => $ex->getMessage()]);
         }
     }
+    public function doUpdateAudit(){
+        //获取提交的参数
+        try{
+            $data = StudentDatum::doUpdateAudit(self::$accept_data);
+            return response()->json($data);
+        }catch (Exception $ex) {
+            return response()->json(['code' => 500 , 'msg' => $ex->getMessage()]);
+        }
+    }
 
 
 

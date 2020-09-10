@@ -28,7 +28,11 @@ class School extends Model {
 
 
     }
-
+    public static function getList($body){
+        $school_name = isset($body['search']) && empty($body['search']) ? $body['search'] :'';
+        $schoolData = self::where(['is_del'=>0,'is_open'=>0])->where('school_name','like','%'.$school_name.'%')->select('id','school_name')->get();
+        return ['code'=>200,'msg'=>'Success','data'=>$schoolData];
+    }
     /*
      * @param  description   分校管理-添加分校方法
      * @param  参数说明       body包含以下参数[
