@@ -121,7 +121,7 @@ class StudentDatum extends Model {
         if(!isset($body['student_card']) || empty($body['student_card'])){
             return ['code' => 201 , 'msg' => '请输入学员身份证号'];
         }
-         //判断户籍地址是否为空
+        //判断户籍地址是否为空
         if(!isset($body['address']) || empty($body['address'])){
             return ['code' => 201 , 'msg' => '请输入户籍地址'];
         }
