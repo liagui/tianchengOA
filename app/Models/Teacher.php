@@ -83,7 +83,6 @@ class Teacher extends Model {
             return ['code' => 200 , 'msg' => '账户已存在'];
         }
         $teacher['password'] = password_hash($data['password'], PASSWORD_DEFAULT);
-        $teacher['real_name'] = $data['real_name'];
         $teacher['create_time'] = date("Y-m-d H:i:s");
         $teacher['role_id'] = 3;
         $teacher['create_id'] = 1;
