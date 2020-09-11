@@ -114,7 +114,7 @@ $app->register(\Tymon\JWTAuth\Providers\LumenServiceProvider::class);
 //加载redis服务
 $app->register(\Illuminate\Redis\RedisServiceProvider::class);
 //加载注册excel
-// $app->register(\Maatwebsite\Excel\ExcelServiceProvider::class);
+$app->register(\Maatwebsite\Excel\ExcelServiceProvider::class);
 //阿里云短信
 $app->register(\Lysice\Sms\SmsServiceProvider::class);
 //图片验证码
