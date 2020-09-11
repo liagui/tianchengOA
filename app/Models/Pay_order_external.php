@@ -20,12 +20,13 @@ class Pay_order_external extends Model
     public static function unpaidOrder($data){
         //科目id
         $where['pay_status'] = 0;
+        //科目id&学科id
         if(!empty($data['project_id'])){
-            $where['project_id'] = $data['project_id'];
-        }
-        //科目id
-        if(!empty($data['subject_id'])){
-            $where['subject_id'] = $data['subject_id'];
+            $parent = json_decode($data['project_id'], true);
+            $where['project_id'] = $parent[0];
+            if(!empty($parent[1])){
+                $where['subject_id'] = $parent[1];
+            }
         }
         //每页显示的条数
         $pagesize = (int)isset($data['pageSize']) && $data['pageSize'] > 0 ? $data['pageSize'] : 20;
