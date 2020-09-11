@@ -13,7 +13,7 @@ class StudentDatumExport implements FromCollection, WithHeadings {
     }
     public function collection() {
         $data = $this->where;
-        $arr =School::select('id')->get();
+        $arr =School::select('id','school_name')->get();
 
         return $arr;
 
@@ -31,6 +31,7 @@ class StudentDatumExport implements FromCollection, WithHeadings {
             // '学员姓名',
             // '学员性别',
             // '学员身份证',
+            '学员身份证照片'
         ];
     }
 }
