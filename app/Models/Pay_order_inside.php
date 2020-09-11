@@ -478,6 +478,10 @@ class Pay_order_inside extends Model
         }
         if(!isset($data['fee_id'])|| empty($data['fee_id'])){
             unset($data['fee_id']);
+            unset($data['sign_Price']);
+        }
+        if(empty($data['course_Price'])){
+            unset($data['course_Price']);
         }
         if($data['confirm_status'] == 1){
             $data['comfirm_time'] = date('Y-m-d H:i:s');
