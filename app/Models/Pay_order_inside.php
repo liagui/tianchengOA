@@ -476,6 +476,9 @@ class Pay_order_inside extends Model
             unset($data['education_id']);
             unset($data['major_id']);
         }
+        if(!isset($data['fee_id'])|| empty($data['fee_id'])){
+            unset($data['fee_id']);
+        }
         if($data['confirm_status'] == 1){
             $data['comfirm_time'] = date('Y-m-d H:i:s');
             $data['have_user_id'] = $admin['id'];
