@@ -21,7 +21,7 @@ class Pay_order_inside extends Model
          * @param  return_visit   0未回访 1 已回访
          * @param  classes   0不开课 1开课
          * @param  confirm_status   订单确认状态码 0未确认 1确认  2驳回
-         * @param  project_id   科目id
+         * @param  project_id  数组
          * @param  school_id   学校id
          * @param  state_time   创建时间
          * @param  end_time    结束时间
@@ -65,9 +65,13 @@ class Pay_order_inside extends Model
         if(!empty($data['confirm_status'])){
             $where['confirm_status'] = $data['confirm_status'];
         }
-        //科目id
+        //科目id&学科id
         if(!empty($data['project_id'])){
-            $where['project_id'] = $data['project_id'];
+            $parent = json_decode($data['project_id'], true);
+            $where['project_id'] = $parent[0];
+            if(!empty($parent[1])){
+                $where['subject_id'] = $parent[1];
+            }
         }
 
         //每页显示的条数
@@ -202,11 +206,13 @@ class Pay_order_inside extends Model
          */
     public static function handOrder($data){
         $admin = isset(AdminLog::getAdminInfo()->admin_user) ? AdminLog::getAdminInfo()->admin_user : [];
-        if(!isset($data['project_id']) || empty($data['project_id'])){
-            return ['code' => 201 , 'msg' => '未选择项目'];
-        }
-        if(!isset($data['subject_id']) || empty($data['subject_id'])){
-            return ['code' => 201 , 'msg' => '未选择学科'];
+        //科目id&学科id
+        if(!empty($data['project_id'])){
+            $parent = json_decode($data['project_id'], true);
+            $where['project_id'] = $parent[0];
+            if(!empty($parent[1])){
+                $where['subject_id'] = $parent[1];
+            }
         }
         if(!isset($data['course_id']) || empty($data['course_id'])){
             return ['code' => 201 , 'msg' => '未选择课程'];
@@ -344,7 +350,7 @@ class Pay_order_inside extends Model
     }
     /*
          * @param  总校待确认订单列表   分校已提交订单
-         * @param  subject_id  学科id
+         * @param  project_id   数组形式
          * @param  school_id  分校id
          * @param  pay_type  支付方式（1支付宝扫码2微信扫码3银联快捷支付4微信小程序5线下录入）
          * @param  confirm_order_type  确认的订单类型 1课程订单 2报名订单3课程+报名订单
@@ -358,8 +364,13 @@ class Pay_order_inside extends Model
     public static function awaitOrder($data,$schoolarr){
         $where['del_flag'] = 0;  //未删除
         $where['confirm_status'] = 0;  //未确认
-        if(isset($data['subject_id']) || !empty($data['subject_id'])){
-            $where['subject_id'] = $data['subject_id'];
+        //科目id&学科id
+        if(!empty($data['project_id'])){
+            $parent = json_decode($data['project_id'], true);
+            $where['project_id'] = $parent[0];
+            if(!empty($parent[1])){
+                $where['subject_id'] = $parent[1];
+            }
         }
         if(isset($data['school_id']) || !empty($data['school_id'])){
             $where['school_id'] = $data['school_id'];
@@ -697,7 +708,7 @@ class Pay_order_inside extends Model
     }
     /*
          * @param  驳回订单
-         * @param  subject_id  学科id
+         * @param  project_id  arr
          * @param  school_id  分校id
          * @param  pay_type  支付方式（1支付宝扫码2微信扫码3银联快捷支付4微信小程序5线下录入）
          * @param  confirm_order_type  确认的订单类型 1课程订单 2报名订单3课程+报名订单
@@ -711,8 +722,13 @@ class Pay_order_inside extends Model
     public static function rejectOrder($data,$schoolarr){
         $where['del_flag'] = 0;  //未删除
         $where['confirm_status'] = 2;  //已驳回
-        if(isset($data['subject_id']) || !empty($data['subject_id'])){
-            $where['subject_id'] = $data['subject_id'];
+        //科目id&学科id
+        if(!empty($data['project_id'])){
+            $parent = json_decode($data['project_id'], true);
+            $where['project_id'] = $parent[0];
+            if(!empty($parent[1])){
+                $where['subject_id'] = $parent[1];
+            }
         }
         if(isset($data['pay_type']) || !empty($data['pay_type'])){
             $where['pay_type'] = $data['pay_type'];
