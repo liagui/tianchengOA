@@ -28,8 +28,6 @@ class ChannelController extends Controller {
      * @param ctime     2020-05-27
      */
     public function getList(){
-        $school_id = isset(AdminLog::getAdminInfo()->admin_user->school_id) ? AdminLog::getAdminInfo()->admin_user->school_id : 0;
-        print_r($this->underlingLook($school_id));die;
         $result = Channel::getList(self::$accept_data);
         if($result['code'] == 200){
             return response()->json($result);
