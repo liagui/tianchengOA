@@ -30,15 +30,15 @@ class Refund_order extends Model
         if(!isset($data['phone']) || empty($data['phone'])){
             return ['code' => 201 , 'msg' => '未填写学员手机号'];
         }
-//        if(!isset($data['project_id']) || empty($data['project_id'])){
-//            return ['code' => 201 , 'msg' => '未选择项目'];
-//        }
-//        if(!isset($data['subject_id']) || empty($data['subject_id'])){
-//            return ['code' => 201 , 'msg' => '未选择学科'];
-//        }
-//        if(!isset($data['course_id']) || empty($data['course_id'])){
-//            return ['code' => 201 , 'msg' => '未选择课程'];
-//        }
+        if(!isset($data['project_id']) || empty($data['project_id'])){
+            return ['code' => 201 , 'msg' => '未选择项目'];
+        }
+        if(!isset($data['subject_id']) || empty($data['subject_id'])){
+            return ['code' => 201 , 'msg' => '未选择学科'];
+        }
+        if(!isset($data['course_id']) || empty($data['course_id'])){
+            return ['code' => 201 , 'msg' => '未选择课程'];
+        }
         if(!isset($data['school_id']) || empty($data['school_id'])){
             return ['code' => 201 , 'msg' => '未选择学校'];
         }
@@ -59,9 +59,9 @@ class Refund_order extends Model
             'refund_reason' => isset($data['refund_reason'])?$data['refund_reason']:'',
             'refund_plan' => 0,
             'teacher_id' =>isset(AdminLog::getAdminInfo()->admin_user->id)?AdminLog::getAdminInfo()->admin_user->id:0,
-//            'course_id' => $data['course_id'],
-//            'project_id' => $data['project_id'],
-//            'subject_id' => $data['subject_id'],
+            'course_id' => $data['course_id'],
+            'project_id' => $data['project_id'],
+            'subject_id' => $data['subject_id'],
         ];
         $add = self::insert($res);
         if($add){

@@ -32,10 +32,8 @@ class Pay_order_inside extends Model
          * @param  2020/9/2 15:52
          * return  array
          */
-    public static function orderList($data){
+    public static function orderList($data,$schoolarr){
         $where=[];
-        //判断是否是分校
-        $admin = isset(AdminLog::getAdminInfo()->admin_user) ? AdminLog::getAdminInfo()->admin_user: [];
         //判断时间
         $begindata="2020-03-04";
         $enddate = date('Y-m-d');
@@ -78,19 +76,13 @@ class Pay_order_inside extends Model
         $offset   = ($page - 1) * $pagesize;
 
         //計算總數
-        $count = self::where(function($query) use ($data,$admin) {
+        $count = self::where(function($query) use ($data,$schoolarr) {
                 if(isset($data['order_no']) && !empty($data['order_no'])){
                     $query->where('order_no',$data['order_on'])
                         ->orwhere('name',$data['order_on'])
                         ->orwhere('mobile',$data['order_on']);
                 }
-            if($admin['school_id'] == 0){
-                if(isset($data['school_id']) && $data['school_id'] != 0 && $data['school_id'] != '' ){
-                    $query->where('school_id',$data['school_id']);
-                }
-            }else{
-                $query->whereIn('school_id',explode(',',$admin['school_id']));
-            }
+                $query->whereIn('school_id',$schoolarr);
             })
             ->where($where)
             ->where('del_flag',0)
@@ -98,19 +90,13 @@ class Pay_order_inside extends Model
             ->count();
 
         //数据
-        $order = self::where(function($query) use ($data,$admin) {
+        $order = self::where(function($query) use ($data,$schoolarr) {
                 if(isset($data['order_no']) && !empty($data['order_no'])){
                     $query->where('order_no',$data['order_on'])
                         ->orwhere('name',$data['order_on'])
                         ->orwhere('mobile',$data['order_on']);
                 }
-            if($admin['school_id'] == 0){
-                if(isset($data['school_id']) && $data['school_id'] != 0 && $data['school_id'] != '' ){
-                    $query->where('school_id',$data['school_id']);
-                }
-            }else{
-                $query->whereIn('school_id',explode(',',$admin['school_id']));
-            }
+                $query->whereIn('school_id',$schoolarr);
             })
             ->where($where)
             ->where('del_flag',0)
@@ -118,8 +104,10 @@ class Pay_order_inside extends Model
             ->orderByDesc('id')
             ->offset($offset)->limit($pagesize)->get()->toArray();
         //循环查询分类
+        $countprice = 0;
         if(!empty($order)){
             foreach ($order as $k=>&$v){
+                $countprice = $countprice + $v['pay_price'];
                 if($v['pay_type'] == 1){
                     $v['pay_type_text'] = '支付宝扫码';
                 }else if ($v['pay_type'] == 2){
@@ -193,7 +181,8 @@ class Pay_order_inside extends Model
             'page' =>$page,
             'total'=>$count
         ];
-        return ['code' => 200 , 'msg' => '查询成功','data'=>$order,'where'=>$data,'page'=>$page];
+        //总金额
+        return ['code' => 200 , 'msg' => '查询成功','data'=>$order,'countprice'=>$countprice,'where'=>$data,'page'=>$page];
     }
     /*
          * @param  手动报单
@@ -368,11 +357,9 @@ class Pay_order_inside extends Model
          * @param  ctime   2020/9/7 10:14
          * return  array
          */
-    public static function awaitOrder($data){
+    public static function awaitOrder($data,$schoolarr){
         $where['del_flag'] = 0;  //未删除
         $where['confirm_status'] = 0;  //未确认
-        //判断学校
-        $admin = isset(AdminLog::getAdminInfo()->admin_user) ? AdminLog::getAdminInfo()->admin_user : [];
         if(isset($data['subject_id']) || !empty($data['subject_id'])){
             $where['subject_id'] = $data['subject_id'];
         }
@@ -398,37 +385,24 @@ class Pay_order_inside extends Model
         $offset   = ($page - 1) * $pagesize;
 
         //計算總數
-        $count = self::where(function($query) use ($data,$admin) {
+        $count = self::where(function($query) use ($data,$schoolarr) {
             if(isset($data['order_no']) && !empty($data['order_no'])){
                 $query->where('order_no',$data['order_on'])
                     ->orwhere('name',$data['order_on'])
                     ->orwhere('mobile',$data['order_on']);
             }
-            if($admin['school_id'] == 0){
-                if(isset($data['school_id']) && $data['school_id'] != 0 && $data['school_id'] != '' ){
-                    $query->where('school_id',$data['school_id']);
-                }
-            }else{
-                $query->whereIn('school_id',explode(',',$admin['school_id']));
-            }
-
+            $query->whereIn('school_id',$schoolarr);
         })
         ->where($where)
         ->count();
 
-        $order = self::where(function($query) use ($data,$admin) {
+        $order = self::where(function($query) use ($data,$schoolarr) {
             if(isset($data['order_no']) && !empty($data['order_no'])){
                 $query->where('order_no',$data['order_on'])
                     ->orwhere('name',$data['order_on'])
                     ->orwhere('mobile',$data['order_on']);
             }
-            if($admin['school_id'] == 0){
-                if(isset($data['school_id']) && $data['school_id'] != 0 && $data['school_id'] != '' ){
-                    $query->where('school_id',$data['school_id']);
-                }
-            }else{
-                $query->whereIn('school_id',explode(',',$admin['school_id']));
-            }
+            $query->whereIn('school_id',$schoolarr);
         })
         ->where($where)
         ->orderByDesc('id')
@@ -736,8 +710,7 @@ class Pay_order_inside extends Model
          * @param  ctime   2020/9/7 16:03
          * return  array
          */
-    public static function rejectOrder($data){
-        $admin = isset(AdminLog::getAdminInfo()->admin_user) ? AdminLog::getAdminInfo()->admin_user: [];
+    public static function rejectOrder($data,$schoolarr){
         $where['del_flag'] = 0;  //未删除
         $where['confirm_status'] = 2;  //已驳回
         if(isset($data['subject_id']) || !empty($data['subject_id'])){
@@ -762,36 +735,24 @@ class Pay_order_inside extends Model
         $offset   = ($page - 1) * $pagesize;
 
         //計算總數
-        $count = self::where(function($query) use ($data,$admin) {
+        $count = self::where(function($query) use ($data,$schoolarr) {
             if(isset($data['order_no']) && !empty($data['order_no'])){
                 $query->where('order_no',$data['order_on'])
                     ->orwhere('name',$data['order_on'])
                     ->orwhere('mobile',$data['order_on']);
             }
-            if($admin['school_id'] == 0){
-                if(isset($data['school_id']) && $data['school_id'] != 0 && $data['school_id'] != '' ){
-                    $query->where('school_id',$data['school_id']);
-                }
-            }else{
-                $query->whereIn('school_id',explode(',',$admin['school_id']));
-            }
+            $query->whereIn('school_id',$schoolarr);
         })
         ->where($where)
         ->count();
 
-        $order = self::where(function($query) use ($data,$admin) {
+        $order = self::where(function($query) use ($data,$schoolarr) {
             if(isset($data['order_no']) && !empty($data['order_no'])){
                 $query->where('order_no',$data['order_on'])
                     ->orwhere('name',$data['order_on'])
                     ->orwhere('mobile',$data['order_on']);
             }
-            if($admin['school_id'] == 0){
-                if(isset($data['school_id']) && $data['school_id'] != 0 && $data['school_id'] != '' ){
-                    $query->where('school_id',$data['school_id']);
-                }
-            }else{
-                $query->whereIn('school_id',explode(',',$admin['school_id']));
-            }
+            $query->whereIn('school_id',$schoolarr);
         })
         ->where($where)
         ->orderByDesc('id')

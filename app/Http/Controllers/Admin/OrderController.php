@@ -1,6 +1,7 @@
 <?php
 namespace App\Http\Controllers\Admin;
 use App\Http\Controllers\Controller;
+use App\Models\AdminLog;
 use App\Models\Pay_order_external;
 use App\Models\Pay_order_inside;
 use App\Models\Refund_order;
@@ -8,7 +9,8 @@ use App\Models\Refund_order;
 class OrderController extends Controller {
     //总校&分校
     public function orderList(){
-        $list = Pay_order_inside::orderList(self::$accept_data);
+        $schoolarr = $this->underlingLook(AdminLog::getAdminInfo()->admin_user->school_id);
+        $list = Pay_order_inside::orderList(self::$accept_data,$schoolarr);
         return response()->json($list);
     }
     //手动报单
@@ -28,7 +30,8 @@ class OrderController extends Controller {
     }
     //被驳回订单
     public function rejectOrder(){
-        $list = Pay_order_inside::rejectOrder(self::$accept_data);
+        $schoolarr = $this->underlingLook(AdminLog::getAdminInfo()->admin_user->school_id);
+        $list = Pay_order_inside::rejectOrder(self::$accept_data,$schoolarr);
         return response()->json($list);
     }
     //驳回订单进行操作
@@ -39,7 +42,8 @@ class OrderController extends Controller {
 
     //总校待确认订单*******************************************************
     public function awaitOrder(){
-        $list = Pay_order_inside::awaitOrder(self::$accept_data);
+        $schoolarr = $this->underlingLook(AdminLog::getAdminInfo()->admin_user->school_id);
+        $list = Pay_order_inside::awaitOrder(self::$accept_data,$schoolarr);
         return response()->json($list);
     }
     //订单详情
@@ -142,7 +146,7 @@ class OrderController extends Controller {
     /*
      * @param  description   开课管理订单详情接口
      * @param  参数说明       body包含以下参数[
-     *      open_id        开课得管理id   
+     *      open_id        开课得管理id
      * ]
      * @param author    dzj
      * @param ctime     2020-09-08
@@ -190,7 +194,7 @@ class OrderController extends Controller {
             return response()->json(['code' => 500 , 'msg' => $ex->getMessage()]);
         }
     }
-    
+
     /*
      * @param  description   确认开课详情接口
      * @param  参数说明       body包含以下参数[
