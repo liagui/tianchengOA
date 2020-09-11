@@ -33,7 +33,7 @@ class Pay_order_inside extends Model
          * return  array
          */
     public static function orderList($data,$schoolarr){
-        $where=[];
+        $where['del_flag']=0;
         //判断时间
         $begindata="2020-03-04";
         $enddate = date('Y-m-d');
@@ -85,7 +85,6 @@ class Pay_order_inside extends Model
                 $query->whereIn('school_id',$schoolarr);
             })
             ->where($where)
-            ->where('del_flag',0)
             ->whereBetween('create_time', [$state_time, $end_time])
             ->count();
 
@@ -99,7 +98,6 @@ class Pay_order_inside extends Model
                 $query->whereIn('school_id',$schoolarr);
             })
             ->where($where)
-            ->where('del_flag',0)
             ->whereBetween('create_time', [$state_time, $end_time])
             ->orderByDesc('id')
             ->offset($offset)->limit($pagesize)->get()->toArray();
