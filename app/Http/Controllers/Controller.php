@@ -321,11 +321,20 @@ class Controller extends BaseController {
         if(empty($school_id) && $school_id == ''){
             return ['code'=>201,'msg'=>'学校id串为空'];
         }
+
         $schoolIds = explode(',',$school_id);
+         
         if(in_array('0',$schoolIds)){
-            $YesLookSchoolIds = \App\Models\School::where(['is_del'=>0,'is_open'=>0])->value('id');
+           
+            $YesLookSchoolIds = \App\Models\School::where(['is_del'=>0,'is_open'=>0])->select('id')->get()->toArray();
+            if(empty($YesLookSchoolIds)){
+                $YesLookSchoolIds = [];
+            }else{
+                $YesLookSchoolIds = array_column($YesLookSchoolIds,'id');
+            }
             return ['code'=>200,'msg'=>'Success','data'=>$YesLookSchoolIds];
         }else{
+            
             $schoolData = \App\Models\School::whereIn('id',$schoolIds)->where(['is_del'=>0])->select('id','look_all_flag','level')->get()->toArray();
             if(empty($schoolData)){
                 return ['code'=>201,'msg'=>'暂无学校信息'];
