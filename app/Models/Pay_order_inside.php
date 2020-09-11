@@ -400,7 +400,7 @@ class Pay_order_inside extends Model
                     ->orwhere('name',$data['order_on'])
                     ->orwhere('mobile',$data['order_on']);
             }
-            $query->whereIn('school_id',$schoolarr);
+//            $query->whereIn('school_id',$schoolarr);
         })
         ->where($where)
         ->count();
@@ -411,7 +411,7 @@ class Pay_order_inside extends Model
                     ->orwhere('name',$data['order_on'])
                     ->orwhere('mobile',$data['order_on']);
             }
-            $query->whereIn('school_id',$schoolarr);
+//            $query->whereIn('school_id',$schoolarr);
         })
         ->where($where)
         ->orderByDesc('id')
@@ -730,6 +730,12 @@ class Pay_order_inside extends Model
                 $where['subject_id'] = $parent[1];
             }
         }
+        $begindata="2020-03-04";
+        $enddate = date('Y-m-d');
+        $statetime = !empty($data['state_time'])?$data['state_time']:$begindata;
+        $endtime = !empty($data['end_time'])?$data['end_time']:$enddate;
+        $state_time = $statetime." 00:00:00";
+        $end_time = $endtime." 23:59:59";
         if(isset($data['pay_type']) || !empty($data['pay_type'])){
             $where['pay_type'] = $data['pay_type'];
         }
@@ -757,6 +763,7 @@ class Pay_order_inside extends Model
             }
             $query->whereIn('school_id',$schoolarr);
         })
+        ->whereBetween('create_time', [$state_time, $end_time])
         ->where($where)
         ->count();
 
@@ -769,6 +776,7 @@ class Pay_order_inside extends Model
             $query->whereIn('school_id',$schoolarr);
         })
         ->where($where)
+            ->whereBetween('create_time', [$state_time, $end_time])
         ->orderByDesc('id')
         ->offset($offset)->limit($pagesize)->get()->toArray();
         //循环查询分类
