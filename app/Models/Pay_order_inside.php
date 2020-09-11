@@ -860,7 +860,7 @@ class Pay_order_inside extends Model
                 $adminname = Admin::where(['id'=>$v['pay_voucher_user_id']])->first();
                 $v['pay_voucher_name'] = $adminname['username'];
                 //驳回人查询
-                $adminreject = Admin::where(['id'=>$order['reject_admin_id']])->first();
+                $adminreject = Admin::where(['id'=>$v['reject_admin_id']])->first();
                 $v['reject_admin_name'] = $adminreject['username'];
             }
         }
