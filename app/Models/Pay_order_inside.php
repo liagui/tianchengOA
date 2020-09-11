@@ -471,6 +471,7 @@ class Pay_order_inside extends Model
         //获取操作人信息
         $admin = isset(AdminLog::getAdminInfo()->admin_user) ? AdminLog::getAdminInfo()->admin_user : [];
         $order = self::where(['id'=>$data['id']])->first();
+        unset($data['/admin/order/notarizeOrder']);
         if($data['confirm_status'] == 1){
             $data['comfirm_time'] = date('Y-m-d H:i:s');
             $data['have_user_id'] = $admin['id'];
