@@ -31,8 +31,7 @@ class  Channel extends Model {
 
     //获取支付通过列表 （lys）2020-09-03
     public static function getList($body){
-        $school_id = isset(AdminLog::getAdminInfo()->admin_user->school_id) ? AdminLog::getAdminInfo()->admin_user->school_id : 0;
-        print_r($this->underlingLook($school_id));die;
+        
         $channelArr = [];
     	$school_id = isset(AdminLog::getAdminInfo()->admin_user->school_id) ? AdminLog::getAdminInfo()->admin_user->school_id : 0;
         $school_status = isset(AdminLog::getAdminInfo()->admin_user->school_status) ? AdminLog::getAdminInfo()->admin_user->school_status : 0;
