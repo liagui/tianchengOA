@@ -46,9 +46,9 @@ class Pay_order_external extends Model
         //数据
         $order = self::where(function($query) use ($data) {
             if(isset($data['order_no']) && !empty($data['order_no'])){
-                $query->where('order_no',$data['order_on'])
-                    ->orwhere('name',$data['order_on'])
-                    ->orwhere('mobile',$data['order_on']);
+                $query->where('order_no',$data['order_on']);
+//                    ->orwhere('name',$data['order_on'])
+//                    ->orwhere('mobile',$data['order_on']);
             }
          })
         ->where($where)
