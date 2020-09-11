@@ -736,16 +736,16 @@ class Pay_order_inside extends Model
         $endtime = !empty($data['end_time'])?$data['end_time']:$enddate;
         $state_time = $statetime." 00:00:00";
         $end_time = $endtime." 23:59:59";
-        if(isset($data['pay_type']) || !empty($data['pay_type'])){
+        if(isset($data['pay_type']) && !empty($data['pay_type'])){
             $where['pay_type'] = $data['pay_type'];
         }
-        if(isset($data['confirm_order_type']) || !empty($data['confirm_order_type'])){
+        if(isset($data['confirm_order_type']) && !empty($data['confirm_order_type'])){
             $where['confirm_order_type'] = $data['confirm_order_type'];
         }
-        if(isset($data['return_visit']) || !empty($data['return_visit'])){
+        if(isset($data['return_visit']) && !empty($data['return_visit'])){
             $where['return_visit'] = $data['return_visit'];
         }
-        if(isset($data['classes']) || !empty($data['classes'])){
+        if(isset($data['classes']) && !empty($data['classes'])){
             $where['classes'] = $data['classes'];
         }
 
