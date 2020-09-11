@@ -35,9 +35,9 @@ class Pay_order_external extends Model
         //計算總數
         $count = self::where(function($query) use ($data) {
             if(isset($data['order_no']) && !empty($data['order_no'])){
-                $query->where('order_no',$data['order_on'])
-                    ->orwhere('name',$data['order_on'])
-                    ->orwhere('mobile',$data['order_on']);
+                $query->where('order_no',$data['order_no'])
+                    ->orwhere('name',$data['order_no'])
+                    ->orwhere('mobile',$data['order_no']);
             }
         })
         ->where($where)
