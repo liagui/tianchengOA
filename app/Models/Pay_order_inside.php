@@ -782,6 +782,55 @@ class Pay_order_inside extends Model
         //循环查询分类
         if(!empty($order)){
             foreach ($order as $k=>&$v){
+                if($v['pay_type'] == 1){
+                    $v['pay_type_text'] = '支付宝扫码';
+                }else if ($v['pay_type'] == 2){
+                    $v['pay_type_text'] = '微信扫码';
+                }else if ($v['pay_type'] == 3){
+                    $v['pay_type_text'] = '银联快捷支付';
+                }else if ($v['pay_type'] == 4){
+                    $v['pay_type_text'] = '微信小程序';
+                }else if ($v['pay_type'] == 5){
+                    $v['pay_type_text'] = '线下录入';
+                }
+                if($v['pay_status'] == 0){
+                    $v['pay_status_text'] = '未支付';
+                }else{
+                    $v['pay_status_text'] = '已支付';
+                }
+                if($v['return_visit'] == 0){
+                    $v['return_visit_text'] = '未回访';
+                }else{
+                    $v['return_visit_text'] = '已回访';
+                }
+                if($v['classes'] == 0){
+                    $v['classes_text'] = '未开课';
+                }else{
+                    $v['classes_text'] = '已开课';
+                }
+                if($v['confirm_order_type'] == 1){
+                    $v['confirm_order_type_text'] = '课程订单';
+                }else if($v['confirm_order_type'] == 2){
+                    $v['confirm_order_type_text'] = '报名订单';
+                }else if($v['confirm_order_type'] == 3){
+                    $v['confirm_order_type_text'] = '课程+报名订单';
+                }
+                if($v['first_pay'] == 1){
+                    $v['first_pay_text'] = '全款';
+                }else if($v['first_pay'] == 2){
+                    $v['first_pay_text'] = '定金';
+                }else if($v['first_pay'] == 3){
+                    $v['first_pay_text'] = '部分尾款';
+                }else if($v['first_pay'] == 4){
+                    $v['first_pay_text'] = '最后一笔尾款';
+                }
+                if($v['confirm_status'] == 0){
+                    $v['confirm_status_text'] = '未确认';
+                }else if($v['confirm_status'] == 1){
+                    $v['confirm_status_text'] = '确认';
+                }else if($v['confirm_status'] == 2){
+                    $v['confirm_status_text'] = '驳回';
+                }
                 //course  课程
                 $course = Course::select('course_name')->where(['id'=>$v['course_id']])->first();
                 $v['course_name'] = $course['course_name'];
