@@ -870,7 +870,7 @@ class Pay_order_inside extends Model
         if(empty($data['id'])){
             return ['code' => 201 , 'msg' => '参数错误'];
         }
-        $up = self::where(['id'=>$data['id']])->where(['confirm_status'=>0]);
+        $up = self::where(['id'=>$data['id']])->update(['confirm_status'=>0]);
         if($up){
             return ['code' => 200 , 'msg' => '操作成功'];
         }else{
