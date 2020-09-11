@@ -372,19 +372,19 @@ class Pay_order_inside extends Model
                 $where['subject_id'] = $parent[1];
             }
         }
-        if(isset($data['school_id']) || !empty($data['school_id'])){
+        if(isset($data['school_id']) && !empty($data['school_id'])){
             $where['school_id'] = $data['school_id'];
         }
-        if(isset($data['pay_type']) || !empty($data['pay_type'])){
+        if(isset($data['pay_type']) && !empty($data['pay_type'])){
             $where['pay_type'] = $data['pay_type'];
         }
-        if(isset($data['confirm_order_type']) || !empty($data['confirm_order_type'])){
+        if(isset($data['confirm_order_type']) && !empty($data['confirm_order_type'])){
             $where['confirm_order_type'] = $data['confirm_order_type'];
         }
-        if(isset($data['return_visit']) || !empty($data['return_visit'])){
+        if(isset($data['return_visit']) && !empty($data['return_visit'])){
             $where['return_visit'] = $data['return_visit'];
         }
-        if(isset($data['classes']) || !empty($data['classes'])){
+        if(isset($data['classes']) && !empty($data['classes'])){
             $where['classes'] = $data['classes'];
         }
 
@@ -400,7 +400,7 @@ class Pay_order_inside extends Model
                     ->orwhere('name',$data['order_on'])
                     ->orwhere('mobile',$data['order_on']);
             }
-//            $query->whereIn('school_id',$schoolarr);
+            $query->whereIn('school_id',$schoolarr);
         })
         ->where($where)
         ->count();
@@ -411,7 +411,7 @@ class Pay_order_inside extends Model
                     ->orwhere('name',$data['order_on'])
                     ->orwhere('mobile',$data['order_on']);
             }
-//            $query->whereIn('school_id',$schoolarr);
+            $query->whereIn('school_id',$schoolarr);
         })
         ->where($where)
         ->orderByDesc('id')
