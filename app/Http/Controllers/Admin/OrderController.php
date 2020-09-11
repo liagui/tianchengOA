@@ -10,8 +10,7 @@ class OrderController extends Controller {
     //总校&分校
     public function orderList(){
         $schoolarr = $this->underlingLook(AdminLog::getAdminInfo()->admin_user->school_id);
-        print_r($schoolarr);die;
-        $list = Pay_order_inside::orderList(self::$accept_data,$schoolarr);
+        $list = Pay_order_inside::orderList(self::$accept_data,$schoolarr['data']);
         return response()->json($list);
     }
     //手动报单
@@ -32,7 +31,7 @@ class OrderController extends Controller {
     //被驳回订单
     public function rejectOrder(){
         $schoolarr = $this->underlingLook(AdminLog::getAdminInfo()->admin_user->school_id);
-        $list = Pay_order_inside::rejectOrder(self::$accept_data,$schoolarr);
+        $list = Pay_order_inside::rejectOrder(self::$accept_data,$schoolarr['data']);
         return response()->json($list);
     }
     //驳回订单进行操作
@@ -44,7 +43,7 @@ class OrderController extends Controller {
     //总校待确认订单*******************************************************
     public function awaitOrder(){
         $schoolarr = $this->underlingLook(AdminLog::getAdminInfo()->admin_user->school_id);
-        $list = Pay_order_inside::awaitOrder(self::$accept_data,$schoolarr);
+        $list = Pay_order_inside::awaitOrder(self::$accept_data,$schoolarr['data']);
         return response()->json($list);
     }
     //订单详情
