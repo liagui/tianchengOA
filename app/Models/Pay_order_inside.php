@@ -1077,8 +1077,8 @@ class Pay_order_inside extends Model
             //判断项目-学科大小类是否为空
             if(isset($body['category_id']) && !empty($body['category_id'])){
                 $category_id= json_decode($body['category_id'] , true);
-                $project_id = $category_id[0];
-                $subject_id = $category_id[1];
+                $project_id = isset($category_id[0]) && $category_id[0] ? $category_id[0] : 0;
+                $subject_id = isset($category_id[1]) && $category_id[1] ? $category_id[1] : 0;
 
                 //判断项目id是否传递
                 if($project_id && $project_id > 0){
