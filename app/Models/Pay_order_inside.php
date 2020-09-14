@@ -1134,7 +1134,7 @@ class Pay_order_inside extends Model
             }
 
             //判断开课状态是否为空和合法
-            if(isset($body['status']) && in_array($body['status'] , [0,1])){
+            if(isset($body['status']) && !empty($body['status']) && in_array($body['status'] , [0,1])){
                 $query->where('status' , '=' , $body['status']);
             }
         })->where(function($query) use ($body){
@@ -1178,7 +1178,7 @@ class Pay_order_inside extends Model
                 }
 
                 //判断开课状态是否为空和合法
-                if(isset($body['status']) && in_array($body['status'] , [0,1])){
+                if(isset($body['status']) && !empty($body['status']) && in_array($body['status'] , [0,1])){
                     $query->where('status' , '=' , $body['status']);
                 }
             })->where(function($query) use ($body){
