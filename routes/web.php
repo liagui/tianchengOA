@@ -44,6 +44,7 @@ $router->group(['prefix' => 'admin' , 'namespace' => 'Admin','middleware'=> ['jw
         $router->post('rejectOrder', 'OrderController@rejectOrder');//分校&总校被驳回订单列表
         $router->post('anewOrder', 'OrderController@anewOrder');//驳回订单进行操作
         //总校
+        $router->post('sureOrderList', 'OrderController@sureOrderList');//总校确认订单列表
         $router->post('notarizeOrder', 'OrderController@notarizeOrder');//总校确认&取消订单
         $router->post('sureOrder', 'OrderController@sureOrder');//总校确认订单详情
         $router->post('unpaidOrder', 'OrderController@unpaidOrder');//总校未支付订单
@@ -238,15 +239,15 @@ $router->group(['prefix' => 'admin' , 'namespace' => 'Admin','middleware'=> ['jw
         // $router->post('doInsertSchool', 'SchoolController@doInsertSchool');    //添加网校
         // $router->post('getSchoolById', 'SchoolController@getSchoolUpdate');  //编辑网校（获取）
         // $router->post('doSchoolUpdate', 'SchoolController@doSchoolUpdate');  //编辑网校
-    }); 
+    });
 
     $router->group(['prefix' => 'datum'], function () use ($router) {
         $router->post('getList', 'StudentDatumController@getList');              //资料列表
         $router->post('doDatumInsert', 'StudentDatumController@doDatumInsert');        //资料添加
         $router->post('getDatumById', 'StudentDatumController@getDatumById');  //资料查看
-        $router->post('doUpdateAudit', 'StudentDatumController@doUpdateAudit');  //审核状态 
+        $router->post('doUpdateAudit', 'StudentDatumController@doUpdateAudit');  //审核状态
         $router->post('getInitiatorById', 'StudentDatumController@getInitiatorById');  //获取发起人信息
-    }); 
+    });
 
 
 

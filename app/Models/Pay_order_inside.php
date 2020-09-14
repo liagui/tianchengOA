@@ -539,6 +539,151 @@ class Pay_order_inside extends Model
         }
     }
     /*
+         * @param  总校确认订单列表
+         * @param  $user_id     参数
+         * @param  author  苏振文
+         * @param  ctime   2020/9/14 9:47
+         * return  array
+         */
+    public static function sureOrderList($data,$schoolarr){
+        $where['del_flag'] = 0;  //未删除
+        $where['confirm_status'] = 1;  //已确认
+        //科目id&学科id
+        if(!empty($data['project_id'])){
+            $parent = json_decode($data['project_id'], true);
+            $where['project_id'] = $parent[0];
+            if(!empty($parent[1])){
+                $where['subject_id'] = $parent[1];
+            }
+        }
+        if(isset($data['school_id']) && !empty($data['school_id'])){
+            $where['school_id'] = $data['school_id'];
+        }
+        if(isset($data['pay_type']) && !empty($data['pay_type'])){
+            $where['pay_type'] = $data['pay_type'];
+        }
+        if(isset($data['confirm_order_type']) && !empty($data['confirm_order_type'])){
+            $where['confirm_order_type'] = $data['confirm_order_type'];
+        }
+        if(isset($data['return_visit']) && !empty($data['return_visit'])){
+            $where['return_visit'] = $data['return_visit'];
+        }
+        if(isset($data['classes']) && !empty($data['classes'])){
+            $where['classes'] = $data['classes'];
+        }
+
+        //每页显示的条数
+        $pagesize = (int)isset($data['pageSize']) && $data['pageSize'] > 0 ? $data['pageSize'] : 20;
+        $page     = isset($data['page']) && $data['page'] > 0 ? $data['page'] : 1;
+        $offset   = ($page - 1) * $pagesize;
+
+        //計算總數
+        $count = self::where(function($query) use ($data,$schoolarr) {
+            if(isset($data['order_no']) && !empty($data['order_no'])){
+                $query->where('order_no',$data['order_on'])
+                    ->orwhere('name',$data['order_on'])
+                    ->orwhere('mobile',$data['order_on']);
+            }
+            $query->whereIn('school_id',$schoolarr);
+        })
+            ->where($where)
+            ->count();
+
+        $order = self::where(function($query) use ($data,$schoolarr) {
+            if(isset($data['order_no']) && !empty($data['order_no'])){
+                $query->where('order_no',$data['order_on'])
+                    ->orwhere('name',$data['order_on'])
+                    ->orwhere('mobile',$data['order_on']);
+            }
+            $query->whereIn('school_id',$schoolarr);
+        })
+            ->where($where)
+            ->orderByDesc('id')
+            ->offset($offset)->limit($pagesize)->get()->toArray();
+        //循环查询分类
+        if(!empty($order)){
+            foreach ($order as $k=>&$v){
+                if($v['pay_type'] == 1){
+                    $v['pay_type_text'] = '支付宝扫码';
+                }else if ($v['pay_type'] == 2){
+                    $v['pay_type_text'] = '微信扫码';
+                }else if ($v['pay_type'] == 3){
+                    $v['pay_type_text'] = '银联快捷支付';
+                }else if ($v['pay_type'] == 4){
+                    $v['pay_type_text'] = '微信小程序';
+                }else if ($v['pay_type'] == 5){
+                    $v['pay_type_text'] = '线下录入';
+                }
+                if($v['pay_status'] == 0){
+                    $v['pay_status_text'] = '未支付';
+                }else{
+                    $v['pay_status_text'] = '已支付';
+                }
+                if($v['return_visit'] == 0){
+                    $v['return_visit_text'] = '未回访';
+                }else{
+                    $v['return_visit_text'] = '已回访';
+                }
+                if($v['classes'] == 0){
+                    $v['classes_text'] = '未开课';
+                }else{
+                    $v['classes_text'] = '已开课';
+                }
+                if($v['confirm_order_type'] == 1){
+                    $v['confirm_order_type_text'] = '课程订单';
+                }else if($v['confirm_order_type'] == 2){
+                    $v['confirm_order_type_text'] = '报名订单';
+                }else if($v['confirm_order_type'] == 3){
+                    $v['confirm_order_type_text'] = '课程+报名订单';
+                }
+                if($v['first_pay'] == 1){
+                    $v['first_pay_text'] = '全款';
+                }else if($v['first_pay'] == 2){
+                    $v['first_pay_text'] = '定金';
+                }else if($v['first_pay'] == 3){
+                    $v['first_pay_text'] = '部分尾款';
+                }else if($v['first_pay'] == 4){
+                    $v['first_pay_text'] = '最后一笔尾款';
+                }
+                if($v['confirm_status'] == 0){
+                    $v['confirm_status_text'] = '未确认';
+                }else if($v['confirm_status'] == 1){
+                    $v['confirm_status_text'] = '确认';
+                }else if($v['confirm_status'] == 2){
+                    $v['confirm_status_text'] = '驳回';
+                }
+                //查学校
+                $school = School::where(['id'=>$v['school_id']])->first();
+                if($school){
+                    $v['school_name'] = $school['school_name'];
+                }
+                //course  课程
+                $course = Course::select('course_name')->where(['id'=>$v['course_id']])->first();
+                $v['course_name'] = $course['course_name'];
+                //Project  项目
+                $project = Project::select('name')->where(['id'=>$v['project_id']])->first();
+                $v['project_name'] = $project['name'];
+                //Subject  学科
+                $subject = Project::select('name')->where(['id'=>$v['subject_id']])->first();
+                $v['subject_name'] = $subject['name'];
+                if(!empty($v['education_id']) && $v['education_id'] != 0){
+                    //查院校
+                    $education = Education::select('education_name')->where(['id'=>$v['education_id']])->first();
+                    $v['education_name'] = $education['education_name'];
+                    //查专业
+                    $major = Major::where(['id'=>$v['major_id']])->first();
+                    $v['major_name'] = $major['major_name'];
+                }
+            }
+        }
+        $page=[
+            'pageSize'=>$pagesize,
+            'page' =>$page,
+            'total'=>$count
+        ];
+        return ['code' => 200 , 'msg' => '查询成功','data'=>$order,'where'=>$data,'page'=>$page];
+    }
+    /*
          * @param  分校未提交订单
          * @param  order_on   订单号
          * @param  author  苏振文
@@ -848,6 +993,11 @@ class Pay_order_inside extends Model
                     $v['confirm_status_text'] = '确认';
                 }else if($v['confirm_status'] == 2){
                     $v['confirm_status_text'] = '驳回';
+                }
+                //查学校
+                $school = School::where(['id'=>$v['school_id']])->first();
+                if($school){
+                    $v['school_name'] = $school['school_name'];
                 }
                 //course  课程
                 $course = Course::select('course_name')->where(['id'=>$v['course_id']])->first();
