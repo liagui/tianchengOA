@@ -1446,7 +1446,7 @@ class Pay_order_inside extends Model
         //根据开课id更新信息
         if(false !== StudentCourse::where('id',$body['open_id'])->update($array)){
             //更新学员开课状态
-            self::where('id',$info['order_id'])->update(['classes' => $status]);
+            //self::where('id',$info['order_id'])->update(['classes' => $status]);
             //事务提交
             DB::commit();
             return ['code' => 200 , 'msg' => '更新成功'];
