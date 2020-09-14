@@ -52,6 +52,7 @@ $app->singleton(
     App\Console\Kernel::class
 );
 
+
 /*
 |--------------------------------------------------------------------------
 | Register Config Files
@@ -113,14 +114,14 @@ $app->register(\Tymon\JWTAuth\Providers\LumenServiceProvider::class);
 //加载redis服务
 $app->register(\Illuminate\Redis\RedisServiceProvider::class);
 //加载注册excel
-// $app->register(\Maatwebsite\Excel\ExcelServiceProvider::class);
+$app->register(\Maatwebsite\Excel\ExcelServiceProvider::class);
 //阿里云短信
 $app->register(\Lysice\Sms\SmsServiceProvider::class);
 //图片验证码
 $app->register(Youngyezi\Captcha\CaptchaServiceProvider::class);
 // 添加别名
 $app->alias('captcha', 'Youngyezi\Captcha\CaptchaServiceProvider');
-// $app->alias('Excel','Maatwebsite\Excel\Facades\Excel::class');
+
 /*
 |--------------------------------------------------------------------------
 | Load The Application Routes
