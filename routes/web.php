@@ -26,7 +26,7 @@ $router->group(['prefix' => 'admin' , 'namespace' => 'Admin','middleware'=> 'cor
     $router->post('bindMobile', 'AuthenticateController@bindMobile');//绑定手机号
     $router->post('doSendSms', 'AuthenticateController@doSendSms');//发送短信
     $router->get('doExcelDatum', 'ExcelController@doExcelDatum');
-   
+
 
 
 
@@ -35,7 +35,7 @@ $router->group(['prefix' => 'admin' , 'namespace' => 'Admin','middleware'=> 'cor
 //后端登录权限认证相关接口
 //
 $router->group(['prefix' => 'admin' , 'namespace' => 'Admin','middleware'=> ['jwt.auth', 'cors'] ], function () use ($router) {
-    
+
      //订单管理（szw）
     $router->group(['prefix' => 'order'], function () use ($router) {
         //总校&分校
@@ -45,12 +45,13 @@ $router->group(['prefix' => 'admin' , 'namespace' => 'Admin','middleware'=> ['jw
         $router->post('orderVoucher', 'OrderController@orderVoucher');//订单查看支付凭证
         $router->post('orderDetail', 'OrderController@orderDetail');//订单备注或驳回信息
         $router->post('rejectOrder', 'OrderController@rejectOrder');//分校&总校被驳回订单列表
-        $router->post('anewOrder', 'OrderController@anewOrder');//驳回订单进行操作
+        $router->post('anewOrder', 'OrderController@anewOrder');//被驳回订单  取消订单 操作
         //总校
         $router->post('sureOrderList', 'OrderController@sureOrderList');//总校确认订单列表
         $router->post('notarizeOrder', 'OrderController@notarizeOrder');//总校确认&取消订单
         $router->post('sureOrder', 'OrderController@sureOrder');//总校确认订单详情
         $router->post('unpaidOrder', 'OrderController@unpaidOrder');//总校未支付订单
+        $router->post('DorejectOrder', 'OrderController@DorejectOrder');//总校进行驳回
         //分校
         $router->post('unsubmittedOrder', 'OrderController@unsubmittedOrder');//分校未提交订单
         $router->post('unsubmittedOrderDetail', 'OrderController@unsubmittedOrderDetail');//分校未提交详情
