@@ -677,6 +677,9 @@ class Pay_order_inside extends Model
                 //根据上传凭证人id查询凭证名称
                 $adminname = Admin::where(['id'=>$v['pay_voucher_user_id']])->first();
                 $v['pay_voucher_name'] = $adminname['username'];
+                //备注
+                $beizhuname = Admin::where(['id'=>$v['admin_id']])->first();
+                $v['remark_name'] = $beizhuname['username'];
             }
         }
         $page=[
