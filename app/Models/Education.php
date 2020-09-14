@@ -136,7 +136,7 @@ class Education extends Model {
         }
         
         //判断院校名称是否存在
-        $is_exists = self::where('parent_id' , $is_exists_school['parent_id'])->where('child_id' , $is_exists_school['child_id'])->where('region_name' , $body['region_name'])->where('is_del' , 0)->count();
+        $is_exists = self::where('parent_id' , $is_exists_school['parent_id'])->where('child_id' , $is_exists_school['child_id'])->where('education_name' , $body['education_name'])->where('is_del' , 0)->count();
         if($is_exists && $is_exists > 0){
             //组装院校数组信息
             $school_array = [
