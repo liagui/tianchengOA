@@ -67,6 +67,11 @@ class OrderController extends Controller {
         $list = Pay_order_external::unpaidOrder(self::$accept_data);
         return response()->json($list);
     }
+    //总校订单进行驳回
+    public function DorejectOrder(){
+        $list = Pay_order_inside::DorejectOrder(self::$accept_data);
+        return response()->json($list);
+    }
 
     //分校订单************************************************************
     //分校未提交订单查询

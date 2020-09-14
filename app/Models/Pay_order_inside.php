@@ -1,10 +1,10 @@
 <?php
 namespace App\Models;
 
+use App\Models\AdminLog;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Support\Facades\DB;
 use App\Models\StudentCourse;
-use App\Models\AdminLog;
 use Illuminate\Support\Facades\Redis;
 
 class Pay_order_inside extends Model
@@ -674,6 +674,12 @@ class Pay_order_inside extends Model
                     $major = Major::where(['id'=>$v['major_id']])->first();
                     $v['major_name'] = $major['major_name'];
                 }
+                //根据上传凭证人id查询凭证名称
+                $adminname = Admin::where(['id'=>$v['pay_voucher_user_id']])->first();
+                $v['pay_voucher_name'] = $adminname['username'];
+                //备注
+                $beizhuname = Admin::where(['id'=>$v['admin_id']])->first();
+                $v['remark_name'] = $beizhuname['username'];
             }
         }
         $page=[
@@ -1032,7 +1038,7 @@ class Pay_order_inside extends Model
         return ['code' => 200 , 'msg' => '查询成功','data'=>$order,'where'=>$data,'page'=>$page];
     }
     /*
-         * @param  被驳回订单进行操作
+         * @param  被驳回订单  取消订单
          * @param  id 订单id
          * @param  author  苏振文
          * @param  ctime   2020/9/7 16:16
@@ -1045,6 +1051,32 @@ class Pay_order_inside extends Model
             return ['code' => 201 , 'msg' => '参数错误'];
         }
         $up = self::where(['id'=>$data['id']])->update(['confirm_status'=>0]);
+        if($up){
+            return ['code' => 200 , 'msg' => '操作成功'];
+        }else{
+            return ['code' => 201 , 'msg' => '操作失败'];
+        }
+    }
+    /*
+        * @param  驳回订单
+        * @param  id 订单id
+        * @param  auth 驳回原因
+        * @param  author  苏振文
+        * @param  ctime   2020/9/7 16:16
+        * return  array
+        */
+    public static function DorejectOrder($data){
+        if(empty($data['id'])){
+            return ['code' => 201 , 'msg' => '参数错误'];
+        }
+        $admin = isset(AdminLog::getAdminInfo()->admin_user) ? AdminLog::getAdminInfo()->admin_user : [];
+        $redate=[
+            'reject_admin_id' => $admin['id'],
+            'reject_time' => date('Y-m-d H:i:s'),
+            'reject_des' => $data['reject_des'],
+            'confirm_status' => 2
+        ];
+        $up = self::where(['id'=>$data['id']])->update($redate);
         if($up){
             return ['code' => 200 , 'msg' => '操作成功'];
         }else{
