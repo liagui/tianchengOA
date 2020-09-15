@@ -26,7 +26,7 @@ class Pay_order_inside extends Model
          * @param  state_time   创建时间
          * @param  end_time    结束时间
          * @param  order_no    订单号/手机号/姓名
-         * @param  pageSize    每页显示条数
+         * @param  pagesize    每页显示条数
          * @param  page    第几页
          * @param  苏振文
          * @param  2020/9/2 15:52
@@ -75,7 +75,7 @@ class Pay_order_inside extends Model
         }
 
         //每页显示的条数
-        $pagesize = (int)isset($data['pageSize']) && $data['pageSize'] > 0 ? $data['pageSize'] : 20;
+        $pagesize = (int)isset($data['pagesize']) && $data['pagesize'] > 0 ? $data['pagesize'] : 20;
         $page     = isset($data['page']) && $data['page'] > 0 ? $data['page'] : 1;
         $offset   = ($page - 1) * $pagesize;
 
@@ -185,7 +185,7 @@ class Pay_order_inside extends Model
             }
         }
         $page=[
-            'pageSize'=>$pagesize,
+            'pagesize'=>$pagesize,
             'page' =>$page,
             'total'=>$count
         ];
@@ -395,7 +395,7 @@ class Pay_order_inside extends Model
         }
 
         //每页显示的条数
-        $pagesize = (int)isset($data['pageSize']) && $data['pageSize'] > 0 ? $data['pageSize'] : 20;
+        $pagesize = (int)isset($data['pagesize']) && $data['pagesize'] > 0 ? $data['pagesize'] : 20;
         $page     = isset($data['page']) && $data['page'] > 0 ? $data['page'] : 1;
         $offset   = ($page - 1) * $pagesize;
 
@@ -445,7 +445,7 @@ class Pay_order_inside extends Model
             }
         }
         $page=[
-            'pageSize'=>$pagesize,
+            'pagesize'=>$pagesize,
             'page' =>$page,
             'total'=>$count
         ];
@@ -573,7 +573,7 @@ class Pay_order_inside extends Model
         }
 
         //每页显示的条数
-        $pagesize = (int)isset($data['pageSize']) && $data['pageSize'] > 0 ? $data['pageSize'] : 20;
+        $pagesize = (int)isset($data['pagesize']) && $data['pagesize'] > 0 ? $data['pagesize'] : 20;
         $page     = isset($data['page']) && $data['page'] > 0 ? $data['page'] : 1;
         $offset   = ($page - 1) * $pagesize;
 
@@ -683,7 +683,7 @@ class Pay_order_inside extends Model
             }
         }
         $page=[
-            'pageSize'=>$pagesize,
+            'pagesize'=>$pagesize,
             'page' =>$page,
             'total'=>$count
         ];
@@ -919,7 +919,7 @@ class Pay_order_inside extends Model
         }
 
         //每页显示的条数
-        $pagesize = (int)isset($data['pageSize']) && $data['pageSize'] > 0 ? $data['pageSize'] : 20;
+        $pagesize = (int)isset($data['pagesize']) && $data['pagesize'] > 0 ? $data['pagesize'] : 20;
         $page     = isset($data['page']) && $data['page'] > 0 ? $data['page'] : 1;
         $offset   = ($page - 1) * $pagesize;
 
@@ -1031,7 +1031,7 @@ class Pay_order_inside extends Model
             }
         }
         $page=[
-            'pageSize'=>$pagesize,
+            'pagesize'=>$pagesize,
             'page' =>$page,
             'total'=>$count
         ];
