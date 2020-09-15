@@ -110,7 +110,7 @@ class RoleController extends Controller {
         if(!isset($data['auth_desc']) || empty($data['auth_desc'])){
             return response()->json(['code'=>201,'msg'=>'权限描述为空或缺少']);
         }
-        unset($data['/admin/role/doRoleAuthInsert']);
+        unset($data['/admin/role/doRoleInsert']);
         $data['create_id'] = isset(CurrentAdmin::user()['id'])?CurrentAdmin::user()['id']:0;
         $role = Roleauth::where(['role_name'=>$data['role_name']])->first();
         if($role){
