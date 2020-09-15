@@ -210,6 +210,27 @@ class ProjectController extends Controller {
     }
     
     /*
+     * @param  description   项目管理-课程列表接口
+     * @param author    dzj
+     * @param ctime     2020-09-15
+     * return string
+     */
+    public function getCourseAllList(){
+        //获取提交的参数
+        try{
+            //获取全部项目列表
+            $data = Course::getCourseAllList(self::$accept_data);
+            if($data['code'] == 200){
+                return response()->json(['code' => 200 , 'msg' => '获取列表成功' , 'data' => $data['data']]);
+            } else {
+                return response()->json(['code' => $data['code'] , 'msg' => $data['msg']]);
+            }
+        } catch (Exception $ex) {
+            return response()->json(['code' => 500 , 'msg' => $ex->getMessage()]);
+        }
+    }
+    
+    /*
      * @param  description   项目管理-添加地区方法
      * @param  参数说明       body包含以下参数[
      *     project_id        项目id
