@@ -111,15 +111,11 @@ class RoleController extends Controller {
             return response()->json(['code'=>201,'msg'=>'权限描述为空或缺少']);
         }
         unset($data['/admin/role/doRoleAuthInsert']);
-        $data['admin_id'] = isset(CurrentAdmin::user()['id'])?CurrentAdmin::user()['id']:0;
+        $data['create_id'] = isset(CurrentAdmin::user()['id'])?CurrentAdmin::user()['id']:0;
         $role = Roleauth::where(['role_name'=>$data['role_name']])->first();
         if($role){
              return response()->json(['code'=>205,'msg'=>'角色已存在']);
         }
-        $role = Roleauth::where(['school_id'=> $data['school_id'],'is_super'=>'1'])->first();
-        $data['create_time'] = date('Y-m-d H:i:s');
-        if($role){  $data['is_super'] = 0; }
-        else{       $data['is_super'] = 1; }
         DB::beginTransaction();
         try{
             $auth_id = explode(',',$data['auth_id']); // authMap表里自增id
@@ -127,9 +123,9 @@ class RoleController extends Controller {
             $data['auth_id'] = array_diff($auth_id,['0']);
             $auth_map_id = implode(',',$data['auth_id']);
             $map_auth_ids =  $data['auth_id'];
-            $roleAuthData  = AuthMap::whereIn('id',$map_auth_ids)->where(['is_del'=>0,'is_forbid'=>0,'is_show'=>0])->select('auth_id')->get()->toArray();
+            $roleAuthData  = AuthMap::whereIn('id',$map_auth_ids)->where(['is_del'=>1,'is_forbid'=>1,'is_show'=>1])->select('auth_id')->get()->toArray();
             $arr = [];
-            foreach($roleAuthData as $key=>$v){
+            foreach($roleAuthData as $key=>$v){ 
                 foreach($v as $vv){
                      array_push($arr,$vv);
                 }
@@ -141,7 +137,7 @@ class RoleController extends Controller {
             $data['map_auth_id'] = $auth_map_id;
             if(Roleauth::insert($data)){
                 AdminLog::insertAdminLog([
-                    'admin_id'       =>   $data['admin_id'] ,
+                    'admin_id'       =>   $data['create_id'] ,
                     'module_name'    =>  'Role' ,
                     'route_url'      =>  'admin/role/doRoleInsert' , 
                     'operate_method' =>  'insert' ,
