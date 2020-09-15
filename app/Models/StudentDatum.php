@@ -98,7 +98,6 @@ class StudentDatum extends Model {
         if(!$body || !is_array($body)){
             return ['code' => 202 , 'msg' => '传递数据不合法'];
         }
-
         //判断学员资料关系表的id是否为空
         if((!isset($body['id']) || empty($body['id'])) && $body['id'] <= 0 ){
             return ['code' => 201 , 'msg' => 'datum_id不合法'];
@@ -137,6 +136,8 @@ class StudentDatum extends Model {
                 return ['code' => 201 , 'msg' => '请选择户籍地址市区'];
             }
         }
+        $body['address_province_id'] = $address[0];
+        $body['address_city_id'] = $address[1];
         unset($body['address']);
         //判断报考月份是否为空
         if(!isset($body['month']) || empty($body['month'])){
@@ -242,7 +243,6 @@ class StudentDatum extends Model {
                 return ['code'=>203,'msg'=>'资料提交失败,请重试！！'];
             }
         }   
-        
     }
 
     public static function getDatumById($body){
@@ -254,6 +254,8 @@ class StudentDatum extends Model {
         $datumArr = Datum::where('id',$body['datum_id'])->first();
         if(is_null($datumArr)){
             $datumArr = [];
+        }else{
+            $datumArr['address']= [$datumArr['address_province_id'],$datumArr['address_city_id']];
         }
         return ['code'=>200,'msg'=>'Success','data'=>$datumArr];
     }
