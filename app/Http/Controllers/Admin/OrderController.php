@@ -51,6 +51,12 @@ class OrderController extends Controller {
         $list = Pay_order_inside::sureOrder(self::$accept_data);
         return response()->json($list);
     }
+    //总校确认订单列表
+    public function sureOrderList(){
+        $schoolarr = $this->underlingLook(AdminLog::getAdminInfo()->admin_user->school_id);
+        $list = Pay_order_inside::sureOrderList(self::$accept_data,$schoolarr['data']);
+        return response()->json($list);
+    }
     //总校确认订单
     public function notarizeOrder(){
         $list = Pay_order_inside::notarizeOrder(self::$accept_data);
@@ -59,6 +65,11 @@ class OrderController extends Controller {
     //总校未支付订单列表
     public function unpaidOrder(){
         $list = Pay_order_external::unpaidOrder(self::$accept_data);
+        return response()->json($list);
+    }
+    //总校订单进行驳回
+    public function DorejectOrder(){
+        $list = Pay_order_inside::DorejectOrder(self::$accept_data);
         return response()->json($list);
     }
 
