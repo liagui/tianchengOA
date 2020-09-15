@@ -61,15 +61,8 @@ class PaySetController extends Controller {
         if(!$payconfigArr){
             return response()->json(['code'=>204,'msg'=>"数据不存在"]);
         }
-        $schoolArr = School::getSchoolOne(['id'=>$payconfigArr['school_id'],'is_del'=>1],'is_forbid');
-        if($schoolArr['code']!= 200){
-             return response()->json($schoolArr);
-        }
-        if($schoolArr['data']['is_forbid'] != 1){
-             return response()->json(['code'=>208,'msg'=>'请先开启学校状态']);
-        }
         if($payconfigArr['zfb_pay_state'] == 1){
-                $update['zfb_pay_state'] = 0;//禁用
+            $update['zfb_pay_state'] = 0;//禁用
         }else{
             $update['zfb_pay_state'] = 1; //启用
         }
