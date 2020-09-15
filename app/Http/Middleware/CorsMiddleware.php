@@ -4,7 +4,7 @@ namespace App\Http\Middleware;
 
 use Illuminate\Http\Request;
 use Illuminate\Http\Response;
-
+use App\Models\School;
 class CorsMiddleware
 {
     private $headers;
@@ -18,7 +18,7 @@ class CorsMiddleware
             'Access-Control-Allow-Credentials' => 'true',//允许客户端发送cookie
             'Access-Control-Max-Age' => 1728000 //该字段可选，用来指定本次预检请求的有效期，在此期间，不用发出另一条预检请求。
         ];
-
+        
         $this->allow_origin = [
             'http://localhost',
             'http://localhost:8080',

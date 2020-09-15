@@ -316,14 +316,11 @@ class Controller extends BaseController {
      * @param ctime     2020-9-9
      * return arr
      */
-    public static function underlingLook($school_id = ''){
+    public static function underlingLook($school_id ){
         $look_school =  $oneChildSchoolIdsArr =  $twoChildSchoolIdsArr = $oneSchoolIds = $twoSchoolIds =  [];
-        if(empty($school_id) && $school_id == ''){
-            return ['code'=>201,'msg'=>'学校id串为空'];
-        }
-
+        
         $schoolIds = explode(',',$school_id);
-         
+       
         if(in_array('0',$schoolIds)){
            
             $YesLookSchoolIds = \App\Models\School::where(['is_del'=>0,'is_open'=>0])->select('id')->get()->toArray();

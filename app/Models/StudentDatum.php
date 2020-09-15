@@ -11,6 +11,9 @@ class StudentDatum extends Model {
     public $timestamps = false;
 
     public static function getStudentDatumList($body){
+
+
+
     	$StudentDatumArr = [];
     	 //每页显示的条数
         $pagesize = (int)isset($body['pageSize']) && $body['pageSize'] > 0 ? $body['pageSize'] : 20;
@@ -21,7 +24,6 @@ class StudentDatum extends Model {
         	$oneSubject = $subject[0];
         	$twoSubject = isset($subject[1]) && $subject[1]>0 ?$subject[1]:0;
     	}
-        DB::connection()->enableQueryLog();
         $count = self::leftJoin('pay_order_inside','student_information.order_id','=','pay_order_inside.id')
         	->leftJoin('student','student.id','=','student_information.student_id')
         	->where(function($query) use ($body) {
@@ -42,6 +44,7 @@ class StudentDatum extends Model {
                 	$query->where('student_information.project_id',$oneSubject);
                 	$query->where('student_information.subject_id',$twoSubject);
             	}
+                $query->whereIn('student_information.school_id',$body['school_id']);
         	})->count();
     	if($count >0){
     		$adminArr = Admin::where(['is_del'=>1,'is_forbid'=>1])->select('id','real_name')->get()->toArray();
@@ -76,6 +79,7 @@ class StudentDatum extends Model {
 	                	$query->where('student_information.project_id',$oneSubject);
 	                	$query->where('student_information.subject_id',$twoSubject);
 	            	}
+                    $query->whereIn('student_information.school_id',$body['school_id']);
 	        	})->select('student_information.student_id','student_information.project_id','student_information.subject_id','student_information.audit_id','student_information.gather_id','student_information.initiator_id','student_information.datum_create_time','student.mobile','student.user_name as student_name','pay_order_inside.consignee_status','student_information.audit_status','student_information.id')->offset($offset)->limit($pagesize)->get();
 	        foreach($StudentDatumArr as $k=>&$v){
 	        	$v['school_name'] = isset($schoolArr[$v['school_id']]) ? $schoolArr[$v['school_id']] :'';
@@ -287,13 +291,12 @@ class StudentDatum extends Model {
         if(!isset($body['id']) || empty($body['id']) || $body['id'] <= 0){
             return ['code' => 202 , 'msg' => 'id不合法'];
         }
-        $info = Admin::where(['is_del'=>1,'is_forbid'=>1])->selet('real_name','mobile','wx')->first();
+        $info = Admin::where(['is_del'=>1,'is_forbid'=>1])->select('real_name','mobile','wx')->first();
         if(is_null($info)){
             $info = [];
         }
         return ['code'=>200,'msg'=>'Success','data'=>$info];
     }
-
 
 
 }

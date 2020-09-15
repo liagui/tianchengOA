@@ -25,8 +25,7 @@ $router->group(['prefix' => 'admin' , 'namespace' => 'Admin','middleware'=> 'cor
     $router->post('login', 'AuthenticateController@postLogin');
     $router->post('bindMobile', 'AuthenticateController@bindMobile');//绑定手机号
     $router->post('doSendSms', 'AuthenticateController@doSendSms');//发送短信
-    $router->get('doExcelDatum', 'ExcelController@doExcelDatum');
-   
+    $router->get('doExcelDatum', 'ExcelController@doExcelDatum');//学员资料导出
 
 
 
@@ -121,9 +120,10 @@ $router->group(['prefix' => 'admin' , 'namespace' => 'Admin','middleware'=> ['jw
     });
     $router->post('getCommonList', 'CommonController@getCommonList');  //OA项目公共参数接口
 
-        //上传到OSS图片接口
+    //上传到OSS图片接口
     $router->post('doUploadOssImage', 'CommonController@doUploadOssImage');
-
+   
+   
 
 
     $router->post('diff', 'TestController@diff');
@@ -242,6 +242,7 @@ $router->group(['prefix' => 'admin' , 'namespace' => 'Admin','middleware'=> ['jw
         // $router->post('getSchoolById', 'SchoolController@getSchoolUpdate');  //编辑网校（获取）
         // $router->post('doSchoolUpdate', 'SchoolController@doSchoolUpdate');  //编辑网校
     }); 
+
 
     $router->group(['prefix' => 'datum'], function () use ($router) {
         $router->post('getList', 'StudentDatumController@getList');              //资料列表
