@@ -36,7 +36,6 @@ class  Channel extends Model {
     	$school_id = isset(AdminLog::getAdminInfo()->admin_user->school_id) ? AdminLog::getAdminInfo()->admin_user->school_id : 0;
         $school_status = isset(AdminLog::getAdminInfo()->admin_user->school_status) ? AdminLog::getAdminInfo()->admin_user->school_status : 0;
         $count =  self::where(['is_del'=>0,'is_forbid'=>0])->count(); 
-        $sum_page = ceil($count/$pagesize);
         if($count>0){
 			$channelArr = self::leftJoin('pay_config','pay_config.channel_id','=','channel.id')
                   ->where(function($query) use ($body){
@@ -44,13 +43,28 @@ class  Channel extends Model {
                           $query->where('channel.is_del',0);
                       })
                   ->select('pay_config.id','pay_config.channel_id','pay_config.wx_pay_state','pay_config.zfb_pay_state','pay_config.hj_wx_pay_state','pay_config.hj_zfb_pay_state','channel.channel_type','channel_name')
-                  ->offset($offset)->limit($pagesize)->get();
-        	foreach($channelArr as $key =>$v){   
-        		$channelArr[$key]['channel_type'] = explode(',',$v['channel_type']);
+                  ->get();
+        	foreach($channelArr as $key =>&$v){
+        		$channel_type = explode(',',$v['channel_type']);
+                if(in_array(1, $channel_type)){
+                      $v['zfb_show'] = true;
+                }else{
+                    $v['zfb_show'] = false;
+                }
+                if(in_array(2, $channel_type)){
+                      $v['wx_show'] = true;
+                }else{
+                    $v['wx_show'] = false;
+                }
+                if(in_array(3, $channel_type)){
+                      $v['hj_show'] = true;
+                }else{
+                    $v['hj_show'] = false;
+                }
               	if($v['hj_wx_pay_state'] <1 && $v['hj_zfb_pay_state']<1){
-              	    $channelArr[$key]['hj_state'] = 0;  //关闭
+              	    $v['hj_state'] = 0;  //关闭
               	}else{
-              	    $channelArr[$key]['hj_state'] = 1;  //开启
+              	    $v['hj_state'] = 1;  //开启
               	} 
           	}
         }
