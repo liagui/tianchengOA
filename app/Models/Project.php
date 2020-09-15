@@ -274,17 +274,17 @@ class Project extends Model {
         //判断项目名称是否传递
         if(!isset($body['project_name']) && !empty($body['project_name'])){
             //项目列表
-            $project_list = self::select('id','name','id as label','name as value','is_del','is_hide')->where('name','like','%'.$body['project_name'].'%')->where('parent_id' , 0)->where('is_del' , 0)->orderByDesc('create_time')->get()->toArray();
+            $project_list = self::select('id','name','id as value','name as label','is_del','is_hide')->where('name','like','%'.$body['project_name'].'%')->where('parent_id' , 0)->where('is_del' , 0)->orderByDesc('create_time')->get()->toArray();
         } else {
             //项目列表
-            $project_list = self::select('id','name','id as label','name as value','is_del','is_hide')->where('parent_id' , 0)->where('is_del' , 0)->orderByDesc('create_time')->get()->toArray();
+            $project_list = self::select('id','name','id as value','name as label','is_del','is_hide')->where('parent_id' , 0)->where('is_del' , 0)->orderByDesc('create_time')->get()->toArray();
         }
 
         //判断是否为空
         if($project_list && !empty($project_list)){
             foreach($project_list as $k=>$v){
                 //获取学科得列表
-                $subject_list = self::select('id','name','id as label','name as value','is_del','is_hide')->where('parent_id' , $v['id'])->where('is_del' , 0)->orderByDesc('create_time')->get()->toArray();
+                $subject_list = self::select('id','name','id as value','name as label','is_del','is_hide')->where('parent_id' , $v['id'])->where('is_del' , 0)->orderByDesc('create_time')->get()->toArray();
                 if($subject_list && !empty($subject_list)){
                     //根据项目得id获取学科得列表
                     $project_list[$k]['subject_list'] = $subject_list && !empty($subject_list) ? $subject_list : [];
