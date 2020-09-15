@@ -78,7 +78,7 @@ class RoleController extends Controller {
      * @param  ctime     2020-04-30
      */
     public function getRoleInsert(){
-        $authMap = AuthMap::where(['is_del'=>0,'is_show'=>0,'is_forbid'=>0])->select('id','parent_id','title')->get()->toArray();
+        $authMap = AuthMap::where(['is_del'=>1,'is_show'=>1,'is_forbid'=>1])->select('id','parent_id','title')->get()->toArray();
         if(!empty($authMap)){
             $authMap = getParentsList($authMap);
         }
@@ -110,16 +110,12 @@ class RoleController extends Controller {
         if(!isset($data['auth_desc']) || empty($data['auth_desc'])){
             return response()->json(['code'=>201,'msg'=>'权限描述为空或缺少']);
         }
-        unset($data['/admin/role/doRoleAuthInsert']);
-        $data['admin_id'] = isset(CurrentAdmin::user()['id'])?CurrentAdmin::user()['id']:0;
+        unset($data['/admin/role/doRoleInsert']);
+        $data['create_id'] = isset(CurrentAdmin::user()['id'])?CurrentAdmin::user()['id']:0;
         $role = Roleauth::where(['role_name'=>$data['role_name']])->first();
         if($role){
              return response()->json(['code'=>205,'msg'=>'角色已存在']);
         }
-        $role = Roleauth::where(['school_id'=> $data['school_id'],'is_super'=>'1'])->first();
-        $data['create_time'] = date('Y-m-d H:i:s');
-        if($role){  $data['is_super'] = 0; }
-        else{       $data['is_super'] = 1; }
         DB::beginTransaction();
         try{
             $auth_id = explode(',',$data['auth_id']); // authMap表里自增id
@@ -127,9 +123,9 @@ class RoleController extends Controller {
             $data['auth_id'] = array_diff($auth_id,['0']);
             $auth_map_id = implode(',',$data['auth_id']);
             $map_auth_ids =  $data['auth_id'];
-            $roleAuthData  = AuthMap::whereIn('id',$map_auth_ids)->where(['is_del'=>0,'is_forbid'=>0,'is_show'=>0])->select('auth_id')->get()->toArray();
+            $roleAuthData  = AuthMap::whereIn('id',$map_auth_ids)->where(['is_del'=>1,'is_forbid'=>1,'is_show'=>1])->select('auth_id')->get()->toArray();
             $arr = [];
-            foreach($roleAuthData as $key=>$v){
+            foreach($roleAuthData as $key=>$v){ 
                 foreach($v as $vv){
                      array_push($arr,$vv);
                 }
@@ -141,7 +137,7 @@ class RoleController extends Controller {
             $data['map_auth_id'] = $auth_map_id;
             if(Roleauth::insert($data)){
                 AdminLog::insertAdminLog([
-                    'admin_id'       =>   $data['admin_id'] ,
+                    'admin_id'       =>   $data['create_id'] ,
                     'module_name'    =>  'Role' ,
                     'route_url'      =>  'admin/role/doRoleInsert' , 
                     'operate_method' =>  'insert' ,
@@ -174,29 +170,57 @@ class RoleController extends Controller {
         if( !isset($data['id']) ||  empty($data['id'])){
             return response()->json(['code'=>201,'msg'=>'参数为空或缺少参数']);
         }
-        $roleAuthData = Roleauth::getRoleOne(['id'=>$data['id'],'is_del'=>0],['id','role_name','auth_desc','auth_id','school_id','map_auth_id']);
+        $roleAuthData = Roleauth::getRoleOne(['id'=>$data['id'],'is_del'=>0],['id','role_name','auth_desc','map_auth_id']);
 
         if($roleAuthData['code'] != 200){
             return response()->json(['code'=>$roleAuthData['code'],'msg'=>$roleAuthData['msg']]); 
         }
         $roleAuthArr = Roleauth::getRoleAuthAlls(['school_id'=>$roleAuthData['data']['school_id'],'is_del'=>1],['id','role_name','auth_desc','map_auth_id as auth_id']); 
-        $authArr = \App\Models\AuthMap::getAuthAlls(['is_del'=>0,'is_forbid'=>0],['id','title','parent_id']);
-        $authArr  = getAuthArr($authArr);                       
+        $authArr = \App\Models\AuthMap::getAuthAlls(['is_del'=>1,'is_forbid'=>1],['id as value','title as label','parent_id']);
+        $authArr  = getAuthArrs($authArr);                       
         if(empty($roleAuthData['data']['map_auth_id'])){
             $roleAuthData['data']['map_auth_id'] = null;
+        }else{
+            $roleAuthMapData = explode(',',$roleAuthData['data']['map_auth_id']);
+            $mapAuthArr = \App\Models\AuthMap::getAuthAlls(['is_del'=>1,'is_forbid'=>1,'parent_id'=>0],['id','title','parent_id']);
+            if(in_array(1,$roleAuthMapData)){
+                $OnemapAuthArr = \App\Models\AuthMap::where(['is_del'=>1,'is_forbid'=>1,'parent_id'=>1])->select('id')->get()->toArray();  //系统
+                if(!empty($OnemapAuthArr)){
+                   $OnemapAuthArr = array_column($OnemapAuthArr, 'id');
+                }
+            }
+            if(in_array(2,$roleAuthMapData)){
+                $TwomapAuthArr= \App\Models\AuthMap::where(['is_del'=>1,'is_forbid'=>1,'parent_id'=>2])->select('id')->get()->toArray(); //总校
+                if(!empty($TwomapAuthArr)){
+                   $TwomapAuthArr = array_column($TwomapAuthArr, 'id');
+                }
+            }
+            if(in_array(3,$roleAuthMapData)){
+                $ThreemapAuthArr  = \App\Models\AuthMap::where(['is_del'=>1,'is_forbid'=>1,'parent_id'=>3])->select('id')->get()->toArray(); //分校
+                if(!empty($ThreemapAuthArr)){
+                   $ThreemapAuthArr = array_column($ThreemapAuthArr, 'id');
+                }
+            }
+        
+
+            $newOnemapAuthArr= array_intersect($OnemapAuthArr,$roleAuthMapData);
+            $newTwomapAuthArr= array_intersect($TwomapAuthArr,$roleAuthMapData);
+            $newThreemapAuthArr= array_intersect($ThreemapAuthArr,$roleAuthMapData);
         }   
+        $roleAuthData['data']['role_auth'] = ['zongxiao'=>$newTwomapAuthArr,'fenxiao'=>$newThreemapAuthArr,'system'=>$newOnemapAuthArr];
+
         $arr = [
             'code'=>200,
             'msg'=>'获取角色成功',
             'data'=>[
                     'id' => $data['id'], //角色id
-                    // 'role_auth_arr'=>$roleAuthArr,
-                    'role_auth_data' =>$roleAuthData['data'],
+                    'role_auth_data'=>$roleAuthData['data'],
                     'auth' =>$authArr
                 ]
         ]; 
         return  response()->json($arr);
     }   
+
     /*
      * @param  descriptsion   编辑角色信息
      * @param  $data=[
@@ -204,7 +228,6 @@ class RoleController extends Controller {
                 'role_name'=> 角色名称
                 'auth_desc'=> 权限描述
                 'auth_id'=> 权限id组
-
         ]           
      * @param  author    lys
      * @param  ctime     2020-04-30
@@ -225,8 +248,8 @@ class RoleController extends Controller {
         if( !isset($data['auth_id']) ||  empty($data['auth_id'])){
             return response()->json(['code'=>201,'msg'=>'权限组id为空或缺少']);
         }
-        if(isset($data['/admin/role/doRoleAuthUpdate'])){
-            unset($data['/admin/role/doRoleAuthUpdate']);
+        if(isset($data['/admin/role/doRoleUpdate'])){
+            unset($data['/admin/role/doRoleUpdate']);
         }
         $count = Roleauth::where('role_name','=',$data['role_name'])->where('id','!=',$data['id'])->count();
         if($count>=1){
@@ -237,7 +260,7 @@ class RoleController extends Controller {
         $data['auth_id'] = array_diff($auth_id,['0']);
         $auth_map_id = implode(',',$data['auth_id']);
         $map_auth_ids =  $data['auth_id'];
-        $roleAuthData  = AuthMap::whereIn('id',$map_auth_ids)->where(['is_del'=>0,'is_forbid'=>0,'is_show'=>0])->select('auth_id')->get()->toArray();
+        $roleAuthData  = AuthMap::whereIn('id',$map_auth_ids)->where(['is_del'=>1,'is_forbid'=>1,'is_show'=>1])->select('auth_id')->get()->toArray();
         $arr = [];
         foreach($roleAuthData as $key=>$v){
             foreach($v as $vv){
@@ -256,7 +279,7 @@ class RoleController extends Controller {
             AdminLog::insertAdminLog([
                 'admin_id'       =>   CurrentAdmin::user()['id'] ,
                 'module_name'    =>  'Role' ,
-                'route_url'      =>  'admin/role/doRoleAuthUpdate' , 
+                'route_url'      =>  'admin/role/doRoleUpdate' , 
                 'operate_method' =>  'update' ,
                 'content'        =>  json_encode($data),
                 'ip'             =>  $_SERVER["REMOTE_ADDR"] ,

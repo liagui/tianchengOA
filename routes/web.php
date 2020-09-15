@@ -255,6 +255,7 @@ $router->group(['prefix' => 'admin' , 'namespace' => 'Admin','middleware'=> ['jw
         $router->post('getDatumById', 'StudentDatumController@getDatumById');  //资料查看
         $router->post('doUpdateAudit', 'StudentDatumController@doUpdateAudit');  //审核状态
         $router->post('getInitiatorById', 'StudentDatumController@getInitiatorById');  //获取发起人信息
+        $router->post('getRegionList', 'StudentDatumController@getRegionList');  //获取发起人信息
     });
 
 

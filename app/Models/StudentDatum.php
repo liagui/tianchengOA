@@ -98,7 +98,6 @@ class StudentDatum extends Model {
         if(!$body || !is_array($body)){
             return ['code' => 202 , 'msg' => '传递数据不合法'];
         }
-
         //判断学员资料关系表的id是否为空
         if((!isset($body['id']) || empty($body['id'])) && $body['id'] <= 0 ){
             return ['code' => 201 , 'msg' => 'datum_id不合法'];
@@ -129,23 +128,38 @@ class StudentDatum extends Model {
         if(!isset($body['address']) || empty($body['address'])){
             return ['code' => 201 , 'msg' => '请输入户籍地址'];
         }
-        
+        $address = json_decode($body['address'],1);
+        if(!isset($address[0])){
+            return ['code' => 201 , 'msg' => '请选择户籍地址省份'];
+        }else{
+            if(!isset($address[1])){
+                return ['code' => 201 , 'msg' => '请选择户籍地址市区'];
+            }
+        }
+        $body['address_province_id'] = $address[0];
+        $body['address_city_id'] = $address[1];
+        unset($body['address']);
         //判断报考月份是否为空
         if(!isset($body['month']) || empty($body['month'])){
-            return ['code' => 201 , 'msg' => '请输入报考月份'];
+            return ['code' => 201 , 'msg' => '请选择报考月份'];
         }
         //判断报考地区是否为空
         if(!isset($body['sign_region']) || empty($body['sign_region'])){
-            return ['code' => 201 , 'msg' => '请输入报考地区'];
+            return ['code' => 201 , 'msg' => '请选择报考地区'];
         }
-        
         //判断备考地区是否为空
         if(!isset($body['reference_region']) || empty($body['reference_region'])){
-            return ['code' => 201 , 'msg' => '请输入备考地区'];
+            return ['code' => 201 , 'msg' => '请选择备考地区'];
         }
+        if($body['sign_region'] != $body['reference_region']){
+            return ['code' => 201 , 'msg' => '报考地区与备考地区不一致！'];
+        }
+        $body['sign_region_id'] = $body['sign_region'];
+        $body['reference_region_id'] = $body['reference_region'];
+        unset($body['sign_region']); unset($body['reference_region']);
         //判断文化程度是否为空
         if(!isset($body['culture']) || empty($body['culture'])){
-            return ['code' => 201 , 'msg' => '请输入文化程度'];
+            return ['code' => 201 , 'msg' => '请选择文化程度'];
         }
         //判断毕业学院是否为空
         if(!isset($body['graduated_school']) || empty($body['graduated_school'])){
@@ -159,7 +173,6 @@ class StudentDatum extends Model {
         if(!isset($body['years']) || empty($body['years'])){
             return ['code' => 201 , 'msg' => '请输入毕业年月'];
         }
-    
         //判断学信网账号是否为空
         if(!isset($body['xx_account']) || empty($body['xx_account'])){
             return ['code' => 201 , 'msg' => '请输入学信网账号'];
@@ -230,7 +243,6 @@ class StudentDatum extends Model {
                 return ['code'=>203,'msg'=>'资料提交失败,请重试！！'];
             }
         }   
-        
     }
 
     public static function getDatumById($body){
@@ -242,6 +254,8 @@ class StudentDatum extends Model {
         $datumArr = Datum::where('id',$body['datum_id'])->first();
         if(is_null($datumArr)){
             $datumArr = [];
+        }else{
+            $datumArr['address']= [$datumArr['address_province_id'],$datumArr['address_city_id']];
         }
         return ['code'=>200,'msg'=>'Success','data'=>$datumArr];
     }

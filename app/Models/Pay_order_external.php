@@ -29,7 +29,7 @@ class Pay_order_external extends Model
             }
         }
         //每页显示的条数
-        $pagesize = (int)isset($data['pageSize']) && $data['pageSize'] > 0 ? $data['pageSize'] : 20;
+        $pagesize = (int)isset($data['pagesize']) && $data['pagesize'] > 0 ? $data['pagesize'] : 20;
         $page     = isset($data['page']) && $data['page'] > 0 ? $data['page'] : 1;
         $offset   = ($page - 1) * $pagesize;
 
@@ -94,7 +94,7 @@ class Pay_order_external extends Model
             }
         }
         $page=[
-            'pageSize'=>$pagesize,
+            'pagesize'=>$pagesize,
             'page' =>$page,
             'total'=>$count
         ];

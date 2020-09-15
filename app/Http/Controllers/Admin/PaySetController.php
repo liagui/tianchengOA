@@ -61,15 +61,8 @@ class PaySetController extends Controller {
         if(!$payconfigArr){
             return response()->json(['code'=>204,'msg'=>"数据不存在"]);
         }
-        $schoolArr = School::getSchoolOne(['id'=>$payconfigArr['school_id'],'is_del'=>1],'is_forbid');
-        if($schoolArr['code']!= 200){
-             return response()->json($schoolArr);
-        }
-        if($schoolArr['data']['is_forbid'] != 1){
-             return response()->json(['code'=>208,'msg'=>'请先开启学校状态']);
-        }
         if($payconfigArr['zfb_pay_state'] == 1){
-                $update['zfb_pay_state'] = 0;//禁用
+            $update['zfb_pay_state'] = 0;//禁用
         }else{
             $update['zfb_pay_state'] = 1; //启用
         }
@@ -95,7 +88,7 @@ class PaySetController extends Controller {
         if(!isset($data['id']) || empty($data['id'])){
             return response()->json(['code'=>201,'msg'=>'id缺少或为空']);
         }
-        if(!isset($data['hj_state']) || empty($data['hj_state'])){
+        if(!isset($data['hj_state'])){
             return response()->json(['code'=>201,'msg'=>'hj状态类型缺少或为空']);
         }
         $payconfigArr  = PaySet::where(['id'=>$data['id']])->first();
@@ -172,7 +165,8 @@ class PaySetController extends Controller {
         if(!isset($data['id']) || empty($data['id'])){
             return response()->json(['code'=>201,'msg'=>'id缺少或为空']);
         }
-        $payconfigArr  = PaySet::where(['id'=>$data['id']])->select('wx_app_id','wx_commercial_tenant_number','wx_api_key')->first();
+
+        $payconfigArr  = PaySet::where(['id'=>$data['id']])->select('wx_app_id','wx_commercial_tenant_number','wx_api_key')->first()->toArray();
         if(!$payconfigArr){
              return response()->json(['code'=>204,'msg'=>"数据不存在"]);
         }
@@ -248,7 +242,7 @@ class PaySetController extends Controller {
         if($validator->fails()) {
             return response()->json(json_decode($validator->errors()->first(),1));
         }
-        $payconfigArr  = PaySet::where(['id'=>$data['id']])->select('admin_id')->first();
+        $payconfigArr  = PaySet::where(['id'=>$data['id']])->select('create_id')->first();
         if(!$payconfigArr){
             return response()->json(['code'=>204,'msg'=>"数据不存在"]);
         } 
@@ -289,7 +283,7 @@ class PaySetController extends Controller {
         if($validator->fails()) {
             return response()->json(json_decode($validator->errors()->first(),1));
         }
-        $payconfigArr  = PaySet::where(['id'=>$data['id']])->select('admin_id')->first();
+        $payconfigArr  = PaySet::where(['id'=>$data['id']])->select('create_id')->first();
         if(!$payconfigArr){
             return response()->json(['code'=>204,'msg'=>"数据不存在"]);
         } 
@@ -333,7 +327,7 @@ class PaySetController extends Controller {
         if($validator->fails()) {
             return response()->json(json_decode($validator->errors()->first(),1));
         }
-        $payconfigArr  = PaySet::where(['id'=>$data['id']])->select('admin_id')->first();
+        $payconfigArr  = PaySet::where(['id'=>$data['id']])->select('create_id')->first();
         if(!$payconfigArr){
             return response()->json(['code'=>204,'msg'=>"数据不存在"]);
         } 

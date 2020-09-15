@@ -9,6 +9,7 @@ use App\Models\Roleauth;
 use App\Models\Authrules;
 use App\Models\School;
 use App\Models\StudentDatum;
+use App\Models\Region;
 use Illuminate\Support\Facades\Redis;
 use App\Tools\CurrentAdmin;
 use Illuminate\Support\Facades\Validator;
@@ -68,6 +69,11 @@ class StudentDatumController extends Controller {
         }catch (Exception $ex) {
             return response()->json(['code' => 500 , 'msg' => $ex->getMessage()]);
         }
+    }
+
+    public function getRegionList(){
+        $data = Region::getRegion();
+        return response()->json($data);
     }
 
 

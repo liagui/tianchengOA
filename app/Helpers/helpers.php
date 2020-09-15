@@ -127,6 +127,35 @@ function getAuthArr($arr){
         }
         return $new_arr;
 }
+ /*
+ * @param  descriptsion    权限管理数组处理s
+ * @param  author          lys
+ * @param  ctime           2020-05-23
+ * return  array
+ */
+
+function getAuthArrs($arr){
+   foreach ($arr as $key => $value) {
+            if ($value['parent_id'] == 0) {
+                $arr_1 = $value;
+                foreach ($arr as $k => $v) {
+                    if ($v['parent_id'] == $value['value']) {
+                        $arr_2 = $v;
+                        foreach ($arr as $kk => $vv) {
+                            if ($vv['parent_id'] == $v['value']) {
+                                $arr_3 = $vv;
+                                $arr_3['parent_id'] = $arr_1['value'].','.$arr_2['value'];
+                                $arr_2['child_arr'][] = $arr_3;
+                            }
+                        }
+                        $arr_1['child_arr'][] = $arr_2;
+                    }
+                }
+                $new_arr[] = $arr_1;
+            }
+        }
+        return $new_arr;
+}
 
  /*
  * @param  descriptsion    随机生成字符串
