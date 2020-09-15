@@ -240,4 +240,16 @@ class Course extends Model {
         }
         return ['code' => 200 , 'msg' => '获取课程列表成功' , 'data' => $course_list];
     }
+    
+    /*
+     * @param  description   项目管理-课程列表接口
+     * @param author    dzj
+     * @param ctime     2020-09-15
+     * return string
+     */
+    public static function getCourseAllList($body=[]){
+        //通过项目的id获取课程列表
+        $course_list = self::select('course_name as label' , 'id as value')->where('is_del' , 0)->get();
+        return ['code' => 200 , 'msg' => '获取课程列表成功' , 'data' => $course_list];
+    }
 }

@@ -77,6 +77,7 @@ $router->group(['prefix' => 'admin' , 'namespace' => 'Admin','middleware'=> ['jw
         $router->post('getCourseInfoById', 'ProjectController@getCourseInfoById');               //课程详情接口
         $router->post('getProjectSubjectList', 'ProjectController@getProjectSubjectList');       //项目筛选学科列表接口
         $router->post('getCourseList', 'ProjectController@getCourseList');                       //课程列表接口
+        $router->post('getCourseAllList', 'ProjectController@getCourseAllList');                 //课程全部列表接口
         $router->post('doInsertRegion', 'ProjectController@doInsertRegion');                     //添加地区的方法
         $router->post('doUpdateRegion', 'ProjectController@doUpdateRegion');                     //修改地区的方法
         $router->post('getRegionInfoById', 'ProjectController@getRegionInfoById');               //地区报名费详情方法
