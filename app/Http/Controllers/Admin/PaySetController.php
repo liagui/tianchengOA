@@ -241,7 +241,7 @@ class PaySetController extends Controller {
         if($validator->fails()) {
             return response()->json(json_decode($validator->errors()->first(),1));
         }
-        $payconfigArr  = PaySet::where(['id'=>$data['id']])->select('admin_id')->first();
+        $payconfigArr  = PaySet::where(['id'=>$data['id']])->select('create_id')->first();
         if(!$payconfigArr){
             return response()->json(['code'=>204,'msg'=>"数据不存在"]);
         } 
@@ -282,7 +282,7 @@ class PaySetController extends Controller {
         if($validator->fails()) {
             return response()->json(json_decode($validator->errors()->first(),1));
         }
-        $payconfigArr  = PaySet::where(['id'=>$data['id']])->select('admin_id')->first();
+        $payconfigArr  = PaySet::where(['id'=>$data['id']])->select('create_id')->first();
         if(!$payconfigArr){
             return response()->json(['code'=>204,'msg'=>"数据不存在"]);
         } 
@@ -326,7 +326,7 @@ class PaySetController extends Controller {
         if($validator->fails()) {
             return response()->json(json_decode($validator->errors()->first(),1));
         }
-        $payconfigArr  = PaySet::where(['id'=>$data['id']])->select('admin_id')->first();
+        $payconfigArr  = PaySet::where(['id'=>$data['id']])->select('create_id')->first();
         if(!$payconfigArr){
             return response()->json(['code'=>204,'msg'=>"数据不存在"]);
         } 
