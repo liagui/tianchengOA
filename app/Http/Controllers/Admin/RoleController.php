@@ -78,7 +78,7 @@ class RoleController extends Controller {
      * @param  ctime     2020-04-30
      */
     public function getRoleInsert(){
-        $authMap = AuthMap::where(['is_del'=>0,'is_show'=>0,'is_forbid'=>0])->select('id','parent_id','title')->get()->toArray();
+        $authMap = AuthMap::where(['is_del'=>1,'is_show'=>1,'is_forbid'=>1])->select('id','parent_id','title')->get()->toArray();
         if(!empty($authMap)){
             $authMap = getParentsList($authMap);
         }
