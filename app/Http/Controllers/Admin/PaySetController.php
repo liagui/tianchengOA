@@ -165,9 +165,8 @@ class PaySetController extends Controller {
         if(!isset($data['id']) || empty($data['id'])){
             return response()->json(['code'=>201,'msg'=>'id缺少或为空']);
         }
-
         $payconfigArr  = PaySet::where(['id'=>$data['id']])->select('wx_app_id','wx_commercial_tenant_number','wx_api_key')->first()->toArray();
-        if(!$payconfigArr){
+        if(empty($payconfigArr)){
              return response()->json(['code'=>204,'msg'=>"数据不存在"]);
         }
         if(!empty($payconfigArr['wx_app_id'])){
@@ -179,10 +178,8 @@ class PaySetController extends Controller {
         if(!empty($payconfigArr['wx_api_key'])){
             $payconfigArr['wx_api_keys'] = substr_replace($payconfigArr['wx_api_key'],'*********','10','25'); 
         }
-        $arr['code'] = 200;
-        $arr['msg']  = 'success';
-        $arr['data'] = $payconfigArr;
-        return response()->json($arr); 
+    
+        return response()->json(['code'=>200,'msg'=>'success','data'=>$payconfigArr]); 
     }
 
     /*

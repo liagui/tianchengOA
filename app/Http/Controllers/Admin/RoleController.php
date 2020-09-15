@@ -175,6 +175,7 @@ class RoleController extends Controller {
         if($roleAuthData['code'] != 200){
             return response()->json(['code'=>$roleAuthData['code'],'msg'=>$roleAuthData['msg']]); 
         }
+        $OnemapAuthArr = $TwomapAuthArr = $ThreemapAuthArr = [];
         $roleAuthArr = Roleauth::getRoleAuthAlls(['school_id'=>$roleAuthData['data']['school_id'],'is_del'=>1],['id','role_name','auth_desc','map_auth_id as auth_id']); 
         $authArr = \App\Models\AuthMap::getAuthAlls(['is_del'=>1,'is_forbid'=>1],['id as value','title as label','parent_id']);
         $authArr  = getAuthArrs($authArr);                       
@@ -215,7 +216,7 @@ class RoleController extends Controller {
             'data'=>[
                     'id' => $data['id'], //角色id
                     'role_auth_data'=>$roleAuthData['data'],
-                    'auth' =>$authArr
+                   
                 ]
         ]; 
         return  response()->json($arr);
