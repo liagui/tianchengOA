@@ -248,8 +248,8 @@ class RoleController extends Controller {
         if( !isset($data['auth_id']) ||  empty($data['auth_id'])){
             return response()->json(['code'=>201,'msg'=>'权限组id为空或缺少']);
         }
-        if(isset($data['/admin/role/doRoleAuthUpdate'])){
-            unset($data['/admin/role/doRoleAuthUpdate']);
+        if(isset($data['/admin/role/doRoleUpdate'])){
+            unset($data['/admin/role/doRoleUpdate']);
         }
         $count = Roleauth::where('role_name','=',$data['role_name'])->where('id','!=',$data['id'])->count();
         if($count>=1){
@@ -260,7 +260,7 @@ class RoleController extends Controller {
         $data['auth_id'] = array_diff($auth_id,['0']);
         $auth_map_id = implode(',',$data['auth_id']);
         $map_auth_ids =  $data['auth_id'];
-        $roleAuthData  = AuthMap::whereIn('id',$map_auth_ids)->where(['is_del'=>0,'is_forbid'=>0,'is_show'=>0])->select('auth_id')->get()->toArray();
+        $roleAuthData  = AuthMap::whereIn('id',$map_auth_ids)->where(['is_del'=>1,'is_forbid'=>1,'is_show'=>1])->select('auth_id')->get()->toArray();
         $arr = [];
         foreach($roleAuthData as $key=>$v){
             foreach($v as $vv){
@@ -279,7 +279,7 @@ class RoleController extends Controller {
             AdminLog::insertAdminLog([
                 'admin_id'       =>   CurrentAdmin::user()['id'] ,
                 'module_name'    =>  'Role' ,
-                'route_url'      =>  'admin/role/doRoleAuthUpdate' , 
+                'route_url'      =>  'admin/role/doRoleUpdate' , 
                 'operate_method' =>  'update' ,
                 'content'        =>  json_encode($data),
                 'ip'             =>  $_SERVER["REMOTE_ADDR"] ,
