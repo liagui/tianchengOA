@@ -184,6 +184,19 @@ class RoleController extends Controller {
         $authArr  = getAuthArr($authArr);                       
         if(empty($roleAuthData['data']['map_auth_id'])){
             $roleAuthData['data']['map_auth_id'] = null;
+        }else{
+            $mapAuthArr = \App\Models\AuthMap::getAuthAlls(['is_del'=>0,'is_forbid'=>0,'parent_id'=>0],['id','title','parent_id']);
+            foreach($OnemapAuthArr as $key=>$v){
+                if(in_array(1,$mapAuthArr)){
+                        $OnemapAuthArr = \App\Models\AuthMap::getAuthAlls(['is_del'=>0,'is_forbid'=>0,'parent_id'=>$v],['id','title','parent_id']);
+                }
+                if(in_array(2,[1,2,3])){
+                       $TwomapAuthArr= \App\Models\AuthMap::getAuthAlls(['is_del'=>0,'is_forbid'=>0,'parent_id'=>$v],['id','title','parent_id']);
+                }
+                if(in_array(3,[1,2,3])){
+                       $ThreemapAuthArr  = \App\Models\AuthMap::getAuthAlls(['is_del'=>0,'is_forbid'=>0,'parent_id'=>$v],['id','title','parent_id']);
+                }              
+            }
         }   
         $arr = [
             'code'=>200,

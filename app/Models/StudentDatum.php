@@ -129,7 +129,15 @@ class StudentDatum extends Model {
         if(!isset($body['address']) || empty($body['address'])){
             return ['code' => 201 , 'msg' => '请输入户籍地址'];
         }
-        json_decode($body['address'],1);
+        $address = json_decode($body['address'],1);
+        if(!isset($address[0])){
+            return ['code' => 201 , 'msg' => '请选择户籍地址省份'];
+        }else{
+            if(!isset($address[1])){
+                return ['code' => 201 , 'msg' => '请选择户籍地址市区'];
+            }
+        }
+        unset($body['address']);
         //判断报考月份是否为空
         if(!isset($body['month']) || empty($body['month'])){
             return ['code' => 201 , 'msg' => '请选择报考月份'];
