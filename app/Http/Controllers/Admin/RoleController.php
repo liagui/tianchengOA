@@ -180,14 +180,12 @@ class RoleController extends Controller {
             return response()->json(['code'=>$roleAuthData['code'],'msg'=>$roleAuthData['msg']]); 
         }
         $roleAuthArr = Roleauth::getRoleAuthAlls(['school_id'=>$roleAuthData['data']['school_id'],'is_del'=>1],['id','role_name','auth_desc','map_auth_id as auth_id']); 
-        $authArr = \App\Models\AuthMap::getAuthAlls(['is_del'=>1,'is_forbid'=>1],['id','title','parent_id']);
-        $authArr  = getAuthArr($authArr);                       
+        $authArr = \App\Models\AuthMap::getAuthAlls(['is_del'=>1,'is_forbid'=>1],['id as value','title as label','parent_id']);
+        $authArr  = getAuthArrs($authArr);                       
         if(empty($roleAuthData['data']['map_auth_id'])){
             $roleAuthData['data']['map_auth_id'] = null;
         }else{
             $roleAuthMapData = explode(',',$roleAuthData['data']['map_auth_id']);
-            
-
             $mapAuthArr = \App\Models\AuthMap::getAuthAlls(['is_del'=>1,'is_forbid'=>1,'parent_id'=>0],['id','title','parent_id']);
             if(in_array(1,$roleAuthMapData)){
                 $OnemapAuthArr = \App\Models\AuthMap::where(['is_del'=>1,'is_forbid'=>1,'parent_id'=>1])->select('id')->get()->toArray();  //系统
@@ -226,6 +224,7 @@ class RoleController extends Controller {
         ]; 
         return  response()->json($arr);
     }   
+
     /*
      * @param  descriptsion   编辑角色信息
      * @param  $data=[
@@ -233,7 +232,6 @@ class RoleController extends Controller {
                 'role_name'=> 角色名称
                 'auth_desc'=> 权限描述
                 'auth_id'=> 权限id组
-
         ]           
      * @param  author    lys
      * @param  ctime     2020-04-30
