@@ -174,37 +174,53 @@ class RoleController extends Controller {
         if( !isset($data['id']) ||  empty($data['id'])){
             return response()->json(['code'=>201,'msg'=>'参数为空或缺少参数']);
         }
-        $roleAuthData = Roleauth::getRoleOne(['id'=>$data['id'],'is_del'=>0],['id','role_name','auth_desc','auth_id','school_id','map_auth_id']);
+        $roleAuthData = Roleauth::getRoleOne(['id'=>$data['id'],'is_del'=>0],['id','role_name','auth_desc','map_auth_id']);
 
         if($roleAuthData['code'] != 200){
             return response()->json(['code'=>$roleAuthData['code'],'msg'=>$roleAuthData['msg']]); 
         }
         $roleAuthArr = Roleauth::getRoleAuthAlls(['school_id'=>$roleAuthData['data']['school_id'],'is_del'=>1],['id','role_name','auth_desc','map_auth_id as auth_id']); 
-        $authArr = \App\Models\AuthMap::getAuthAlls(['is_del'=>0,'is_forbid'=>0],['id','title','parent_id']);
+        $authArr = \App\Models\AuthMap::getAuthAlls(['is_del'=>1,'is_forbid'=>1],['id','title','parent_id']);
         $authArr  = getAuthArr($authArr);                       
         if(empty($roleAuthData['data']['map_auth_id'])){
             $roleAuthData['data']['map_auth_id'] = null;
         }else{
-            $mapAuthArr = \App\Models\AuthMap::getAuthAlls(['is_del'=>0,'is_forbid'=>0,'parent_id'=>0],['id','title','parent_id']);
-            foreach($OnemapAuthArr as $key=>$v){
-                if(in_array(1,$mapAuthArr)){
-                        $OnemapAuthArr = \App\Models\AuthMap::getAuthAlls(['is_del'=>0,'is_forbid'=>0,'parent_id'=>$v],['id','title','parent_id']);
+            $roleAuthMapData = explode(',',$roleAuthData['data']['map_auth_id']);
+            
+
+            $mapAuthArr = \App\Models\AuthMap::getAuthAlls(['is_del'=>1,'is_forbid'=>1,'parent_id'=>0],['id','title','parent_id']);
+            if(in_array(1,$roleAuthMapData)){
+                $OnemapAuthArr = \App\Models\AuthMap::where(['is_del'=>1,'is_forbid'=>1,'parent_id'=>1])->select('id')->get()->toArray();  //系统
+                if(!empty($OnemapAuthArr)){
+                   $OnemapAuthArr = array_column($OnemapAuthArr, 'id');
                 }
-                if(in_array(2,[1,2,3])){
-                       $TwomapAuthArr= \App\Models\AuthMap::getAuthAlls(['is_del'=>0,'is_forbid'=>0,'parent_id'=>$v],['id','title','parent_id']);
-                }
-                if(in_array(3,[1,2,3])){
-                       $ThreemapAuthArr  = \App\Models\AuthMap::getAuthAlls(['is_del'=>0,'is_forbid'=>0,'parent_id'=>$v],['id','title','parent_id']);
-                }              
             }
+            if(in_array(2,$roleAuthMapData)){
+                $TwomapAuthArr= \App\Models\AuthMap::where(['is_del'=>1,'is_forbid'=>1,'parent_id'=>2])->select('id')->get()->toArray(); //总校
+                if(!empty($TwomapAuthArr)){
+                   $TwomapAuthArr = array_column($TwomapAuthArr, 'id');
+                }
+            }
+            if(in_array(3,$roleAuthMapData)){
+                $ThreemapAuthArr  = \App\Models\AuthMap::where(['is_del'=>1,'is_forbid'=>1,'parent_id'=>3])->select('id')->get()->toArray(); //分校
+                if(!empty($ThreemapAuthArr)){
+                   $ThreemapAuthArr = array_column($ThreemapAuthArr, 'id');
+                }
+            }
+        
+
+            $newOnemapAuthArr= array_intersect($OnemapAuthArr,$roleAuthMapData);
+            $newTwomapAuthArr= array_intersect($TwomapAuthArr,$roleAuthMapData);
+            $newThreemapAuthArr= array_intersect($ThreemapAuthArr,$roleAuthMapData);
         }   
+        $roleAuthData['data']['role_auth'] = ['zongxiao'=>$newTwomapAuthArr,'fenxiao'=>$newThreemapAuthArr,'system'=>$newOnemapAuthArr];
+
         $arr = [
             'code'=>200,
             'msg'=>'获取角色成功',
             'data'=>[
                     'id' => $data['id'], //角色id
-                    // 'role_auth_arr'=>$roleAuthArr,
-                    'role_auth_data' =>$roleAuthData['data'],
+                    'role_auth_data'=>$roleAuthData['data'],
                     'auth' =>$authArr
                 ]
         ]; 
