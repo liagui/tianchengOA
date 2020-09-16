@@ -177,6 +177,15 @@ class Student extends Model {
         //获取登录id
         $admin = isset(AdminLog::getAdminInfo()->admin_user) ? AdminLog::getAdminInfo()->admin_user: [];
         $user_id  = $admin['id'];
+        //项目和学科
+        if(!empty($data['project_id'])){
+            $s_id = json_decode($data['project_id']);
+            if(!empty($s_id[0])){
+                $data['project_id'] = $s_id[0];
+            }else{
+                $data['project_id'] = 0;
+            }
+        }
         //获取班主任
         $teacher = Teacher::select("id","username")->where("id",$user_id)->first();
         //获取数据
@@ -287,7 +296,11 @@ class Student extends Model {
         //项目和学科
         if(!empty($data['project_id'])){
             $s_id = json_decode($data['project_id']);
-            $data['project_id'] = $s_id[0];
+            if(!empty($s_id[0])){
+                $data['project_id'] = $s_id[0];
+            }else{
+                $data['project_id'] = 0;
+            }
             if(!empty($s_id[1])){
                 $data['subject_id'] = $s_id[1];
             }else{
