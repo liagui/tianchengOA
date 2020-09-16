@@ -37,6 +37,7 @@ class  Channel extends Model {
         $school_status = isset(AdminLog::getAdminInfo()->admin_user->school_status) ? AdminLog::getAdminInfo()->admin_user->school_status : 0;
         $count =  self::where(['is_del'=>0,'is_forbid'=>0])->count(); 
         if($count>0){
+            $use_channel = self::where(['is_del'=>0,'is_forbid'=>0,'is_use'=>0])->first()['id'];
 			$channelArr = self::leftJoin('pay_config','pay_config.channel_id','=','channel.id')
                   ->where(function($query) use ($body){
                           $query->where('channel.is_forbid',0);
@@ -67,8 +68,11 @@ class  Channel extends Model {
               	    $v['hj_state'] = 1;  //开启
               	} 
           	}
-        }
-        return ['code'=>200,'msg'=>'Success','data'=>$channelArr];
+        }else{
+            $use_channel = -1;
+        }   
+
+        return ['code'=>200,'msg'=>'Success','data'=>$channelArr,'use_channel'=>$use_channel];
     }
 
     //添加支付通道(lys) 2020-09-03

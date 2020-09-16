@@ -224,6 +224,12 @@ class StudentDatum extends Model {
                      DB::rollBack();
                     return ['code'=>203,'msg'=>' 资料提交失败，请重试 '];
                 }
+                $datumId = Datum::insertGetId($body);
+                if($datumId<=0){
+                     DB::rollBack();
+                    return ['code'=>203,'msg'=>'资料提交失败，请重试'];
+                }
+
                 
             }else{
                 //走第一遍流程

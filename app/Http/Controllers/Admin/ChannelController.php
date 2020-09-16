@@ -140,7 +140,7 @@ class ChannelController extends Controller {
         		DB::rollback();
         		return response()->json(['code'=>203,'msg'=>'选择失败']);
         	}
-	        $noUseRes = Channel::where('id','!=',$data['id'])->where(['is_del'=>0,'is_forbid'=>0])->update(['channel_id'=>$data['id'],'update_time'=>date('Y-m-d H:i:s')]);
+	        $noUseRes = Channel::where('id','!=',$data['id'])->where(['is_del'=>0,'is_forbid'=>0])->update(['is_use'=>1,'update_time'=>date('Y-m-d H:i:s')]);
 	        if($noUseRes){
 	        	 DB::commit();
 	            return response()->json(['code'=>200,'msg'=>'选择成功']);
