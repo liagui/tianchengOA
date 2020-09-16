@@ -42,12 +42,12 @@ class  Channel extends Model {
                           $query->where('channel.is_forbid',0);
                           $query->where('channel.is_del',0);
                       })
-                  ->select('pay_config.id','pay_config.channel_id','pay_config.wx_pay_state','pay_config.zfb_pay_state','pay_config.hj_wx_pay_state','pay_config.hj_zfb_pay_state','channel.channel_type','channel_name')
+                  ->select('pay_config.id','pay_config.channel_id','pay_config.wx_pay_state','pay_config.zfb_pay_state','pay_config.hj_wx_pay_state','pay_config.hj_zfb_pay_state','channel.channel_type','channel_name','channel.is_use')
                   ->get();
         	foreach($channelArr as $key =>&$v){
         		$channel_type = explode(',',$v['channel_type']);
                 if(in_array(1, $channel_type)){
-                      $v['zfb_show'] = true;
+                      $v['zfb_show'] = true; 
                 }else{
                     $v['zfb_show'] = false;
                 }
@@ -76,17 +76,26 @@ class  Channel extends Model {
     	$create_id = isset(AdminLog::getAdminInfo()->admin_user->id) ? AdminLog::getAdminInfo()->admin_user->id : 0;
     	$create_name = isset(AdminLog::getAdminInfo()->admin_user->real_name) ? AdminLog::getAdminInfo()->admin_user->real_name : '';
     	$count = self::where('channel_name','!=',$body['channel_name'])->where(['is_forbid'=>0,'is_del'=>0])->count();
+        DB::beginTransaction();
     	if($count >0){
             $insert['channel_name'] = $body['channel_name'];
     	    $insert['channel_type'] = $body['channel_type'];
     		$insert['create_time'] = date('Y-m-d H:i:s');
     		$insert['create_id'] = $create_id;
     		$channelId = self::insertGetId($insert);
-    		if($channelId >0){
-    			return ['code'=>200,'msg'=>'支付通过添加成功！'];
+    		if($channelId <=0){
+                DB::rollBack();
+                return ['code'=>205,'msg'=>'支付通过添加未成功！'];
     		}else{
-    			return ['code'=>205,'msg'=>'支付通过添加未成功！'];
-    		}
+                $paysetId = Payset::insertGetId(['create_id'=>$create_id,'create_at'=>date('Y-m-d H:i:s'),'channel_id'=>$channelId]);
+                if($paysetId >0){
+                    DB::commit();
+                    return ['code'=>200,'msg'=>'支付通过添加成功'];
+                }else{
+                    DB::rollBack();
+                    return ['code'=>205,'msg'=>'支付通过添加未成功！！'];    
+                }
+            }
     	}else{
     		return ['code'=>201,'msg'=>'支付通道已存在！'];
     	}

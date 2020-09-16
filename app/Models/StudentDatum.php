@@ -209,12 +209,6 @@ class StudentDatum extends Model {
         if(!isset($body['my_photo']) || empty($body['my_photo'])){
             return ['code' => 201 , 'msg' => '请上传本人手持身份证照片'];
         }
-
-        
-
-
-
-        
         $id = $body['id'];
         unset($body['id']);
         $body['create_time']=date('Y-m-d H:i:s');
@@ -223,30 +217,41 @@ class StudentDatum extends Model {
         if(empty($StudentDatumArr)){
             return ['code'=>201,'msg'=>'暂无数据信息'];
         }else{
-            $datumId = Datum::insertGetId($body);
-            if($datumId<=0){
-                 DB::rollBack();
-                return ['code'=>203,'msg'=>'资料提交失败，请重试'];
-            }
-            $update = [
-                'information_id'=>$datumId,
-                'gather_id' => isset(AdminLog::getAdminInfo()->admin_user->id) ? AdminLog::getAdminInfo()->admin_user->id : 0,
-                'datum_create_time'=>$body['create_time'],
-                'update_time'=> date('Y-m-d H:i:s')
-            ];
-            $res = self::where('id',$id)->update($update);
-            if(!$res){
-                DB::rollBack();
-                return ['code'=>203,'msg'=>'资料提交失败,请重试！'];
-            }
-            $admin_name = isset(AdminLog::getAdminInfo()->admin_user->real_name) ? AdminLog::getAdminInfo()->admin_user->real_name : '';
-            $orderRes = pay_order_inside::where('id',$StudentDatumArr['order_id'])->update(['consignee_name'=>$admin_name]);
-            if($orderRes){
-                DB::commit();
-                return ['code'=>200,'msg'=>'资料提交成功'];
+            if($StudentDatumArr['audit_status'] == 2 && $StudentDatumArr['audit_id']>0 && $StudentDatumArr['gather_id']>0 ){
+                //正常流程走完一边（驳回）
+                $datumDelRes=Datum::where('id',$StudentDatumArr['id'])->update(['id_del'=>0,'update_time'=>date('Y-m-d H:i:s')]);
+                if(!$datumDelRes){
+                     DB::rollBack();
+                    return ['code'=>203,'msg'=>' 资料提交失败，请重试 '];
+                }
+                
             }else{
-                DB::rollBack();
-                return ['code'=>203,'msg'=>'资料提交失败,请重试！！'];
+                //走第一遍流程
+                $datumId = Datum::insertGetId($body);
+                if($datumId<=0){
+                     DB::rollBack();
+                    return ['code'=>203,'msg'=>'资料提交失败，请重试'];
+                }
+                $update = [
+                    'information_id'=>$datumId,
+                    'gather_id' => isset(AdminLog::getAdminInfo()->admin_user->id) ? AdminLog::getAdminInfo()->admin_user->id : 0,
+                    'datum_create_time'=>$body['create_time'],
+                    'update_time'=> date('Y-m-d H:i:s')
+                ];
+                $res = self::where('id',$id)->update($update);
+                if(!$res){
+                    DB::rollBack();
+                    return ['code'=>203,'msg'=>'资料提交失败,请重试！'];
+                }
+                $admin_name = isset(AdminLog::getAdminInfo()->admin_user->real_name) ? AdminLog::getAdminInfo()->admin_user->real_name : '';
+                $orderRes = pay_order_inside::where('id',$StudentDatumArr['order_id'])->update(['consignee_name'=>$admin_name]);
+                if($orderRes){
+                    DB::commit();
+                    return ['code'=>200,'msg'=>'资料提交成功'];
+                }else{
+                    DB::rollBack();
+                    return ['code'=>203,'msg'=>'资料提交失败,请重试！！'];
+                }
             }
         }   
     }
