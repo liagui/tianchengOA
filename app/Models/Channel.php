@@ -77,6 +77,7 @@ class  Channel extends Model {
     	$create_name = isset(AdminLog::getAdminInfo()->admin_user->real_name) ? AdminLog::getAdminInfo()->admin_user->real_name : '';
     	$count = self::where('channel_name','!=',$body['channel_name'])->where(['is_forbid'=>0,'is_del'=>0])->count();
     	if($count >0){
+            $insert['channel_name'] = $body['channel_name'];
     	    $insert['channel_type'] = $body['channel_type'];
     		$insert['create_time'] = date('Y-m-d H:i:s');
     		$insert['create_id'] = $create_id;
