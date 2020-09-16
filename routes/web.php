@@ -127,8 +127,8 @@ $router->group(['prefix' => 'admin' , 'namespace' => 'Admin','middleware'=> ['jw
 
     //上传到OSS图片接口
     $router->post('doUploadOssImage', 'CommonController@doUploadOssImage');
-   
-   
+
+
 
 
     $router->post('diff', 'TestController@diff');
@@ -185,6 +185,8 @@ $router->group(['prefix' => 'admin' , 'namespace' => 'Admin','middleware'=> ['jw
     $router->post('getTeacherPerformance', 'TeacherController@getTeacherPerformance');
     //业绩详情
     $router->post('getTeacherPerformanceOne', 'TeacherController@getTeacherPerformanceOne');
+    //导出业绩
+    $router->post('exportTeacherPerformance', 'TeacherController@exportTeacherPerformance');
     //创建班主任
     $router->post('createTeacher', 'TeacherController@createTeacher');
     //获取班主任列表
