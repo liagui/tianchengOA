@@ -254,12 +254,22 @@ class Refund_order extends Model
     }
     /*
          * @param  修改退费状态
-         * @param  $id 订单id
+         * @param  id 订单id
+         * @param  student_name 学生姓名
+         * @param  phone 学生手机号
+         * @param  project_id arr
+         * @param  course_id 课程id
+         * @param  order_ id 关联订单id  arr
+         * @param  reality_price  实际退费金额
+         * @param  school_id  学校id
+         * @param  refund_reason  退费原因
+         * @param  pay_credentials  arr 凭证
          * @param  author  苏振文
          * @param  ctime   2020/9/9 16:19
          * return  array
          */
     public static function amendOrder($data){
+
         $order = self::select('confirm_status','refund_plan')->where(['id' => $data['id']])->first();
         if(!$order){
             return ['code' => 201 , 'msg' => '参数不对'];
@@ -284,7 +294,7 @@ class Refund_order extends Model
          * @param  修改打款状态
          * @param  id  订单id
          * @param  remit_time  凭证时间
-         * @param  refund_credentials  退款凭证
+         * @param  refund_credentials  arr 退款凭证
          * @param  remit_name  打款人
          * @param  author  苏振文
          * @param  ctime   2020/9/9 16:25
