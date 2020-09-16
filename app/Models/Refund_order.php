@@ -13,8 +13,7 @@ class Refund_order extends Model
          * @param  添加退费订单
          * @param  student_name  学员姓名
          * @param  phone  学员手机号
-         * @param  project_id  项目id
-         * @param  subject_id  学科id
+         * @param  project_id  arr
          * @param  course_id   课程id
          * @param  refund_price   退费金额
          * @param  school_id   学校
@@ -33,8 +32,12 @@ class Refund_order extends Model
         if(!isset($data['project_id']) || empty($data['project_id'])){
             return ['code' => 201 , 'msg' => '未选择项目'];
         }
-        if(!isset($data['subject_id']) || empty($data['subject_id'])){
-            return ['code' => 201 , 'msg' => '未选择学科'];
+        if(!empty($data['project_id'])){
+            $parent = json_decode($data['project_id'], true);
+            $data['project_id'] = $parent[0];
+            if(!empty($parent[1])){
+                $data['subject_id'] = $parent[1];
+            }
         }
         if(!isset($data['course_id']) || empty($data['course_id'])){
             return ['code' => 201 , 'msg' => '未选择课程'];
