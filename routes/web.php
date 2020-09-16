@@ -192,6 +192,8 @@ $router->group(['prefix' => 'admin' , 'namespace' => 'Admin','middleware'=> ['jw
 
     //更改班主任值班状态
     $router->post('updateTeacherStatus', 'TeacherController@updateTeacherStatus');
+    //更改班主任离职状态
+    $router->post('updateTeacherSeasStatus', 'TeacherController@updateTeacherSeasStatus');
 
     /*** 班主任管理end ***/
      $router->group(['prefix' => 'payset'], function () use ($router) {

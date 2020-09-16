@@ -122,6 +122,29 @@ class Teacher extends Model {
         }
     }
 
+    public static function updateTeacherSeasStatus($data){
+        unset($data['/admin/updateTeacherSeasStatus']);
+        $teacher = self::where(['id'=>$data['teacher_id'],'role_id'=>3])->first();
+        if(empty($teacher)){
+            return ['code' => 202 , 'msg' => '请检查账号是否存在'];
+        }
+        if($teacher['dimission'] == 1){
+            $update['dimission'] = 0;
+        }else{
+            $update['dimission'] = 1;
+        }
+        $update['is_forbid'] = 0;
+        $res = self::where('id',$data['teacher_id'])->update($update);
+        if($res){
+            //更新所有订单的状态为放入放入公海
+            $update = Pay_order_inside::where(['have_user_id'=>$data['teacher_id']])->update(['seas_status'=>1,"seas_time"=>date("Y-m-d H:i:s")]);
+            return ['code' => 200 , 'msg' => '更新离职状态成功'];
+        }else{
+            return ['code' => 202 , 'msg' => '更新离职状态失败'];
+        }
+    }
+
+
     public static function getTeacherPerformance($data){
         //每页显示的条数
         $pagesize = (int)isset($data['pageSize']) && $data['pageSize'] > 0 ? $data['pageSize'] : 20;
