@@ -67,13 +67,51 @@ class Student extends Model {
                 $query->where('name','like','%'.$data['keyword'].'%')->orWhere('mobile','like','%'.$data['keyword'].'%');
             }
         })->offset($offset)->limit($pagesize)->get()->toArray();
-
         //获取分校名称
         foreach($data as $k =>$v){
-             $school_name = School::select("school_name")->where('id',$v['school_id'])->first();
-             if(!empty($school_name)){
-                $data[$k]['school_name'] = $school_name['school_name'];
-             }
+            //confirm_order_type 确认的订单类型 1课程订单 2报名订单3课程+报名订单
+            //first_pay  支付类型 1全款 2定金 3部分尾款 4最后一笔尾款
+            //classes  是否开课 0不开课 1开课）
+            //return_visit  回访状态 0未回访 1 已回访  是否回访
+            if($v['confirm_order_type'] == 1){
+                $data[$k]['confirm_order_type_name'] = "课程订单";
+            }else if($v['confirm_order_type'] == 2){
+                $data[$k]['confirm_order_type_name'] = "报名订单";
+            }else{
+                $data[$k]['confirm_order_type_name'] = "课程+报名订单";
+            }
+
+            if($v['first_pay'] == 1){
+                $data[$k]['first_pay_name'] = "全款";
+            }else if($v['first_pay'] == 2){
+                $data[$k]['first_pay_name'] = "定金";
+            }else if($v['first_pay'] == 3){
+                $data[$k]['first_pay_name'] = "部分尾款";
+            }else{
+                $data[$k]['first_pay_name'] = "最后一笔尾款";
+            }
+            if($v['classes'] == 1){
+                $data[$k]['classes_name'] = "开课";
+            }else{
+                $data[$k]['classes_name'] = "不开课";
+            }
+
+            if($v['return_visit'] == 1){
+                $data[$k]['return_visit_name'] = "已回访";
+            }else{
+                $data[$k]['return_visit_name'] = "未回访";
+            }
+
+            if($v['return_visit'] == 1){
+                $data[$k]['return_visit_status'] = "是";
+            }else{
+                $data[$k]['return_visit_status'] = "否";
+            }
+
+            $school_name = School::select("school_name")->where('id',$v['school_id'])->first();
+            if(!empty($school_name)){
+            $data[$k]['school_name'] = $school_name['school_name'];
+            }
         }
         $page=[
             'pageSize'=>$pagesize,
