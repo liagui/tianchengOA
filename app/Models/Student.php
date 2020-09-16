@@ -283,6 +283,17 @@ class Student extends Model {
         $pagesize = (int)isset($data['pageSize']) && $data['pageSize'] > 0 ? $data['pageSize'] : 20;
         $page     = isset($data['page']) && $data['page'] > 0 ? $data['page'] : 1;
         $offset   = ($page - 1) * $pagesize;
+
+        //项目和学科
+        if(!empty($data['project_id'])){
+            $s_id = json_decode($data['project_id']);
+            $data['project_id'] = $s_id[0];
+            if(!empty($s_id[1])){
+                $data['subject_id'] = $s_id[1];
+            }else{
+                $data['subject_id'] = 0;
+            }
+        }
         //计算总数
         $count = Pay_order_inside::select()->where("seas_status",0)->where("have_user_id",$user_id)->where(function($query) use ($data) {
             if(isset($data['project_id']) && !empty($data['project_id'])){
