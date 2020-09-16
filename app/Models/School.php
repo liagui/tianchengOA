@@ -60,17 +60,17 @@ class School extends Model {
         }
 
         //判断佣金比例是否为空
-        if(!isset($body['commission']) || empty($body['commission'])){
+        if(!isset($body['commission']) || $body['commission'] <=0){
             return ['code' => 201 , 'msg' => '请输入佣金比例'];
         }
 
         //判断押金比例是否为空
-        if(!isset($body['deposit']) || empty($body['deposit'])){
+        if(!isset($body['deposit']) || $body['deposit'] <=0){
             return ['code' => 201 , 'msg' => '请输入押金比例'];
         }
 
         //判断税点比例是否为空
-        if(!isset($body['tax_point']) || empty($body['tax_point'])){
+        if(!isset($body['tax_point']) || $body['tax_point'] <=0){
             return ['code' => 201 , 'msg' => '请输入税点比例'];
         }
 
@@ -78,7 +78,6 @@ class School extends Model {
         if(!isset($body['look_all_flag']) || !in_array($body['look_all_flag'] , [0,1])){
             return ['code' => 202 , 'msg' => '查看方式不合法'];
         }
-
         //判断分校级别是否合法
         if(!isset($body['level']) || !in_array($body['level'] , [1,2,3])){
             return ['code' => 202 , 'msg' => '分校级别不合法'];
@@ -103,15 +102,15 @@ class School extends Model {
                 return ['code' => 203 , 'msg' => '级别不对应'];
             }else{
                 if($body['level'] == 2 && in_array(2,[2,3])){
-                    if(!isset($body['one_extraction_ratio'])){
+                    if(!isset($body['one_extraction_ratio']) || strlen($body['one_extraction_ratio']) <=0){
                         return ['code'=>201,'msg'=>'请输入一级抽离比例'];
                     }
                 }
                 if($body['level'] == 3 && in_array(3,[2,3])){
-                    if(!isset($body['one_extraction_ratio'])){
+                    if(!isset($body['one_extraction_ratio']) || strlen($body['one_extraction_ratio']) <=0){
                         return ['code'=>201,'msg'=>'请输入一级抽离比例'];
                     }
-                    if(!isset($body['two_extraction_ratio'])){
+                    if(!isset($body['two_extraction_ratio']) || strlen($body['one_extraction_ratio']) <=0){
                         return ['code'=>201,'msg'=>'请输入二级级抽离比例'];
                     }
                 }
@@ -130,7 +129,10 @@ class School extends Model {
             'deposit'       =>   $body['deposit'] ,
             'look_all_flag' =>   isset($body['look_all_flag']) && $body['look_all_flag'] == 1 ? 1 : 0 ,
             'create_id'     =>   $admin_id ,
-            'create_time'   =>   date('Y-m-d H:i:s')
+            'create_time'   =>   date('Y-m-d H:i:s'),
+            'one_extraction_ratio' => isset($body['one_extraction_ratio'])?$body['one_extraction_ratio']:'',
+            'two_extraction_ratio' => isset($body['two_extraction_ratio'])?$body['two_extraction_ratio']:'',
+
         ];
         //开启事务
         DB::beginTransaction();
@@ -246,7 +248,9 @@ class School extends Model {
                 'commission'    =>   $body['commission'] ,
                 'deposit'       =>   $body['deposit'] ,
                 'look_all_flag' =>   isset($body['look_all_flag']) && $body['look_all_flag'] == 1 ? 1 : 0 ,
-                'update_time'   =>   date('Y-m-d H:i:s')
+                'update_time'   =>   date('Y-m-d H:i:s'),
+                'one_extraction_ratio' => isset($body['one_extraction_ratio'])?$body['one_extraction_ratio']:'',
+                'two_extraction_ratio' => isset($body['two_extraction_ratio'])?$body['two_extraction_ratio']:'',
             ];
         } else {
             //组装分校数组信息
@@ -258,7 +262,10 @@ class School extends Model {
                 'commission'    =>   $body['commission'] ,
                 'deposit'       =>   $body['deposit'] ,
                 'look_all_flag' =>   isset($body['look_all_flag']) && $body['look_all_flag'] == 1 ? 1 : 0 ,
-                'update_time'   =>   date('Y-m-d H:i:s')
+                'update_time'   =>   date('Y-m-d H:i:s'),
+                'one_extraction_ratio' => isset($body['one_extraction_ratio'])?$body['one_extraction_ratio']:'',
+                'two_extraction_ratio' => isset($body['two_extraction_ratio'])?$body['two_extraction_ratio']:'',
+
             ];
         }
 
