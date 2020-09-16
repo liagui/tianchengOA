@@ -137,7 +137,7 @@ class Student extends Model {
         }
         $data['follow_time'] = date("Y-m-d H:i:s");
         $res = Orderdocumentary::insert($data);
-        if($res && $res1){
+        if($res || $res1){
             return ['code' => 200 , 'msg' => '跟单成功'];
         }else{
             return ['code' => 202 , 'msg' => '跟单失败'];
