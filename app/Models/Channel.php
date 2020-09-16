@@ -124,7 +124,7 @@ class  Channel extends Model {
             return response()->json(['code'=>201,'msg'=>'channel_type缺少或为空']);
         }
         $body['update_time'] = date('Y-m-d H:i:s');
-       	upset($body['admin/channel/doUpdateChannelPay']);
+       	unset($body['admin/channel/doUpdateChannelPay']);
         $res = self::where(['id'=>$body['id']])->update($body);
         if($res){
         	return ['code'=>200,'msg'=>'通道更改成功'];
