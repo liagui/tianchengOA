@@ -134,6 +134,7 @@ class Teacher extends Model {
         $teacher = self::select("real_name","mobile","wx","id")->where('role_id',3)->offset($offset)->limit($pagesize)->get()->toArray();
 
         foreach($teacher as $k =>&$v){
+
             //已回访单数
             $v['yet_singular'] = Pay_order_inside::where(['return_visit'=>1,'have_user_id'=>$v['id']])->where(function($query) use ($data){
                 if(isset($data['start_time']) && !empty(isset($data['start_time']))  && isset($data['end_time']) && !empty(isset($data['end_time']))){
@@ -240,6 +241,13 @@ class Teacher extends Model {
                 $query->where('name','like','%'.$data['keyword'].'%')->orWhere('mobile','like','%'.$data['keyword'].'%');
             }
         })->offset($offset)->limit($pagesize)->get();
+
+        foreach($data as $k =>$v){
+            $school_name = School::select("school_name")->where('id',$v['school_id'])->first();
+            if(!empty($school_name)){
+            $data[$k]['school_name'] = $school_name['school_name'];
+            }
+        }
         $page=[
             'pageSize'=>$pagesize,
             'page' =>$page,
