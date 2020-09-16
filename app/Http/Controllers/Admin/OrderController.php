@@ -101,6 +101,11 @@ class OrderController extends Controller {
         $list = Refund_order::returnOrder(self::$accept_data);
         return response()->json($list);
     }
+    //单条详情
+    public function returnOne(){
+        $list = Refund_order::returnOne(self::$accept_data);
+        return response()->json($list);
+    }
     //add
     public function initOrder(){
         $list = Refund_order::initOrder(self::$accept_data);
@@ -120,10 +125,6 @@ class OrderController extends Controller {
     public function remitOrder(){
         $list = Refund_order::remitOrder(self::$accept_data);
         return response()->json($list);
-    }
-    //oa支付
-    public function oapay(){
-
     }
 
     /*

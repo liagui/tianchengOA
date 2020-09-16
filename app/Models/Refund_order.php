@@ -196,6 +196,45 @@ class Refund_order extends Model
     }
 
     /*
+         * @param  单条详情
+         * @param  id     参数
+         * @param  author  苏振文
+         * @param  ctime   2020/9/16 19:59
+         * return  array
+         */
+    public static function returnOne($data){
+        $res = self::where(['id'=>$data['id']])->first();
+        //项目 学科  姓名
+        $course = Course::select('course_name')->where(['id'=>$res['course_id']])->first();
+        $res['course_name'] = $course['course_name'];
+        $project = Project::select('name')->where(['id'=>$res['project_id']])->first();
+        $res['project_name'] = $project['name'];
+        $subject = Project::select('name')->where(['id'=>$res['subject_id']])->first();
+        $res['subject_name'] = $subject['name'];
+        if(!empty($res['education_id']) && $res['education_id'] != 0){
+            //查院校
+            $education = Education::select('education_name')->where(['id'=>$res['education_id']])->first();
+            $res['education_name'] = $education['education_name'];
+            //查专业
+            $major = Major::where(['id'=>$res['major_id']])->first();
+            $res['major_name'] = $major['major_name'];
+        }
+        //查学校
+        $school = School::where(['id'=>$res['school_id']])->first();
+        if($school){
+            $res['school_name'] = $school['school_name'];
+        }
+        //根据用户名 手机号  项目 学科 课程 查询订单
+        $order = Pay_order_inside::where([
+            'name'=>$res['student_name'],
+            'mobile'=>$res['phone'],
+            'project_id'=>$res['project_id'],
+            'subject_id'=>$res['subject_id'],
+            'course_id' => $res['course_id']
+        ])->get();
+        return ['code' => 200, 'msg' => '获取成功','data'=>$res,'order'=>$order];
+    }
+    /*
          * @param  查看退款凭证
          * @param  $id    订单id
          * @param  author  苏振文
