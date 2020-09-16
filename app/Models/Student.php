@@ -107,9 +107,11 @@ class Student extends Model {
     }
     //获取跟单记录
     public static function getdocumentary($data){
-        $data = Orderdocumentary::where("order_id",$data['order_id'])->get();
-        if($data){
-            return ['code' => 200, 'msg' => '查询成功', 'data' => $data];
+        $res = Orderdocumentary::where("order_id",$data['order_id'])->get()->toArray();
+        $last_follow_time = Orderdocumentary::where("order_id",$data['order_id'])->orderByDesc('id')->first();
+        array_unshift($res,$last_follow_time['last_follow_time']);
+        if($res){
+            return ['code' => 200, 'msg' => '查询成功', 'data' => $res];
         }else{
             return ['code' => 202, 'msg' => '查询暂无数据'];
         }
