@@ -272,7 +272,7 @@ class Project extends Model {
      */
     public static function getProjectSubjectList($body=[]) {
         //判断项目名称是否传递
-        if(!isset($body['project_name']) && !empty($body['project_name'])){
+        if(isset($body['project_name']) && !empty($body['project_name'])){
             //项目列表
             $project_list = self::select('id','name','id as value','name as label','is_del','is_hide')->where('name','like','%'.$body['project_name'].'%')->where('parent_id' , 0)->where('is_del' , 0)->orderByDesc('create_time')->get()->toArray();
         } else {
