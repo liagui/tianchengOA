@@ -121,7 +121,7 @@ class Roleauth extends Model {
                         }   
                         $query->where('is_del',0);
                       })
-                  ->select('role_name as name','auth_desc','create_id','create_time','id')
+                  ->select('role_name as name','auth_desc','create_id','create_time','id','id as value','role_name as label')
                   ->offset($offset)->limit($pagesize)->get();
             $adminData  = Admin::where(['is_del'=>1,'is_forbid'=>1])->select('id','username')->get()->toArray();
             $adminData = array_column($adminData,'username','id');

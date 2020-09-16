@@ -191,7 +191,7 @@ class RoleController extends Controller {
                 }
             }
             if(in_array(2,$roleAuthMapData)){
-                $TwomapAuthArr= \App\Models\AuthMap::where(['is_del'=>1,'is_forbid'=>1,'parent_id'=>2])->select('id')->get()->toArray(); //总校
+                $TwomapAuthArr = \App\Models\AuthMap::where(['is_del'=>1,'is_forbid'=>1,'parent_id'=>2])->select('id')->get()->toArray(); //总校
                 if(!empty($TwomapAuthArr)){
                    $TwomapAuthArr = array_column($TwomapAuthArr, 'id');
                 }
@@ -202,14 +202,11 @@ class RoleController extends Controller {
                    $ThreemapAuthArr = array_column($ThreemapAuthArr, 'id');
                 }
             }
-        
-
             $newOnemapAuthArr= array_intersect($OnemapAuthArr,$roleAuthMapData);
             $newTwomapAuthArr= array_intersect($TwomapAuthArr,$roleAuthMapData);
             $newThreemapAuthArr= array_intersect($ThreemapAuthArr,$roleAuthMapData);
         }   
         $roleAuthData['data']['role_auth'] = ['zongxiao'=>$newTwomapAuthArr,'fenxiao'=>$newThreemapAuthArr,'system'=>$newOnemapAuthArr];
-
         $arr = [
             'code'=>200,
             'msg'=>'获取角色成功',
