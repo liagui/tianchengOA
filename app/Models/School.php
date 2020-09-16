@@ -101,9 +101,22 @@ class School extends Model {
             $level= bcadd($info['level'],1);
             if($body['level'] != $level){
                 return ['code' => 203 , 'msg' => '级别不对应'];
-            }
+            }else{
+                if($body['level'] == 2 && in_array(2,[2,3])){
+                    if(!isset($body['one_extraction_ratio'])){
+                        return ['code'=>201,'msg'=>'请输入一级抽离比例'];
+                    }
+                }
+                if($body['level'] == 3 && in_array(3,[2,3])){
+                    if(!isset($body['one_extraction_ratio'])){
+                        return ['code'=>201,'msg'=>'请输入一级抽离比例'];
+                    }
+                    if(!isset($body['two_extraction_ratio'])){
+                        return ['code'=>201,'msg'=>'请输入二级级抽离比例'];
+                    }
+                }
+            } 
         }
-
         //获取后端的操作员id
         $admin_id = isset(AdminLog::getAdminInfo()->admin_user->id) ? AdminLog::getAdminInfo()->admin_user->id : 0;
 
@@ -207,7 +220,21 @@ class School extends Model {
             $level= bcadd($info['level'],1);
             if($body['level'] != $level){
                 return ['code' => 203 , 'msg' => '级别不对应'];
-            }
+            }else{
+                if($body['level'] == 2 && in_array(2,[2,3])){
+                    if(!isset($body['one_extraction_ratio'])){
+                        return ['code'=>201,'msg'=>'请输入一级抽离比例'];
+                    }
+                }
+                if($body['level'] == 3 && in_array(3,[2,3])){
+                    if(!isset($body['one_extraction_ratio'])){
+                        return ['code'=>201,'msg'=>'请输入一级抽离比例'];
+                    }
+                    if(!isset($body['two_extraction_ratio'])){
+                        return ['code'=>201,'msg'=>'请输入二级级抽离比例'];
+                    }
+                }
+            } 
         }
 
         //判断分校级别下面的分校名称是否存在
@@ -272,7 +299,7 @@ class School extends Model {
         }
 
         //根据id获取分校的详情
-        $info = self::select('school_name', 'level' , 'tax_point','commission' , 'deposit' , 'look_all_flag' , 'parent_id')->where('id' , $body['school_id'])->where('is_del' , 0)->first();
+        $info = self::select('school_name', 'level' , 'tax_point','commission' , 'deposit' , 'look_all_flag' , 'parent_id','one_extraction_ratio','two_extraction_ratio')->where('id' , $body['school_id'])->where('is_del' , 0)->first();
         if($info && !empty($info)){
             return ['code' => 200 , 'msg' => '获取详情成功' , 'data' => $info];
         } else {
@@ -339,7 +366,7 @@ class School extends Model {
             $school_array = [];
 
             //获取分校列表
-            $school_list = self::select('id as school_id' , 'parent_id' , 'school_name' , 'tax_point' , 'commission' , 'deposit' , 'level' , 'look_all_flag' , 'is_open')->where(function($query) use ($body){
+            $school_list = self::select('id as school_id' , 'parent_id' , 'school_name' , 'tax_point' , 'commission' , 'deposit' , 'level' , 'look_all_flag' , 'is_open','one_extraction_ratio','two_extraction_ratio')->where(function($query) use ($body){
                 //判断分校名称是否为空
                 if(isset($body['school_name']) && !empty($body['school_name'])){
                     $query->where('school_name','like','%'.$body['school_name'].'%');
