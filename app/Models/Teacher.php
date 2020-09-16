@@ -70,6 +70,14 @@ class Teacher extends Model {
             return ['code' => 202, 'msg' => '查询暂无数据'];
         }
     }
+    public static function getTeacherListAll($data){
+        $data = self::select("id","username")->where('admin.role_id',3)->get();
+        if($data){
+            return ['code' => 200, 'msg' => '查询成功', 'data' => $data];
+        }else{
+            return ['code' => 202, 'msg' => '查询暂无数据'];
+        }
+    }
     public static function createTeacher($data){
         //创建班主任账号
         unset($data['/admin/createTeacher']);

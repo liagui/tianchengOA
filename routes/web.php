@@ -187,6 +187,9 @@ $router->group(['prefix' => 'admin' , 'namespace' => 'Admin','middleware'=> ['jw
     $router->post('createTeacher', 'TeacherController@createTeacher');
     //获取班主任列表
     $router->post('getTeacherList', 'TeacherController@getTeacherList');
+    //获取班主任列表
+    $router->post('getTeacherListAll', 'TeacherController@getTeacherListAll');
+
     //更改班主任值班状态
     $router->post('updateTeacherStatus', 'TeacherController@updateTeacherStatus');
 

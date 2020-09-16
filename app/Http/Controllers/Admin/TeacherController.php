@@ -11,11 +11,21 @@ use App\Models\AdminLog;
 use Maatwebsite\Excel\Facades\Excel;
 class TeacherController extends Controller
 {
-    //获取班主任列表
+    //获取班主任列表分页
     public function getTeacherList(){
         //获取提交的参数
         try{
             $data = Teacher::getTeacherList(self::$accept_data);
+            return response()->json($data);
+        } catch (Exception $ex) {
+            return response()->json(['code' => 500 , 'msg' => $ex->getMessage()]);
+        }
+    }
+    //获取班主任列表
+    public function getTeacherListAll(){
+        //获取提交的参数
+        try{
+            $data = Teacher::getTeacherListAll(self::$accept_data);
             return response()->json($data);
         } catch (Exception $ex) {
             return response()->json(['code' => 500 , 'msg' => $ex->getMessage()]);
