@@ -63,7 +63,7 @@ class CorsMiddleware
             'http://neibu.testwo.longde999.cn',
             'http://neibu.tiancheng.longde999.cn',
             'http://edu.jingluojiaoyu.com',
-            'http://testoapi.longde999.cn',
+            'http://testoa.longde999.cn',
             'http://oapi.longde999.cn'
         
         ];
