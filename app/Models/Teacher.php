@@ -70,10 +70,6 @@ class Teacher extends Model {
             return ['code' => 202, 'msg' => '查询暂无数据'];
         }
     }
-    public static function exportTeacherPerformance($data){
-        //导出数据
-        echo "导出数据";
-    }
     public static function createTeacher($data){
         //创建班主任账号
         unset($data['/admin/createTeacher']);

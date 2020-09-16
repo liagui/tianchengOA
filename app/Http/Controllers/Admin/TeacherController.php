@@ -7,6 +7,8 @@ use Log;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Http\Request;
 use App\Models\Teacher;
+use App\Models\AdminLog;
+use Maatwebsite\Excel\Facades\Excel;
 class TeacherController extends Controller
 {
     //获取班主任列表
@@ -23,8 +25,11 @@ class TeacherController extends Controller
     public function exportTeacherPerformance(){
         //获取提交的参数
         try{
-            $data = Teacher::exportTeacherPerformance(self::$accept_data);
-            return response()->json($data);
+            $data = self::$accept_data;
+            $res = $this->underlingLook(isset(AdminLog::getAdminInfo()->admin_user->school_id) ? AdminLog::getAdminInfo()->admin_user->school_id : 0);
+            $data['schoolids'] = $res['data'];
+            return Excel::download(new \App\Exports\TeacherExport($data), '班主任业绩导出.xlsx');
+
         } catch (Exception $ex) {
             return response()->json(['code' => 500 , 'msg' => $ex->getMessage()]);
         }

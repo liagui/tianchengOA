@@ -27,11 +27,8 @@ $router->group(['prefix' => 'admin' , 'namespace' => 'Admin','middleware'=> 'cor
     $router->post('doSendSms', 'AuthenticateController@doSendSms');//发送短信
 
     $router->get('doExcelDatum', 'ExcelController@doExcelDatum');//学员资料导出
-
-
-
-
-
+    //导出业绩
+    $router->get('exportTeacherPerformance', 'TeacherController@exportTeacherPerformance');
 });
 //后端登录权限认证相关接口
 //
@@ -185,8 +182,7 @@ $router->group(['prefix' => 'admin' , 'namespace' => 'Admin','middleware'=> ['jw
     $router->post('getTeacherPerformance', 'TeacherController@getTeacherPerformance');
     //业绩详情
     $router->post('getTeacherPerformanceOne', 'TeacherController@getTeacherPerformanceOne');
-    //导出业绩
-    $router->post('exportTeacherPerformance', 'TeacherController@exportTeacherPerformance');
+
     //创建班主任
     $router->post('createTeacher', 'TeacherController@createTeacher');
     //获取班主任列表
