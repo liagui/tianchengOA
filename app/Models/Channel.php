@@ -79,7 +79,6 @@ class  Channel extends Model {
     	if($count >0){
     	    $insert['channel_type'] = $body['channel_type'];
     		$insert['create_time'] = date('Y-m-d H:i:s');
-    		$insert['create_name'] = $create_name;
     		$insert['create_id'] = $create_id;
     		$channelId = self::insertGetId($insert);
     		if($channelId >0){

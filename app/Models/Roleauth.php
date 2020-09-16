@@ -134,7 +134,4 @@ class Roleauth extends Model {
     }
 
 
-
-
-
 }

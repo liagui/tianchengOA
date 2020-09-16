@@ -99,10 +99,10 @@ class StudentDatum extends Model {
             return ['code' => 202 , 'msg' => '传递数据不合法'];
         }
         //判断学员资料关系表的id是否为空
-        if((!isset($body['id']) || empty($body['id'])) && $body['id'] <= 0 ){
-            return ['code' => 201 , 'msg' => 'datum_id不合法'];
+        if(!isset($body['id']) || empty($body['id']) || $body['id'] <= 0 ){
+            return ['code' => 201 , 'msg' => 'id不合法'];
         }
-        //判断学员资料关系表的id是否为空
+        //判断学员资料关系表的id是否为空  
         if(!isset($body['branch_school']) || empty($body['branch_school']) || $body['branch_school'] <= 0 ){
             return ['code' => 201 , 'msg' => '学校标识不合法'];
         }
@@ -209,6 +209,12 @@ class StudentDatum extends Model {
         if(!isset($body['my_photo']) || empty($body['my_photo'])){
             return ['code' => 201 , 'msg' => '请上传本人手持身份证照片'];
         }
+
+        
+
+
+
+        
         $id = $body['id'];
         unset($body['id']);
         $body['create_time']=date('Y-m-d H:i:s');
