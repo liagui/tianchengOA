@@ -217,6 +217,11 @@ class StudentDatum extends Model {
         }
         $id = $body['id'];
         unset($body['id']);
+        if(isset($body['/admin/datum/doDatumInsert'])){
+            unset($body['/admin/datum/doDatumInsert']);
+        }
+          
+
         $body['create_time']=date('Y-m-d H:i:s');
         DB::beginTransaction();
         $admin_name = isset(AdminLog::getAdminInfo()->admin_user->real_name) ? AdminLog::getAdminInfo()->admin_user->real_name : '';
