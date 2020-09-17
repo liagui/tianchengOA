@@ -240,22 +240,32 @@ class Refund_order extends Model
         if($school){
             $res['school_name'] = $school['school_name'];
         }
-        $orderid=[];
+
         //根据用户名 手机号  项目 学科 课程 查询订单
-        $order = Pay_order_inside::where([
-            'name'=>$res['student_name'],
-            'mobile'=>$res['phone'],
-            'project_id'=>$res['project_id'],
-            'subject_id'=>$res['subject_id'],
-            'course_id' => $res['course_id'],
-        ])->get();
-        if(!empty($order)){
-            foreach ($order as $k=>&$v){
-                array_push($orderid,$v['id']);
-                $v['select'] = true;
-                $school = School::where(['id'=>$v['school_id']])->first();
-                $v['school_name'] = $school['school_name'];
+
+        if(empty($res['order_id'])) {
+            $orderid=[];
+            $order = Pay_order_inside::where([
+                'name' => $res['student_name'],
+                'mobile' => $res['phone'],
+                'project_id' => $res['project_id'],
+                'subject_id' => $res['subject_id'],
+                'course_id' => $res['course_id'],
+            ])->get();
+            if (!empty($order)) {
+                foreach ($order as $k => &$v) {
+                    array_push($orderid, $v['id']);
+                    $v['select'] = true;
+                    $school = School::where(['id' => $v['school_id']])->first();
+                    $v['school_name'] = $school['school_name'];
+                }
             }
+        }else{
+            $orderid = explode($res['order_id'],true);
+            foreach ($orderid as $k=>$v){
+                $order[] = Pay_order_inside::where(['id'=>$v])->first();
+            }
+
         }
         unset($res['project_id']);
         unset($res['subject_id']);
