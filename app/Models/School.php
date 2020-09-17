@@ -413,7 +413,9 @@ class School extends Model {
                     'look_all_flag'    =>  $v['look_all_flag'] ,
                     'is_open'          =>  $v['is_open'] ,
                     'is_open_name'     =>  $v['is_open'] && $v['is_open'] > 0 ? '关闭' : '开启' ,
-                    'admin_name'       =>  'admin'
+                    'admin_name'       =>  'admin',
+                    'one_extraction_ratio'=>$v['one_extraction_ratio'] && $v['one_extraction_ratio'] > 0 ? $v['one_extraction_ratio'].'%' : 0,
+                    'two_extraction_ratio' =>$v['two_extraction_ratio'] && $v['two_extraction_ratio'] > 0 ? $v['two_extraction_ratio'].'%' : 0,
                 ];
             }
             return ['code' => 200 , 'msg' => '获取分校列表成功' , 'data' => ['school_list' => $school_array , 'total' => $school_count , 'pagesize' => $pagesize , 'page' => $page]];
