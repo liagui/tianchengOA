@@ -313,6 +313,8 @@ class Refund_order extends Model
         if(!$order){
             return ['code' => 201 , 'msg' => '参数不对'];
         }
+        $tui = explode(',',$order['refund_credentials']);
+        $order['refund_credentials'] = $tui;
         if(!empty($order['refund_credentials'])){
             return ['code' => 200, 'msg' => '获取成功','data'=>$order];
         }else{
