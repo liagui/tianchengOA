@@ -12,7 +12,7 @@ use Tymon\JWTAuth\Http\Middleware\BaseMiddleware;
 
 class ExcelController extends Controller{
 	public function doExcelDatum(){
-	    include_once("./app/Http/Middleware/JWTRoleAuth.php");
+	    include_once("../../Middleware/JWTRoleAuth.php");
 	    $jwt = new JWTRoleAuth();
 	    $data = self::$accept_data;
 	    $token = $jwt->handle($data['token'],'/admin/doExcelDatum');
