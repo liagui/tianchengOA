@@ -26,7 +26,7 @@ $router->group(['prefix' => 'admin' , 'namespace' => 'Admin','middleware'=> 'cor
     $router->post('bindMobile', 'AuthenticateController@bindMobile');//绑定手机号
     $router->post('doSendSms', 'AuthenticateController@doSendSms');//发送短信
 
-    $router->get('doExcelDatum', 'ExcelController@doExcelDatum');//学员资料导出
+    
    
 });
 //后端登录权限认证相关接口
@@ -256,7 +256,7 @@ $router->group(['prefix' => 'admin' , 'namespace' => 'Admin','middleware'=> ['jw
         $router->post('getRegionList', 'StudentDatumController@getRegionList');  //获取发起人信息
         $router->post('getDatumCount', 'StudentDatumController@getDatumCount');  //获取资料数量
         //导出业绩
-        $router->get('exportTeacherPerformance', 'TeacherController@exportTeacherPerformance');
+        $router->post('doExcelDatum', 'ExcelController@doExcelDatum');//学员资料导出
     });
 
 });
