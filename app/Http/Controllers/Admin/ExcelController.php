@@ -11,7 +11,8 @@ class ExcelController extends Controller {
 	public function doExcelDatum(){
         $data = self::$accept_data;
         if(!empty($data['token'])){
-            $user =  JWTRoleAuth::handle($data['token'],'/admin/doExcelDatum');
+            $jwt = new JWTRoleAuth();
+            $user =  $jwt->handle($data['token'],'/admin/doExcelDatum');
             if(empty($user)){
                 return ['code' => 202 , 'msg' => 'token....'];
             }
