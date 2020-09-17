@@ -192,7 +192,21 @@ class Refund_order extends Model
             'page' =>$page,
             'total'=>$count
         ];
-        return ['code' => 200 , 'msg' => '查询成功','data'=>$order,'where'=>$data,'page'=>$page];
+        //退费总金额
+        $tuicount = self::sum('refund_Price');
+        //未确认金额   confirm_status 0
+        $weicount = self::where(['confirm_status'=>0])->sum('refund_Price');
+        //已确认金额   confirm_status 1
+        $surecount = self::where(['confirm_status'=>1])->sum('refund_Price');
+        //已退金额   refund_plan = 2
+        $yituicount = self::where(['refund_plan'=>2])->sum('refund_Price');
+        $count=[
+            'tuicount' => $tuicount,
+            'weicount' => $weicount,
+            'surecoun' => $surecount,
+            'yituicount' => $yituicount,
+        ];
+        return ['code' => 200 , 'msg' => '查询成功','data'=>$order,'where'=>$data,'page'=>$page,'count'=>$count];
     }
 
     /*
@@ -232,11 +246,10 @@ class Refund_order extends Model
             'project_id'=>$res['project_id'],
             'subject_id'=>$res['subject_id'],
             'course_id' => $res['course_id'],
-            'del_flag' => 0
         ])->get();
         if(!empty($order)){
             foreach ($order as $k=>&$v){
-                array_push($v['id'],$orderid);
+                array_push($orderid,$v['id']);
                 $v['select'] = true;
                 $school = School::where(['id'=>$v['school_id']])->first();
                 $v['school_name'] = $school['school_name'];
