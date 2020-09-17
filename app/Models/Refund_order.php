@@ -149,6 +149,10 @@ class Refund_order extends Model
         //循环查询分类
         if(!empty($order)){
             foreach ($order as $k=>&$v){
+                $tui = explode(',',$v['refund_credentials']);
+                $v['refund_credentials'] = $tui;
+                $zhifu = explode(',',$v['pay_credentials']);
+                $v['pay_credentials'] = $zhifu;
                 //查学校
                 $school = School::where(['id'=>$v['school_id']])->first();
                 if($school){
