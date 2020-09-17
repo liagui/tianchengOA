@@ -30,7 +30,12 @@ class Region extends Model {
     	}
     	return ['code'=>200,'msg'=>'success','data'=>$arr];
     }
-
+    public static function getRegionList($body){
+        $parent_id = isset($body['parent_id']) && !empty($body['parent_id']) && $body['parent_id'] >0 ?$body['parent_id'] :0;
+        $data = self::select('id as value','name as label')->where('parent_id',$parent_id)->get()->toArray();
+        print_r($data);die;
+        return ['code'=>200,'msg'=>'success','data'=>$data];
+    }
 
 
 }

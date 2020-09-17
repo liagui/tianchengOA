@@ -85,7 +85,11 @@ class StudentDatumController extends Controller {
             return response()->json(['code' => 500 , 'msg' => $ex->getMessage()]);
         }
     }
-
+   //获取地区
+    public function getRegionLists(){
+        $arr = Region::getRegionList(self::$accept_data);
+        return response()->json($arr);
+    }
 
 
 
