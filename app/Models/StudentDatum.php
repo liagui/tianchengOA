@@ -91,7 +91,7 @@ class StudentDatum extends Model {
 	                	$query->where('student_information.project_id',$oneSubject);
 	                	$query->where('student_information.subject_id',$twoSubject);
 	            	}   
-	        	})->select('student_information.student_id','student_information.project_id','student_information.subject_id','student_information.audit_id','student_information.gather_id','student_information.initiator_id','student_information.datum_create_time','student.mobile','student.user_name as student_name','pay_order_inside.consignee_status','student_information.audit_status','student_information.id','student_information.course_id','student_information.school_id')->offset($offset)->limit($pagesize)->get();
+	        	})->select('student_information.student_id','student_information.project_id','student_information.subject_id','student_information.audit_id','student_information.gather_id','student_information.initiator_id','student_information.datum_create_time','student.mobile','student.user_name as student_name','pay_order_inside.consignee_status','student_information.audit_status','student_information.id','student_information.course_id','student_information.school_id','student_information.information_id')->offset($offset)->limit($pagesize)->get();
 	        foreach($StudentDatumArr as $k=>&$v){
 	        	$v['school_name'] = isset($schoolArr[$v['school_id']]) ? $schoolArr[$v['school_id']] :'';
 	        	$v['project_name'] = isset($categoryArr[$v['project_id']]) ? $categoryArr[$v['project_id']] :'';
