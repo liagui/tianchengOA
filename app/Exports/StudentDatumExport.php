@@ -22,18 +22,7 @@ class StudentDatumExport implements FromCollection, WithHeadings {
         //     $twoSubject = isset($subject[1]) && $subject[1]>0 ?$subject[1]:0;
         // }
         // DB::connection()->enableQueryLog();
-        $Datum = StudentDatum::leftJoin('information','information.id','=','student_information.information_id')
-            ->where(function($query) use ($body){
-                // if(isset($body['school_id']) && !empty($body['school_id'])){
-                //     $query->where('student_information.school_id',$body['school_id']);
-                // }else{
-                //     $query->whereIn('student_information.school_id',$body['schoolids']['data']);
-                // }
-                if(isset($body['subject']) && !empty($body['subject'])){
-                    $query->where('student_information.project_id',$oneSubject);
-                    $query->where('student_information.subject_id',$twoSubject);
-                }
-            })->select('student_id')->get()->toArray();
+        $Datum = StudentDatum::select('student_id')->get();
             // })->select('student_id','school_id','project_id','subject_id','course_id','gather_id','datum_create_time','initiator_id','student_name','student_sex','student_phone','student_card','address','month','sign_region','reference_region','culture','graduated_school','professional','years','xx_account','xx_password','branch_school','photo','card_photo_front','card_photo_contrary','card_photo_scanning','diploma_photo','diploma_scanning','my_photo','audit_id')->orderByDesc('datum_create_time')->get()->toArray();
         
         // if(!empty($Datum)){
@@ -59,7 +48,7 @@ class StudentDatumExport implements FromCollection, WithHeadings {
         //         $v['student_sex'] = $v['student_sex'] == 1?'女':'男';
         //     }
         // }
-
+        
         return $Datum; 
     }
 
