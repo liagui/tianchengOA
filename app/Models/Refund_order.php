@@ -200,11 +200,14 @@ class Refund_order extends Model
         $surecount = self::where(['confirm_status'=>1])->sum('refund_Price');
         //已退金额   refund_plan = 2
         $yituicount = self::where(['refund_plan'=>2])->sum('refund_Price');
+        //未处理条数
+        $weisum = self::where(['confirm_status'=>0])->count();
         $count=[
             'tuicount' => $tuicount,
             'weicount' => $weicount,
             'surecoun' => $surecount,
             'yituicount' => $yituicount,
+            'weisum' => $weisum,
         ];
         return ['code' => 200 , 'msg' => '查询成功','data'=>$order,'where'=>$data,'page'=>$page,'count'=>$count];
     }
