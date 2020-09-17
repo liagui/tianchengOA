@@ -243,7 +243,7 @@ class Refund_order extends Model
         ])->get();
         if(!empty($order)){
             foreach ($order as $k=>&$v){
-                array_push($v['id'],$orderid);
+                array_push($orderid,$v['id']);
                 $v['select'] = true;
                 $school = School::where(['id'=>$v['school_id']])->first();
                 $v['school_name'] = $school['school_name'];
