@@ -224,6 +224,7 @@ class Refund_order extends Model
         if($school){
             $res['school_name'] = $school['school_name'];
         }
+        $orderid=[];
         //根据用户名 手机号  项目 学科 课程 查询订单
         $order = Pay_order_inside::where([
             'name'=>$res['student_name'],
@@ -235,12 +236,13 @@ class Refund_order extends Model
         ])->get();
         if(!empty($order)){
             foreach ($order as $k=>&$v){
+                array_push($v['id'],$orderid);
                 $v['select'] = true;
                 $school = School::where(['id'=>$v['school_id']])->first();
                 $v['school_name'] = $school['school_name'];
             }
         }
-        return ['code' => 200, 'msg' => '获取成功','data'=>$res,'order'=>$order];
+        return ['code' => 200, 'msg' => '获取成功','data'=>$res,'order'=>$order,'order_id'=>$orderid];
     }
     /*
          * @param  根据where查关联订单
