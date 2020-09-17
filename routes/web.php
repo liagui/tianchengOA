@@ -55,6 +55,7 @@ $router->group(['prefix' => 'admin' , 'namespace' => 'Admin','middleware'=> ['jw
         //退费订单操作
         $router->post('returnOrder', 'OrderController@returnOrder');//退款订单列表
         $router->post('returnOne', 'OrderController@returnOne');//退款订单单条详情
+        $router->post('returnWhereOne', 'OrderController@returnWhereOne');//根据用户名，手机号，项目学科查订单
         $router->post('initOrder', 'OrderController@initOrder');//添加退款订单
         $router->post('seeOrder', 'OrderController@seeOrder');//查看退款凭证
         $router->post('amendOrder', 'OrderController@amendOrder');//修改退费状态
