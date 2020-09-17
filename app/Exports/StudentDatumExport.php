@@ -11,7 +11,7 @@ use Illuminate\Support\Facades\DB;
 class StudentDatumExport implements FromCollection, WithHeadings {
 
     protected $where;
-    public function __construct($invoices){
+    public function __construct($invoices,$user){
         $this->where = $invoices;
     }
     public function collection() {
@@ -24,7 +24,7 @@ class StudentDatumExport implements FromCollection, WithHeadings {
         // DB::connection()->enableQueryLog();
         $Datum = StudentDatum::select('student_id')->get();
             // })->select('student_id','school_id','project_id','subject_id','course_id','gather_id','datum_create_time','initiator_id','student_name','student_sex','student_phone','student_card','address','month','sign_region','reference_region','culture','graduated_school','professional','years','xx_account','xx_password','branch_school','photo','card_photo_front','card_photo_contrary','card_photo_scanning','diploma_photo','diploma_scanning','my_photo','audit_id')->orderByDesc('datum_create_time')->get()->toArray();
-        
+
         // if(!empty($Datum)){
         //     $adminArr = Admin::where(['is_del'=>1,'is_forbid'=>1])->select('id','real_name')->get()->toArray();
         //     if(!empty($adminArr)){
@@ -48,8 +48,8 @@ class StudentDatumExport implements FromCollection, WithHeadings {
         //         $v['student_sex'] = $v['student_sex'] == 1?'女':'男';
         //     }
         // }
-        
-        return $Datum; 
+
+        return $Datum;
     }
 
     public function headings(): array

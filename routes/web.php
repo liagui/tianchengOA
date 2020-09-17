@@ -26,8 +26,6 @@ $router->group(['prefix' => 'admin' , 'namespace' => 'Admin','middleware'=> 'cor
     $router->post('bindMobile', 'AuthenticateController@bindMobile');//绑定手机号
     $router->post('doSendSms', 'AuthenticateController@doSendSms');//发送短信
     $router->get('doExcelDatum', 'ExcelController@doExcelDatum');//学员资料导出
-
-
 });
 //后端登录权限认证相关接口
 //
