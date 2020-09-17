@@ -23,7 +23,7 @@ class StudentDatumController extends Controller {
         try{
             $data = self::$accept_data;
             $school_id =  isset(AdminLog::getAdminInfo()->admin_user->school_id) ? AdminLog::getAdminInfo()->admin_user->school_id : 0;
-            $data['school_id'] = $this->underlingLook($school_id);
+            $data['school_ids'] = $this->underlingLook($school_id);
             $data = StudentDatum::getStudentDatumList($data);
             return response()->json($data);
         } catch (Exception $ex) {

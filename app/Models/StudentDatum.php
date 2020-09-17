@@ -23,13 +23,18 @@ class StudentDatum extends Model {
         	$subject = json_decode($body['subject'],1);
         	$oneSubject = $subject[0];
         	$twoSubject = isset($subject[1]) && $subject[1]>0 ?$subject[1]:0;
-    	}
+    	}  
+
+
         $count = self::leftJoin('pay_order_inside','student_information.order_id','=','pay_order_inside.id')
         	->leftJoin('student','student.id','=','student_information.student_id')
+
         	->where(function($query) use ($body) {
         		if(isset($body['school_id']) && !empty($body['school_id'])){ //所属学校
                 	$query->where('student_information.school_id',$body['school_id']);
-            	}
+            	}else{
+                    $query->whereIn('student_information.school_id',$body['school_ids']);
+                }
             	if(isset($body['audit_state']) && !empty($body['audit_state'])){ //所属审核状态
                 	$query->where('student_information.audit_status',$body['audit_state']);
             	}
@@ -44,8 +49,8 @@ class StudentDatum extends Model {
                 	$query->where('student_information.project_id',$oneSubject);
                 	$query->where('student_information.subject_id',$twoSubject);
             	}
-                $query->whereIn('student_information.school_id',$body['school_id']);
         	})->count();
+          
     	if($count >0){
     		$adminArr = Admin::where(['is_del'=>1,'is_forbid'=>1])->select('id','real_name')->get()->toArray();
     		if(!empty($adminArr)){
@@ -64,7 +69,9 @@ class StudentDatum extends Model {
 	        	->where(function($query) use ($body) {
 	        		if(isset($body['school_id']) && !empty($body['school_id'])){ //所属学校
 	                	$query->where('student_information.school_id',$body['school_id']);
-	            	}
+	            	}else{
+                        $query->whereIn('student_information.school_id',$body['school_ids']);
+                    }
 	            	if(isset($body['audit_state']) && !empty($body['audit_state'])){ //所属审核状态
 	                	$query->where('student_information.audit_status',$body['audit_state']);
 	            	}
@@ -78,8 +85,7 @@ class StudentDatum extends Model {
 	            	if(isset($body['subject']) && !empty($body['subject'])){
 	                	$query->where('student_information.project_id',$oneSubject);
 	                	$query->where('student_information.subject_id',$twoSubject);
-	            	}
-                    $query->whereIn('student_information.school_id',$body['school_id']);
+	            	}   
 	        	})->select('student_information.student_id','student_information.project_id','student_information.subject_id','student_information.audit_id','student_information.gather_id','student_information.initiator_id','student_information.datum_create_time','student.mobile','student.user_name as student_name','pay_order_inside.consignee_status','student_information.audit_status','student_information.id')->offset($offset)->limit($pagesize)->get();
 	        foreach($StudentDatumArr as $k=>&$v){
 	        	$v['school_name'] = isset($schoolArr[$v['school_id']]) ? $schoolArr[$v['school_id']] :'';
