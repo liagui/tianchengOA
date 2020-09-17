@@ -129,9 +129,9 @@ class StudentDatum extends Model {
         }
         //判断手机号是否为空
         if(!isset($body['student_phone']) || empty($body['student_phone'])){
-            return response()->json(['code' => 201 , 'msg' => '请输入手机号']);
+            return ['code' => 201 , 'msg' => '请输入手机号'];
         } else if(!preg_match('#^13[\d]{9}$|^14[\d]{9}$|^15[\d]{9}$|^17[\d]{9}$|^18[\d]{9}|^16[\d]{9}|^19[\d]{9}$#', $body['student_phone'])) {
-            return response()->json(['code' => 202 , 'msg' => '手机号不合法']);
+            return ['code' => 201 , 'msg' => '手机号不合法'];
         }
          //判断学员身份证号是否为空
         if(!isset($body['student_card']) || empty($body['student_card'])){
@@ -274,7 +274,7 @@ class StudentDatum extends Model {
         $admin_id = isset(AdminLog::getAdminInfo()->admin_user->id) ? AdminLog::getAdminInfo()->admin_user->id : 0;
         //判断学员资料id是否为空
         if(!isset($body['datum_id']) || empty($body['datum_id']) || $body['datum_id'] <= 0){
-            return ['code' => 202 , 'msg' => 'datum_id不合法'];
+            return ['code' => 201 , 'msg' => 'datum_id不合法'];
         }
         $datumArr = Datum::where('id',$body['datum_id'])->first();
         if(is_null($datumArr)){
@@ -288,7 +288,7 @@ class StudentDatum extends Model {
     public static function doUpdateAudit($body){
         $admin_id = isset(AdminLog::getAdminInfo()->admin_user->id) ? AdminLog::getAdminInfo()->admin_user->id : 0;
         if(!isset($body['id']) || empty($body['id']) || $body['id'] <= 0){
-            return ['code' => 202 , 'msg' => 'id不合法'];
+            return ['code' => 201 , 'msg' => 'id不合法'];
         }
          //判断毕业证照片是否为空
         if(!isset($body['audit_state']) || empty($body['audit_state'])){
@@ -328,7 +328,7 @@ class StudentDatum extends Model {
     //发起人信息
     public static function getInitiatorById($body){
         if(!isset($body['id']) || empty($body['id']) || $body['id'] <= 0){
-            return ['code' => 202 , 'msg' => 'id不合法'];
+            return ['code' => 201 , 'msg' => 'id不合法'];
         }
         $info = Admin::where(['is_del'=>1,'is_forbid'=>1])->select('real_name','mobile','wx')->first();
         if(is_null($info)){
