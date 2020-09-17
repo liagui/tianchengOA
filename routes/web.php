@@ -252,7 +252,7 @@ $router->group(['prefix' => 'admin' , 'namespace' => 'Admin','middleware'=> ['jw
     });
 
 
-    $router->group(['prefix' => 's'], function () use ($router) {
+    $router->group(['prefix' => 'datum'], function () use ($router) {
         $router->post('getList', 'StudentDatumController@getList');              //资料列表
         $router->post('doDatumInsert', 'StudentDatumController@doDatumInsert');        //资料添加
         $router->post('getDatumById', 'StudentDatumController@getDatumById');  //资料查看
