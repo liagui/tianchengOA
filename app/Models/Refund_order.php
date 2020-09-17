@@ -390,7 +390,8 @@ class Refund_order extends Model
         if($order['confirm_status'] == 0){
             $data['confirm_status'] = 1;
         }
-        $data['refund_credentials'] = implode(',',json_decode($data['refund_credentials'],true));
+        $credent = json_decode($data['refund_credentials'],true);
+        $data['refund_credentials'] = implode(',',$credent);
         unset($data['/admin/order/remitOrder']);
         $up = self::where(['id' => $data['id']])->update($data);
         if($up){
