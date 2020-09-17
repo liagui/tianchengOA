@@ -258,7 +258,7 @@ class StudentDatum extends Model {
                 return ['code'=>203,'msg'=>'资料提交失败,请重试！'];
             }
        
-            $orderRes = pay_order_inside::where('id',$StudentDatumArr['order_id'])->update($OrderUpdate); //修改订单表 资料收集状态
+            $orderRes = Pay_order_inside::where('id',$StudentDatumArr['order_id'])->update($OrderUpdate); //修改订单表 资料收集状态
 
             if($orderRes){
                 DB::commit();
