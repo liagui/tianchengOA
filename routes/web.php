@@ -28,7 +28,10 @@ $router->group(['prefix' => 'admin' , 'namespace' => 'Admin','middleware'=> 'cor
     $router->get('doExcelDatum', 'ExcelController@doExcelDatum');//学员资料导出
     $router->group(['prefix' => 'datum'], function () use ($router) {
         $router->post('doExcelDatum', 'ExcelController@doExcelDatum');//学员资料导出
-    });
+
+    }); 
+    $router->post('getRegionList', 'StudentDatumController@getRegionLists');//获取所有地区
+
 });
 //后端登录权限认证相关接口
 //
