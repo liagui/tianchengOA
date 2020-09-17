@@ -218,6 +218,7 @@ class Refund_order extends Model
          */
     public static function returnOne($data){
         $res = self::where(['id'=>$data['id']])->first();
+        $arrproject = [$res['project_id'],$res['subject_id']];
         //项目 学科  姓名
         $course = Course::select('course_name')->where(['id'=>$res['course_id']])->first();
         $res['course_name'] = $course['course_name'];
@@ -233,6 +234,9 @@ class Refund_order extends Model
             $major = Major::where(['id'=>$res['major_id']])->first();
             $res['major_name'] = $major['major_name'];
         }
+        unset($res['project_id']);
+        unset($res['subject_id']);
+        $res['project_id'] = $arrproject;
         //查学校
         $school = School::where(['id'=>$res['school_id']])->first();
         if($school){
@@ -334,11 +338,11 @@ class Refund_order extends Model
             $up['student_name'] = $data['student_name'];
             $up['phone'] = $data['phone'];
             $up['confirm_status'] = 1;
-            $up['order_ id'] = implode(',',$data['order_id']);
+            $up['order_ id'] = implode(',',json_decode($data['order_id'],true));
             $up['reality_price'] = $data['reality_price'];
             $up['school_id'] = $data['school_id'];
             $up['refund_reason'] = $data['refund_reason'];
-            $up['pay_credentials'] = implode(',',$data['pay_credentials']);
+            $up['pay_credentials'] = implode(',',json_decode($data['pay_credentials'],true));
             $up['refund_time'] = date('Y-m-d H:i:s');
             if($order['refund_plan'] == 0){
                 $up['refund_plan'] = 1;
@@ -370,7 +374,7 @@ class Refund_order extends Model
         if($order['confirm_status'] == 0){
             $data['confirm_status'] = 1;
         }
-        $data['refund_credentials'] = implode(',',$data['refund_credentials']);
+        $data['refund_credentials'] = implode(',',json_decode($data['refund_credentials'],true));
         unset($data['/admin/order/remitOrder']);
         $up = self::where(['id' => $data['id']])->update($data);
         if($up){
