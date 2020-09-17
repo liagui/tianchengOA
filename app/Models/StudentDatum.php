@@ -236,9 +236,9 @@ class StudentDatum extends Model {
                      DB::rollBack();
                     return ['code'=>203,'msg'=>' 资料提交失败，请重试 '];
                 }
-                $OrderUpdate = ['consignee_name'=>$admin_name]; //修改订单状态
+                $OrderUpdate = ['consignee_name'=>$admin_name,'update_time'=>date('Y-m-d H:i:s')]; //修改订单状态
             }else{
-                $OrderUpdate = ['consignee_name'=>$admin_name,'consignee_status'=>2]; //consignee_status 2是已收集 0 待收集  1 收集中  3 重新收集
+                $OrderUpdate = ['consignee_name'=>$admin_name,'consignee_status'=>2,'update_time'=>date('Y-m-d H:i:s')]; //consignee_status 2是已收集 0 待收集  1 收集中  3 重新收集
             }   
              //走第一遍流程
             $datumId = Datum::insertGetId($body);  //添加资料
@@ -259,7 +259,7 @@ class StudentDatum extends Model {
             }
        
             $orderRes = Pay_order_inside::where('id',$StudentDatumArr['order_id'])->update($OrderUpdate); //修改订单表 资料收集状态
-
+           
             if($orderRes){
                 DB::commit();
                 return ['code'=>200,'msg'=>'资料提交成功'];
