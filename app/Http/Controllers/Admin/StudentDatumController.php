@@ -60,7 +60,7 @@ class StudentDatumController extends Controller {
             return response()->json(['code' => 500 , 'msg' => $ex->getMessage()]);
         }
     } 
-
+    //获取资料的id
     public function getInitiatorById(){
         //获取提交的参数
         try{
@@ -70,10 +70,20 @@ class StudentDatumController extends Controller {
             return response()->json(['code' => 500 , 'msg' => $ex->getMessage()]);
         }
     }
-
+    //获取发起人的资料
     public function getRegionList(){
         $data = Region::getRegion();
         return response()->json($data);
+    }
+    //获取添加资料的数量
+    public function getDatumCount(){
+        //获取提交的参数
+        try{
+            $data = StudentDatum::getDatumCount(self::$accept_data);
+            return response()->json($data);
+        }catch (Exception $ex) {
+            return response()->json(['code' => 500 , 'msg' => $ex->getMessage()]);
+        }
     }
 
 
