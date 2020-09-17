@@ -269,7 +269,6 @@ class Refund_order extends Model
          * return  array
          */
     public static function amendOrder($data){
-
         $order = self::select('confirm_status','refund_plan')->where(['id' => $data['id']])->first();
         if(!$order){
             return ['code' => 201 , 'msg' => '参数不对'];
@@ -277,7 +276,20 @@ class Refund_order extends Model
         if($order['confirm_status'] == 1){
             return ['code' => 200, 'msg' => '修改成功'];
         }else{
+            $parent = json_decode($data['project_id'], true);
+            $up['project_id'] = $parent[0];
+            if(!empty($parent[1])){
+                $up['subject_id'] = $parent[1];
+            }
+            $up['course_id'] = $data['course_id'];
+            $up['student_name'] = $data['student_name'];
+            $up['phone'] = $data['phone'];
             $up['confirm_status'] = 1;
+            $up['order_ id'] = implode(',',$data['order_id']);
+            $up['reality_price'] = $data['reality_price'];
+            $up['school_id'] = $data['school_id'];
+            $up['refund_reason'] = $data['refund_reason'];
+            $up['pay_credentials'] = implode(',',$data['pay_credentials']);
             $up['refund_time'] = date('Y-m-d H:i:s');
             if($order['refund_plan'] == 0){
                 $up['refund_plan'] = 1;
@@ -294,7 +306,7 @@ class Refund_order extends Model
          * @param  修改打款状态
          * @param  id  订单id
          * @param  remit_time  凭证时间
-         * @param  refund_credentials  arr 退款凭证
+         * @param  refund_credentials  arr 退款凭证  多图
          * @param  remit_name  打款人
          * @param  author  苏振文
          * @param  ctime   2020/9/9 16:25
@@ -309,6 +321,7 @@ class Refund_order extends Model
         if($order['confirm_status'] == 0){
             $data['confirm_status'] = 1;
         }
+        $data['refund_credentials'] = implode(',',$data['refund_credentials']);
         unset($data['/admin/order/remitOrder']);
         $up = self::where(['id' => $data['id']])->update($data);
         if($up){
