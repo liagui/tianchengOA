@@ -230,9 +230,43 @@ class Refund_order extends Model
             'mobile'=>$res['phone'],
             'project_id'=>$res['project_id'],
             'subject_id'=>$res['subject_id'],
-            'course_id' => $res['course_id']
+            'course_id' => $res['course_id'],
+            'del_flag' => 0
         ])->get();
+        if(!empty($order)){
+            foreach ($order as $k=>&$v){
+                $v['select'] = true;
+                $school = School::where(['id'=>$v['school_id']])->first();
+                $v['school_name'] = $school['school_name'];
+            }
+        }
         return ['code' => 200, 'msg' => '获取成功','data'=>$res,'order'=>$order];
+    }
+    /*
+         * @param  根据where查关联订单
+         * @param  用户名 手机号  项目 学科 课程
+         * @param  author  苏振文
+         * @param  ctime   2020/9/17 15:45
+         * return  array
+         */
+    public static function returnWhereOne($data){
+    //根据用户名 手机号  项目 学科 课程 查询订单
+        if(!empty($data['project_id'])){
+            $parent = json_decode($data['project_id'], true);
+            $data['project_id'] = $parent[0];
+            if(!empty($parent[1])){
+                $data['subject_id'] = $parent[1];
+            }
+        }
+        $order = Pay_order_inside::where([
+            'name'=>$data['student_name'],
+            'mobile'=>$data['phone'],
+            'project_id'=>$data['project_id'],
+            'subject_id'=>$data['subject_id'],
+            'course_id' => $data['course_id'],
+            'del_flag' => 0
+        ])->get();
+        return ['code' => 200, 'msg' => '获取成功','data'=>$order];
     }
     /*
          * @param  查看退款凭证

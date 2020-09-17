@@ -2,13 +2,11 @@
 namespace App\Http\Controllers\Admin;
 
 use App\Http\Middleware\JWTRoleAuth;
-use App\Models\AdminLog;
-use Maatwebsite\Excel\Facades\Excel;
 use App\Http\Controllers\Controller;
 use Illuminate\Support\Facades\DB;
 use App\Models\Admin;
 
-class ExcelController extends Controller {
+class ExcelController extends Controller{
 	public function doExcelDatum(){
         $data = self::$accept_data;
         if(!isset($data['id']) || $data['id']<=0){

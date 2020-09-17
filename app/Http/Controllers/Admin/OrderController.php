@@ -106,6 +106,11 @@ class OrderController extends Controller {
         $list = Refund_order::returnOne(self::$accept_data);
         return response()->json($list);
     }
+    //根据条件差关联订单
+    public function returnWhereOne(){
+        $list = Refund_order::returnWhereOne(self::$accept_data);
+        return response()->json($list);
+    }
     //add
     public function initOrder(){
         $list = Refund_order::initOrder(self::$accept_data);
