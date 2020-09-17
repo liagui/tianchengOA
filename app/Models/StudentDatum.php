@@ -307,7 +307,7 @@ class StudentDatum extends Model {
         }
         $studentDatumArr  = self::where('information_id',$body['id'])->select('order_id')->first();
         $consignee_status = $body['audit_state']  == 1 ? 2:3;
-        $orderRes = Pay_order_inside::where('id',$studentDatumArr['order_id'])->update(['consignee_status'=>$consignee_status]);
+        $orderRes = Pay_order_inside::where('id',$studentDatumArr['order_id'])->update(['consignee_status'=>$consignee_status,'update_time'=>date('Y-m-d H:i:s')]);
         if($orderRes){
             AdminLog::insertAdminLog([
                 'admin_id'       =>   $admin_id ,
