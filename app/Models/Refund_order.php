@@ -234,9 +234,7 @@ class Refund_order extends Model
             $major = Major::where(['id'=>$res['major_id']])->first();
             $res['major_name'] = $major['major_name'];
         }
-        unset($res['project_id']);
-        unset($res['subject_id']);
-        $res['project_id'] = $arrproject;
+
         //查学校
         $school = School::where(['id'=>$res['school_id']])->first();
         if($school){
@@ -259,6 +257,9 @@ class Refund_order extends Model
                 $v['school_name'] = $school['school_name'];
             }
         }
+        unset($res['project_id']);
+        unset($res['subject_id']);
+        $res['project_id'] = $arrproject;
         return ['code' => 200, 'msg' => '获取成功','data'=>$res,'order'=>$order,'order_id'=>$orderid];
     }
     /*
