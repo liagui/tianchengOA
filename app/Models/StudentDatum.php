@@ -64,6 +64,11 @@ class StudentDatum extends Model {
     		if(!empty($schoolArr)){
     			$schoolArr  = array_column($schoolArr,'school_name','id');
     		}
+            $categoryArr = Category::where(['is_del'=>0])->select('id','name')->get()->toArray();
+            if(!empty($categoryArr)){
+                $categoryArr  = array_column($categoryArr,'name','id');
+            }
+            
     		$StudentDatumArr  = self::leftJoin('pay_order_inside','student_information.order_id','=','pay_order_inside.id')
 	        	->leftJoin('student','student.id','=','student_information.student_id')
 	        	->where(function($query) use ($body) {
@@ -86,14 +91,15 @@ class StudentDatum extends Model {
 	                	$query->where('student_information.project_id',$oneSubject);
 	                	$query->where('student_information.subject_id',$twoSubject);
 	            	}   
-	        	})->select('student_information.student_id','student_information.project_id','student_information.subject_id','student_information.audit_id','student_information.gather_id','student_information.initiator_id','student_information.datum_create_time','student.mobile','student.user_name as student_name','pay_order_inside.consignee_status','student_information.audit_status','student_information.id')->offset($offset)->limit($pagesize)->get();
+	        	})->select('student_information.student_id','student_information.project_id','student_information.subject_id','student_information.audit_id','student_information.gather_id','student_information.initiator_id','student_information.datum_create_time','student.mobile','student.user_name as student_name','pay_order_inside.consignee_status','student_information.audit_status','student_information.id','student_information.course_id')->offset($offset)->limit($pagesize)->get();
 	        foreach($StudentDatumArr as $k=>&$v){
 	        	$v['school_name'] = isset($schoolArr[$v['school_id']]) ? $schoolArr[$v['school_id']] :'';
-	        	$v['project_name'] = isset($courseArr[$v['project_id']]) ? $courseArr[$v['project_id']] :'';
-	        	$v['subject_name'] = isset($courseArr[$v['subject_id']]) ? $courseArr[$v['subject_id']] :'';
+	        	$v['project_name'] = isset($categoryArr[$v['project_id']]) ? $categoryArr[$v['project_id']] :'';
+	        	$v['subject_name'] = isset($categoryArr[$v['subject_id']]) ? $categoryArr[$v['subject_id']] :'';
 	        	$v['audit_name'] = isset($adminArr[$v['audit_id']]) ? $adminArr[$v['audit_id']] :'';
 	        	$v['gather_name'] = isset($adminArr[$v['gather_id']]) ? $adminArr[$v['gather_id']] :'';
 	        	$v['initiator_name'] = isset($adminArr[$v['initiator_id']]) ? $adminArr[$v['initiator_id']] :'';
+                $v['course_name'] = isset($courseArr[$v['course_id']]) ? $courseArr[$v['course_id']] :'';
 	        } 
     	}
     	return ['code'=>200,'msg'=>'success','data'=>$StudentDatumArr,'total'=>$count];
