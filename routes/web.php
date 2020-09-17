@@ -26,6 +26,9 @@ $router->group(['prefix' => 'admin' , 'namespace' => 'Admin','middleware'=> 'cor
     $router->post('bindMobile', 'AuthenticateController@bindMobile');//绑定手机号
     $router->post('doSendSms', 'AuthenticateController@doSendSms');//发送短信
     $router->post('doExcelDatum', 'ExcelController@doExcelDatum');//学员资料导出
+    $router->group(['prefix' => 'datum'], function () use ($router) {
+        $router->post('doExcelDatum', 'ExcelController@doExcelDatum');//学员资料导出
+    });
 });
 //后端登录权限认证相关接口
 //
@@ -243,18 +246,14 @@ $router->group(['prefix' => 'admin' , 'namespace' => 'Admin','middleware'=> ['jw
         // $router->post('getSchoolById', 'SchoolController@getSchoolUpdate');  //编辑网校（获取）
         // $router->post('doSchoolUpdate', 'SchoolController@doSchoolUpdate');  //编辑网校
     });
-
-
     $router->group(['prefix' => 'datum'], function () use ($router) {
         $router->post('getList', 'StudentDatumController@getList');              //资料列表
         $router->post('doDatumInsert', 'StudentDatumController@doDatumInsert');        //资料添加
         $router->post('getDatumById', 'StudentDatumController@getDatumById');  //资料查看
         $router->post('doUpdateAudit', 'StudentDatumController@doUpdateAudit');  //审核状态
         $router->post('getInitiatorById', 'StudentDatumController@getInitiatorById');  //获取发起人信息
-        $router->post('getRegionList', 'StudentDatumController@getRegionList');  //获取发起人信息
+        $router->post('getRegionList', 'StudentDatumController@getRegionList');  //获取户籍地区地址
         $router->post('getDatumCount', 'StudentDatumController@getDatumCount');  //获取资料数量
-        //导出业绩
-        $router->post('doExcelDatum', 'ExcelController@doExcelDatum');//学员资料导出
     });
 
 });
