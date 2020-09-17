@@ -351,7 +351,7 @@ class Refund_order extends Model
             $up['student_name'] = $data['student_name'];
             $up['phone'] = $data['phone'];
             $up['confirm_status'] = 1;
-            $up['order_ id'] = implode(',',$orderid);
+            $up['order_id'] = implode(',',$orderid);
             $up['reality_price'] = $data['reality_price'];
             $up['school_id'] = $data['school_id'];
             $up['refund_reason'] = $data['refund_reason'];
