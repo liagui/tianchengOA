@@ -345,15 +345,17 @@ class Refund_order extends Model
             if(!empty($parent[1])){
                 $up['subject_id'] = $parent[1];
             }
+            $orderid = json_decode($data['order_id'],true);
+            $credentials = json_decode($data['pay_credentials'],true);
             $up['course_id'] = $data['course_id'];
             $up['student_name'] = $data['student_name'];
             $up['phone'] = $data['phone'];
             $up['confirm_status'] = 1;
-            $up['order_ id'] = implode(',',json_decode($data['order_id'],true));
+            $up['order_ id'] = implode(',',$orderid);
             $up['reality_price'] = $data['reality_price'];
             $up['school_id'] = $data['school_id'];
             $up['refund_reason'] = $data['refund_reason'];
-            $up['pay_credentials'] = implode(',',json_decode($data['pay_credentials'],true));
+            $up['pay_credentials'] = implode(',',$credentials);
             $up['refund_time'] = date('Y-m-d H:i:s');
             if($order['refund_plan'] == 0){
                 $up['refund_plan'] = 1;
