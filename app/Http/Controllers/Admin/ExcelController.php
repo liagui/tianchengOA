@@ -2,17 +2,11 @@
 namespace App\Http\Controllers\Admin;
 
 use App\Http\Middleware\JWTRoleAuth;
-use App\Models\AdminLog;
-use http\Header;
-use Maatwebsite\Excel\Facades\Excel;
 use App\Http\Controllers\Controller;
-use Illuminate\Support\Facades\DB;
-use Tymon\JWTAuth\Exceptions\JWTException;
-use Tymon\JWTAuth\Http\Middleware\BaseMiddleware;
 
 class ExcelController extends Controller{
 	public function doExcelDatum(){
-	    include_once("../../Middleware/JWTRoleAuth.php");
+        require_once("../../Middleware/JWTRoleAuth.php");
 	    $jwt = new JWTRoleAuth();
 	    $data = self::$accept_data;
 	    $token = $jwt->handle($data['token'],'/admin/doExcelDatum');
