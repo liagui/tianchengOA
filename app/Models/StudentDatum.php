@@ -68,7 +68,6 @@ class StudentDatum extends Model {
             if(!empty($categoryArr)){
                 $categoryArr  = array_column($categoryArr,'name','id');
             }
-
     		$StudentDatumArr  = self::leftJoin('pay_order_inside','student_information.order_id','=','pay_order_inside.id')
 	        	->leftJoin('student','student.id','=','student_information.student_id')
 	        	->where(function($query) use ($body) {
