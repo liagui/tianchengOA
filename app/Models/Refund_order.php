@@ -233,6 +233,13 @@ class Refund_order extends Model
             'course_id' => $res['course_id'],
             'del_flag' => 0
         ])->get();
+        if(!empty($order)){
+            foreach ($order as $k=>&$v){
+                $v['select'] = true;
+                $school = School::where(['id'=>$v['school_id']])->first();
+                $v['school_name'] = $school['school_name'];
+            }
+        }
         return ['code' => 200, 'msg' => '获取成功','data'=>$res,'order'=>$order];
     }
     /*
