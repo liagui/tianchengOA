@@ -215,10 +215,6 @@ class StudentDatum extends Model {
         if(!isset($body['diploma_scanning']) || empty($body['diploma_scanning'])){
             return ['code' => 201 , 'msg' => '请上传毕业证扫描'];
         }
-         //判断本人手持身份证照片是否为空
-        if(!isset($body['my_photo']) || empty($body['my_photo'])){
-            return ['code' => 201 , 'msg' => '请上传本人手持身份证照片'];
-        }
         $id = $body['id'];
         unset($body['id']);
         $body['create_time']=date('Y-m-d H:i:s');
