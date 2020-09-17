@@ -150,19 +150,16 @@ class StudentDatum extends Model {
             return ['code' => 201 , 'msg' => '请选择报考月份'];
         }
         //判断报考地区是否为空
-        if(!isset($body['sign_region']) || empty($body['sign_region'])){
+        if(!isset($body['sign_region_id']) || empty($body['sign_region_id'])){
             return ['code' => 201 , 'msg' => '请选择报考地区'];
         }
         //判断备考地区是否为空
-        if(!isset($body['reference_region']) || empty($body['reference_region'])){
+        if(!isset($body['reference_region_id']) || empty($body['reference_region_id'])){
             return ['code' => 201 , 'msg' => '请选择备考地区'];
         }
-        if($body['sign_region'] != $body['reference_region']){
+        if($body['sign_region_id'] != $body['reference_region_id']){
             return ['code' => 201 , 'msg' => '报考地区与备考地区不一致！'];
         }
-        $body['sign_region_id'] = $body['sign_region'];
-        $body['reference_region_id'] = $body['reference_region'];
-        unset($body['sign_region']); unset($body['reference_region']);
         //判断文化程度是否为空
         if(!isset($body['culture']) || empty($body['culture'])){
             return ['code' => 201 , 'msg' => '请选择文化程度'];
@@ -252,8 +249,9 @@ class StudentDatum extends Model {
                 DB::rollBack();
                 return ['code'=>203,'msg'=>'资料提交失败,请重试！'];
             }
-           
+       
             $orderRes = pay_order_inside::where('id',$StudentDatumArr['order_id'])->update($OrderUpdate); //修改订单表 资料收集状态
+
             if($orderRes){
                 DB::commit();
                 return ['code'=>200,'msg'=>'资料提交成功'];

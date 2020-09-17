@@ -25,6 +25,6 @@ class ExcelController extends Controller {
         //     return ['code' => 202 , 'msg' => 'token....'];
         // }
 		$data['schoolids'] = $this->underlingLook(isset($adminArr['school_id']) && !empty($adminArr['school_id']) ? $adminArr['school_id'] : 0);
-        return Excel::download(new \App\Exports\StudentDatumExport($data,$user), '学员报名资料.xlsx');
+        return Excel::download(new \App\Exports\StudentDatumExport($data), '学员报名资料.xlsx');
 	}
 }

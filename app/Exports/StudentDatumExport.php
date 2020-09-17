@@ -11,7 +11,7 @@ use Illuminate\Support\Facades\DB;
 class StudentDatumExport implements FromCollection, WithHeadings {
 
     protected $where;
-    public function __construct($invoices,$user){
+    public function __construct($invoices){
         $this->where = $invoices;
     }
     public function collection() {
