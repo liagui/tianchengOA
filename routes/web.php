@@ -103,11 +103,6 @@ $router->group(['prefix' => 'admin' , 'namespace' => 'Admin','middleware'=> ['jw
     });
 
 
-
-
-
-
-
     //分校管理部分(dzj)
     $router->group(['prefix' => 'school'], function () use ($router) {
         $router->post('doInsertSchool', 'SchoolController@doInsertSchool');                      //添加分校接口
@@ -261,10 +256,8 @@ $router->group(['prefix' => 'admin' , 'namespace' => 'Admin','middleware'=> ['jw
         $router->post('getRegionList', 'StudentDatumController@getRegionList');  //获取发起人信息
         $router->post('getDatumCount', 'StudentDatumController@getDatumCount');  //获取资料数量
         //导出业绩
-        $router->post('exportTeacherPerformance', 'TeacherController@exportTeacherPerformance');
+        $router->get('exportTeacherPerformance', 'TeacherController@exportTeacherPerformance');
     });
-
-
 
 });
 
