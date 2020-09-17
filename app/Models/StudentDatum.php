@@ -125,7 +125,7 @@ class StudentDatum extends Model {
         }
           //判断是否查看下属分校数据
         if(!isset($body['student_sex']) || !in_array($body['student_sex'] , [0,1])){
-            return ['code' => 202 , 'msg' => '请选择性别'];
+            return ['code' => 201, 'msg' => '请选择性别'];
         }
         //判断手机号是否为空
         if(!isset($body['student_phone']) || empty($body['student_phone'])){
