@@ -15,7 +15,7 @@ class StudentDatumExport implements FromCollection, WithHeadings {
         $this->where = $invoices;
     }
     public function collection() {
-        // $body = $this->where;
+        $body = $this->where;
         // if(isset($body['subject']) && !empty($body['subject'])){
         //     $subject = json_decode($body['subject'],1);
         //     $oneSubject = $subject[0];
