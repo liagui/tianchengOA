@@ -300,12 +300,12 @@ class StudentDatum extends Model {
         $update['audit_id']  =  $admin_id;
         $update['audit_status'] = $body['audit_state'];
         $udpate['update_time'] =date('Y-m-d H:i:s');
-        $res = self::where('id',$body['id'])->update($update);
+        $res = self::where('information_id',$body['id'])->update($update);
         if(!$res){
             DB::rollBack();
             return ['code'=>203,'msg'=>'审核失败,请重试'];
         }
-        $studentDatumArr  = self::where('id',$body['id'])->select('order_id')->first();
+        $studentDatumArr  = self::where('information_id',$body['id'])->select('order_id')->first();
         $consignee_status = $body['audit_state']  == 1 ? 2:3;
         $orderRes = Pay_order_inside::where('id',$studentDatumArr['order_id'])->update(['consignee_status'=>$consignee_status]);
         if($orderRes){
