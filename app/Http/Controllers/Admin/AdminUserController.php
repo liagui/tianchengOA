@@ -200,7 +200,7 @@ class AdminUserController extends Controller {
         $data = self::$accept_data;
         $validator = Validator::make($data,
                 [
-                    'school_id' => 'required',
+                    // 'school_id' => 'required',
                     'username' => 'required',
                     // 'realname' => 'required',
                     // 'password'=>'required',
@@ -219,6 +219,11 @@ class AdminUserController extends Controller {
         }
         if($data['password'] != $data['pwd']){
             return response()->json(['code'=>206,'msg'=>'登录密码不一致']);
+        }
+        if(!isset($data['school_id']) || empty($data['school_id'])){
+            $data['school_id'] = '0';
+        }else{
+            $data['school_id'] = $data['school_id'];
         }  
         if(isset($data['pwd'])){
             unset($data['pwd']);
@@ -321,7 +326,7 @@ class AdminUserController extends Controller {
         $user_id = isset(AdminLog::getAdminInfo()->admin_user->id) ? AdminLog::getAdminInfo()->admin_user->id : 0;
         $validator = Validator::make($data,
                 [
-                    'school_id' => 'required',
+                    
                     'username' => 'required',
                     // 'realname' => 'required',
                     'password'=>'required',
@@ -332,6 +337,11 @@ class AdminUserController extends Controller {
         if($validator->fails()) {
             return response()->json(json_decode($validator->errors()->first(),1));
         }
+        if(!isset($data['school_id']) || empty($data['school_id'])){
+            $data['school_id'] = '0';
+        }else{
+            $data['school_id'] = $data['school_id'];
+        } 
          //7.11  end  
         if(isset($data['password']) && isset($data['pwd'])){
          
