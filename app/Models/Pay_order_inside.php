@@ -723,10 +723,10 @@ class Pay_order_inside extends Model
     public static function unsubmittedOrder($data){
         //默认不传订单号   展示空页面
         $res=[];
-        if(!isset($data['order_on']) || empty($data['order_on'])){
+        if(!isset($data['order_no']) || empty($data['order_no'])){
             return ['code' => 200 , 'msg' => '获取成功','data'=>$res];
         }
-        $res = Pay_order_external::where(['order_no'=>$data['order_on'],'status'=>0])->first();
+        $res = Pay_order_external::where(['order_no'=>$data['order_no'],'status'=>0])->first();
         if(!empty($res)){
             //course  课程
             $course = Course::select('course_name')->where(['id'=>$res['course_id']])->first();
