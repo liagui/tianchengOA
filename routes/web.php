@@ -29,8 +29,11 @@ $router->group(['prefix' => 'admin' , 'namespace' => 'Admin','middleware'=> 'cor
     $router->group(['prefix' => 'datum'], function () use ($router) {
         $router->post('doExcelDatum', 'ExcelController@doExcelDatum');//学员资料导出
 
-    }); 
+    });
     $router->post('getRegionList', 'StudentDatumController@getRegionLists');//获取所有地区
+    $router->post('paylist', 'OrderController@paylist');//支付通道
+    $router->post('oapay', 'OrderController@oapay');//支付
+    $router->get('hjnotify', 'NotifyController@hjnotify');//汇聚 支付回调
 
 });
 //后端登录权限认证相关接口
@@ -67,7 +70,7 @@ $router->group(['prefix' => 'admin' , 'namespace' => 'Admin','middleware'=> ['jw
         $router->post('amendOrder', 'OrderController@amendOrder');//修改退费状态
         $router->post('remitOrder', 'OrderController@remitOrder');//修改打款状态
 
-        $router->post('oapay', 'OrderController@oapay');//oa支付
+
     });
     //项目管理部分(dzj)
     $router->group(['prefix' => 'project'], function () use ($router) {
