@@ -32,7 +32,7 @@ class ApiAuthToken {
             $role = Roleauth::getRoleOne(['id'=>$userlist['data']['role_id']]);//获取角色权限
             if($role['code']!=200){
                 return response()->json(['code'=>403,'msg'=>'此用户没有权限,请联系管理员']);
-                
+
             }else{
                 $arr = explode(',',$role['data']['auth_id']);
                 if(!in_array((string)$authid['id'],$arr)){
