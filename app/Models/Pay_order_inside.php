@@ -854,8 +854,8 @@ class Pay_order_inside extends Model
             'course_id' => $data['course_id'],//课程id
             'project_id' => $data['project_id'],//项目id
             'subject_id' => $data['subject_id'], //学科id
-            'education_id' => !isset($data['education_id'])?$data['education_id']:0, //院校id
-            'major_id' => !isset($data['major_id'])?$data['major_id']:0, //专业id
+            'education_id' => isset($data['education_id'])?$data['education_id']:0, //院校id
+            'major_id' => isset($data['major_id'])?$data['major_id']:0, //专业id
             'pay_status' => $external['pay_status'],//支付状态
             'pay_type' => $external['pay_type'], //支付方式（1支付宝扫码2微信扫码3银联快捷支付4微信小程序5线下录入）
             'confirm_status' => 0, //订单确认状态码
@@ -869,9 +869,9 @@ class Pay_order_inside extends Model
             'pay_voucher_user_id' => $admin['id'], //上传凭证人
             'pay_voucher_time' => date('Y-m-d H:i:s'), //上传凭证时间
             'pay_voucher' => $data['remark'], //支付凭证
-            'course_Price' => !isset($data['course_Price'])?$data['course_Price']:0,
+            'course_Price' => isset($data['course_Price'])?$data['course_Price']:0,
             'sum_Price' => $external['pay_price'],
-            'sign_Price' => !isset($data['sign_Price'])?$data['sign_Price']:0,
+            'sign_Price' => isset($data['sign_Price'])?$data['sign_Price']:0,
             'admin_id' => $admin['id']
         ];
         $add = Pay_order_inside::insert($insert);
