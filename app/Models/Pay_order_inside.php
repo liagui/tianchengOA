@@ -854,8 +854,8 @@ class Pay_order_inside extends Model
             'course_id' => $data['course_id'],//课程id
             'project_id' => $data['project_id'],//项目id
             'subject_id' => $data['subject_id'], //学科id
-            'education_id' => isset($data['subject_id'])?$data['education_id']:0, //院校id
-            'major_id' => isset($data['major_id'])?$data['major_id']:0, //专业id
+            'education_id' => !empty($data['education_id'])?$data['education_id']:0, //院校id
+            'major_id' => !empty($data['major_id'])?$data['major_id']:0, //专业id
             'pay_status' => $external['pay_status'],//支付状态
             'pay_type' => $external['pay_type'], //支付方式（1支付宝扫码2微信扫码3银联快捷支付4微信小程序5线下录入）
             'confirm_status' => 0, //订单确认状态码
