@@ -87,7 +87,7 @@ class AuthenticateController extends Controller {
         $user['auth'] = [];     //5.14 该账户没有权限返回空  begin
         if($user['role_id']>0){
             $admin_user_atuh =  $AdminUser->getAdminUserLoginAuth($user['role_id']);  //获取后台用户菜单栏（lys 5.5）
-             print_r($user['role_id']);die;
+             
             if($admin_user_atuh['code']!=200){
                 return response()->json(['code'=>$admin_user_atuh['code'],'msg'=>$admin_user_atuh['msg']]);
             }
