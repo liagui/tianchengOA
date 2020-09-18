@@ -46,12 +46,10 @@ class RoleController extends Controller {
         if(AdminUser::where(['role_id'=>$data['id'],'is_del'=>1])->count()  >0){  //  角色使用中无法删除    5.14  
             return response()->json(['code'=>205,'msg'=>'角色使用中,不能删除!']);
         }
-
         // $zongxiaoRoleArr = Roleauth::where('id',$data['id'])->first();
-        // if($zongxiaoRoleArr['is_super'] == 1){
-        //     return response()->json(['code'=>203,'msg'=>'超管角色，不能删除']);
-        // }       
-
+        if(in_array($data['id'],[1,2,3])){
+            return response()->json(['code'=>203,'msg'=>'固定角色不能删除']);
+        }       
         $role = Roleauth::findOrfail($data['id']);
         $role->is_del = 1;
         $role->update_time = date('Y-m-d H:i:s');
@@ -256,6 +254,9 @@ class RoleController extends Controller {
         }
         if( !isset($data['auth_id']) ||  empty($data['auth_id'])){
             return response()->json(['code'=>201,'msg'=>'权限组id为空或缺少']);
+        }
+        if(in_array($data['id'],[1])){
+            return response()->json(['code'=>200,'msg'=>'固定角色不能编辑']);
         }
         if(isset($data['/admin/role/doRoleUpdate'])){
             unset($data['/admin/role/doRoleUpdate']);
