@@ -838,6 +838,7 @@ class Pay_order_inside extends Model
         if(!isset($data['first_pay']) || empty($data['first_pay'])){
             return ['code' => 201 , 'msg' => '未选择缴费类型'];
         }
+        unset($data['begin_class']);
         //获取操作员信息
         $admin = isset(AdminLog::getAdminInfo()->admin_user) ? AdminLog::getAdminInfo()->admin_user : [];
         //第三方订单数据
