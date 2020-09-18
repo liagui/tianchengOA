@@ -128,7 +128,7 @@ class RoleController extends Controller {
                      array_push($arr,$vv);
                 }
             }
-            $publicAuthArr = Authrules::where(['parent_id'=>-1,'is_del'=>1,'is_forbid'=>1,'is_show'=>1])->pluck('id')->toArray();
+            $publicAuthArr = Authrules::where(['parent_id'=>-1,'is_del'=>0,'is_forbid'=>0,'is_show'=>0])->pluck('id')->toArray();
             $arr =  empty($publicAuthArr) ?$arr:array_merge($arr,$publicAuthArr);
             $arr =implode(',',$arr);
             $data['auth_id'] = unique($arr);
@@ -277,7 +277,7 @@ class RoleController extends Controller {
                  array_push($arr,$vv);
             }
         }
-        $publicAuthArr = Authrules::where(['parent_id'=>-1,'is_del'=>1,'is_forbid'=>1,'is_show'=>1])->pluck('id')->toArray();
+        $publicAuthArr = Authrules::where(['parent_id'=>-1,'is_del'=>0,'is_forbid'=>0,'is_show'=>0])->pluck('id')->toArray();
         $arr = empty($publicAuthArr)?$arr:array_merge($arr,$publicAuthArr);
         $arr =implode(',',$arr);
         $data['auth_id'] = unique($arr);

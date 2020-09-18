@@ -15,6 +15,21 @@ use Illuminate\Support\Facades\DB;
 use App\Models\CouresSubject;
 use Log;
 class SchoolController extends Controller {
+
+    public function getSchoolByIdLevel(){
+        try{
+            $data = School::getSchoolByIdLevel(self::$accept_data);
+            if($data['code'] == 200){
+                return response()->json($data);
+            } else {
+                return response()->json($data);
+            }
+        } catch (Exception $ex) {
+            return response()->json(['code' => 500 , 'msg' => $ex->getMessage()]);
+        }      
+    }
+
+
     public function getList(){
             //获取提交的参数
         try{

@@ -209,8 +209,8 @@ class AdminUserController extends Controller {
                     // 'school_id' => 'required',
                     'username' => 'required',
                     // 'realname' => 'required',
-                    // 'password'=>'required',
-                    // 'pwd'=>'required',
+                    'password'=>'required',
+                    'pwd'=>'required',
                     'role_id' => 'required|integer',
                 ],
                 Adminuser::message());
@@ -335,8 +335,8 @@ class AdminUserController extends Controller {
                     
                     'username' => 'required',
                     // 'realname' => 'required',
-                    'password'=>'required',
-                    'pwd'=>'required',
+                    // 'password'=>'required',
+                    // 'pwd'=>'required',
                     'role_id' => 'required|integer',
                 ],
                 Adminuser::message());

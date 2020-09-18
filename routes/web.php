@@ -129,7 +129,7 @@ $router->group(['prefix' => 'admin' , 'namespace' => 'Admin','middleware'=> ['jw
     $router->post('getCommonList', 'CommonController@getCommonList');  //OA项目公共参数接口
 
     //上传到OSS图片接口
-    $router->post('doUploadOssImage', 'CommonController@doUploadOssImage');
+    $router->post('doUploadOssImage', 'CommonController@doUploadOssImage'); 
 
 
 
