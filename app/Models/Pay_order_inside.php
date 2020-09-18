@@ -560,12 +560,8 @@ class Pay_order_inside extends Model
                 $leadid = Redis::get('classlead');
                 if(empty($leadid)){
                     //如果没有 就从第一个开始
-                    if(empty($classlead[0]['id'])){
-                        $data['have_user_id'] = 0;
-                    }else{
-                        $data['have_user_id'] = $classlead[0]['id'];
-                        Redis::set('classlead' , $classlead[0]['id']);
-                    }
+                    $data['have_user_id'] = $classlead[0]['id'];
+                    Redis::set('classlead' , $classlead[0]['id']);
                 }else{
                     //如果有 判断班主任id是否等于或大于最后一个数，从第一个开始排 否者数组取下一个
                     $len = count($classlead,1);
@@ -582,6 +578,8 @@ class Pay_order_inside extends Model
                         }
                     }
                 }
+            }else{
+                $data['have_user_id'] = 0;
             }
             //计算成本
             //  after_tax_amount  税后金额
