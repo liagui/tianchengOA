@@ -860,7 +860,7 @@ class Pay_order_inside extends Model
             'pay_type' => $external['pay_type'], //支付方式（1支付宝扫码2微信扫码3银联快捷支付4微信小程序5线下录入）
             'confirm_status' => 0, //订单确认状态码
             'school_id' => $admin['school_id'],  //所属分校
-            'consignee_statsu' => 0,//0带收集 1收集中 2已收集 3重新收集
+            'consignee_status' => 0,//0带收集 1收集中 2已收集 3重新收集
             'confirm_order_type' => $data['confirm_order_type'],//确认的订单类型 1课程订单 2报名订单3课程+报名订单
             'first_pay' => $data['first_pay'],//支付类型 1全款 2定金 3部分尾款 4最后一笔尾款
 //            'classes' => $data['classes'],//开课状态
