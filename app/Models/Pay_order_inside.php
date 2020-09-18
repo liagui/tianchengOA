@@ -375,10 +375,10 @@ class Pay_order_inside extends Model
     public static function awaitOrder($data,$schoolarr){
 
         $classlead = Admin::where(['is_del'=>1,'is_forbid'=>1,'status'=>1,'is_use'=>1])->get()->toArray();
-        print_r($classlead);die;
         if(!empty($classlead)){
             //上次值班的班主任id
             $leadid = Redis::get('classlead');
+            echo $leadid;die;
             if(empty($leadid)){
                 //如果没有 就从第一个开始
                 $data['have_user_id'] = $classlead[0]['id'];
