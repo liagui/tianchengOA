@@ -590,6 +590,7 @@ class Pay_order_inside extends Model
             //  agent_margin 代理保证金
             //  first_out_of_amount  1级抽离金额
             //  second_out_of_amount  2级抽离金额
+            //  actual_commission  实际佣金
         }
         if($data['confirm_status'] == 2){
             $data['reject_time'] = date('Y-m-d H:i:s');
