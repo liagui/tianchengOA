@@ -187,6 +187,9 @@ class Pay_order_inside extends Model
                 //驳回人查询
                 $adminreject = Admin::where(['id'=>$v['reject_admin_id']])->first();
                 $v['reject_admin_name'] = $adminreject['username'];
+                //备注人 admin_id
+                $adminbeizhu = Admin::where(['id'=>$v['admin_id']])->first();
+                $v['remark_admin_name'] = $adminbeizhu['username'];
             }
         }
         $page=[
@@ -582,9 +585,12 @@ class Pay_order_inside extends Model
                 $data['have_user_id'] = 0;
             }
             //计算成本
-            //  after_tax_amount  税后金额
-            //  return_commission_amount  返佣金额
-            //  earnest_money  保证金
+            //到款业绩=到账金额-退款金额
+//            $payment = $order['pay_price'] -
+
+            //  after_tax_amount  税后金额   到款业绩-扣税    扣税=到款业绩*后台分校管理中扣税比例 到款业绩=到账金额-退款金额
+            //  return_commission_amount  返佣金额 实际到款*返佣比例  返佣比例=后台分校管理中佣金比例
+            //  earnest_money  保证金  返佣比例=后台分校管理中佣金比例
             //  agent_margin 代理保证金
             //  first_out_of_amount  1级抽离金额
             //  second_out_of_amount  2级抽离金额
