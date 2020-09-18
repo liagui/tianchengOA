@@ -401,7 +401,7 @@ class Pay_order_inside extends Model
         }else{
             $data['have_user_id'] = 0;
         }
-        echo $data['have_user_id'];die;
+        print_r($data['have_user_id']);die;
 
 
 
