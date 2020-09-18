@@ -561,18 +561,18 @@ class Pay_order_inside extends Model
                 if(empty($leadid)){
                     //如果没有 就从第一个开始
                     $data['have_user_id'] = $classlead[0]['id'];
-                    Redis::setex('classlead' , $classlead[0]['id']);
+                    Redis::set('classlead' , $classlead[0]['id']);
                 }else{
                     //如果有 判断班主任id是否等于或大于最后一个数，从第一个开始排 否者数组取下一个
                     $len = count($classlead,1);
                     if($classlead[$len-1] <= $leadid){
                         $data['have_user_id'] = $classlead[0]['id'];
-                        Redis::setex('classlead' , $classlead[0]['id']);
+                        Redis::set('classlead' , $classlead[0]['id']);
                     }else{
                         foreach ($classlead as $k => $v){
                             if($v['id'] > $leadid){
                                 $data['have_user_id'] = $v['id'];
-                                Redis::setex('classlead' , $v['id']);
+                                Redis::set('classlead' , $v['id']);
                                 break;
                             }
                         }
@@ -1574,8 +1574,8 @@ class Pay_order_inside extends Model
             return ['code' => 200 , 'msg' => '获取详情成功' , 'data' => $info];
         }
     }
-    
-    
+
+
     /*
      * @param  description   财务管理-收入详情
      * @param  参数说明       body包含以下参数[
@@ -1585,7 +1585,7 @@ class Pay_order_inside extends Model
      *     course_id         课程id
      * ]
      * @param author    dzj
-     * @param ctime     2020-09-18     
+     * @param ctime     2020-09-18
      * return string
      */
     public static function getIncomeeList($body=[]) {
@@ -1600,7 +1600,7 @@ class Pay_order_inside extends Model
             if(isset($body['school_id']) && !empty($body['school_id']) && $body['school_id'] > 0){
                 $query->where('school_id' , '=' , $body['school_id']);
             }
-                
+
             //判断项目-学科大小类是否为空
             if(isset($body['category_id']) && !empty($body['category_id'])){
                 $category_id= json_decode($body['category_id'] , true);
@@ -1617,12 +1617,12 @@ class Pay_order_inside extends Model
                     $query->where('subject_id' , '=' , $subject_id);
                 }
             }
-            
+
             //判断课程id是否为空和合法
             if(isset($body['course_id']) && !empty($body['course_id']) && $body['course_id'] > 0){
                 $query->where('course_id' , '=' , $body['course_id']);
             }
-            
+
             //获取日期
             if(isset($body['create_time']) && !empty($body['create_time'])){
                 $create_time = json_decode($body['create_time'] , true);
