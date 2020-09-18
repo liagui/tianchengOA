@@ -404,7 +404,6 @@ class Pay_order_inside extends Model
         }else{
             $have_user_id = 0;
         }
-        echo $have_user_id;die;
 
 
 
