@@ -229,7 +229,7 @@ class Admin extends Model implements AuthenticatableContract, AuthorizableContra
                     }
                     $v['schoolname'] =  rtrim($str,',');
                 }else{
-                    $v['schoolname'] =  $str;
+                    $v['schoolname'] =  '全部分校';
                 }
             }
         }
