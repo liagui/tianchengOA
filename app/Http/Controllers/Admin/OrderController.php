@@ -333,7 +333,7 @@ class OrderController extends Controller {
             }
             //汇聚微信
             if($data['pay_type'] == 4){
-                $list = Channel::where(['is_ise'=>0])->firts();
+                $list = Channel::where(['is_ise'=>0])->first();
                 $paylist = PaySet::where(['channel_id'=>$list['id']])->first();
                 $notify = 'AB|'."http://".$_SERVER['HTTP_HOST']."/admin/notify/hjnotify";
                 $pay=[
