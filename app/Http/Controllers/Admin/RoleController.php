@@ -135,6 +135,7 @@ class RoleController extends Controller {
             $arr =implode(',',$arr);
             $data['auth_id'] = unique($arr);
             $data['map_auth_id'] = $auth_map_id;
+            $data['create_time'] = date('Y-m-d H:i:s');
             if(Roleauth::insert($data)){
                 AdminLog::insertAdminLog([
                     'admin_id'       =>   $data['create_id'] ,

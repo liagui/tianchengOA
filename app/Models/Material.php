@@ -77,7 +77,7 @@ class Material extends Model {
         if($data){
             return ['code' => 200, 'msg' => '查询成功', 'data' => $data,'page'=>$page,'nocount'=>$nocount];
         }else{
-            return ['code' => 202, 'msg' => '查询暂无数据'];
+            return ['code' => 200, 'msg' => '查询暂无数据', 'data' => [],'page'=>$page,'nocount'=>0];
         }
 
     }
@@ -175,7 +175,7 @@ class Material extends Model {
         if($res){
             return ['code' => 200, 'msg' => '查询成功', 'data' => $res];
         }else{
-            return ['code' => 202, 'msg' => '查询暂无数据'];
+            return ['code' => 200, 'msg' => '查询暂无数据', 'data' => []];
         }
     }
     //更新物料
@@ -216,7 +216,7 @@ class Material extends Model {
         if($res){
             return ['code' => 200, 'msg' => '查询成功', 'data' => $res];
         }else{
-            return ['code' => 202, 'msg' => '查询暂无数据'];
+            return ['code' => 200, 'msg' => '查询暂无数据', 'data' => []];
         }
     }
     //获取确认物料信息
@@ -225,7 +225,7 @@ class Material extends Model {
         if($res){
             return ['code' => 200, 'msg' => '查询成功', 'data' => $res];
         }else{
-            return ['code' => 202, 'msg' => '查询暂无数据'];
+            return ['code' => 200, 'msg' => '查询暂无数据', 'data' => []];
         }
     }
 
