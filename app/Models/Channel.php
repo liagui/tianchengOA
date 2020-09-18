@@ -79,7 +79,7 @@ class  Channel extends Model {
     public static function doChannelInsert($body){
     	$create_id = isset(AdminLog::getAdminInfo()->admin_user->id) ? AdminLog::getAdminInfo()->admin_user->id : 0;
     	$create_name = isset(AdminLog::getAdminInfo()->admin_user->real_name) ? AdminLog::getAdminInfo()->admin_user->real_name : '';
-    	$count = self::where('channel_name','!=',$body['channel_name'])->where(['is_forbid'=>0,'is_del'=>0])->count();
+    	$count = self::where('channel_name','=',$body['channel_name'])->where(['is_forbid'=>0,'is_del'=>0])->count();
         DB::beginTransaction();
     	if($count >0){
             $insert['channel_name'] = $body['channel_name'];
