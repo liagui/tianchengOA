@@ -102,11 +102,8 @@ class Material extends Model {
                 $material_listing1['material_id'] = $material_id;
                 $material_listing1['material_type'] = 1;
                 $material_listing1['project_id'] = $material_list['project_id'];
-                $material_listing1['project_name'] = $material_list['project_name'];
                 $material_listing1['subject_id'] = $material_list['subject_id'];
-                $material_listing1['subject_name'] = $material_list['subject_name'];
                 $material_listing1['course_id'] = $material_list['course_id'];
-                $material_listing1['course_name'] = $material_list['course_name'];
                 $material_listing1['contract_number'] = $material_list['contract_number'];
                 $res = MaterialListing::insert($material_listing1);
             }else if($material_list['type']  == 2){
@@ -140,11 +137,8 @@ class Material extends Model {
                 $material_listing1['material_id'] = $material_id;
                 $material_listing1['material_type'] = 1;
                 $material_listing1['project_id'] = $material_list['project_id'];
-                $material_listing1['project_name'] = $material_list['project_name'];
                 $material_listing1['subject_id'] = $material_list['subject_id'];
-                $material_listing1['subject_name'] = $material_list['subject_name'];
                 $material_listing1['course_id'] = $material_list['course_id'];
-                $material_listing1['course_name'] = $material_list['course_name'];
                 $material_listing1['contract_number'] = $material_list['contract_number'];
                 $res = MaterialListing::where(["material_id"=>$material_id,"material_type"=>1])->update($material_listing1);
             }else if($material_list['type']  == 2){
