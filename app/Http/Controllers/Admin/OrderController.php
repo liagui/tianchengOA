@@ -304,7 +304,7 @@ class OrderController extends Controller {
             }
             //汇聚支付宝
             if($data['pay_type'] == 3){
-                $list = Channel::where(['is_ise'=>0])->firts();
+                $list = Channel::where(['is_ise'=>0])->first();
                 $paylist = PaySet::where(['channel_id'=>$list['id']])->first();
                 $notify = 'AB|'."http://".$_SERVER['HTTP_HOST']."/admin/notify/hjnotify";
                 $pay=[
