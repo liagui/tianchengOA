@@ -504,6 +504,9 @@ class Pay_order_inside extends Model
                     $major = Major::where(['id'=>$v['major_id']])->first();
                     $v['major_name'] = $major['major_name'];
                 }
+                //根据上传凭证人id查询凭证名称
+                $adminname = Admin::where(['id'=>$v['pay_voucher_user_id']])->first();
+                $v['pay_voucher_name'] = $adminname['username'];
             }
         }
         $page=[

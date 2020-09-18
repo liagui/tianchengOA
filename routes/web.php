@@ -31,7 +31,7 @@ $router->group(['prefix' => 'admin' , 'namespace' => 'Admin','middleware'=> 'cor
 
     });
     $router->post('getRegionList', 'StudentDatumController@getRegionLists');//获取所有地区
-    
+
     //项目管理部分(dzj)
     $router->group(['prefix' => 'project'], function () use ($router) {
         $router->post('getProjectSubjectList', 'ProjectController@getProjectSubjectList');       //项目筛选学科列表接口
@@ -59,7 +59,7 @@ $router->group(['prefix' => 'admin' , 'namespace' => 'Admin','middleware'=> ['jw
         //总校
         $router->post('sureOrderList', 'OrderController@sureOrderList');//总校确认订单列表
         $router->post('notarizeOrder', 'OrderController@notarizeOrder');//总校确认&取消订单
-        $router->post('sureOrder', 'OrderController@sureOrder');//总校确认订单详情                           
+        $router->post('sureOrder', 'OrderController@sureOrder');//总校确认订单详情
         $router->post('unpaidOrder', 'OrderController@unpaidOrder');//总校未支付订单
         $router->post('DorejectOrder', 'OrderController@DorejectOrder');//总校进行驳回
         //分校
