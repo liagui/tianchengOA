@@ -257,7 +257,7 @@ class OrderController extends Controller {
         if($paylist['hj_wx_pay_state'] == 1){
             array_push($status,'4');
         }
-        return response()->json(['code' => 200 , 'msg' => '获取成功' , 'data' =>$list]);
+        return response()->json(['code' => 200 , 'msg' => '获取成功' , 'data' =>$status]);
     }
     //支付   入库   并生成二维码
     public function oapay(){
