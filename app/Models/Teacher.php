@@ -67,7 +67,7 @@ class Teacher extends Model {
         if($data){
             return ['code' => 200, 'msg' => '查询成功', 'data' => $data,'page'=>$page];
         }else{
-            return ['code' => 202, 'msg' => '查询暂无数据'];
+            return ['code' => 200, 'msg' => '查询暂无数据', 'data' => [],'page'=>$page];
         }
     }
     public static function getTeacherListAll($data){
@@ -75,7 +75,7 @@ class Teacher extends Model {
         if($data){
             return ['code' => 200, 'msg' => '查询成功', 'data' => $data];
         }else{
-            return ['code' => 202, 'msg' => '查询暂无数据'];
+            return ['code' => 200, 'msg' => '查询暂无数据','data' => []];
         }
     }
     public static function createTeacher($data){
@@ -208,7 +208,7 @@ class Teacher extends Model {
         if($teacher){
             return ['code' => 200, 'msg' => '查询成功', 'data' => $teacher,'page'=>$page,'one'=>$one];
         }else{
-            return ['code' => 202, 'msg' => '查询暂无数据'];
+            return ['code' => 200, 'msg' => '查询暂无数据', 'data' => [],'page'=>$page,'one'=>[]];
         }
     }
     public static function getTeacherPerformanceOne($data){
@@ -279,7 +279,7 @@ class Teacher extends Model {
         if($one){
             return ['code' => 200, 'msg' => '查询成功', 'data' => $data,'one'=>$one,'page'=>$page];
         }else{
-            return ['code' => 202, 'msg' => '查询暂无数据'];
+            return ['code' => 200, 'msg' => '查询暂无数据', 'data' => [],'one'=>[],'page'=>$page];
         }
 
     }

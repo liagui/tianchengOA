@@ -119,9 +119,9 @@ class Student extends Model {
             'total'=>$count
         ];
         if($data){
-            return ['code' => 200, 'msg' => '查询成功', 'data' => $data,'page'=>$page];
+            return ['code' => 200, 'msg' => '查询成功','data' => $data,'page'=>$page];
         }else{
-            return ['code' => 202, 'msg' => '查询暂无数据'];
+            return ['code' => 200, 'msg' => '查询暂无数据','data' => [],'page'=>$page];
         }
     }
     //跟单
@@ -151,7 +151,7 @@ class Student extends Model {
         if($res){
             return ['code' => 200, 'msg' => '查询成功', 'data' => $res];
         }else{
-            return ['code' => 202, 'msg' => '查询暂无数据'];
+            return ['code' => 200, 'msg' => '查询暂无数据', 'data' => []];
         }
     }
     //转单
@@ -278,7 +278,7 @@ class Student extends Model {
         if($data){
             return ['code' => 200, 'msg' => '查询成功', 'data' => $data,'page'=>$page,'one'=>$one];
         }else{
-            return ['code' => 202, 'msg' => '查询暂无数据'];
+            return ['code' => 200, 'msg' => '查询暂无数据','data' => [],'page'=>$page,'one'=>[]];
         }
 
     }
@@ -369,7 +369,7 @@ class Student extends Model {
         if($data){
             return ['code' => 200, 'msg' => '查询成功', 'data' => $data,'page'=>$page];
         }else{
-            return ['code' => 202, 'msg' => '查询暂无数据'];
+            return ['code' => 200, 'msg' => '查询暂无数据', 'data' => [],'page'=>$page];
         }
     }
     //学员公海 被放入公海的所有学员订单
@@ -435,7 +435,7 @@ class Student extends Model {
         if($data){
             return ['code' => 200, 'msg' => '查询成功', 'data' => $data,'page'=>$page];
         }else{
-            return ['code' => 202, 'msg' => '查询暂无数据'];
+            return ['code' => 200, 'msg' => '查询暂无数据', 'data' => [],'page'=>$page];
         }
 
     }
