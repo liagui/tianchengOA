@@ -385,8 +385,11 @@ class Pay_order_inside extends Model
             }else{
                 //如果有 判断班主任id是否等于或大于最后一个数，从第一个开始排 否者数组取下一个
                 $len = count($classlead);
-                if($classlead[$len-1] <= $leadid){
+                if($classlead[$len-1] == $leadid){
+                    print_r($classlead[$len-1]);
+                    echo $leadid;
                     $have_user_id = $classlead[0]['id'];
+                    echo $have_user_id;die;
                     Redis::set('classlead' , $classlead[0]['id']);
                 }else{
                     foreach ($classlead as $k => $v){
