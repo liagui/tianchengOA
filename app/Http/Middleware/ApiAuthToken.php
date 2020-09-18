@@ -33,7 +33,7 @@ class ApiAuthToken {
 
             if($role['code']!=200){
                 return response()->json(['code'=>403,'msg'=>'此用户没有权限,请联系管理员']);
-                
+
             }else{
                 $arr = explode(',',$role['data']['auth_id']);
                 if(!in_array((string)$authid['id'],$arr)){
