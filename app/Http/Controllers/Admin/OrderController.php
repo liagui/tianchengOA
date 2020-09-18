@@ -326,7 +326,7 @@ class OrderController extends Controller {
             if($data['pay_type'] == 3){
                 $list = Channel::where(['is_use'=>0])->first();
                 $paylist = PaySet::where(['channel_id'=>$list['id']])->first();
-                $notify = 'AB|'."http://".$_SERVER['HTTP_HOST']."/admin/notify/hjnotify";
+                $notify = 'AB|'."http://".$_SERVER['HTTP_HOST']."/admin/hjnotify";
                 $pay=[
                     'p0_Version'=>'1.0',
                     'p1_MerchantNo'=> $paylist['hj_commercial_tenant_number'],
@@ -355,7 +355,7 @@ class OrderController extends Controller {
             if($data['pay_type'] == 4){
                 $list = Channel::where(['is_use'=>0])->first();
                 $paylist = PaySet::where(['channel_id'=>$list['id']])->first();
-                $notify = 'AB|'."http://".$_SERVER['HTTP_HOST']."/admin/notify/hjnotify";
+                $notify = 'AB|'."http://".$_SERVER['HTTP_HOST']."/admin/hjnotify";
                 $pay=[
                     'p0_Version'=>'1.0',
                     'p1_MerchantNo'=> $paylist['hj_commercial_tenant_number'],
