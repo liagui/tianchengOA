@@ -16,7 +16,7 @@ class Student extends Model {
     public static function getStudentStatus($data){
         //项目project_id 所属分校school_id 订单状态confirm_status 付款方式pay_type 是否回访return_visit 是否开课classes 手机/姓名keyword
         //每页显示的条数
-        $pagesize = (int)isset($data['pageSize']) && $data['pageSize'] > 0 ? $data['pageSize'] : 20;
+        $pagesize = (int)isset($data['pagesize']) && $data['pagesize'] > 0 ? $data['pagesize'] : 20;
         $page     = isset($data['page']) && $data['page'] > 0 ? $data['page'] : 1;
         $offset   = ($page - 1) * $pagesize;
         //计算总数
@@ -219,7 +219,7 @@ class Student extends Model {
         })->sum("refund_Price");
         //获取列表数据
         //每页显示的条数
-        $pagesize = (int)isset($data['pageSize']) && $data['pageSize'] > 0 ? $data['pageSize'] : 20;
+        $pagesize = (int)isset($data['pagesize']) && $data['pagesize'] > 0 ? $data['pagesize'] : 20;
         $page     = isset($data['page']) && $data['page'] > 0 ? $data['page'] : 1;
         $offset   = ($page - 1) * $pagesize;
         //计算总数
@@ -289,7 +289,7 @@ class Student extends Model {
         $admin = isset(AdminLog::getAdminInfo()->admin_user) ? AdminLog::getAdminInfo()->admin_user: [];
         $user_id  = $admin['id'];
         //每页显示的条数
-        $pagesize = (int)isset($data['pageSize']) && $data['pageSize'] > 0 ? $data['pageSize'] : 20;
+        $pagesize = (int)isset($data['pagesize']) && $data['pagesize'] > 0 ? $data['pagesize'] : 20;
         $page     = isset($data['page']) && $data['page'] > 0 ? $data['page'] : 1;
         $offset   = ($page - 1) * $pagesize;
 
@@ -376,7 +376,7 @@ class Student extends Model {
     public static function getStudentSeas($data){
     //查询条件   项目  分校 开课状态  回访状态  手机号/姓名 订单状态 付款形式
         //每页显示的条数
-        $pagesize = (int)isset($data['pageSize']) && $data['pageSize'] > 0 ? $data['pageSize'] : 20;
+        $pagesize = (int)isset($data['pagesize']) && $data['pagesize'] > 0 ? $data['pagesize'] : 20;
         $page     = isset($data['page']) && $data['page'] > 0 ? $data['page'] : 1;
         $offset   = ($page - 1) * $pagesize;
         //计算总数

@@ -15,7 +15,7 @@ class Material extends Model {
         //未处理物料条数
         $nocount = self::select('submit_time', 'submit_name', 'school_id', 'status','id')->where('status',0)->count();
         //每页显示的条数
-        $pagesize = (int)isset($data['pageSize']) && $data['pageSize'] > 0 ? $data['pageSize'] : 20;
+        $pagesize = (int)isset($data['pagesize']) && $data['pagesize'] > 0 ? $data['pagesize'] : 20;
         $page     = isset($data['page']) && $data['page'] > 0 ? $data['page'] : 1;
         $offset   = ($page - 1) * $pagesize;
         //计算总数
