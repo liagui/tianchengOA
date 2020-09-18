@@ -109,6 +109,11 @@ class Pay_order_inside extends Model
         $countprice = 0;
         if(!empty($order)){
             foreach ($order as $k=>&$v){
+                //查学校
+                $school = School::where(['id'=>$v['school_id']])->first();
+                if($school){
+                    $v['school_name'] = $school['school_name'];
+                }
                 $countprice = $countprice + $v['pay_price'];
                 if($v['pay_type'] == 1){
                     $v['pay_type_text'] = '支付宝扫码';
@@ -402,9 +407,9 @@ class Pay_order_inside extends Model
         //計算總數
         $count = self::where(function($query) use ($data,$schoolarr) {
             if(isset($data['order_no']) && !empty($data['order_no'])){
-                $query->where('order_no',$data['order_on'])
-                    ->orwhere('name',$data['order_on'])
-                    ->orwhere('mobile',$data['order_on']);
+                $query->where('order_no',$data['order_no'])
+                    ->orwhere('name',$data['order_no'])
+                    ->orwhere('mobile',$data['order_no']);
             }
             $query->whereIn('school_id',$schoolarr);
         })
@@ -413,9 +418,9 @@ class Pay_order_inside extends Model
 
         $order = self::where(function($query) use ($data,$schoolarr) {
             if(isset($data['order_no']) && !empty($data['order_no'])){
-                $query->where('order_no',$data['order_on'])
-                    ->orwhere('name',$data['order_on'])
-                    ->orwhere('mobile',$data['order_on']);
+                $query->where('order_no',$data['order_no'])
+                    ->orwhere('name',$data['order_no'])
+                    ->orwhere('mobile',$data['order_no']);
             }
             $query->whereIn('school_id',$schoolarr);
         })
@@ -425,6 +430,11 @@ class Pay_order_inside extends Model
          //循环查询分类
         if(!empty($order)){
             foreach ($order as $k=>&$v){
+                //查学校
+                $school = School::where(['id'=>$v['school_id']])->first();
+                if($school){
+                    $v['school_name'] = $school['school_name'];
+                }
                 if($v['pay_type'] == 1){
                     $v['pay_type_text'] = '支付宝扫码';
                 }else if ($v['pay_type'] == 2){
@@ -908,7 +918,7 @@ class Pay_order_inside extends Model
             'pay_status' => $external['pay_status'],//支付状态
             'pay_type' => $external['pay_type'], //支付方式（1支付宝扫码2微信扫码3银联快捷支付4微信小程序5线下录入）
             'confirm_status' => 0, //订单确认状态码
-            'school_id' => $admin['school_id'],  //所属分校
+            'school_id' => $data['school_id'],  //所属分校
             'consignee_status' => 0,//0带收集 1收集中 2已收集 3重新收集
             'confirm_order_type' => $data['confirm_order_type'],//确认的订单类型 1课程订单 2报名订单3课程+报名订单
             'first_pay' => $data['first_pay'],//支付类型 1全款 2定金 3部分尾款 4最后一笔尾款
