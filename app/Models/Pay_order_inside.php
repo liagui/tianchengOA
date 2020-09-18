@@ -728,6 +728,11 @@ class Pay_order_inside extends Model
         }
         $res = Pay_order_external::where(['order_no'=>$data['order_no'],'status'=>0])->first();
         if(!empty($res)){
+            if($res['pay_type'] == 1 || $res['pay_type'] == 3){
+                    $res['pay_type_text'] = '微信支付';
+            }else{
+                $res['pay_type_text'] = '支付宝支付';
+            }
             //course  课程
             $course = Course::select('course_name')->where(['id'=>$res['course_id']])->first();
             $res['course_name'] = $course['course_name'];
