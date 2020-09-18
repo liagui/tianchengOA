@@ -238,7 +238,7 @@ class OrderController extends Controller {
             return response()->json(['code' => 500 , 'msg' => $ex->getMessage()]);
         }
     }
-    
+
     /*
      * @param  description   财务管理-收入详情
      * @param  参数说明       body包含以下参数[
@@ -248,7 +248,7 @@ class OrderController extends Controller {
      *     course_id         课程id
      * ]
      * @param author    dzj
-     * @param ctime     2020-09-18     
+     * @param ctime     2020-09-18
      * return string
      */
     public function getIncomeeList(){
@@ -257,10 +257,10 @@ class OrderController extends Controller {
             //获取院校id(1,2,3)
             $school_id  = isset(AdminLog::getAdminInfo()->admin_user->school_id) ? AdminLog::getAdminInfo()->admin_user->school_id : 0;
             $school_arr = parent::underlingLook($school_id);
-            
+
             //分校的id传递
             self::$accept_data['schoolId'] = $school_arr['data'];
-            
+
             //获取专业列表
             $data = Pay_order_inside::getIncomeeList(self::$accept_data);
             if($data['code'] == 200){
