@@ -203,9 +203,19 @@ class RoleController extends Controller {
                    $ThreemapAuthArr = array_column($ThreemapAuthArr, 'id');
                 }
             }
-            $newOnemapAuthArr= array_intersect($OnemapAuthArr,$roleAuthMapData);
-            $newTwomapAuthArr= array_intersect($TwomapAuthArr,$roleAuthMapData);
-            $newThreemapAuthArr= array_intersect($ThreemapAuthArr,$roleAuthMapData);
+
+            $newOnemapAuthArr= array_intersect($OnemapAuthArr,$roleAuthMapData); //差集
+            $newTwomapAuthArr= array_intersect($TwomapAuthArr,$roleAuthMapData);//差集
+            $newThreemapAuthArr= array_intersect($ThreemapAuthArr,$roleAuthMapData);//差集
+            if(!empty($newOnemapAuthArr)){
+                $newOnemapAuthArr = array_values($newOnemapAuthArr);
+            }
+            if(!empty($newTwomapAuthArr)){
+                $newTwomapAuthArr = array_values($newTwomapAuthArr);
+            }
+            if(!empty($newThreemapAuthArr)){
+                $newThreemapAuthArr = array_values($newThreemapAuthArr);
+            }
         }   
         $roleAuthData['data']['role_auth'] = ['zongxiao'=>$newTwomapAuthArr,'fenxiao'=>$newThreemapAuthArr,'system'=>$newOnemapAuthArr];
         $arr = [

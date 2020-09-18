@@ -322,7 +322,6 @@ class Controller extends BaseController {
         $schoolIds = explode(',',$school_id);
        
         if(in_array('0',$schoolIds)){
-           
             $YesLookSchoolIds = \App\Models\School::where(['is_del'=>0,'is_open'=>0])->select('id')->get()->toArray();
             if(empty($YesLookSchoolIds)){
                 $YesLookSchoolIds = [];
