@@ -373,38 +373,6 @@ class Pay_order_inside extends Model
          * return  array
          */
     public static function awaitOrder($data,$schoolarr){
-
-        $classlead = Admin::where(['is_del'=>1,'is_forbid'=>1,'status'=>1,'is_use'=>1])->get()->toArray();
-        if(!empty($classlead)){
-            //上次值班的班主任id
-            $leadid = Redis::get('classlead');
-            if(empty($leadid)){
-                //如果没有 就从第一个开始
-                $have_user_id = $classlead[0]['id'];
-                Redis::set('classlead' , $classlead[0]['id']);
-            }else{
-                //如果有 判断班主任id是否等于或大于最后一个数，从第一个开始排 否者数组取下一个
-                $len = count($classlead);
-                if($classlead[$len-1]['id'] == $leadid){
-                    $have_user_id = $classlead[0]['id'];
-                    Redis::set('classlead' , $classlead[0]['id']);
-                }else{
-                    foreach ($classlead as $k => $v){
-                        if($v['id'] > $leadid){
-                            $have_user_id = $v['id'];
-                            Redis::set('classlead' , $v['id']);
-                            break;
-                        }
-                    }
-                }
-            }
-        }else{
-            $have_user_id = 0;
-        }
-        echo $have_user_id;die;
-
-
-
         $where['del_flag'] = 0;  //未删除
         $where['confirm_status'] = 0;  //未确认
         //科目id&学科id
@@ -596,8 +564,8 @@ class Pay_order_inside extends Model
                     Redis::set('classlead' , $classlead[0]['id']);
                 }else{
                     //如果有 判断班主任id是否等于或大于最后一个数，从第一个开始排 否者数组取下一个
-                    $len = count($classlead,1);
-                    if($classlead[$len-1] <= $leadid){
+                    $len = count($classlead);
+                    if($classlead[$len-1]['id'] <= $leadid){
                         $data['have_user_id'] = $classlead[0]['id'];
                         Redis::set('classlead' , $classlead[0]['id']);
                     }else{
