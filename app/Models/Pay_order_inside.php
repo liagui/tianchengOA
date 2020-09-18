@@ -425,6 +425,55 @@ class Pay_order_inside extends Model
          //循环查询分类
         if(!empty($order)){
             foreach ($order as $k=>&$v){
+                if($v['pay_type'] == 1){
+                    $v['pay_type_text'] = '支付宝扫码';
+                }else if ($v['pay_type'] == 2){
+                    $v['pay_type_text'] = '微信扫码';
+                }else if ($v['pay_type'] == 3){
+                    $v['pay_type_text'] = '银联快捷支付';
+                }else if ($v['pay_type'] == 4){
+                    $v['pay_type_text'] = '微信小程序';
+                }else if ($v['pay_type'] == 5){
+                    $v['pay_type_text'] = '线下录入';
+                }
+                if($v['pay_status'] == 0){
+                    $v['pay_status_text'] = '未支付';
+                }else{
+                    $v['pay_status_text'] = '已支付';
+                }
+                if($v['return_visit'] == 0){
+                    $v['return_visit_text'] = '未回访';
+                }else{
+                    $v['return_visit_text'] = '已回访';
+                }
+                if($v['classes'] == 0){
+                    $v['classes_text'] = '未开课';
+                }else{
+                    $v['classes_text'] = '已开课';
+                }
+                if($v['confirm_order_type'] == 1){
+                    $v['confirm_order_type_text'] = '课程订单';
+                }else if($v['confirm_order_type'] == 2){
+                    $v['confirm_order_type_text'] = '报名订单';
+                }else if($v['confirm_order_type'] == 3){
+                    $v['confirm_order_type_text'] = '课程+报名订单';
+                }
+                if($v['first_pay'] == 1){
+                    $v['first_pay_text'] = '全款';
+                }else if($v['first_pay'] == 2){
+                    $v['first_pay_text'] = '定金';
+                }else if($v['first_pay'] == 3){
+                    $v['first_pay_text'] = '部分尾款';
+                }else if($v['first_pay'] == 4){
+                    $v['first_pay_text'] = '最后一笔尾款';
+                }
+                if($v['confirm_status'] == 0){
+                    $v['confirm_status_text'] = '未确认';
+                }else if($v['confirm_status'] == 1){
+                    $v['confirm_status_text'] = '确认';
+                }else if($v['confirm_status'] == 2){
+                    $v['confirm_status_text'] = '驳回';
+                }
                 //course  课程
                 $course = Course::select('course_name')->where(['id'=>$v['course_id']])->first();
                 $v['course_name'] = $course['course_name'];
@@ -723,11 +772,16 @@ class Pay_order_inside extends Model
     public static function unsubmittedOrder($data){
         //默认不传订单号   展示空页面
         $res=[];
-        if(!isset($data['order_on']) || empty($data['order_on'])){
+        if(!isset($data['order_no']) || empty($data['order_no'])){
             return ['code' => 200 , 'msg' => '获取成功','data'=>$res];
         }
-        $res = Pay_order_external::where(['order_on'=>$data['order_on'],'status'=>0])->first();
+        $res = Pay_order_external::where(['order_no'=>$data['order_no'],'status'=>0])->first();
         if(!empty($res)){
+            if($res['pay_type'] == 1 || $res['pay_type'] == 3){
+                    $res['pay_type_text'] = '微信支付';
+            }else{
+                $res['pay_type_text'] = '支付宝支付';
+            }
             //course  课程
             $course = Course::select('course_name')->where(['id'=>$res['course_id']])->first();
             $res['course_name'] = $course['course_name'];
@@ -833,6 +887,7 @@ class Pay_order_inside extends Model
         if(!isset($data['first_pay']) || empty($data['first_pay'])){
             return ['code' => 201 , 'msg' => '未选择缴费类型'];
         }
+        unset($data['begin_class']);
         //获取操作员信息
         $admin = isset(AdminLog::getAdminInfo()->admin_user) ? AdminLog::getAdminInfo()->admin_user : [];
         //第三方订单数据
@@ -848,13 +903,13 @@ class Pay_order_inside extends Model
             'course_id' => $data['course_id'],//课程id
             'project_id' => $data['project_id'],//项目id
             'subject_id' => $data['subject_id'], //学科id
-            'education_id' => isset($data['subject_id'])?$data['education_id']:0, //院校id
+            'education_id' => isset($data['education_id'])?$data['education_id']:0, //院校id
             'major_id' => isset($data['major_id'])?$data['major_id']:0, //专业id
             'pay_status' => $external['pay_status'],//支付状态
             'pay_type' => $external['pay_type'], //支付方式（1支付宝扫码2微信扫码3银联快捷支付4微信小程序5线下录入）
             'confirm_status' => 0, //订单确认状态码
             'school_id' => $admin['school_id'],  //所属分校
-            'consignee_statsu' => 0,//0带收集 1收集中 2已收集 3重新收集
+            'consignee_status' => 0,//0带收集 1收集中 2已收集 3重新收集
             'confirm_order_type' => $data['confirm_order_type'],//确认的订单类型 1课程订单 2报名订单3课程+报名订单
             'first_pay' => $data['first_pay'],//支付类型 1全款 2定金 3部分尾款 4最后一笔尾款
 //            'classes' => $data['classes'],//开课状态
@@ -863,9 +918,9 @@ class Pay_order_inside extends Model
             'pay_voucher_user_id' => $admin['id'], //上传凭证人
             'pay_voucher_time' => date('Y-m-d H:i:s'), //上传凭证时间
             'pay_voucher' => $data['remark'], //支付凭证
-            'course_Price' => $data['course_Price'],
+            'course_Price' => isset($data['course_Price'])?$data['course_Price']:0,
             'sum_Price' => $external['pay_price'],
-            'sign_Price' => $data['sign_Price'],
+            'sign_Price' => isset($data['sign_Price'])?$data['sign_Price']:0,
             'admin_id' => $admin['id']
         ];
         $add = Pay_order_inside::insert($insert);

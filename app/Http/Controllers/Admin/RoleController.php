@@ -112,7 +112,7 @@ class RoleController extends Controller {
         }
         unset($data['/admin/role/doRoleInsert']);
         $data['create_id'] = isset(CurrentAdmin::user()['id'])?CurrentAdmin::user()['id']:0;
-        $role = Roleauth::where(['role_name'=>$data['role_name']])->first();
+        $role = Roleauth::where(['role_name'=>$data['role_name'],'id_del'=>0])->first();
         if($role){
              return response()->json(['code'=>205,'msg'=>'角色已存在']);
         }
@@ -250,7 +250,7 @@ class RoleController extends Controller {
         if(isset($data['/admin/role/doRoleUpdate'])){
             unset($data['/admin/role/doRoleUpdate']);
         }
-        $count = Roleauth::where('role_name','=',$data['role_name'])->where('id','!=',$data['id'])->count();
+        $count = Roleauth::where('role_name','=',$data['role_name'])->where('id','!=',$data['id'])->where('is_del',0)->count();
         if($count>=1){
             return response()->json(['code'=>205,'msg'=>'角色名称已存在']); 
         }
