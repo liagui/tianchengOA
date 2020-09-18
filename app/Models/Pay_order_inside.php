@@ -378,7 +378,6 @@ class Pay_order_inside extends Model
         if(!empty($classlead)){
             //上次值班的班主任id
             $leadid = Redis::get('classlead');
-            echo $leadid;die;
             if(empty($leadid)){
                 //如果没有 就从第一个开始
                 $data['have_user_id'] = $classlead[0]['id'];
@@ -386,6 +385,7 @@ class Pay_order_inside extends Model
             }else{
                 //如果有 判断班主任id是否等于或大于最后一个数，从第一个开始排 否者数组取下一个
                 $len = count($classlead,1);
+                echo $len;die;
                 if($classlead[$len-1] <= $leadid){
                     $data['have_user_id'] = $classlead[0]['id'];
                     Redis::set('classlead' , $classlead[0]['id']);
