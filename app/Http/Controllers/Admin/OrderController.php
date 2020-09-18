@@ -242,7 +242,7 @@ class OrderController extends Controller {
 
     //支付信息
     public function paylist(){
-        $list = Channel::where(['is_ise'=>0])->first();
+        $list = Channel::where(['is_use'=>0])->first();
         $paylist = PaySet::where(['channel_id'=>$list['id']])->first();
         $status=[];
         if($paylist['zfb_pay_state'] == 1){
