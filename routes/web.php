@@ -35,7 +35,7 @@ $router->group(['prefix' => 'admin' , 'namespace' => 'Admin','middleware'=> 'cor
 });
 //后端登录权限认证相关接口
 //
-$router->group(['prefix' => 'admin' , 'namespace' => 'Admin','middleware'=> ['jwt.auth', 'cors'] ], function () use ($router) {
+$router->group(['prefix' => 'admin' , 'namespace' => 'Admin','middleware'=> ['jwt.auth', 'cors','api'] ], function () use ($router) {
 
      //订单管理（szw）
     $router->group(['prefix' => 'order'], function () use ($router) {
