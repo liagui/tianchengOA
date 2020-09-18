@@ -443,7 +443,7 @@ class AdminUserController extends Controller {
             return ['code'=>$adminRole['code'],'msg'=>$adminRole['msg']];
         }
         $adminRuths = Authrules::getAdminAuthAll($adminRole['data']['map_auth_id']);
-          print_r($adminRuths);die;
+         
         if($adminRuths['code'] != 200){
             return ['code'=>$adminRuths['code'],'msg'=>$adminRuths['msg']];
         }
