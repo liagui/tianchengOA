@@ -111,7 +111,7 @@ $router->group(['prefix' => 'admin' , 'namespace' => 'Admin','middleware'=> ['jw
 
     //财务管理部分(dzj)
     $router->group(['prefix' => 'finance'], function () use ($router) {
-
+        $router->post('getIncomeeList', 'OrderController@getIncomeeList');                       //财务管理-收入详情
     });
 
 

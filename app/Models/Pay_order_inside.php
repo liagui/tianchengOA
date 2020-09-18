@@ -1574,4 +1574,138 @@ class Pay_order_inside extends Model
             return ['code' => 200 , 'msg' => '获取详情成功' , 'data' => $info];
         }
     }
+    
+    
+    /*
+     * @param  description   财务管理-收入详情
+     * @param  参数说明       body包含以下参数[
+     *     education_id      院校id
+     *     project_id        项目id
+     *     subject_id        学科id
+     *     course_id         课程id
+     * ]
+     * @param author    dzj
+     * @param ctime     2020-09-18     
+     * return string
+     */
+    public static function getIncomeeList($body=[]) {
+        //每页显示的条数
+        $pagesize = isset($body['pagesize']) && $body['pagesize'] > 0 ? $body['pagesize'] : 20;
+        $page     = isset($body['page']) && $body['page'] > 0 ? $body['page'] : 1;
+        $offset   = ($page - 1) * $pagesize;
+
+        //获取收入详情的总数量
+        $count = self::where(function($query) use ($body){
+            //判断分校id是否为空和合法
+            if(isset($body['school_id']) && !empty($body['school_id']) && $body['school_id'] > 0){
+                $query->where('school_id' , '=' , $body['school_id']);
+            }
+                
+            //判断项目-学科大小类是否为空
+            if(isset($body['category_id']) && !empty($body['category_id'])){
+                $category_id= json_decode($body['category_id'] , true);
+                $project_id = isset($category_id[0]) && $category_id[0] ? $category_id[0] : 0;
+                $subject_id = isset($category_id[1]) && $category_id[1] ? $category_id[1] : 0;
+
+                //判断项目id是否传递
+                if($project_id && $project_id > 0){
+                    $query->where('project_id' , '=' , $project_id);
+                }
+
+                //判断学科id是否传递
+                if($subject_id && $subject_id > 0){
+                    $query->where('subject_id' , '=' , $subject_id);
+                }
+            }
+            
+            //判断课程id是否为空和合法
+            if(isset($body['course_id']) && !empty($body['course_id']) && $body['course_id'] > 0){
+                $query->where('course_id' , '=' , $body['course_id']);
+            }
+            
+            //获取日期
+            if(isset($body['create_time']) && !empty($body['create_time'])){
+                $create_time = json_decode($body['create_time'] , true);
+                $state_time  = $create_time[0]." 00:00:00";
+                $end_time    = $create_time[1]." 23:59:59";
+                $query->whereBetween('create_time', [$state_time, $end_time]);
+            }
+        })->whereIn('education_id' , $body['schoolId'])->where('del_flag' , 0)->count();
+
+        if($count > 0){
+            //新数组赋值
+            $array = [];
+
+            //获取收入详情列表
+            $list = self::where(function($query) use ($body){
+                //判断分校id是否为空和合法
+                if(isset($body['school_id']) && !empty($body['school_id']) && $body['school_id'] > 0){
+                    $query->where('school_id' , '=' , $body['school_id']);
+                }
+
+                //判断项目-学科大小类是否为空
+                if(isset($body['category_id']) && !empty($body['category_id'])){
+                    $category_id= json_decode($body['category_id'] , true);
+                    $project_id = isset($category_id[0]) && $category_id[0] ? $category_id[0] : 0;
+                    $subject_id = isset($category_id[1]) && $category_id[1] ? $category_id[1] : 0;
+
+                    //判断项目id是否传递
+                    if($project_id && $project_id > 0){
+                        $query->where('project_id' , '=' , $project_id);
+                    }
+
+                    //判断学科id是否传递
+                    if($subject_id && $subject_id > 0){
+                        $query->where('subject_id' , '=' , $subject_id);
+                    }
+                }
+
+                //判断课程id是否为空和合法
+                if(isset($body['course_id']) && !empty($body['course_id']) && $body['course_id'] > 0){
+                    $query->where('course_id' , '=' , $body['course_id']);
+                }
+
+                //获取日期
+                if(isset($body['create_time']) && !empty($body['create_time'])){
+                    $create_time = json_decode($body['create_time'] , true);
+                    $state_time  = $create_time[0]." 00:00:00";
+                    $end_time    = $create_time[1]." 23:59:59";
+                    $query->whereBetween('create_time', [$state_time, $end_time]);
+                }
+            })->whereIn('education_id' , $body['schoolId'])->where('del_flag' , 0)->orderByDesc('create_time')->offset($offset)->limit($pagesize)->get()->toArray();
+
+            //循环获取相关信息
+            foreach($list as $k=>$v){
+                //项目名称
+                $project_name = Project::where('id' , $v['project_id'])->value('name');
+
+                //学科名称
+                $subject_name = Project::where('parent_id' , $v['project_id'])->where('id' , $v['subject_id'])->value('name');
+
+                //课程名称
+                $course_name  = Course::where('id' , $v['course_id'])->value('course_name');
+
+                //分校的名称
+                $school_name  = School::where('id' , $v['school_id'])->value('school_name');
+
+                //数组赋值
+                $array[] = [
+                    'create_time'   =>  date('Ymd' ,strtotime($v['create_time'])) ,
+                    'school_name'   =>  $school_name  && !empty($school_name)  ? $school_name  : '' ,
+                    'project_name'  =>  $project_name && !empty($project_name) ? $project_name : '' ,
+                    'subject_name'  =>  $subject_name && !empty($subject_name) ? $subject_name : '' ,
+                    'course_name'   =>  $course_name  && !empty($course_name)  ? $course_name  : '' ,
+                    'received_order'=>  0 ,  //到账订单数量
+                    'refund_order'  =>  0 ,  //退费订单数量
+                    'received_money'=>  0 ,  //到账金额
+                    'refund_money'  =>  0 ,  //退费金额
+                    'enroll_price'  =>  $v['sign_Price'] ,  //报名费用
+                    'prime_cost'    =>  $v['sum_Price']  ,  //成本
+                    'return_commission_amount' => $v['return_commission_amount'] ,  //返佣金额(实际佣金)
+                ];
+            }
+            return ['code' => 200 , 'msg' => '获取列表成功' , 'data' => ['list' => $array , 'total' => $count , 'pagesize' => $pagesize , 'page' => $page]];
+        }
+        return ['code' => 200 , 'msg' => '获取列表成功' , 'data' => ['list' => [] , 'total' => 0 , 'pagesize' => $pagesize , 'page' => $page]];
+    }
 }

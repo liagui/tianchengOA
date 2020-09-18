@@ -238,6 +238,40 @@ class OrderController extends Controller {
             return response()->json(['code' => 500 , 'msg' => $ex->getMessage()]);
         }
     }
+    
+    /*
+     * @param  description   财务管理-收入详情
+     * @param  参数说明       body包含以下参数[
+     *     education_id      院校id
+     *     project_id        项目id
+     *     subject_id        学科id
+     *     course_id         课程id
+     * ]
+     * @param author    dzj
+     * @param ctime     2020-09-18     
+     * return string
+     */
+    public function getIncomeeList(){
+        //获取提交的参数
+        try{
+            //获取院校id(1,2,3)
+            $school_id  = isset(AdminLog::getAdminInfo()->admin_user->school_id) ? AdminLog::getAdminInfo()->admin_user->school_id : 0;
+            $school_arr = parent::underlingLook($school_id);
+            
+            //分校的id传递
+            self::$accept_data['schoolId'] = $school_arr['data'];
+            
+            //获取专业列表
+            $data = Pay_order_inside::getIncomeeList(self::$accept_data);
+            if($data['code'] == 200){
+                return response()->json(['code' => 200 , 'msg' => '获取列表成功' , 'data' => $data['data']]);
+            } else {
+                return response()->json(['code' => $data['code'] , 'msg' => $data['msg']]);
+            }
+        } catch (Exception $ex) {
+            return response()->json(['code' => 500 , 'msg' => $ex->getMessage()]);
+        }
+    }
 
 
     //支付信息
