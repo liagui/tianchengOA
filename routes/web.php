@@ -38,7 +38,7 @@ $router->group(['prefix' => 'admin' , 'namespace' => 'Admin','middleware'=> 'cor
 });
 //后端登录权限认证相关接口
 //
-$router->group(['prefix' => 'admin' , 'namespace' => 'Admin','middleware'=> ['jwt.auth', 'cors'] ], function () use ($router) {
+$router->group(['prefix' => 'admin' , 'namespace' => 'Admin','middleware'=> ['jwt.auth', 'cors','api'] ], function () use ($router) {
 
      //订单管理（szw）
     $router->group(['prefix' => 'order'], function () use ($router) {
@@ -53,7 +53,7 @@ $router->group(['prefix' => 'admin' , 'namespace' => 'Admin','middleware'=> ['jw
         //总校
         $router->post('sureOrderList', 'OrderController@sureOrderList');//总校确认订单列表
         $router->post('notarizeOrder', 'OrderController@notarizeOrder');//总校确认&取消订单
-        $router->post('sureOrder', 'OrderController@sureOrder');//总校确认订单详情
+        $router->post('sureOrder', 'OrderController@sureOrder');//总校确认订单详情                           
         $router->post('unpaidOrder', 'OrderController@unpaidOrder');//总校未支付订单
         $router->post('DorejectOrder', 'OrderController@DorejectOrder');//总校进行驳回
         //分校
@@ -121,7 +121,6 @@ $router->group(['prefix' => 'admin' , 'namespace' => 'Admin','middleware'=> ['jw
         $router->post('doDelSchool', 'SchoolController@doDelSchool');                            //分校删除接口  （lys）
         $router->post('doOpenSchool', 'SchoolController@doOpenSchool');                          //分校启用禁用接口（lys）
         $router->post('doLookSchool', 'SchoolController@doLookSchool');                          //是否查看下属分校内容接口（lys）
-
     });
     $router->post('getCommonList', 'CommonController@getCommonList');  //OA项目公共参数接口
 
@@ -245,9 +244,9 @@ $router->group(['prefix' => 'admin' , 'namespace' => 'Admin','middleware'=> ['jw
 
     $router->group(['prefix' => 'school'], function () use ($router) {
         $router->post('getList', 'SchoolController@getList');              //学校列表（仅限搜索用）
-        $router->post('doSchoolDel', 'SchoolController@doSchoolDel');          //软删除
-        $router->post('doSchoolForbid', 'SchoolController@doSchoolForbid');  //启用禁用
-        $router->post('doSchoolLook', 'SchoolController@doSchoolLook');  //是否观看其他网校数据
+        // $router->post('doSchoolDel', 'SchoolController@doSchoolDel');          //软删除
+        // $router->post('doSchoolForbid', 'SchoolController@doSchoolForbid');  //启用禁用
+        // $router->post('doSchoolLook', 'SchoolController@doSchoolLook');  //是否观看其他网校数据
         // $router->post('getSchoolList', 'SchoolController@schoolList');    //网校列表（添加、修改）
         // $router->post('doInsertSchool', 'SchoolController@doInsertSchool');    //添加网校
         // $router->post('getSchoolById', 'SchoolController@getSchoolUpdate');  //编辑网校（获取）
