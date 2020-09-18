@@ -112,7 +112,7 @@ class RoleController extends Controller {
         }
         unset($data['/admin/role/doRoleInsert']);
         $data['create_id'] = isset(CurrentAdmin::user()['id'])?CurrentAdmin::user()['id']:0;
-        $role = Roleauth::where(['role_name'=>$data['role_name'],'id_del'=>0])->first();
+        $role = Roleauth::where(['role_name'=>$data['role_name'],'is_del'=>0])->first();
         if($role){
              return response()->json(['code'=>205,'msg'=>'角色已存在']);
         }
@@ -203,9 +203,19 @@ class RoleController extends Controller {
                    $ThreemapAuthArr = array_column($ThreemapAuthArr, 'id');
                 }
             }
-            $newOnemapAuthArr= array_intersect($OnemapAuthArr,$roleAuthMapData);
-            $newTwomapAuthArr= array_intersect($TwomapAuthArr,$roleAuthMapData);
-            $newThreemapAuthArr= array_intersect($ThreemapAuthArr,$roleAuthMapData);
+
+            $newOnemapAuthArr= array_intersect($OnemapAuthArr,$roleAuthMapData); //差集
+            $newTwomapAuthArr= array_intersect($TwomapAuthArr,$roleAuthMapData);//差集
+            $newThreemapAuthArr= array_intersect($ThreemapAuthArr,$roleAuthMapData);//差集
+            if(!empty($newOnemapAuthArr)){
+                $newOnemapAuthArr = array_values($newOnemapAuthArr);
+            }
+            if(!empty($newTwomapAuthArr)){
+                $newTwomapAuthArr = array_values($newTwomapAuthArr);
+            }
+            if(!empty($newThreemapAuthArr)){
+                $newThreemapAuthArr = array_values($newThreemapAuthArr);
+            }
         }   
         $roleAuthData['data']['role_auth'] = ['zongxiao'=>$newTwomapAuthArr,'fenxiao'=>$newThreemapAuthArr,'system'=>$newOnemapAuthArr];
         $arr = [

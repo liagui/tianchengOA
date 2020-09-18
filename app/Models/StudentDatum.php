@@ -33,7 +33,7 @@ class StudentDatum extends Model {
         		if(isset($body['school_id']) && !empty($body['school_id'])){ //所属学校
                 	$query->where('student_information.school_id',$body['school_id']);
             	}else{
-                    $query->whereIn('student_information.school_id',$body['school_ids']);
+                    $query->whereIn('student_information.school_id',$body['school_ids']['data']);
                 }
             	if(isset($body['audit_state']) && !empty($body['audit_state'])){ //所属审核状态
                 	$query->where('student_information.audit_status',$body['audit_state']);
@@ -74,7 +74,7 @@ class StudentDatum extends Model {
 	        		if(isset($body['school_id']) && !empty($body['school_id'])){ //所属学校
 	                	$query->where('student_information.school_id',$body['school_id']);
 	            	}else{
-                        $query->whereIn('student_information.school_id',$body['school_ids']);
+                        $query->whereIn('student_information.school_id',$body['school_ids']['data']);
                     }
 	            	if(isset($body['audit_state']) && !empty($body['audit_state'])){ //所属审核状态
 	                	$query->where('student_information.audit_status',$body['audit_state']);
