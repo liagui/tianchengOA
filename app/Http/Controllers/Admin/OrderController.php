@@ -246,16 +246,36 @@ class OrderController extends Controller {
         $paylist = PaySet::where(['channel_id'=>$list['id']])->first();
         $status=[];
         if($paylist['zfb_pay_state'] == 1){
-            array_push($status,'1');
+            $paystatus=[
+                'paytype' => 1,
+                'payname' => '微信支付',
+                'payimg' => 'https://longdeapi.oss-cn-beijing.aliyuncs.com/wx2xtb.png',
+            ];
+            $status[] = $paystatus;
         }
         if($paylist['wx_pay_state'] == 1){
-            array_push($status,'2');
-        }
-        if($paylist['hj_zfb_pay_state'] == 1){
-            array_push($status,'3');
+            $paystatus=[
+                'paytype' => 2,
+                'payname' => '支付宝支付',
+                'payimg' => 'https://longdeapi.oss-cn-beijing.aliyuncs.com/zfb2xtb.png',
+            ];
+            $status[] = $paystatus;
         }
         if($paylist['hj_wx_pay_state'] == 1){
-            array_push($status,'4');
+            $paystatus=[
+                'paytype' => 3,
+                'payname' => '微信支付',
+                'payimg' => 'https://longdeapi.oss-cn-beijing.aliyuncs.com/wx2xtb.png',
+            ];
+            $status[] = $paystatus;
+        }
+        if($paylist['hj_zfb_pay_state'] == 1){
+            $paystatus=[
+                'paytype' => 4,
+                'payname' => '支付宝支付',
+                'payimg' => 'https://longdeapi.oss-cn-beijing.aliyuncs.com/zfb2xtb.png',
+            ];
+            $status[] = $paystatus;
         }
         return response()->json(['code' => 200 , 'msg' => '获取成功' , 'data' =>$status]);
     }
@@ -294,45 +314,16 @@ class OrderController extends Controller {
         $add = Pay_order_external::insertGetId($insert);
         if($add){
             $course = Course::where(['id'=>$data['course_id']])->first();
-            //支付宝
+            //微信
             if($data['pay_type'] == 1){
 
             }
-            //微信
+            //支付宝
             if($data['pay_type'] == 2){
 
             }
-            //汇聚支付宝
-            if($data['pay_type'] == 3){
-                $list = Channel::where(['is_use'=>0])->first();
-                $paylist = PaySet::where(['channel_id'=>$list['id']])->first();
-                $notify = 'AB|'."http://".$_SERVER['HTTP_HOST']."/admin/notify/hjnotify";
-                $pay=[
-                    'p0_Version'=>'1.0',
-                    'p1_MerchantNo'=> $paylist['hj_commercial_tenant_number'],
-                    'p2_OrderNo'=>$insert['order_no'],
-                    'p3_Amount'=>$data['pay_price'],
-                    'p4_Cur'=>1,
-                    'p5_ProductName'=>$course['title'],
-                    'p9_NotifyUrl'=>$notify,
-                    'q1_FrpCode'=>'ALIPAY_NATIVE',
-                    'q4_IsShowPic'=>1,
-                    'qa_TradeMerchantNo'=>$paylist['hj_zfb_commercial_tenant_deal_number']
-                ];
-                $str = $paylist['hj_md_key'];
-                $token = $this->hjHmac($pay,$str);
-                $pay['hmac'] = $token;
-                $zfbpay = $this->hjpost($pay);
-                $zfbpayarr = json_decode($zfbpay,true);
-                file_put_contents('zfbhjpay.txt', '时间:'.date('Y-m-d H:i:s').print_r($zfbpayarr,true),FILE_APPEND);
-                if($zfbpayarr['ra_Code'] == 100){
-                    return response()->json(['code' => 200, 'msg' => '预支付订单生成成功','data'=>$zfbpayarr['rd_Pic']]);
-                }else{
-                    return response()->json(['code' => 202, 'msg' => '暂未开通']);
-                }
-            }
             //汇聚微信
-            if($data['pay_type'] == 4){
+            if($data['pay_type'] == 3){
                 $list = Channel::where(['is_use'=>0])->first();
                 $paylist = PaySet::where(['channel_id'=>$list['id']])->first();
                 $notify = 'AB|'."http://".$_SERVER['HTTP_HOST']."/admin/notify/hjnotify";
@@ -360,6 +351,36 @@ class OrderController extends Controller {
                     return response()->json(['code' => 202, 'msg' => '暂未开通']);
                 }
             }
+            //汇聚支付宝
+            if($data['pay_type'] == 4){
+                $list = Channel::where(['is_use'=>0])->first();
+                $paylist = PaySet::where(['channel_id'=>$list['id']])->first();
+                $notify = 'AB|'."http://".$_SERVER['HTTP_HOST']."/admin/notify/hjnotify";
+                $pay=[
+                    'p0_Version'=>'1.0',
+                    'p1_MerchantNo'=> $paylist['hj_commercial_tenant_number'],
+                    'p2_OrderNo'=>$insert['order_no'],
+                    'p3_Amount'=>$data['pay_price'],
+                    'p4_Cur'=>1,
+                    'p5_ProductName'=>$course['title'],
+                    'p9_NotifyUrl'=>$notify,
+                    'q1_FrpCode'=>'ALIPAY_NATIVE',
+                    'q4_IsShowPic'=>1,
+                    'qa_TradeMerchantNo'=>$paylist['hj_zfb_commercial_tenant_deal_number']
+                ];
+                $str = $paylist['hj_md_key'];
+                $token = $this->hjHmac($pay,$str);
+                $pay['hmac'] = $token;
+                $zfbpay = $this->hjpost($pay);
+                $zfbpayarr = json_decode($zfbpay,true);
+                file_put_contents('zfbhjpay.txt', '时间:'.date('Y-m-d H:i:s').print_r($zfbpayarr,true),FILE_APPEND);
+                if($zfbpayarr['ra_Code'] == 100){
+                    return response()->json(['code' => 200, 'msg' => '预支付订单生成成功','data'=>$zfbpayarr['rd_Pic']]);
+                }else{
+                    return response()->json(['code' => 202, 'msg' => '暂未开通']);
+                }
+            }
+
         }
     }
     //汇聚签名
