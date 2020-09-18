@@ -380,18 +380,18 @@ class Pay_order_inside extends Model
             $leadid = Redis::get('classlead');
             if(empty($leadid)){
                 //如果没有 就从第一个开始
-                $data['have_user_id'] = $classlead[0]['id'];
+                $have_user_id = $classlead[0]['id'];
                 Redis::set('classlead' , $classlead[0]['id']);
             }else{
                 //如果有 判断班主任id是否等于或大于最后一个数，从第一个开始排 否者数组取下一个
                 $len = count($classlead);
                 if($classlead[$len-1] <= $leadid){
-                    $data['have_user_id'] = $classlead[0]['id'];
+                    $have_user_id = $classlead[0]['id'];
                     Redis::set('classlead' , $classlead[0]['id']);
                 }else{
                     foreach ($classlead as $k => $v){
                         if($v['id'] > $leadid){
-                            $data['have_user_id'] = $v['id'];
+                            $have_user_id = $v['id'];
                             Redis::set('classlead' , $v['id']);
                             break;
                         }
@@ -399,9 +399,9 @@ class Pay_order_inside extends Model
                 }
             }
         }else{
-            $data['have_user_id'] = 0;
+            $have_user_id = 0;
         }
-        print_r($data['have_user_id']);die;
+        echo $have_user_id;die;
 
 
 
