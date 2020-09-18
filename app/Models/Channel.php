@@ -91,7 +91,7 @@ class  Channel extends Model {
                 DB::rollBack();
                 return ['code'=>205,'msg'=>'支付通过添加未成功！'];
     		}else{
-                $paysetId = Payset::insertGetId(['create_id'=>$create_id,'create_at'=>date('Y-m-d H:i:s'),'channel_id'=>$channelId]);
+                $paysetId = PaySet::insertGetId(['create_id'=>$create_id,'create_at'=>date('Y-m-d H:i:s'),'channel_id'=>$channelId]);
                 if($paysetId >0){
                     DB::commit();
                     return ['code'=>200,'msg'=>'支付通过添加成功'];
