@@ -525,14 +525,14 @@ class Pay_order_inside extends Model
                     $v['pay_status_text'] = '已支付';
                 }
                 if($v['return_visit'] == 0){
-                    $v['return_visit_text'] = '未回访';
+                    $v['return_visit_text'] = '否';
                 }else{
-                    $v['return_visit_text'] = '已回访';
+                    $v['return_visit_text'] = '是';
                 }
                 if($v['classes'] == 0){
-                    $v['classes_text'] = '未开课';
+                    $v['classes_text'] = '否';
                 }else{
-                    $v['classes_text'] = '已开课';
+                    $v['classes_text'] = '是';
                 }
                 if($v['confirm_order_type'] == 1){
                     $v['confirm_order_type_text'] = '课程订单';
@@ -827,14 +827,14 @@ class Pay_order_inside extends Model
                     $v['pay_status_text'] = '已支付';
                 }
                 if($v['return_visit'] == 0){
-                    $v['return_visit_text'] = '未回访';
+                    $v['return_visit_text'] = '否';
                 }else{
-                    $v['return_visit_text'] = '已回访';
+                    $v['return_visit_text'] = '是';
                 }
                 if($v['classes'] == 0){
-                    $v['classes_text'] = '未开课';
+                    $v['classes_text'] = '否';
                 }else{
-                    $v['classes_text'] = '已开课';
+                    $v['classes_text'] = '是';
                 }
                 if($v['confirm_order_type'] == 1){
                     $v['confirm_order_type_text'] = '课程订单';
@@ -1185,14 +1185,14 @@ class Pay_order_inside extends Model
                     $v['pay_status_text'] = '已支付';
                 }
                 if($v['return_visit'] == 0){
-                    $v['return_visit_text'] = '未回访';
+                    $v['return_visit_text'] = '否';
                 }else{
-                    $v['return_visit_text'] = '已回访';
+                    $v['return_visit_text'] = '是';
                 }
                 if($v['classes'] == 0){
-                    $v['classes_text'] = '未开课';
+                    $v['classes_text'] = '否';
                 }else{
-                    $v['classes_text'] = '已开课';
+                    $v['classes_text'] = '是';
                 }
                 if($v['confirm_order_type'] == 1){
                     $v['confirm_order_type_text'] = '课程订单';
