@@ -90,7 +90,7 @@ class Pay_order_inside extends Model
                         ->orwhere('mobile',$data['order_on']);
                 }
                 if(isset($data['classes'])){
-                    $where['classes'] = $data['classes'];
+                    $query->where('classes',$data['classes']);
                 }
                 $query->whereIn('school_id',$schoolarr);
             })
