@@ -44,14 +44,19 @@ class Material extends Model {
                 $query->where('material.submit_name',$data['submit_name']);
             }
         })->offset($offset)->limit($pagesize)->orderByDesc("id")->get()->toArray();
-        $desc = "";
+
         $school_name = "";
+        $contract = "";
+        $invoice = "";
+        $receipt = "";
         foreach($data as $key =>&$material){
+            $desc = "";
             if($material['status'] == 1){
                 $material['status_desc'] = "快递公司：".$material['courier_company']."-快递单号：".$material['courier_number']."-快递备注：".$material['courier_note']."-邮寄时间：".$material['delivery_time'];
             }
-            $res = MaterialListing::where('material_id',$material['id'])->get();
+            $res = MaterialListing::where('material_id',$material['id'])->get()->toArray();
             foreach($res as $k => $v){
+
                 if($v['material_type'] == 1){
                     $desc.= $v['project_name']."-".$v['subject_name']."-".$v['course_name']."-合同"."*".$v['contract_number'];
                 }else if($v['material_type'] == 2){
@@ -63,6 +68,7 @@ class Material extends Model {
             $material['desc'] = $desc;
             $school_name = School::select("school_name")->where("id",$material['school_id'])->first();
             $material['school_name'] = $school_name['school_name'];
+
             if($material['status'] == 1){
                 $material['status_s'] = "已确认";
             }else{
