@@ -274,7 +274,7 @@ class StudentDatum extends Model {
         $admin_id = isset(AdminLog::getAdminInfo()->admin_user->id) ? AdminLog::getAdminInfo()->admin_user->id : 0;
         //判断学员资料id是否为空
         if(!isset($body['datum_id']) || empty($body['datum_id']) || $body['datum_id'] <= 0){
-            return ['code' => 201 , 'msg' => 'datum_id不合法'];
+            return ['code' => 201 , 'msg' => '请先提交资料！'];
         }
         $datumArr = Datum::where('id',$body['datum_id'])->first();
         if(is_null($datumArr)){
