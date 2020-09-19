@@ -953,6 +953,7 @@ class Pay_order_inside extends Model
         }
         $res = Pay_order_external::where(['id'=>$data['id'],'del_flag'=>0])->first();
         if(!$res){
+            $res['school_id'] = null;
             //查询分类
             //course  课程
             $course = Course::select('course_name')->where(['id'=>$res['course_id']])->first();
