@@ -91,7 +91,7 @@ class Pay_order_inside extends Model
             ->where($where)
             ->whereBetween('create_time', [$state_time, $end_time])
             ->orderByDesc('id')
-            ->offset($offset)->limit($pagesize)->get()->toArray();
+            ->get()->toArray();
         print_r($order);
         $external = Pay_order_external::where(function($query) use ($data,$schoolarr) {
             if (isset($data['order_no']) && !empty($data['order_no'])) {
@@ -102,7 +102,7 @@ class Pay_order_inside extends Model
         })->where($where)->where(['pay_status'=>1])
             ->whereBetween('create_time', [$state_time, $end_time])
             ->orderByDesc('id')
-            ->offset($offset)->limit($pagesize)->get()->toArray();
+            ->get()->toArray();
         print_r($external);
         //两数组合并 排序
         if (!empty($order) && !empty($external)) {
