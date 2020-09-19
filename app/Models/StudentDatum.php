@@ -39,7 +39,7 @@ class StudentDatum extends Model {
                 	$query->where('student_information.audit_status',$body['audit_state']);
             	}
             	if(isset($body['gather_state']) && strlen($body['gather_state'])>0){
-                	$query->where('student_information.consignee_status',$body['gather_state']);
+                	$query->where('pay_order_inside.consignee_status',$body['gather_state']);
             	}
             	if(isset($body['search']) && !empty($body['search'])){
                 	$query->where('student.user_name','like','%'.$body['search'].'%')
@@ -76,11 +76,11 @@ class StudentDatum extends Model {
 	            	}else{
                         $query->whereIn('student_information.school_id',$body['school_ids']['data']);
                     }
-	            	if(isset($body['audit_state']) &&strlen($body['audit_state'])>0){ //所属审核状态
+	            	if(isset($body['audit_state']) && strlen($body['audit_state'])>0){ //所属审核状态
 	                	$query->where('student_information.audit_status',$body['audit_state']);
 	            	}
 	            	if(isset($body['gather_state']) && strlen($body['gather_state'])>0){
-	                	$query->where('student_information.consignee_status',$body['gather_state']);
+	                	$query->where('pay_order_inside.consignee_status',$body['gather_state']);
 	            	}
 	            	if(isset($body['search']) && !empty($body['search'])){
 	                	$query->where('student.user_name','like','%'.$body['search'].'%')
