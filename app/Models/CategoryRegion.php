@@ -6,6 +6,7 @@ use Illuminate\Support\Facades\Redis;
 use Illuminate\Support\Facades\DB;
 use App\Models\AdminLog;
 use App\Models\Project;
+use App\Models\RegionFee;
 
 class CategoryRegion extends Model {
     //指定别的表名
@@ -67,6 +68,62 @@ class CategoryRegion extends Model {
             //事务回滚
             DB::rollBack();
             return ['code' => 203 , 'msg' => '添加失败'];
+        }
+    }
+    
+    /*
+     * @param  description   项目管理-修改地区关联的项目
+     * @param  参数说明       body包含以下参数[
+     *     project_id        项目id
+     * ]
+     * @param author    dzj
+     * @param ctime     2020-09-04
+     * return string
+     */
+    public static function doUpdateCategoryRegion($body=[]){
+        //判断传过来的数组数据是否为空
+        if(!$body || !is_array($body)){
+            return ['code' => 202 , 'msg' => '传递数据不合法'];
+        }
+        
+        //判断的项目id是否合法
+        if(!isset($body['pre_project_id']) || empty($body['pre_project_id']) || $body['pre_project_id'] <= 0){
+            return ['code' => 202 , 'msg' => '项目id不合法'];
+        }
+        
+        //判断的选中后的项目id是否合法
+        if(!isset($body['last_project_id']) || empty($body['last_project_id']) || $body['last_project_id'] <= 0){
+            return ['code' => 202 , 'msg' => '项目id不合法'];
+        }
+        
+        //判断此项目在地区是否存在
+        $is_exists = self::where('parent_id' , $body['pre_project_id'])->where('is_del' , 0)->count();
+        if(!$is_exists || $is_exists <= 0){
+            return ['code' => 202 , 'msg' => '此项目不存在'];
+        }
+        
+        //判断父级id是否在表中是否存在
+        $is_exists_parentId = Project::where('id' , $body['last_project_id'])->where('parent_id' , 0)->where('is_del' , 0)->count();
+        if(!$is_exists_parentId || $is_exists_parentId <= 0){
+            return ['code' => 203 , 'msg' => '此项目名称不存在'];
+        }
+        
+        //根据项目的id获取地区的id
+        $region_id = RegionFee::select('id')->where('category_id' , $body['pre_project_id'])->get()->toArray();
+        $region_ids= array_column($region_id , 'id');
+        
+        //开启事务
+        DB::beginTransaction();
+
+        //更新数据信息
+        if(false !== RegionFee::whereIn('id',$region_ids)->update(['category_id' => $body['last_project_id'] , 'update_time' => date('Y-m-d H:i:s')])){
+            //事务提交
+            DB::commit();
+            return ['code' => 200 , 'msg' => '修改成功'];
+        } else {
+            //事务回滚
+            DB::rollBack();
+            return ['code' => 203 , 'msg' => '修改失败'];
         }
     }
     

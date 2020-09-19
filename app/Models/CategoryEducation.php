@@ -6,6 +6,7 @@ use Illuminate\Support\Facades\Redis;
 use Illuminate\Support\Facades\DB;
 use App\Models\AdminLog;
 use App\Models\Project;
+use App\Models\Education;
 
 class CategoryEducation extends Model {
     //指定别的表名
@@ -67,6 +68,66 @@ class CategoryEducation extends Model {
             //事务回滚
             DB::rollBack();
             return ['code' => 203 , 'msg' => '添加失败'];
+        }
+    }
+    
+    /*
+     * @param  description   项目管理-修改学历成本关联的项目
+     * @param  参数说明       body包含以下参数[
+     *     project_id        项目id
+     * ]
+     * @param author    dzj
+     * @param ctime     2020-09-04
+     * return string
+     */
+    public static function doUpdateCategoryEducation($body=[]){
+        //判断传过来的数组数据是否为空
+        if(!$body || !is_array($body)){
+            return ['code' => 202 , 'msg' => '传递数据不合法'];
+        }
+        
+        //判断的项目id是否合法
+        if(!isset($body['pre_category_id']) || empty($body['pre_category_id'])){
+            return ['code' => 202 , 'msg' => '项目id不合法'];
+        }
+        
+        //判断的选中后的项目id是否合法
+        if(!isset($body['last_category_id']) || empty($body['last_category_id'])){
+            return ['code' => 202 , 'msg' => '项目id不合法'];
+        }
+        
+        //前项目id转化
+        $pre_category_id = json_decode($body['pre_category_id'] , true);
+        $last_category_id= json_decode($body['last_category_id'] , true);
+        
+        //判断此项目在学历成本是否存在
+        $is_exists = self::where('parent_id' , $pre_category_id[0])->where('is_del' , 0)->count();
+        if(!$is_exists || $is_exists <= 0){
+            return ['code' => 202 , 'msg' => '此项目不存在'];
+        }
+        
+        //判断父级id是否在表中是否存在
+        $is_exists_parentId = Project::where('id' , $last_category_id[0])->where('parent_id' , 0)->where('is_del' , 0)->count();
+        if(!$is_exists_parentId || $is_exists_parentId <= 0){
+            return ['code' => 203 , 'msg' => '此项目名称不存在'];
+        }
+        
+        //根据项目的id获取学历成本的id
+        $education_id = Education::select('id')->where('parent_id' , $pre_category_id[0])->where('child_id' , $pre_category_id[1])->get()->toArray();
+        $education_ids= array_column($education_id , 'id');
+        
+        //开启事务
+        DB::beginTransaction();
+
+        //更新数据信息
+        if(false !== Education::whereIn('id',$education_ids)->update(['parent_id' => $last_category_id[0] , 'child_id' => $last_category_id[1] , 'update_time' => date('Y-m-d H:i:s')])){
+            //事务提交
+            DB::commit();
+            return ['code' => 200 , 'msg' => '修改成功'];
+        } else {
+            //事务回滚
+            DB::rollBack();
+            return ['code' => 203 , 'msg' => '修改失败'];
         }
     }
     
