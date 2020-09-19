@@ -389,7 +389,7 @@ class Student extends Model {
                 if(isset($data['keyword']) && !empty(isset($data['keyword']))){
                     $query->where('name','like','%'.$data['keyword'].'%')->orWhere('mobile','like','%'.$data['keyword'].'%');
                 }
-            })->offset($offset)->limit($pagesize)->get()->toArray();
+            })->offset($offset)->limit($pagesize)->orderByDesc("id")->get()->toArray();
         }else{
             //计算总数
             $count = Pay_order_inside::select()->where("seas_status",0)->where("have_user_id",$user_id)->where(function($query) use ($data) {
@@ -444,7 +444,7 @@ class Student extends Model {
                 if(isset($data['keyword']) && !empty(isset($data['keyword']))){
                     $query->where('name','like','%'.$data['keyword'].'%')->orWhere('mobile','like','%'.$data['keyword'].'%');
                 }
-            })->offset($offset)->limit($pagesize)->get()->toArray();
+            })->offset($offset)->limit($pagesize)->orderByDesc("id")->get()->toArray();
         }
         foreach($data as $k => &$v){
                 $v['school_name'] = School::select("school_name")->where("id",$v['school_id'])->first()['school_name'];
