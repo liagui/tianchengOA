@@ -79,20 +79,7 @@ class Pay_order_inside extends Model
         $page     = isset($data['page']) && $data['page'] > 0 ? $data['page'] : 1;
         $offset   = ($page - 1) * $pagesize;
 
-        //計算總數
-        $count = self::where(function($query) use ($data,$schoolarr) {
-                if(isset($data['order_no']) && !empty($data['order_no'])){
-                    $query->where('order_no',$data['order_on'])
-                        ->orwhere('name',$data['order_on'])
-                        ->orwhere('mobile',$data['order_on']);
-                }
-                $query->whereIn('school_id',$schoolarr);
-            })
-            ->where($where)
-            ->whereBetween('create_time', [$state_time, $end_time])
-            ->count();
-
-        //数据
+        //数据   流转订单 + 第三方支付订单
         $order = self::where(function($query) use ($data,$schoolarr) {
                 if(isset($data['order_no']) && !empty($data['order_no'])){
                     $query->where('order_no',$data['order_on'])
@@ -104,60 +91,109 @@ class Pay_order_inside extends Model
             ->where($where)
             ->whereBetween('create_time', [$state_time, $end_time])
             ->orderByDesc('id')
-            ->offset($offset)->limit($pagesize)->get()->toArray();
+            ->get()->toArray();
+        $external = Pay_order_external::where(function($query) use ($data,$schoolarr) {
+            if (isset($data['order_no']) && !empty($data['order_no'])) {
+                $query->where('order_no', $data['order_on'])
+                    ->orwhere('name', $data['order_on'])
+                    ->orwhere('mobile', $data['order_on']);
+            }
+        })->where($where)
+            ->whereBetween('create_time', [$state_time, $end_time])
+            ->orderByDesc('id')
+            ->get()->toArray();
+        //两数组合并
+        if (!empty($order) && !empty($external)) {
+            $all = array_merge($order, $external);//合并两个二维数组
+        } else {
+            $all = !empty($order) ? $order : $external;
+        }
+        $res = array_slice($all, $offset, $pagesize);
+        if(empty($res)){
+            $res = array_slice($all, 1, $pagesize);
+        }
         //循环查询分类
         $countprice = 0;
-        if(!empty($order)){
-            foreach ($order as $k=>&$v){
+        $count = count($order) + count($external);
+        if(!empty($res)){
+            foreach ($res as $k=>&$v){
+                //查学校
+                if(empty($v['school_id']) || $v['school_id'] == 0){
+                    $v['school_name'] = '';
+                }else{
+                    $school = School::where(['id'=>$v['school_id']])->first();
+                    if($school){
+                        $v['school_name'] = $school['school_name'];
+                    }
+                }
                 $countprice = $countprice + $v['pay_price'];
                 if($v['pay_type'] == 1){
-                    $v['pay_type_text'] = '支付宝扫码';
-                }else if ($v['pay_type'] == 2){
                     $v['pay_type_text'] = '微信扫码';
+                }else if ($v['pay_type'] == 2){
+                    $v['pay_type_text'] = '支付宝扫码';
                 }else if ($v['pay_type'] == 3){
-                    $v['pay_type_text'] = '银联快捷支付';
+                    $v['pay_type_text'] = '汇聚微信扫码';
                 }else if ($v['pay_type'] == 4){
-                    $v['pay_type_text'] = '微信小程序';
-                }else if ($v['pay_type'] == 5){
-                    $v['pay_type_text'] = '线下录入';
+                    $v['pay_type_text'] = '汇聚支付宝扫码';
                 }
                 if($v['pay_status'] == 0){
                     $v['pay_status_text'] = '未支付';
                 }else{
                     $v['pay_status_text'] = '已支付';
                 }
-                if($v['return_visit'] == 0){
-                    $v['return_visit_text'] = '未回访';
+                if(empty($v['return_visit'])){
+                    $v['return_visit_text'] = '';
                 }else{
-                    $v['return_visit_text'] = '已回访';
+                    if($v['return_visit'] == 0){
+                        $v['return_visit_text'] = '未回访';
+                    }else{
+                        $v['return_visit_text'] = '已回访';
+                    }
                 }
-                if($v['classes'] == 0){
-                    $v['classes_text'] = '未开课';
+                if(empty($v['classes'])){
+                    $v['classes_text'] = '';
                 }else{
-                    $v['classes_text'] = '已开课';
+                    if( $v['classes'] == 0){
+                        $v['classes_text'] = '未开课';
+                    }else{
+                        $v['classes_text'] = '已开课';
+                    }
                 }
-                if($v['confirm_order_type'] == 1){
-                    $v['confirm_order_type_text'] = '课程订单';
-                }else if($v['confirm_order_type'] == 2){
-                    $v['confirm_order_type_text'] = '报名订单';
-                }else if($v['confirm_order_type'] == 3){
-                    $v['confirm_order_type_text'] = '课程+报名订单';
+                if(empty($v['confirm_order_type'])){
+                    $v['confirm_order_type_text'] = '';
+                }else{
+                    if($v['confirm_order_type'] == 1){
+                        $v['confirm_order_type_text'] = '课程订单';
+                    }else if($v['confirm_order_type'] == 2){
+                        $v['confirm_order_type_text'] = '报名订单';
+                    }else if($v['confirm_order_type'] == 3){
+                        $v['confirm_order_type_text'] = '课程+报名订单';
+                    }
                 }
-                if($v['first_pay'] == 1){
-                    $v['first_pay_text'] = '全款';
-                }else if($v['first_pay'] == 2){
-                    $v['first_pay_text'] = '定金';
-                }else if($v['first_pay'] == 3){
-                    $v['first_pay_text'] = '部分尾款';
-                }else if($v['first_pay'] == 4){
-                    $v['first_pay_text'] = '最后一笔尾款';
+
+                if(empty($v['first_pay'])){
+                    $v['first_pay_text'] = '';
+                }else{
+                    if($v['first_pay'] == 1){
+                        $v['first_pay_text'] = '全款';
+                    }else if($v['first_pay'] == 2){
+                        $v['first_pay_text'] = '定金';
+                    }else if($v['first_pay'] == 3){
+                        $v['first_pay_text'] = '部分尾款';
+                    }else if($v['first_pay'] == 4){
+                        $v['first_pay_text'] = '最后一笔尾款';
+                    }
                 }
-                if($v['confirm_status'] == 0){
-                    $v['confirm_status_text'] = '未确认';
-                }else if($v['confirm_status'] == 1){
-                    $v['confirm_status_text'] = '确认';
-                }else if($v['confirm_status'] == 2){
-                    $v['confirm_status_text'] = '驳回';
+                if(empty($v['confirm_status'])){
+                    $v['confirm_status_text'] = '';
+                }else{
+                    if($v['confirm_status'] == 0){
+                        $v['confirm_status_text'] = '未确认';
+                    }else if($v['confirm_status'] == 1){
+                        $v['confirm_status_text'] = '确认';
+                    }else if($v['confirm_status'] == 2){
+                        $v['confirm_status_text'] = '驳回';
+                    }
                 }
                 //course  课程
                 $course = Course::select('course_name')->where(['id'=>$v['course_id']])->first();
@@ -177,11 +213,26 @@ class Pay_order_inside extends Model
                     $v['major_name'] = $major['major_name'];
                 }
                 //根据上传凭证人id查询凭证名称
-                $adminname = Admin::where(['id'=>$v['pay_voucher_user_id']])->first();
-                $v['pay_voucher_name'] = $adminname['username'];
+                if(empty($v['pay_voucher_user_id'])){
+                    $v['pay_voucher_name'] = '';
+                }else{
+                    $adminname = Admin::where(['id'=>$v['pay_voucher_user_id']])->first();
+                    $v['pay_voucher_name'] = $adminname['username'];
+                }
                 //驳回人查询
-                $adminreject = Admin::where(['id'=>$v['reject_admin_id']])->first();
-                $v['reject_admin_name'] = $adminreject['username'];
+                if(empty($v['reject_admin_id'])){
+                    $v['reject_admin_name'] = '';
+                }else{
+                    $adminreject = Admin::where(['id'=>$v['reject_admin_id']])->first();
+                    $v['reject_admin_name'] = $adminreject['username'];
+                }
+                //备注人 admin_id
+                if(empty($v['admin_id'])){
+                    $v['remark_admin_name'] = '';
+                }else{
+                    $adminbeizhu = Admin::where(['id'=>$v['admin_id']])->first();
+                    $v['remark_admin_name'] = $adminbeizhu['username'];
+                }
             }
         }
         $page=[
@@ -190,7 +241,7 @@ class Pay_order_inside extends Model
             'total'=>$count
         ];
         //总金额
-        return ['code' => 200 , 'msg' => '查询成功','data'=>$order,'countprice'=>$countprice,'where'=>$data,'page'=>$page];
+        return ['code' => 200 , 'msg' => '查询成功','data'=>$res,'countprice'=>$countprice,'where'=>$data,'page'=>$page];
     }
     /*
          * @param  手动报单
@@ -402,9 +453,9 @@ class Pay_order_inside extends Model
         //計算總數
         $count = self::where(function($query) use ($data,$schoolarr) {
             if(isset($data['order_no']) && !empty($data['order_no'])){
-                $query->where('order_no',$data['order_on'])
-                    ->orwhere('name',$data['order_on'])
-                    ->orwhere('mobile',$data['order_on']);
+                $query->where('order_no',$data['order_no'])
+                    ->orwhere('name',$data['order_no'])
+                    ->orwhere('mobile',$data['order_no']);
             }
             $query->whereIn('school_id',$schoolarr);
         })
@@ -413,9 +464,9 @@ class Pay_order_inside extends Model
 
         $order = self::where(function($query) use ($data,$schoolarr) {
             if(isset($data['order_no']) && !empty($data['order_no'])){
-                $query->where('order_no',$data['order_on'])
-                    ->orwhere('name',$data['order_on'])
-                    ->orwhere('mobile',$data['order_on']);
+                $query->where('order_no',$data['order_no'])
+                    ->orwhere('name',$data['order_no'])
+                    ->orwhere('mobile',$data['order_no']);
             }
             $query->whereIn('school_id',$schoolarr);
         })
@@ -425,6 +476,11 @@ class Pay_order_inside extends Model
          //循环查询分类
         if(!empty($order)){
             foreach ($order as $k=>&$v){
+                //查学校
+                $school = School::where(['id'=>$v['school_id']])->first();
+                if($school){
+                    $v['school_name'] = $school['school_name'];
+                }
                 if($v['pay_type'] == 1){
                     $v['pay_type_text'] = '支付宝扫码';
                 }else if ($v['pay_type'] == 2){
@@ -491,6 +547,9 @@ class Pay_order_inside extends Model
                     $major = Major::where(['id'=>$v['major_id']])->first();
                     $v['major_name'] = $major['major_name'];
                 }
+                //根据上传凭证人id查询凭证名称
+                $adminname = Admin::where(['id'=>$v['pay_voucher_user_id']])->first();
+                $v['pay_voucher_name'] = $adminname['username'];
             }
         }
         $page=[
@@ -551,31 +610,60 @@ class Pay_order_inside extends Model
                 if(empty($leadid)){
                     //如果没有 就从第一个开始
                     $data['have_user_id'] = $classlead[0]['id'];
-                    Redis::setex('classlead' , $classlead[0]['id']);
+                    Redis::set('classlead' , $classlead[0]['id']);
                 }else{
                     //如果有 判断班主任id是否等于或大于最后一个数，从第一个开始排 否者数组取下一个
-                    $len = count($classlead,1);
-                    if($classlead[$len-1] <= $leadid){
+                    $len = count($classlead);
+                    if($classlead[$len-1]['id'] <= $leadid){
                         $data['have_user_id'] = $classlead[0]['id'];
-                        Redis::setex('classlead' , $classlead[0]['id']);
+                        Redis::set('classlead' , $classlead[0]['id']);
                     }else{
                         foreach ($classlead as $k => $v){
                             if($v['id'] > $leadid){
                                 $data['have_user_id'] = $v['id'];
-                                Redis::setex('classlead' , $v['id']);
+                                Redis::set('classlead' , $v['id']);
                                 break;
                             }
                         }
                     }
                 }
+            }else{
+                $data['have_user_id'] = 0;
             }
             //计算成本
-            //  after_tax_amount  税后金额
-            //  return_commission_amount  返佣金额
-            //  earnest_money  保证金
-            //  agent_margin 代理保证金
-            //  first_out_of_amount  1级抽离金额
+//到款业绩=到款金额
+//扣税=到账金额*扣税比例
+//税后金额=到账金额-扣税
+//单数=报名订单数量+含有学历成本的订单数量
+//成本=学历成本+报名费用
+//实际到款=税后金额-成本
+//返佣比例=后台分校管理中佣金比例
+//返佣金额=实际到款*返佣比例
+//保证金=返佣金额*后台分校管理中押金比例
+            $school = School::where(['id'=>$data['school_id']])->first();
+            $daokuan = $order['pay_price'];
+            $kousui = $daokuan * $school['tax_point'];
+            $suihou = $daokuan - $kousui; //税后金额
+            $fanyong = $daokuan * $school['commission']; //佣金比例
+            $baozhengjin = $daokuan * $school['deposit']; //保证金
+            //一级没有保证金  二级给一级代理保证金  三级给二级代理保证金
+            if($school['level'] == 1){
+                $dailibaozhengjin = 0;
+                $yijichoulijine = 0;
+                $erjichoulijine = 0;
+            }else if($school['level'] == 2){
+                //一级抽离金额
+                $choulijine = $daokuan * $school['one_extraction_ratio'];
+                $dailibaozhengjin = $choulijine * $school['deposit'];
+            }else if($school['level'] == 3){
+                //一级抽离金额
+                $choulijine = $daokuan * $school['one_extraction_ratio'];
+                $dailibaozhengjin = $choulijine * $school['deposit'];
+            }
+            // 1级抽离金额
+
             //  second_out_of_amount  2级抽离金额
+            //  actual_commission  实际佣金
         }
         if($data['confirm_status'] == 2){
             $data['reject_time'] = date('Y-m-d H:i:s');
@@ -775,7 +863,14 @@ class Pay_order_inside extends Model
         if(!isset($data['order_no']) || empty($data['order_no'])){
             return ['code' => 200 , 'msg' => '获取成功','data'=>$res];
         }
-        $res = Pay_order_external::where(['order_no'=>$data['order_no'],'status'=>0])->first();
+        $res = Pay_order_external::
+        where(function($query) use ($data) {
+            if(isset($data['order_no']) && !empty($data['order_no'])){
+                $query->where('order_no',$data['order_no'])
+                    ->orwhere('name',$data['order_no'])
+                    ->orwhere('mobile',$data['order_no']);
+            }
+        })->where(['status'=>0])->first();
         if(!empty($res)){
             if($res['pay_type'] == 1 || $res['pay_type'] == 3){
                     $res['pay_type_text'] = '微信支付';
@@ -887,7 +982,6 @@ class Pay_order_inside extends Model
         if(!isset($data['first_pay']) || empty($data['first_pay'])){
             return ['code' => 201 , 'msg' => '未选择缴费类型'];
         }
-        unset($data['begin_class']);
         //获取操作员信息
         $admin = isset(AdminLog::getAdminInfo()->admin_user) ? AdminLog::getAdminInfo()->admin_user : [];
         //第三方订单数据
@@ -908,12 +1002,12 @@ class Pay_order_inside extends Model
             'pay_status' => $external['pay_status'],//支付状态
             'pay_type' => $external['pay_type'], //支付方式（1支付宝扫码2微信扫码3银联快捷支付4微信小程序5线下录入）
             'confirm_status' => 0, //订单确认状态码
-            'school_id' => $admin['school_id'],  //所属分校
+            'school_id' => $data['school_id'],  //所属分校
             'consignee_status' => 0,//0带收集 1收集中 2已收集 3重新收集
             'confirm_order_type' => $data['confirm_order_type'],//确认的订单类型 1课程订单 2报名订单3课程+报名订单
             'first_pay' => $data['first_pay'],//支付类型 1全款 2定金 3部分尾款 4最后一笔尾款
-//            'classes' => $data['classes'],//开课状态
-//            'return_visit' => $data['return_visit'],//回访状态
+            'classes' => $data['classes'],//开课状态
+            'return_visit' => $data['return_visit'],//回访状态
             'remark' => $data['remark'], //备注
             'pay_voucher_user_id' => $admin['id'], //上传凭证人
             'pay_voucher_time' => date('Y-m-d H:i:s'), //上传凭证时间
@@ -1162,8 +1256,62 @@ class Pay_order_inside extends Model
             return ['code' => 201 , 'msg' => '操作失败'];
         }
     }
-
-
+    /*
+         * @param  分校被驳回订单重新提交
+         * @param  id   流转订单id
+         * @param  project_id    项目id
+         * @param  subject_id   学科id
+         * @param  course_id  课程id
+         * @param  education_id  院校id
+         * @param  major_id  专业id
+         * @param  name   姓名
+         * @param  mobile   手机号
+         * @param  confirm_order_type   订单类型
+         * @param  first_pay   缴费类型
+         * @param  return_visit   回访状态 0未回访 1 已回访
+         * @param  classes   是否开课 0不开课 1开课
+         * @param  remark   订单备注
+         * @param  pay_voucher   上传凭证
+         * @param  course_Price   课程金额
+         * @param  sign_Price   报名金额
+         * @param  author  苏振文
+         * @param  ctime   2020/9/4 15:06
+         * return  array
+         */
+    public static function branchsubmittedOrderCancel($data){
+        if(!isset($data['id']) || empty($data['id'])){
+            return ['code' => 201 , 'msg' => '参数有误'];
+        }
+        if(!isset($data['project_id']) || empty($data['project_id'])){
+            return ['code' => 201 , 'msg' => '未选择项目'];
+        }
+        if(!isset($data['subject_id']) || empty($data['subject_id'])){
+            return ['code' => 201 , 'msg' => '未选择学科'];
+        }
+        if(!isset($data['course_id']) || empty($data['course_id'])){
+            return ['code' => 201 , 'msg' => '未选择课程'];
+        }
+        if(!isset($data['name']) || empty($data['name'])){
+            return ['code' => 201 , 'msg' => '未填写姓名'];
+        }
+        if(!isset($data['mobile']) || empty($data['mobile'])){
+            return ['code' => 201 , 'msg' => '未填写手机号'];
+        }
+        if(!isset($data['confirm_order_type']) || empty($data['confirm_order_type'])){
+            return ['code' => 201 , 'msg' => '未选择订单类型'];
+        }
+        if(!isset($data['first_pay']) || empty($data['first_pay'])){
+            return ['code' => 201 , 'msg' => '未选择缴费类型'];
+        }
+        $data['confirm_status'] = 0;
+        //获取操作员信息
+        $up = Pay_order_inside::where(['id'=>$data['id']])->update($data);
+        if($up){
+            return ['code' => 200 , 'msg' => '提交成功'];
+        }else{
+            return ['code' => 201 , 'msg' => '提交失败'];
+        }
+    }
     /*
      * @param  description   开课管理列表接口
      * @param  参数说明       body包含以下参数[
@@ -1564,8 +1712,8 @@ class Pay_order_inside extends Model
             return ['code' => 200 , 'msg' => '获取详情成功' , 'data' => $info];
         }
     }
-    
-    
+
+
     /*
      * @param  description   财务管理-收入详情
      * @param  参数说明       body包含以下参数[
@@ -1575,7 +1723,7 @@ class Pay_order_inside extends Model
      *     course_id         课程id
      * ]
      * @param author    dzj
-     * @param ctime     2020-09-18     
+     * @param ctime     2020-09-18
      * return string
      */
     public static function getIncomeeList($body=[]) {
@@ -1590,7 +1738,7 @@ class Pay_order_inside extends Model
             if(isset($body['school_id']) && !empty($body['school_id']) && $body['school_id'] > 0){
                 $query->where('school_id' , '=' , $body['school_id']);
             }
-                
+
             //判断项目-学科大小类是否为空
             if(isset($body['category_id']) && !empty($body['category_id'])){
                 $category_id= json_decode($body['category_id'] , true);
@@ -1607,12 +1755,12 @@ class Pay_order_inside extends Model
                     $query->where('subject_id' , '=' , $subject_id);
                 }
             }
-            
+
             //判断课程id是否为空和合法
             if(isset($body['course_id']) && !empty($body['course_id']) && $body['course_id'] > 0){
                 $query->where('course_id' , '=' , $body['course_id']);
             }
-            
+
             //获取日期
             if(isset($body['create_time']) && !empty($body['create_time'])){
                 $create_time = json_decode($body['create_time'] , true);

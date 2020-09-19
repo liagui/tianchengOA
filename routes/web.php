@@ -31,7 +31,7 @@ $router->group(['prefix' => 'admin' , 'namespace' => 'Admin','middleware'=> 'cor
 
     });
     $router->post('getRegionList', 'StudentDatumController@getRegionLists');//获取所有地区
-    
+
     //项目管理部分(dzj)
     $router->group(['prefix' => 'project'], function () use ($router) {
         $router->post('getProjectSubjectList', 'ProjectController@getProjectSubjectList');       //项目筛选学科列表接口
@@ -59,7 +59,7 @@ $router->group(['prefix' => 'admin' , 'namespace' => 'Admin','middleware'=> ['jw
         //总校
         $router->post('sureOrderList', 'OrderController@sureOrderList');//总校确认订单列表
         $router->post('notarizeOrder', 'OrderController@notarizeOrder');//总校确认&取消订单
-        $router->post('sureOrder', 'OrderController@sureOrder');//总校确认订单详情                           
+        $router->post('sureOrder', 'OrderController@sureOrder');//总校确认订单详情
         $router->post('unpaidOrder', 'OrderController@unpaidOrder');//总校未支付订单
         $router->post('DorejectOrder', 'OrderController@DorejectOrder');//总校进行驳回
         //分校
@@ -67,6 +67,7 @@ $router->group(['prefix' => 'admin' , 'namespace' => 'Admin','middleware'=> ['jw
         $router->post('unsubmittedOrderDetail', 'OrderController@unsubmittedOrderDetail');//分校未提交详情
         $router->post('DoSubmitted', 'OrderController@DoSubmitted');//分校未提交订单进行提交
         $router->post('submittedOrderCancel', 'OrderController@submittedOrderCancel');//分校已提交订单进行取消
+        $router->post('branchsubmittedOrderCancel', 'OrderController@branchsubmittedOrderCancel');//被驳回订单重新提交
         //退费订单操作
         $router->post('returnOrder', 'OrderController@returnOrder');//退款订单列表
         $router->post('returnOne', 'OrderController@returnOne');//退款订单单条详情
@@ -123,6 +124,7 @@ $router->group(['prefix' => 'admin' , 'namespace' => 'Admin','middleware'=> ['jw
         $router->post('doUpdateSchool', 'SchoolController@doUpdateSchool');                      //修改分校接口
         $router->post('getSchoolInfoById', 'SchoolController@getSchoolInfoById');                //分校详情接口
         $router->post('getSchoolListByLevel', 'SchoolController@getSchoolListByLevel');          //上级分校列表接口
+        $router->post('getSchoolListByLevels', 'SchoolController@getSchoolListByLevels');          //上级分校列表接口（lys）
         $router->post('getSchoolList', 'SchoolController@getSchoolList');                        //分校列表接口
         $router->post('doDelSchool', 'SchoolController@doDelSchool');                            //分校删除接口  （lys）
         $router->post('doOpenSchool', 'SchoolController@doOpenSchool');                          //分校启用禁用接口（lys）

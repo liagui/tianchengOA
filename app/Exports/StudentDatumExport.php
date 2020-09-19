@@ -18,21 +18,21 @@ class StudentDatumExport implements FromCollection, WithHeadings {
     }
     public function collection() {
         $body = $this->where;
-        // if(isset($body['subject']) && !empty($body['subject'])){
-        //     $subject = json_decode($body['subject'],1);
-        //     $oneSubject = $subject[0];
-        //     $twoSubject = isset($subject[1]) && $subject[1]>0 ?$subject[1]:0;
-        // }
+        if(isset($body['subject']) && !empty($body['subject'])){
+            $subject = json_decode($body['subject'],1);
+            $oneSubject = $subject[0];
+            $twoSubject = isset($subject[1]) && $subject[1]>0 ?$subject[1]:0;
+        }
         // DB::connection()->enableQueryLog();
         $Datum = StudentDatum::leftJoin('information','information.id','=','student_information.information_id')->where(function($query) use ($body) {
-                    // if(!empty($body['school_id'])){
-                    //     $query->where('information.branch_school',$body['school_id']); //所属分校      
-                    // }
-                    // if(!empty($body['subject'])){ //所属审核状态
-                    //     $query->where('student_information.project_id',$body['subject'][0]);
-                    //     $query->where('student_information.subject_id',$body['subject'][1]);
-                    // }
-                    $query->where('audit_status',1);
+                    if(!empty($body['school_id'])){
+                        $query->where('information.branch_school',$body['school_id']); //所属分校      
+                    }
+                    if(!empty($body['subject'])){ 
+                        $query->where('student_information.project_id',$body['subject'][0]);
+                        $query->where('student_information.subject_id',$body['subject'][1]);
+                    }
+                    $query->where('audit_status',1);//所属审核状态
                 })->select('information.student_name','information.student_sex','information.student_phone','information.student_card','information.address_province_id','information.address_city_id','information.month','information.sign_region_id','information.reference_region_id','information.culture','information.graduated_school','information.professional','information.years','information.xx_account','information.xx_password','information.branch_school','information.photo','information.card_photo_front','information.card_photo_contrary','information.card_photo_scanning','information.diploma_photo','information.diploma_scanning')->get();
         $datumArr = [];
         if(!empty($Datum)){

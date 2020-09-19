@@ -60,6 +60,9 @@ class AdminUserController extends Controller {
         if( !isset($data['id']) || empty($data['id']) || is_int($data['id']) ){
             return response()->json(['code'=>201,'msg'=>'账号id为空或缺少或类型不合法']);
         }
+        if(in_array($data['id'], [1])){
+           return response()->json(['code'=>201,'msg'=>'admin账户禁止禁用']);
+        }
         $userInfo = Adminuser::getUserOne(['id'=>$data['id']]);
         if($userInfo['code'] !=200){
             return response()->json(['code'=>$userInfo['code'],'msg'=>$userInfo['msg']]); 
@@ -109,6 +112,9 @@ class AdminUserController extends Controller {
         //     return response()->json(['code'=>203,'msg'=>'超级管理员信息，不能删除']);
         // }       
          //7.11  end
+         if(in_array($data['id'], [1])){
+           return response()->json(['code'=>201,'msg'=>'admin账户禁止删除']);
+        }
         $userInfo = Adminuser::findOrFail($data['id']);
         $userInfo->is_del = 0;
         if($userInfo->save()){
@@ -203,8 +209,8 @@ class AdminUserController extends Controller {
                     // 'school_id' => 'required',
                     'username' => 'required',
                     // 'realname' => 'required',
-                    // 'password'=>'required',
-                    // 'pwd'=>'required',
+                    'password'=>'required',
+                    'pwd'=>'required',
                     'role_id' => 'required|integer',
                 ],
                 Adminuser::message());
@@ -329,13 +335,19 @@ class AdminUserController extends Controller {
                     
                     'username' => 'required',
                     // 'realname' => 'required',
-                    'password'=>'required',
-                    'pwd'=>'required',
+                    // 'password'=>'required',
+                    // 'pwd'=>'required',
                     'role_id' => 'required|integer',
                 ],
                 Adminuser::message());
         if($validator->fails()) {
             return response()->json(json_decode($validator->errors()->first(),1));
+        }
+        if( !isset($data['id']) || empty($data['id']) ){
+            return response()->json(['code'=>201,'msg'=>'用户表示缺少或为空']);
+        } 
+        if(in_array($data['id'], [1])){
+           return response()->json(['code'=>201,'msg'=>'admin账户禁止编辑']);
         }
         if(!isset($data['school_id']) || empty($data['school_id'])){
             $data['school_id'] = '0';
@@ -431,7 +443,7 @@ class AdminUserController extends Controller {
             return ['code'=>$adminRole['code'],'msg'=>$adminRole['msg']];
         }
         $adminRuths = Authrules::getAdminAuthAll($adminRole['data']['map_auth_id']);
-
+         
         if($adminRuths['code'] != 200){
             return ['code'=>$adminRuths['code'],'msg'=>$adminRuths['msg']];
         }

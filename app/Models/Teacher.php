@@ -16,7 +16,7 @@ class Teacher extends Model {
 
     public static function getTeacherList($data){
         //每页显示的条数
-        $pagesize = (int)isset($data['pageSize']) && $data['pageSize'] > 0 ? $data['pageSize'] : 20;
+        $pagesize = (int)isset($data['pagesize']) && $data['pagesize'] > 0 ? $data['pagesize'] : 20;
         $page     = isset($data['page']) && $data['page'] > 0 ? $data['page'] : 1;
         $offset   = ($page - 1) * $pagesize;
         $count = self::where('admin.role_id',3)->where(function($query) use ($data){
@@ -88,7 +88,7 @@ class Teacher extends Model {
         //账户唯一验证
         $admin = self::where('username',$data['username'])->first();
         if($admin){
-            return ['code' => 200 , 'msg' => '账户已存在'];
+            return ['code' => 202 , 'msg' => '账户已存在'];
         }
         $teacher['password'] = password_hash($data['password'], PASSWORD_DEFAULT);
         $teacher['create_time'] = date("Y-m-d H:i:s");
@@ -147,7 +147,7 @@ class Teacher extends Model {
 
     public static function getTeacherPerformance($data){
         //每页显示的条数
-        $pagesize = (int)isset($data['pageSize']) && $data['pageSize'] > 0 ? $data['pageSize'] : 20;
+        $pagesize = (int)isset($data['pagesize']) && $data['pagesize'] > 0 ? $data['pagesize'] : 20;
         $page     = isset($data['page']) && $data['page'] > 0 ? $data['page'] : 1;
         $offset   = ($page - 1) * $pagesize;
         //查询所有班主任
@@ -213,7 +213,7 @@ class Teacher extends Model {
     }
     public static function getTeacherPerformanceOne($data){
         //搜索条件 项目 所属分校 开课状态 回访状态 手机号/姓名/微信号
-        $pagesize = (int)isset($data['pageSize']) && $data['pageSize'] > 0 ? $data['pageSize'] : 20;
+        $pagesize = (int)isset($data['pagesize']) && $data['pagesize'] > 0 ? $data['pagesize'] : 20;
         $page     = isset($data['page']) && $data['page'] > 0 ? $data['page'] : 1;
         $offset   = ($page - 1) * $pagesize;
         //班主任姓名
