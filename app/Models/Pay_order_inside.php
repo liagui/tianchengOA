@@ -86,7 +86,7 @@ class Pay_order_inside extends Model
                         ->orwhere('name',$data['order_on'])
                         ->orwhere('mobile',$data['order_on']);
                 }
-//                $query->whereIn('school_id',$schoolarr);
+                $query->whereIn('school_id',$schoolarr);
             })
             ->where($where)
             ->whereBetween('create_time', [$state_time, $end_time])
@@ -631,14 +631,37 @@ class Pay_order_inside extends Model
                 $data['have_user_id'] = 0;
             }
             //计算成本
-            //到款业绩=到账金额-退款金额
-//            $payment = $order['pay_price'] -
+//到款业绩=到款金额
+//扣税=到账金额*扣税比例
+//税后金额=到账金额-扣税
+//单数=报名订单数量+含有学历成本的订单数量
+//成本=学历成本+报名费用
+//实际到款=税后金额-成本
+//返佣比例=后台分校管理中佣金比例
+//返佣金额=实际到款*返佣比例
+//保证金=返佣金额*后台分校管理中押金比例
+            $school = School::where(['id'=>$data['school_id']])->first();
+            $daokuan = $order['pay_price'];
+            $kousui = $daokuan * $school['tax_point'];
+            $suihou = $daokuan - $kousui; //税后金额
+            $fanyong = $daokuan * $school['commission']; //佣金比例
+            $baozhengjin = $daokuan * $school['deposit']; //保证金
+            //一级没有保证金  二级给一级代理保证金  三级给二级代理保证金
+            if($school['level'] == 1){
+                $dailibaozhengjin = 0;
+                $yijichoulijine = 0;
+                $erjichoulijine = 0;
+            }else if($school['level'] == 2){
+                //一级抽离金额
+                $choulijine = $daokuan * $school['one_extraction_ratio'];
+                $dailibaozhengjin = $choulijine * $school['deposit'];
+            }else if($school['level'] == 3){
+                //一级抽离金额
+                $choulijine = $daokuan * $school['one_extraction_ratio'];
+                $dailibaozhengjin = $choulijine * $school['deposit'];
+            }
+            // 1级抽离金额
 
-            //  after_tax_amount  税后金额   到款业绩-扣税    扣税=到款业绩*后台分校管理中扣税比例 到款业绩=到账金额-退款金额
-            //  return_commission_amount  返佣金额 实际到款*返佣比例  返佣比例=后台分校管理中佣金比例
-            //  earnest_money  保证金  返佣比例=后台分校管理中佣金比例
-            //  agent_margin 代理保证金
-            //  first_out_of_amount  1级抽离金额
             //  second_out_of_amount  2级抽离金额
             //  actual_commission  实际佣金
         }
@@ -840,7 +863,14 @@ class Pay_order_inside extends Model
         if(!isset($data['order_no']) || empty($data['order_no'])){
             return ['code' => 200 , 'msg' => '获取成功','data'=>$res];
         }
-        $res = Pay_order_external::where(['order_no'=>$data['order_no'],'status'=>0])->first();
+        $res = Pay_order_external::
+        where(function($query) use ($data) {
+            if(isset($data['order_no']) && !empty($data['order_no'])){
+                $query->where('order_no',$data['order_no'])
+                    ->orwhere('name',$data['order_no'])
+                    ->orwhere('mobile',$data['order_no']);
+            }
+        })->where(['status'=>0])->first();
         if(!empty($res)){
             if($res['pay_type'] == 1 || $res['pay_type'] == 3){
                     $res['pay_type_text'] = '微信支付';
