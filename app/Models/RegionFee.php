@@ -5,6 +5,7 @@ use Illuminate\Database\Eloquent\Model;
 use Illuminate\Support\Facades\Redis;
 use Illuminate\Support\Facades\DB;
 use App\Models\AdminLog;
+use App\Models\Project;
 
 class RegionFee extends Model {
     //指定别的表名
@@ -218,5 +219,48 @@ class RegionFee extends Model {
         //通过项目的id获取地区列表
         $region_list = self::select('id as region_id' , 'region_name' , 'cost')->where('category_id' , $body['project_id'])->where('is_del' , 0)->get();
         return ['code' => 200 , 'msg' => '获取地区列表成功' , 'data' => $region_list];
+    }
+    
+    /*
+     * @param  description   项目管理-地区所有项目列表接口
+     * @param author    dzj
+     * @param ctime     2020-09-19
+     * return string
+     */
+    public static function getRegionProjectList(){
+        //获取地区下面所有的项目列表
+        $project_list = self::selectRaw("any_value(category_id) as id")->where('is_del' , 0)->groupBy("category_id")->get()->toArray();
+        //判断是否为空
+        if($project_list && !empty($project_list)){
+            //空数组赋值
+            $arr = [];
+            foreach($project_list as $k=>$v){
+                //根据项目id获取项目信息
+                $project_info = Project::where('id' , $v['id'])->where('parent_id' , 0)->first();
+                
+                //获取学科得列表
+                $subject_list = Project::select('id','name','id as value','name as label','is_del','is_hide')->where('parent_id' , $v['id'])->where('is_del' , 0)->orderByDesc('create_time')->get()->toArray();
+                if($subject_list && !empty($subject_list)){
+                    //根据项目得id获取学科得列表
+                    $subject_list = $subject_list && !empty($subject_list) ? $subject_list : [];
+                } else {
+                    $subject_list = [] ;
+                }
+                
+                //数组赋值
+                $arr[] = [
+                    'id'      =>   $v['id'] ,
+                    'name'    =>   $project_info['name'] ,
+                    'label'   =>   $project_info['name'] ,
+                    'value'   =>   $v['id'] ,
+                    'is_del'  =>   $project_info['is_del'] ,
+                    'is_hide' =>   $project_info['is_hide'] ,
+                    'subject_list' => $subject_list
+                ];
+            }
+            return ['code' => 200 , 'msg' => '获取列表成功' , 'data' => $arr];
+        } else {
+            return ['code' => 200 , 'msg' => '获取列表成功' , 'data' => []];
+        }
     }
 }
