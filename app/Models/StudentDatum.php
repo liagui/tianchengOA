@@ -364,18 +364,16 @@ class StudentDatum extends Model {
         $school_id = isset($body['school_id'])&& $body['school_id'] >0?$body['school_id']:'';
         if(isset($body['subject']) && !empty($body['subject'])){
             $subject = json_decode($body['subject'],1);
-            
-            if(!isset($subject[1]) || empty($subject[1])){
-                return ['code'=>201,'msg'=>'请选择项目-学科'];
-            }
         }
         $count = self::where(function($query) use ($school_id,$subject) {
                     if(!empty($school_id)){
                          $query->where('school_id',$school_id); //所属分校      
                     }
                     if(!empty($subject)){ //所属审核状态
-                        $query->where('project_id',$project[0]);
-                        $query->where('subject_id',$project[1]);
+                        $query->where('project_id',$subject[0]);
+                        if(isset($subject[1]) && $subject[1]>0 ){
+                            $query->where('subject_id',$subject[1]);
+                        }
                     }
                     $query->where('audit_status',1);
                 })->select('id')->count();
