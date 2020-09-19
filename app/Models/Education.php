@@ -225,10 +225,10 @@ class Education extends Model {
         //判断学科id是否传递
         if(!isset($body['child_id']) || $body['child_id'] <= 0){
             //通过项目的id获取院校列表
-            $school_list = self::select('id as school_id' , 'education_name')->where('parent_id' , $body['parent_id'])->where('is_del' , 0)->get();
+            $school_list = self::select('id as school_id' , 'education_name' , 'education_name as label' , 'id as value')->where('parent_id' , $body['parent_id'])->where('is_del' , 0)->get();
         } else {
             //通过项目的id获取院校列表
-            $school_list = self::select('id as school_id' , 'education_name')->where('parent_id' , $body['parent_id'])->where('child_id' , $body['child_id'])->where('is_del' , 0)->get();
+            $school_list = self::select('id as school_id' , 'education_name' , 'education_name as label' , 'id as value')->where('parent_id' , $body['parent_id'])->where('child_id' , $body['child_id'])->where('is_del' , 0)->get();
         }
         return ['code' => 200 , 'msg' => '获取列表成功' , 'data' => $school_list];
     }

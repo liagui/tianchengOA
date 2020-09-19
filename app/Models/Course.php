@@ -233,10 +233,10 @@ class Course extends Model {
         //判断学科id是否传递
         if(!isset($body['child_id']) || $body['child_id'] <= 0){
             //通过项目的id获取课程列表
-            $course_list = self::select('id as course_id' , 'course_name')->where('category_one_id' , $body['parent_id'])->where('is_del' , 0)->get();
+            $course_list = self::select('id as course_id' , 'course_name' , 'course_name as label' , 'id as value')->where('category_one_id' , $body['parent_id'])->where('is_del' , 0)->get();
         } else {
             //通过项目的id获取课程列表
-            $course_list = self::select('id as course_id' , 'course_name')->where('category_one_id' , $body['parent_id'])->where('category_tow_id' , $body['child_id'])->where('is_del' , 0)->get();
+            $course_list = self::select('id as course_id' , 'course_name' , 'course_name as label' , 'id as value')->where('category_one_id' , $body['parent_id'])->where('category_tow_id' , $body['child_id'])->where('is_del' , 0)->get();
         }
         return ['code' => 200 , 'msg' => '获取课程列表成功' , 'data' => $course_list];
     }
