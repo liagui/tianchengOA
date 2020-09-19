@@ -632,8 +632,8 @@ class Pay_order_inside extends Model
         }
         if($data['confirm_status'] == 1){
             $data['comfirm_time'] = date('Y-m-d H:i:s');
-            $data['have_user_id'] = $admin['id'];
-            $data['have_user_name'] = $admin['username'];
+//            $data['have_user_id'] = $admin['id'];
+//            $data['have_user_name'] = $admin['username'];
             //确认订单  排课
             //值班班主任 排课
             $classlead = Admin::where(['is_del'=>1,'is_forbid'=>1,'status'=>1,'is_use'=>1])->get()->toArray();
@@ -643,17 +643,20 @@ class Pay_order_inside extends Model
                 if(empty($leadid)){
                     //如果没有 就从第一个开始
                     $data['have_user_id'] = $classlead[0]['id'];
+                    $data['have_user_name'] = $classlead[0]['username'];
                     Redis::set('classlead' , $classlead[0]['id']);
                 }else{
                     //如果有 判断班主任id是否等于或大于最后一个数，从第一个开始排 否者数组取下一个
                     $len = count($classlead);
                     if($classlead[$len-1]['id'] <= $leadid){
                         $data['have_user_id'] = $classlead[0]['id'];
+                        $data['have_user_name'] = $classlead[0]['username'];
                         Redis::set('classlead' , $classlead[0]['id']);
                     }else{
                         foreach ($classlead as $k => $v){
                             if($v['id'] > $leadid){
                                 $data['have_user_id'] = $v['id'];
+                                $data['have_user_name'] = $v['username'];
                                 Redis::set('classlead' , $v['id']);
                                 break;
                             }
@@ -959,6 +962,7 @@ class Pay_order_inside extends Model
         $res = Pay_order_external::where(['id'=>$data['id'],'del_flag'=>0])->first();
         if(!$res){
             $res['school_id'] = null;
+            $res['first_pay'] = null;
             //查询分类
             //course  课程
             $course = Course::select('course_name')->where(['id'=>$res['course_id']])->first();
