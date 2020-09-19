@@ -7,6 +7,8 @@ use App\Models\Orderdocumentary;
 use App\Models\Teacher;
 use Illuminate\Support\Facades\DB;
 use App\Models\School;
+use App\Models\Category;
+use App\Models\Course;
 class Student extends Model {
     //指定别的表名
     public $table = 'student';
@@ -361,6 +363,29 @@ class Student extends Model {
                 $query->where('name','like','%'.$data['keyword'].'%')->orWhere('mobile','like','%'.$data['keyword'].'%');
             }
         })->offset($offset)->limit($pagesize)->get()->toArray();
+        foreach($data as $k => &$v){
+                $v['school_name'] = School::select("school_name")->where("id",$v['school_id'])->first()['school_name'];
+                $v['project_name'] = Category::select("name")->where("id",$v['project_id'])->first()['name'];
+                $v['subject_name'] = Category::select("name")->where("id",$v['subject_id'])->first()['name'];
+                $v['course_name'] = Course::select("course_name")->where("id",$v['course_id'])->first()['course_name'];
+                if($v['first_pay'] == 1){
+                    $v['first_pay_name'] = "全款";
+                }else if($v['first_pay'] == 2){
+                    $v['first_pay_name'] = "定金";
+                }else if($v['first_pay'] == 3){
+                    $v['first_pay_name'] = "部分尾款";
+                }else{
+                    $v['first_pay_name'] = "最后一笔尾款";
+                }
+
+                if($v['confirm_order_type'] == 1){
+                    $v['confirm_order_type_name'] = "课程订单";
+                }else if($v['confirm_order_type'] == 2){
+                    $v['confirm_order_type_name'] = "报名订单";
+                }else{
+                    $v['confirm_order_type_name'] = "课程+报名订单";
+                }
+        }
         $page=[
             'pageSize'=>$pagesize,
             'page' =>$page,
