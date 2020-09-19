@@ -119,11 +119,11 @@ class Pay_order_inside extends Model
             foreach ($res as $k=>&$v){
                 //查学校
                 if(empty($v['school_id']) || $v['school_id'] == 0){
-                    if(!empty($data['isBranchSchool']) && $data['isBranchSchool'] == true){
-                        unset($res[$k]);
-                    }else{
+//                    if(!empty($data['isBranchSchool']) && $data['isBranchSchool'] == true){
+//                        unset($res[$k]);
+//                    }else{
                         $v['school_name'] = '';
-                    }
+//                    }
                 }else{
                     $school = School::where(['id'=>$v['school_id']])->first();
                     if($school){
