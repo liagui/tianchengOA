@@ -85,9 +85,9 @@ class Pay_order_inside extends Model
                         ->orwhere('name',$data['order_on'])
                         ->orwhere('mobile',$data['order_on']);
                 }
-//                if($data['isBranchSchool'] == true){
-//                    $query->where('school_id','!=',null);
-//                }
+                if($data['isBranchSchool'] == true){
+                    $query->where('school_id','!=',null);
+                }
                 $query->whereIn('school_id',$schoolarr);
             })
             ->where($where)
@@ -99,9 +99,9 @@ class Pay_order_inside extends Model
                 $query->where('order_no', $data['order_on'])
                     ->orwhere('name', $data['order_on'])
                     ->orwhere('mobile', $data['order_on']);
-//            if($data['isBranchSchool'] == true){
-//                $query->where('school_id','!=',null);
-//            }
+            if($data['isBranchSchool'] == true){
+                $query->where('school_id','!=',null);
+            }
             }
         })->where($where)
             ->whereBetween('create_time', [$state_time, $end_time])
@@ -1016,8 +1016,8 @@ class Pay_order_inside extends Model
             'consignee_status' => 0,//0带收集 1收集中 2已收集 3重新收集
             'confirm_order_type' => $data['confirm_order_type'],//确认的订单类型 1课程订单 2报名订单3课程+报名订单
             'first_pay' => $data['first_pay'],//支付类型 1全款 2定金 3部分尾款 4最后一笔尾款
-//            'classes' => $data['classes'],//开课状态
-//            'return_visit' => $data['return_visit'],//回访状态
+            'classes' => $data['classes'],//开课状态
+            'return_visit' => $data['return_visit'],//回访状态
             'remark' => $data['remark'], //备注
             'pay_voucher_user_id' => $admin['id'], //上传凭证人
             'pay_voucher_time' => date('Y-m-d H:i:s'), //上传凭证时间
