@@ -1301,6 +1301,7 @@ class Pay_order_inside extends Model
          * return  array
          */
     public static function branchsubmittedOrderCancel($data){
+        unset($data['/admin/order/branchsubmittedOrderCancel']);
         if(!isset($data['id']) || empty($data['id'])){
             return ['code' => 201 , 'msg' => '参数有误'];
         }
