@@ -88,7 +88,7 @@ class Pay_order_inside extends Model
                 $query->whereIn('school_id',$schoolarr);
             })
 //            ->where($where)
-            ->whereBetween('create_time', [$state_time, $end_time])
+//            ->whereBetween('create_time', [$state_time, $end_time])
             ->orderByDesc('id')
             ->offset($offset)->limit($pagesize)
             ->get()->toArray();
