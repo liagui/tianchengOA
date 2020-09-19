@@ -15,6 +15,21 @@ use Illuminate\Support\Facades\DB;
 use App\Models\CouresSubject;
 use Log;
 class SchoolController extends Controller {
+
+    public function getSchoolByIdLevel(){
+        try{
+            $data = School::getSchoolByIdLevel(self::$accept_data);
+            if($data['code'] == 200){
+                return response()->json($data);
+            } else {
+                return response()->json($data);
+            }
+        } catch (Exception $ex) {
+            return response()->json(['code' => 500 , 'msg' => $ex->getMessage()]);
+        }      
+    }
+
+
     public function getList(){
             //获取提交的参数
         try{
@@ -133,6 +148,22 @@ class SchoolController extends Controller {
         }
         return response()->json(['code' => 200 , 'msg' => 'Success','data'=>$school]);
     }
+
+     public function getSchoolListByLevels(){
+        //获取提交的参数
+        try{
+            //获取分校列表
+            $data = School::getSchoolListByLevels(self::$accept_data);
+            if($data['code'] == 200){
+                return response()->json(['code' => 200 , 'msg' => '获取列表成功' , 'data' => $data['data']]);
+            } else {
+                return response()->json(['code' => $data['code'] , 'msg' => $data['msg']]);
+            }
+        } catch (Exception $ex) {
+            return response()->json(['code' => 500 , 'msg' => $ex->getMessage()]);
+        }
+    }
+
 
     public function getSchoolListByLevel(){
         //获取提交的参数

@@ -209,8 +209,8 @@ class AdminUserController extends Controller {
                     // 'school_id' => 'required',
                     'username' => 'required',
                     // 'realname' => 'required',
-                    // 'password'=>'required',
-                    // 'pwd'=>'required',
+                    'password'=>'required',
+                    'pwd'=>'required',
                     'role_id' => 'required|integer',
                 ],
                 Adminuser::message());
@@ -335,8 +335,8 @@ class AdminUserController extends Controller {
                     
                     'username' => 'required',
                     // 'realname' => 'required',
-                    'password'=>'required',
-                    'pwd'=>'required',
+                    // 'password'=>'required',
+                    // 'pwd'=>'required',
                     'role_id' => 'required|integer',
                 ],
                 Adminuser::message());
@@ -443,7 +443,7 @@ class AdminUserController extends Controller {
             return ['code'=>$adminRole['code'],'msg'=>$adminRole['msg']];
         }
         $adminRuths = Authrules::getAdminAuthAll($adminRole['data']['map_auth_id']);
-          print_r($adminRuths);die;
+         
         if($adminRuths['code'] != 200){
             return ['code'=>$adminRuths['code'],'msg'=>$adminRuths['msg']];
         }
