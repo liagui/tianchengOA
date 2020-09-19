@@ -158,18 +158,26 @@ class Teacher extends Model {
 
         foreach($teacher as $k =>&$v){
 
+
+            $res1 = Pay_order_inside::select()->where("seas_status",0)->where("have_user_id",$v['id'])->get()->toArray();
+            foreach($res1 as $k => &$vv){
+                //是否回访
+                $a = Orderdocumentary::where("order_id",$v['id'])->first();
+                if(empty($a)){
+                    $vv['return_visit'] = 0;
+                }else{
+                    $vv['return_visit'] = 1;
+                }
+            }
             //已回访单数
-            $v['yet_singular'] = Pay_order_inside::where(['return_visit'=>1,'have_user_id'=>$v['id']])->where(function($query) use ($data){
-                if(isset($data['start_time']) && !empty(isset($data['start_time']))  && isset($data['end_time']) && !empty(isset($data['end_time']))){
-                    $query->whereBetween('comfirm_time',[date("Y-m-d H:i:s",strtotime($data['start_time'])),date("Y-m-d H:i:s",strtotime($data['end_time']))]);
-                }
-            })->count();
+            $yet_singular = array_filter($res1, function($t) use ($data) { return $t['return_visit'] == 1; });
+            $yet_singular = array_merge($yet_singular);
+            $v['yet_singular'] =  count($yet_singular);
             //未回放单数
-            $v['not_singular'] = Pay_order_inside::where(['return_visit'=>0,'have_user_id'=>$v['id']])->where(function($query) use ($data){
-                if(isset($data['start_time']) && !empty(isset($data['start_time']))  && isset($data['end_time']) && !empty(isset($data['end_time']))){
-                    $query->whereBetween('comfirm_time',[date("Y-m-d H:i:s",strtotime($data['start_time'])),date("Y-m-d H:i:s",strtotime($data['end_time']))]);
-                }
-            })->count();
+            $not_singular = array_filter($res1, function($t) use ($data) { return $t['return_visit'] == 0; });
+            $not_singular = array_merge($not_singular);
+            $v['not_singular'] = count($not_singular);
+
             //总回放单数
             $v['sum_singular'] = $v['yet_singular'] + $v['not_singular'];
 
