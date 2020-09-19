@@ -89,10 +89,6 @@ class Pay_order_inside extends Model
                         ->orwhere('name',$data['order_on'])
                         ->orwhere('mobile',$data['order_on']);
                 }
-                if($data['isBranchSchool'] == true){
-                    $query->where('school_id','!=',null)
-                        ->orwhere('school_id','!=',0);
-                }
                 $query->whereIn('school_id',$schoolarr);
             })
             ->where($where)
@@ -104,20 +100,21 @@ class Pay_order_inside extends Model
                 $query->where('order_no', $data['order_on'])
                     ->orwhere('name', $data['order_on'])
                     ->orwhere('mobile', $data['order_on']);
-            if($data['isBranchSchool'] == true){
-                $query->where('school_id','!=',null)
-                    ->orwhere('school_id','!=',0);
-            }
             }
         })->where($where)
         ->whereBetween('create_time', [$state_time, $end_time])
         ->orderByDesc('id')
         ->get()->toArray();
-        //两数组合并
-        if (!empty($order) && !empty($external)) {
-            $all = array_merge($order, $external);//合并两个二维数组
-        } else {
-            $all = !empty($order) ? $order : $external;
+        //分校只显示流转
+        if(!empty($data['isBranchSchool']) && $data['isBranchSchool'] == true){
+            $all = $order;
+        }else{
+            //两数组合并
+            if (!empty($order) && !empty($external)) {
+                $all = array_merge($order, $external);//合并两个二维数组
+            } else {
+                $all = !empty($order) ? $order : $external;
+            }
         }
         $date = array_column($all, 'create_time');
         array_multisort($date, SORT_DESC, $all);
