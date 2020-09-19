@@ -107,7 +107,6 @@ class Pay_order_inside extends Model
         } else {
             $all = !empty($order) ? $order : $external;
         }
-        print_r($all);die;
         $res = array_slice($all, $offset, $pagesize);
         if(empty($res)){
             $res = array_slice($all, 1, $pagesize);
