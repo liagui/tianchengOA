@@ -89,9 +89,6 @@ class Pay_order_inside extends Model
                         ->orwhere('name',$data['order_on'])
                         ->orwhere('mobile',$data['order_on']);
                 }
-//                if($data['isBranchSchool'] == true){
-//                    $query->where('school_id','!=',null);
-//                }
                 $query->whereIn('school_id',$schoolarr);
             })
             ->where($where)
@@ -103,19 +100,21 @@ class Pay_order_inside extends Model
                 $query->where('order_no', $data['order_on'])
                     ->orwhere('name', $data['order_on'])
                     ->orwhere('mobile', $data['order_on']);
-//            if($data['isBranchSchool'] == true){
-//                $query->where('school_id','!=',null);
-//            }
             }
         })->where($where)
         ->whereBetween('create_time', [$state_time, $end_time])
         ->orderByDesc('id')
         ->get()->toArray();
-        //两数组合并
-        if (!empty($order) && !empty($external)) {
-            $all = array_merge($order, $external);//合并两个二维数组
-        } else {
-            $all = !empty($order) ? $order : $external;
+        //分校只显示流转
+        if(!empty($data['isBranchSchool']) && $data['isBranchSchool'] == true){
+            $all = $order;
+        }else{
+            //两数组合并
+            if (!empty($order) && !empty($external)) {
+                $all = array_merge($order, $external);//合并两个二维数组
+            } else {
+                $all = !empty($order) ? $order : $external;
+            }
         }
         $date = array_column($all, 'create_time');
         array_multisort($date, SORT_DESC, $all);
@@ -129,11 +128,7 @@ class Pay_order_inside extends Model
             foreach ($res as $k=>&$v){
                 //查学校
                 if(empty($v['school_id']) || $v['school_id'] == 0){
-//                    if(!empty($data['isBranchSchool']) && $data['isBranchSchool'] == true){
-//                        unset($res[$k]);
-//                    }else{
                         $v['school_name'] = '';
-//                    }
                 }else{
                     $school = School::where(['id'=>$v['school_id']])->first();
                     if($school){
@@ -525,14 +520,14 @@ class Pay_order_inside extends Model
                     $v['pay_status_text'] = '已支付';
                 }
                 if($v['return_visit'] == 0){
-                    $v['return_visit_text'] = '未回访';
+                    $v['return_visit_text'] = '否';
                 }else{
-                    $v['return_visit_text'] = '已回访';
+                    $v['return_visit_text'] = '是';
                 }
                 if($v['classes'] == 0){
-                    $v['classes_text'] = '未开课';
+                    $v['classes_text'] = '否';
                 }else{
-                    $v['classes_text'] = '已开课';
+                    $v['classes_text'] = '是';
                 }
                 if($v['confirm_order_type'] == 1){
                     $v['confirm_order_type_text'] = '课程订单';
@@ -613,6 +608,12 @@ class Pay_order_inside extends Model
         $admin = isset(AdminLog::getAdminInfo()->admin_user) ? AdminLog::getAdminInfo()->admin_user : [];
         $order = self::where(['id'=>$data['id']])->first();
         unset($data['/admin/order/notarizeOrder']);
+        if($data['confirm_order_type'] == 2 || $data['confirm_order_type'] == 3){
+            $ppppp = $data['course_Price'] + $data['sign_Price'];
+            if($ppppp > $order['pay_price']){
+                return ['code' => 201 , 'msg' => '所填金额大于支付金额'];
+            }
+        }
         if(empty($data['education_id'])){
             unset($data['education_id']);
             unset($data['major_id']);
@@ -658,15 +659,15 @@ class Pay_order_inside extends Model
                 $data['have_user_id'] = 0;
             }
             //计算成本
-//到款业绩=到款金额
-//扣税=到账金额*扣税比例
-//税后金额=到账金额-扣税
-//单数=报名订单数量+含有学历成本的订单数量
-//成本=学历成本+报名费用
-//实际到款=税后金额-成本
-//返佣比例=后台分校管理中佣金比例
-//返佣金额=实际到款*返佣比例
-//保证金=返佣金额*后台分校管理中押金比例
+            //到款业绩=到款金额
+            //扣税=到账金额*扣税比例
+            //税后金额=到账金额-扣税
+            //单数=报名订单数量+含有学历成本的订单数量
+            //成本=学历成本+报名费用
+            //实际到款=税后金额-成本
+            //返佣比例=后台分校管理中佣金比例
+            //返佣金额=实际到款*返佣比例
+            //保证金=返佣金额*后台分校管理中押金比例
             $school = School::where(['id'=>$data['school_id']])->first();
             $daokuan = $order['pay_price'];
             $kousui = $daokuan * (100/$school['tax_point']);
@@ -693,12 +694,19 @@ class Pay_order_inside extends Model
                 $dailibaozhengjin = $erjichoulijine * (100/$school['deposit']);
                 //三级分校的实际返佣=三级分校的返佣金额
             }
+            //查成本
+            $chengben=0;
+            if(!empty($data['education_id'])){
+                $majorprice = Major::where(['id'=>$data['major_id']])->first();
+                $chengben = $majorprice['price'] + $data['sign_Price'];
+            }
             $data['after_tax_amount'] = $suihou;   //税后金额
             $data['return_commission_amount'] = $fanyong;  //返佣金额
             $data['earnest_money'] = $baozhengjin;    //保证金
             $data['agent_margin'] = $dailibaozhengjin;    //代理保证金
             $data['first_out_of_amount'] = $yijichoulijine;    //1级抽离金额
             $data['second_out_of_amount'] = $erjichoulijine;    //2级抽离金额
+            $data['sum_Price'] = $chengben;    //成本价
         }
         if($data['confirm_status'] == 2){
             $data['reject_time'] = date('Y-m-d H:i:s');
@@ -814,14 +822,14 @@ class Pay_order_inside extends Model
                     $v['pay_status_text'] = '已支付';
                 }
                 if($v['return_visit'] == 0){
-                    $v['return_visit_text'] = '未回访';
+                    $v['return_visit_text'] = '否';
                 }else{
-                    $v['return_visit_text'] = '已回访';
+                    $v['return_visit_text'] = '是';
                 }
                 if($v['classes'] == 0){
-                    $v['classes_text'] = '未开课';
+                    $v['classes_text'] = '否';
                 }else{
-                    $v['classes_text'] = '已开课';
+                    $v['classes_text'] = '是';
                 }
                 if($v['confirm_order_type'] == 1){
                     $v['confirm_order_type_text'] = '课程订单';
@@ -1172,14 +1180,14 @@ class Pay_order_inside extends Model
                     $v['pay_status_text'] = '已支付';
                 }
                 if($v['return_visit'] == 0){
-                    $v['return_visit_text'] = '未回访';
+                    $v['return_visit_text'] = '否';
                 }else{
-                    $v['return_visit_text'] = '已回访';
+                    $v['return_visit_text'] = '是';
                 }
                 if($v['classes'] == 0){
-                    $v['classes_text'] = '未开课';
+                    $v['classes_text'] = '否';
                 }else{
-                    $v['classes_text'] = '已开课';
+                    $v['classes_text'] = '是';
                 }
                 if($v['confirm_order_type'] == 1){
                     $v['confirm_order_type_text'] = '课程订单';
@@ -1878,8 +1886,8 @@ class Pay_order_inside extends Model
         }
         return ['code' => 200 , 'msg' => '获取列表成功' , 'data' => ['list' => [] , 'total' => 0 , 'pagesize' => $pagesize , 'page' => $page]];
     }
-    
-    
+
+
     /*
      * @param  description   财务管理-分校业绩列表
      * @param  参数说明       body包含以下参数[
@@ -1895,8 +1903,8 @@ class Pay_order_inside extends Model
         $pagesize = isset($body['pagesize']) && $body['pagesize'] > 0 ? $body['pagesize'] : 20;
         $page     = isset($body['page']) && $body['page'] > 0 ? $body['page'] : 1;
         $offset   = ($page - 1) * $pagesize;
-        
-        
+
+
         //获取数量
         $count = DB::table('school')->join("pay_order_inside" , function($join){
             $join->on('school.id', '=', 'pay_order_inside.school_id');
@@ -1953,41 +1961,41 @@ class Pay_order_inside extends Model
                     $first_school_name = '-';
                     $two_school_name   = '-';
                     $three_school_name = $v['school_name'];
-                } 
-                
+                }
+
                 //到款业绩=到款金额
                 $payment_performance = $v['pay_price'];
-                
+
                 //扣税比例
                 $tax_deduction_ratio = $tax_point['tax_point'];
-                
+
                 //扣税=到账金额*扣税比例
                 $tax_deduction  = $v['pay_price'] * ($tax_deduction_ratio / 100);
-                
+
                 //税后金额=到账金额-扣税
                 $after_tax_amount = $v['pay_price'] > $tax_deduction ? $v['pay_price'] - $tax_deduction : 0;
-                
+
                 //单数=报名订单数量+含有学历成本的订单数量
                 $enroll_number   = self::where('school_id' , $v['school_id'])->whereIn('confirm_order_type' , [2,3])->count();
                 $chengben_number = self::where('school_id' , $v['school_id'])->where('education_id' , '>' , 0)->where('major_id' , '>' , 0)->count();
                 $order_number    = $enroll_number + $chengben_number;
-                
+
                 //成本=学历成本+报名费用
                 $education_cost = Major::where('education_id' , $v['education_id'])->where('major_id' , $v['major_id'])->value('price');
                 $sum_cost       = $education_cost + $v['sign_Price'];
-                
+
                 //实际到款=税后金额-成本
                 $actual_receipt = $v['after_tax_amount'] > $v['sum_Price']  ? $v['after_tax_amount'] - $v['sum_Price'] : 0;
-                
+
                 //返佣比例=后台分校管理中佣金比例
                 $commission_rebate = $v['commission'];
-                
+
                 //返佣金额=实际到款*返佣比例
                 $commission_money  = $actual_receipt * ($commission_rebate / 100);
-                
+
                 //保证金=返佣金额*后台分校管理中押金比例
                 $bond  = $commission_money * ($v['deposit'] / 100);
-                
+
                 //一级分校无一级抽离比例、押金和二级抽离比例、押金
                 if($v['level'] == 1){
                     $first_out_of_amount = '-';
@@ -1996,36 +2004,36 @@ class Pay_order_inside extends Model
                     $second_out_of_money = '-';
                     //代理保证金
                     $agent_margin = $v['agent_margin'];
-                    
+
                     //一级分校下面的所有二级分校
                     $seond_school_id = School::select('id')->where('parent_id' , $v['school_id'])->where('level' , 2)->get()->toArray();
                     $seond_school_ids= array_column($seond_school_id, 'id');
-                    
+
                     //二级下面的所有三级分校
                     $three_school_id = School::select('id')->whereIn('parent_id' , $seond_school_ids)->where('level' , 3)->get()->toArray();
                     $three_school_ids= array_column($three_school_id, 'id');
-                    
+
                     //一级分校的实际返佣=返佣金额-一级分校的保证金+（二级分校的一级抽离金额+三级分校的一级抽离金额）*（1-押金比例）-（一级分校退费*返佣比例+二级分校退费*二级分校1级抽离比例+三级分校退费*二级分校1级抽离比例）
                     //二级分校的一级抽离金额
                     $first_out_of_amount1 = self::whereIn('school_id' , $seond_school_ids)->sum('first_out_of_amount');
-                    
+
                     //三级分校的一级抽离金额
                     $first_out_of_amount2 = self::whereIn('school_id' , $three_school_ids)->sum('first_out_of_amount');
-                    
+
                     //一级分校退费金额
                     $first_refund_Price = Refund_order::where('school_id' , $v['school_id'])->where('confirm_status' , 1)->sum('refund_Price');
                     //二级分校退费金额
                     $send_refund_Price  = Refund_order::whereIn('school_id' , $seond_school_ids)->where('confirm_status' , 1)->sum('refund_Price');
                     //三级分校退费金额
                     $three_refund_Price = Refund_order::whereIn('school_id' , $three_school_ids)->where('confirm_status' , 1)->sum('refund_Price');
-                    
+
                     //二级分校的一级抽离比例=后台分校管理中一级抽离比例  |  三级分校的一级抽离比例=后台分校管理中一级抽离比例
                     $actual_commission_refund = $commission_money - $bond + ($first_out_of_amount1 + $first_out_of_amount2) * (1 - $v['deposit']) - ($first_refund_Price*$v['commission']+$send_refund_Price*$v['one_extraction_ratio']+$three_refund_Price*$v['one_extraction_ratio']);
                 } elseif($v['level'] == 2){
                     //二级分校的一级抽离比例=后台分校管理中一级抽离比例
                     //二级分校的一级抽离金额=二级分校的一级抽离比例*实际到款
                     //二级分校无二级抽离比例、押金
-                    
+
                     //二级分校的一级抽离比例一级抽离比例
                     $first_out_of_amount  = $v['first_out_of_amount'];
                     $first_out_of_money   = ($first_out_of_amount / 100) * $actual_receipt;
@@ -2033,23 +2041,23 @@ class Pay_order_inside extends Model
                     $second_out_of_money  = '-';
                     //代理保证金
                     $agent_margin = $v['agent_margin'];
-                    
+
                     //一级分校下面的所有二级分校
                     $seond_school_id = School::select('id')->where('parent_id' , $v['school_id'])->where('level' , 2)->get()->toArray();
                     $seond_school_ids= array_column($seond_school_id, 'id');
-                    
+
                     //二级下面的所有三级分校
                     $three_school_id = School::select('id')->whereIn('parent_id' , $seond_school_ids)->where('level' , 3)->get()->toArray();
                     $three_school_ids= array_column($three_school_id, 'id');
-                    
+
                     //三级分校的二级抽离金额
                     $second_out_of_amount2 = self::whereIn('school_id' , $three_school_ids)->sum('second_out_of_amount');
-                    
+
                     //二级分校退费金额
                     $send_refund_Price     = Refund_order::whereIn('school_id' , $seond_school_ids)->where('confirm_status' , 1)->sum('refund_Price');
                     //三级分校退费金额
                     $three_refund_Price    = Refund_order::whereIn('school_id' , $three_school_ids)->where('confirm_status' , 1)->sum('refund_Price');
-                    
+
                     //二级分校的实际返佣=二级分校的返佣金额-二级分校的保证金+三级分校的二级抽离金额*（1-押金比例）-（二级分校退费*返佣比例+三级分校退费*三级分校2级抽离比例）
                     $actual_commission_refund = $commission_money - $bond + $second_out_of_amount2 * (1 - $v['deposit']) - ($send_refund_Price * $v['commission'] + $three_refund_Price * $v['two_extraction_ratio']);
                 } elseif($v['level'] == 3){
@@ -2060,19 +2068,19 @@ class Pay_order_inside extends Model
                     //三级分校的实际返佣=三级分校的返佣金额-三级分校的保证金-三级分校退费*三级分校返佣比例
                     $first_out_of_amount  = $v['first_out_of_amount'];
                     $first_out_of_money   = ($first_out_of_amount / 100) * $actual_receipt;
-                    
+
                     //二级抽离比例
                     $second_out_of_amount= $v['second_out_of_amount'];
                     $second_out_of_money = ($second_out_of_amount / 100) * $actual_receipt;
                     //三级分校无代理保证金
                     $agent_margin = '-';
-                    
+
                     //三级分校的实际返佣=三级分校的返佣金额-三级分校的保证金-三级分校退费*三级分校返佣比例
                     $actual_commission_refund = $commission_money - $bond;
                 }
-                
-                
-                
+
+
+
 
                 //数组赋值
                 $array[] = [
@@ -2081,11 +2089,11 @@ class Pay_order_inside extends Model
                     'two_school_name'     =>  $two_school_name ,
                     'three_school_name'   =>  $three_school_name ,
                     'actual_receipt'      =>  $actual_receipt ,
-                    
-                    
-                    
-                    
-                    
+
+
+
+
+
                     'received_order'=>  0 ,  //到账订单数量
                     'refund_order'  =>  0 ,  //退费订单数量
                     'received_money'=>  0 ,  //到账金额
