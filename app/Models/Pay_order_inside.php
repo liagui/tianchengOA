@@ -85,7 +85,7 @@ class Pay_order_inside extends Model
                         ->orwhere('name',$data['order_on'])
                         ->orwhere('mobile',$data['order_on']);
                 }
-                $query->whereIn('school_id',$schoolarr);
+//                $query->whereIn('school_id',$schoolarr);
             })
             ->where($where)
             ->whereBetween('create_time', [$state_time, $end_time])
