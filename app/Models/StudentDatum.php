@@ -35,11 +35,11 @@ class StudentDatum extends Model {
             	}else{
                     $query->whereIn('student_information.school_id',$body['school_ids']['data']);
                 }
-            	if(isset($body['audit_state']) && !empty($body['audit_state'])){ //所属审核状态
+            	if(isset($body['audit_state']) && strlen($body['audit_state'])>0){ //所属审核状态
                 	$query->where('student_information.audit_status',$body['audit_state']);
             	}
-            	if(isset($body['gather_state']) && !empty($body['gather_state'])){
-                	$query->where('student_information.consignee_status',$body['gather_state']);
+            	if(isset($body['gather_state']) && strlen($body['gather_state'])>0){
+                	$query->where('pay_order_inside.consignee_status',$body['gather_state']);
             	}
             	if(isset($body['search']) && !empty($body['search'])){
                 	$query->where('student.user_name','like','%'.$body['search'].'%')
@@ -56,7 +56,7 @@ class StudentDatum extends Model {
     		if(!empty($adminArr)){
     			$adminArr  = array_column($adminArr,'real_name','id');
     		}
-    		$courseArr = Course::where(['is_del'=>1])->select('id','course_name')->get()->toArray();
+    		$courseArr = Course::where(['is_del'=>0])->select('id','course_name')->get()->toArray();
     		if(!empty($courseArr)){
     			$courseArr  = array_column($courseArr,'course_name','id');
     		}
@@ -76,11 +76,11 @@ class StudentDatum extends Model {
 	            	}else{
                         $query->whereIn('student_information.school_id',$body['school_ids']['data']);
                     }
-	            	if(isset($body['audit_state']) && !empty($body['audit_state'])){ //所属审核状态
+	            	if(isset($body['audit_state']) && strlen($body['audit_state'])>0){ //所属审核状态
 	                	$query->where('student_information.audit_status',$body['audit_state']);
 	            	}
-	            	if(isset($body['gather_state']) && !empty($body['gather_state'])){
-	                	$query->where('student_information.consignee_status',$body['gather_state']);
+	            	if(isset($body['gather_state']) && strlen($body['gather_state'])>0){
+	                	$query->where('pay_order_inside.consignee_status',$body['gather_state']);
 	            	}
 	            	if(isset($body['search']) && !empty($body['search'])){
 	                	$query->where('student.user_name','like','%'.$body['search'].'%')
@@ -231,7 +231,7 @@ class StudentDatum extends Model {
         }else{
             if($StudentDatumArr['audit_status'] == 2 && $StudentDatumArr['audit_id']>0 && $StudentDatumArr['gather_id']>0 ){
                 //正常流程走完一边（驳回）
-                $datumDelRes=Datum::where('id',$StudentDatumArr['id'])->update(['id_del'=>0,'update_time'=>date('Y-m-d H:i:s')]);
+                $datumDelRes=Datum::where('id',$StudentDatumArr['id'])->update(['is_del'=>0,'update_time'=>date('Y-m-d H:i:s')]);
                 if(!$datumDelRes){
                      DB::rollBack();
                     return ['code'=>203,'msg'=>' 资料提交失败，请重试 '];
@@ -274,7 +274,7 @@ class StudentDatum extends Model {
         $admin_id = isset(AdminLog::getAdminInfo()->admin_user->id) ? AdminLog::getAdminInfo()->admin_user->id : 0;
         //判断学员资料id是否为空
         if(!isset($body['datum_id']) || empty($body['datum_id']) || $body['datum_id'] <= 0){
-            return ['code' => 201 , 'msg' => 'datum_id不合法'];
+            return ['code' => 201 , 'msg' => '请先提交资料！'];
         }
         $datumArr = Datum::where('id',$body['datum_id'])->first();
         if(is_null($datumArr)){

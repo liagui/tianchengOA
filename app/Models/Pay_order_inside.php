@@ -108,9 +108,9 @@ class Pay_order_inside extends Model
 //            }
             }
         })->where($where)
-            ->whereBetween('create_time', [$state_time, $end_time])
-            ->orderByDesc('id')
-            ->get()->toArray();
+        ->whereBetween('create_time', [$state_time, $end_time])
+        ->orderByDesc('id')
+        ->get()->toArray();
         //两数组合并
         if (!empty($order) && !empty($external)) {
             $all = array_merge($order, $external);//合并两个二维数组
@@ -124,20 +124,22 @@ class Pay_order_inside extends Model
             $res = array_slice($all, 1, $pagesize);
         }
         //循环查询分类
-        $countprice = 0;
         $count = count($order) + count($external);
         if(!empty($res)){
             foreach ($res as $k=>&$v){
                 //查学校
                 if(empty($v['school_id']) || $v['school_id'] == 0){
-                    $v['school_name'] = '';
+//                    if(!empty($data['isBranchSchool']) && $data['isBranchSchool'] == true){
+//                        unset($res[$k]);
+//                    }else{
+                        $v['school_name'] = '';
+//                    }
                 }else{
                     $school = School::where(['id'=>$v['school_id']])->first();
                     if($school){
                         $v['school_name'] = $school['school_name'];
                     }
                 }
-                $countprice = $countprice + $v['pay_price'];
                 if($v['pay_type'] == 1){
                     $v['pay_type_text'] = '微信扫码';
                 }else if ($v['pay_type'] == 2){
@@ -156,18 +158,18 @@ class Pay_order_inside extends Model
                     $v['return_visit_text'] = '';
                 }else{
                     if($v['return_visit'] == 0){
-                        $v['return_visit_text'] = '未回访';
+                        $v['return_visit_text'] = '否';
                     }else{
-                        $v['return_visit_text'] = '已回访';
+                        $v['return_visit_text'] = '是';
                     }
                 }
                 if(empty($v['classes'])){
                     $v['classes_text'] = '';
                 }else{
                     if( $v['classes'] == 0){
-                        $v['classes_text'] = '未开课';
+                        $v['classes_text'] = '否';
                     }else{
-                        $v['classes_text'] = '已开课';
+                        $v['classes_text'] = '是';
                     }
                 }
                 if(empty($v['confirm_order_type'])){
@@ -251,6 +253,10 @@ class Pay_order_inside extends Model
             'page' =>$page,
             'total'=>$count
         ];
+        //计算总数
+        $orderprice = self::whereIn('school_id',$schoolarr)->sum('pay_price');
+        $externalprice = Pay_order_external::where(['pay_status'=>1])->sum('pay_price');
+        $countprice = $orderprice + $externalprice;
         //总金额
         return ['code' => 200 , 'msg' => '查询成功','data'=>$res,'countprice'=>$countprice,'where'=>$data,'page'=>$page];
     }
@@ -431,7 +437,7 @@ class Pay_order_inside extends Model
          */
     public static function awaitOrder($data,$schoolarr){
         $where['del_flag'] = 0;  //未删除
-        $where['confirm_status'] = 0;  //未确认
+
         //科目id&学科id
         if(!empty($data['project_id'])){
             $parent = json_decode($data['project_id'], true);
@@ -468,6 +474,12 @@ class Pay_order_inside extends Model
                     ->orwhere('name',$data['order_no'])
                     ->orwhere('mobile',$data['order_no']);
             }
+            if(!empty($data['isBranchSchool']) && $data['isBranchSchool'] == true){
+                $query->where('confirm_status',0)
+                    ->orwhere('confirm_status',1);
+            }else{
+                $query->where('confirm_status',0);
+            }
             $query->whereIn('school_id',$schoolarr);
         })
         ->where($where)
@@ -478,6 +490,12 @@ class Pay_order_inside extends Model
                 $query->where('order_no',$data['order_no'])
                     ->orwhere('name',$data['order_no'])
                     ->orwhere('mobile',$data['order_no']);
+            }
+            if(!empty($data['isBranchSchool']) &&$data['isBranchSchool'] == true){
+                $query->where('confirm_status',0)
+                    ->orwhere('confirm_status',1);
+            }else{
+                $query->where('confirm_status',0);
             }
             $query->whereIn('school_id',$schoolarr);
         })
@@ -493,15 +511,13 @@ class Pay_order_inside extends Model
                     $v['school_name'] = $school['school_name'];
                 }
                 if($v['pay_type'] == 1){
-                    $v['pay_type_text'] = '支付宝扫码';
-                }else if ($v['pay_type'] == 2){
                     $v['pay_type_text'] = '微信扫码';
+                }else if ($v['pay_type'] == 2){
+                    $v['pay_type_text'] = '支付宝扫码';
                 }else if ($v['pay_type'] == 3){
-                    $v['pay_type_text'] = '银联快捷支付';
+                    $v['pay_type_text'] = '汇聚微信扫码';
                 }else if ($v['pay_type'] == 4){
-                    $v['pay_type_text'] = '微信小程序';
-                }else if ($v['pay_type'] == 5){
-                    $v['pay_type_text'] = '线下录入';
+                    $v['pay_type_text'] = '汇聚支付宝扫码';
                 }
                 if($v['pay_status'] == 0){
                     $v['pay_status_text'] = '未支付';
@@ -653,31 +669,36 @@ class Pay_order_inside extends Model
 //保证金=返佣金额*后台分校管理中押金比例
             $school = School::where(['id'=>$data['school_id']])->first();
             $daokuan = $order['pay_price'];
-            $kousui = $daokuan * $school['tax_point'];
+            $kousui = $daokuan * (100/$school['tax_point']);
             $suihou = $daokuan - $kousui; //税后金额
-            $fanyong = $daokuan * $school['commission']; //返佣金额
-            $baozhengjin = $daokuan * $school['deposit']; //保证金
+            $fanyong = $daokuan * (100/$school['commission']); //返佣金额
+            $baozhengjin = $daokuan * (100/$school['deposit']); //保证金
             //一级没有保证金  二级给一级代理保证金  三级给二级代理保证金
             if($school['level'] == 1){
                 $dailibaozhengjin = 0;
                 $yijichoulijine = 0;
                 $erjichoulijine = 0;
-                //一级分校的实际返佣=返佣金额-一级分校的保证金+（二级分校的一级抽离金额+三级分校的一级抽离金额）*（1-押金比例）-（一级分校退费*返佣比例+二级分校退费*二级分校1级抽离比例+三级分校退费*二级分校1级抽离比例）
+                //一级分校的实际返佣=返佣金额-一级分校的保证金+（二级分校的一级抽离金额+三级分校的一级抽离金额）*（1-押金比例）
             }else if($school['level'] == 2){
                 //一级抽离金额
-                $yijichoulijine = $daokuan * $school['one_extraction_ratio'];
+                $yijichoulijine = $daokuan * (100/$school['one_extraction_ratio']);
                 $dailibaozhengjin = $yijichoulijine * $school['deposit'];
                 $erjichoulijine = 0;
-                //二级分校的实际返佣=二级分校的返佣金额-二级分校的保证金+三级分校的二级抽离金额*（1-押金比例）-（二级分校退费*返佣比例+三级分校退费*三级分校2级抽离比例）
+                //二级分校的实际返佣=二级分校的返佣金额-二级分校的保证金+三级分校的二级抽离金额*（1-押金比例）
             }else if($school['level'] == 3){
                 //一级抽离金额
-                $yijichoulijine = $daokuan * $school['one_extraction_ratio'];
+                $yijichoulijine = $daokuan * (100/$school['one_extraction_ratio']);
                 //二级抽离金额
-                $erjichoulijine = $daokuan * $school['two_extraction_ratio'];
-                $dailibaozhengjin = $erjichoulijine * $school['deposit'];
-                //三级分校的实际返佣=三级分校的返佣金额-三级分校的保证金-三级分校退费*三级分校返佣比例
-
+                $erjichoulijine = $daokuan * (100/$school['two_extraction_ratio']);
+                $dailibaozhengjin = $erjichoulijine * (100/$school['deposit']);
+                //三级分校的实际返佣=三级分校的返佣金额
             }
+            $data['after_tax_amount'] = $suihou;   //税后金额
+            $data['return_commission_amount'] = $fanyong;  //返佣金额
+            $data['earnest_money'] = $baozhengjin;    //保证金
+            $data['agent_margin'] = $dailibaozhengjin;    //代理保证金
+            $data['first_out_of_amount'] = $yijichoulijine;    //1级抽离金额
+            $data['second_out_of_amount'] = $erjichoulijine;    //2级抽离金额
         }
         if($data['confirm_status'] == 2){
             $data['reject_time'] = date('Y-m-d H:i:s');
@@ -779,15 +800,13 @@ class Pay_order_inside extends Model
         if(!empty($order)){
             foreach ($order as $k=>&$v){
                 if($v['pay_type'] == 1){
-                    $v['pay_type_text'] = '支付宝扫码';
-                }else if ($v['pay_type'] == 2){
                     $v['pay_type_text'] = '微信扫码';
+                }else if ($v['pay_type'] == 2){
+                    $v['pay_type_text'] = '支付宝扫码';
                 }else if ($v['pay_type'] == 3){
-                    $v['pay_type_text'] = '银联快捷支付';
+                    $v['pay_type_text'] = '汇聚微信扫码';
                 }else if ($v['pay_type'] == 4){
-                    $v['pay_type_text'] = '微信小程序';
-                }else if ($v['pay_type'] == 5){
-                    $v['pay_type_text'] = '线下录入';
+                    $v['pay_type_text'] = '汇聚支付宝扫码';
                 }
                 if($v['pay_status'] == 0){
                     $v['pay_status_text'] = '未支付';
@@ -1020,12 +1039,12 @@ class Pay_order_inside extends Model
             'consignee_status' => 0,//0带收集 1收集中 2已收集 3重新收集
             'confirm_order_type' => $data['confirm_order_type'],//确认的订单类型 1课程订单 2报名订单3课程+报名订单
             'first_pay' => $data['first_pay'],//支付类型 1全款 2定金 3部分尾款 4最后一笔尾款
-//            'classes' => $data['classes'],//开课状态
-//            'return_visit' => $data['return_visit'],//回访状态
+            'classes' => isset($data['classes'])?$data['classes']:0,//开课状态
+            'return_visit' => isset($data['return_visit'])?$data['return_visit']:0,//回访状态
             'remark' => $data['remark'], //备注
             'pay_voucher_user_id' => $admin['id'], //上传凭证人
             'pay_voucher_time' => date('Y-m-d H:i:s'), //上传凭证时间
-            'pay_voucher' => $data['remark'], //支付凭证
+            'pay_voucher' => isset($data['pay_voucher'])?$data['pay_voucher']:'', //支付凭证
             'course_Price' => isset($data['course_Price'])?$data['course_Price']:0,
             'sum_Price' => $external['pay_price'],
             'sign_Price' => isset($data['sign_Price'])?$data['sign_Price']:0,
@@ -1139,15 +1158,13 @@ class Pay_order_inside extends Model
         if(!empty($order)){
             foreach ($order as $k=>&$v){
                 if($v['pay_type'] == 1){
-                    $v['pay_type_text'] = '支付宝扫码';
-                }else if ($v['pay_type'] == 2){
                     $v['pay_type_text'] = '微信扫码';
+                }else if ($v['pay_type'] == 2){
+                    $v['pay_type_text'] = '支付宝扫码';
                 }else if ($v['pay_type'] == 3){
-                    $v['pay_type_text'] = '银联快捷支付';
+                    $v['pay_type_text'] = '汇聚微信扫码';
                 }else if ($v['pay_type'] == 4){
-                    $v['pay_type_text'] = '微信小程序';
-                }else if ($v['pay_type'] == 5){
-                    $v['pay_type_text'] = '线下录入';
+                    $v['pay_type_text'] = '汇聚支付宝扫码';
                 }
                 if($v['pay_status'] == 0){
                     $v['pay_status_text'] = '未支付';
@@ -1293,6 +1310,7 @@ class Pay_order_inside extends Model
          * return  array
          */
     public static function branchsubmittedOrderCancel($data){
+        unset($data['/admin/order/branchsubmittedOrderCancel']);
         if(!isset($data['id']) || empty($data['id'])){
             return ['code' => 201 , 'msg' => '参数有误'];
         }
@@ -1510,7 +1528,7 @@ class Pay_order_inside extends Model
         $order_count = self::where('name' , $name)->where('mobile' , $mobile)->where('school_id' , $school_id)->where('project_id' , $project_id)->where('subject_id' , $subject_id)->where('course_id' , $course_id)->where('del_flag' , 0)->count();
 
         //支付方式数组
-        $pay_type_array = [1=>'支付宝扫码',2=>'微信扫码',3=>'银联快捷支付',4=>'微信小程序',5=>'线下录入'];
+        $pay_type_array = [1=>'微信扫码',2=>'支付宝扫码',3=>'汇聚微信扫码',4=>'汇聚支付宝扫码'];
 
         //支付状态数组
         $pay_status_array = [0=>'未支付',1=>'已支付',2=>'支付失败',3=>'已退款'];

@@ -7,6 +7,8 @@ use App\Models\Orderdocumentary;
 use App\Models\Teacher;
 use Illuminate\Support\Facades\DB;
 use App\Models\School;
+use App\Models\Category;
+use App\Models\Course;
 class Student extends Model {
     //指定别的表名
     public $table = 'student';
@@ -275,6 +277,29 @@ class Student extends Model {
             'page' =>$page,
             'total'=>$count
         ];
+        foreach($data as $k => &$v){
+            $v['school_name'] = School::select("school_name")->where("id",$v['school_id'])->first()['school_name'];
+            $v['project_name'] = Category::select("name")->where("id",$v['project_id'])->first()['name'];
+            $v['subject_name'] = Category::select("name")->where("id",$v['subject_id'])->first()['name'];
+            $v['course_name'] = Course::select("course_name")->where("id",$v['course_id'])->first()['course_name'];
+            if($v['first_pay'] == 1){
+                $v['first_pay_name'] = "全款";
+            }else if($v['first_pay'] == 2){
+                $v['first_pay_name'] = "定金";
+            }else if($v['first_pay'] == 3){
+                $v['first_pay_name'] = "部分尾款";
+            }else{
+                $v['first_pay_name'] = "最后一笔尾款";
+            }
+
+            if($v['confirm_order_type'] == 1){
+                $v['confirm_order_type_name'] = "课程订单";
+            }else if($v['confirm_order_type'] == 2){
+                $v['confirm_order_type_name'] = "报名订单";
+            }else{
+                $v['confirm_order_type_name'] = "课程+报名订单";
+            }
+    }
         if($data){
             return ['code' => 200, 'msg' => '查询成功', 'data' => $data,'page'=>$page,'one'=>$one];
         }else{
@@ -288,6 +313,8 @@ class Student extends Model {
         //获取登录id
         $admin = isset(AdminLog::getAdminInfo()->admin_user) ? AdminLog::getAdminInfo()->admin_user: [];
         $user_id  = $admin['id'];
+
+
         //每页显示的条数
         $pagesize = (int)isset($data['pagesize']) && $data['pagesize'] > 0 ? $data['pagesize'] : 20;
         $page     = isset($data['page']) && $data['page'] > 0 ? $data['page'] : 1;
@@ -307,60 +334,141 @@ class Student extends Model {
                 $data['subject_id'] = 0;
             }
         }
-        //计算总数
-        $count = Pay_order_inside::select()->where("seas_status",0)->where("have_user_id",$user_id)->where(function($query) use ($data) {
-            if(isset($data['project_id']) && !empty($data['project_id'])){
-                $query->where('project_id',$data['project_id']);
-            }
-            if(isset($data['subject_id']) && !empty($data['subject_id'])){
-                $query->where('subject_id',$data['subject_id']);
-            }
-            if(isset($data['school_id']) && !empty($data['school_id'])){
-                $query->where('school_id',$data['school_id']);
-            }
-            if(isset($data['return_visit']) && $data['return_visit'] != -1){
-                $query->where('return_visit',$data['return_visit']);
-            }
-            if(isset($data['pay_type']) && $data['pay_type'] != -1){
-                $query->where('pay_type',$data['pay_type']);
-            }
-            if(isset($data['classes']) && $data['classes'] != -1){
-                $query->where('classes',$data['classes']);
-            }
-            if(isset($data['confirm_status']) && $data['confirm_status'] != -1){
-                $query->where('confirm_status',$data['confirm_status']);
-            }
-            if(isset($data['keyword']) && !empty(isset($data['keyword']))){
-                $query->where('name','like','%'.$data['keyword'].'%')->orWhere('mobile','like','%'.$data['keyword'].'%');
-            }
-        })->count();
-        //分页数据
-        $data = Pay_order_inside::select()->where("seas_status",0)->where("have_user_id",$user_id)->where(function($query) use ($data) {
-            if(isset($data['project_id']) && !empty($data['project_id'])){
-                $query->where('project_id',$data['project_id']);
-            }
-            if(isset($data['subject_id']) && !empty($data['subject_id'])){
-                $query->where('subject_id',$data['subject_id']);
-            }
-            if(isset($data['school_id']) && !empty($data['school_id'])){
-                $query->where('school_id',$data['school_id']);
-            }
-            if(isset($data['return_visit']) && $data['return_visit'] != -1){
-                $query->where('return_visit',$data['return_visit']);
-            }
-            if(isset($data['pay_type']) && $data['pay_type'] != -1){
-                $query->where('pay_type',$data['pay_type']);
-            }
-            if(isset($data['classes']) && $data['classes'] != -1){
-                $query->where('classes',$data['classes']);
-            }
-            if(isset($data['confirm_status']) && $data['confirm_status'] != -1){
-                $query->where('confirm_status',$data['confirm_status']);
-            }
-            if(isset($data['keyword']) && !empty(isset($data['keyword']))){
-                $query->where('name','like','%'.$data['keyword'].'%')->orWhere('mobile','like','%'.$data['keyword'].'%');
-            }
-        })->offset($offset)->limit($pagesize)->get()->toArray();
+        //总管理
+        if($user_id == 1){
+            //计算总数
+            $count = Pay_order_inside::where("seas_status",0)->where(function($query) use ($data) {
+                if(isset($data['project_id']) && !empty($data['project_id'])){
+                    $query->where('project_id',$data['project_id']);
+                }
+                if(isset($data['subject_id']) && !empty($data['subject_id'])){
+                    $query->where('subject_id',$data['subject_id']);
+                }
+                if(isset($data['school_id']) && !empty($data['school_id'])){
+                    $query->where('school_id',$data['school_id']);
+                }
+                if(isset($data['return_visit']) && $data['return_visit'] != -1){
+                    $query->where('return_visit',$data['return_visit']);
+                }
+                if(isset($data['pay_type']) && $data['pay_type'] != -1){
+                    $query->where('pay_type',$data['pay_type']);
+                }
+                if(isset($data['classes']) && $data['classes'] != -1){
+                    $query->where('classes',$data['classes']);
+                }
+                if(isset($data['confirm_status']) && $data['confirm_status'] != -1){
+                    $query->where('confirm_status',$data['confirm_status']);
+                }
+                if(isset($data['keyword']) && !empty(isset($data['keyword']))){
+                    $query->where('name','like','%'.$data['keyword'].'%')->orWhere('mobile','like','%'.$data['keyword'].'%');
+                }
+            })->count();
+            //分页数据
+            $data = Pay_order_inside::where("seas_status",0)->where(function($query) use ($data) {
+                if(isset($data['project_id']) && !empty($data['project_id'])){
+                    $query->where('project_id',$data['project_id']);
+                }
+                if(isset($data['subject_id']) && !empty($data['subject_id'])){
+                    $query->where('subject_id',$data['subject_id']);
+                }
+                if(isset($data['school_id']) && !empty($data['school_id'])){
+                    $query->where('school_id',$data['school_id']);
+                }
+                if(isset($data['return_visit']) && $data['return_visit'] != -1){
+                    $query->where('return_visit',$data['return_visit']);
+                }
+                if(isset($data['pay_type']) && $data['pay_type'] != -1){
+                    $query->where('pay_type',$data['pay_type']);
+                }
+                if(isset($data['classes']) && $data['classes'] != -1){
+                    $query->where('classes',$data['classes']);
+                }
+                if(isset($data['confirm_status']) && $data['confirm_status'] != -1){
+                    $query->where('confirm_status',$data['confirm_status']);
+                }
+                if(isset($data['keyword']) && !empty(isset($data['keyword']))){
+                    $query->where('name','like','%'.$data['keyword'].'%')->orWhere('mobile','like','%'.$data['keyword'].'%');
+                }
+            })->offset($offset)->limit($pagesize)->get()->toArray();
+        }else{
+            //计算总数
+            $count = Pay_order_inside::select()->where("seas_status",0)->where("have_user_id",$user_id)->where(function($query) use ($data) {
+                if(isset($data['project_id']) && !empty($data['project_id'])){
+                    $query->where('project_id',$data['project_id']);
+                }
+                if(isset($data['subject_id']) && !empty($data['subject_id'])){
+                    $query->where('subject_id',$data['subject_id']);
+                }
+                if(isset($data['school_id']) && !empty($data['school_id'])){
+                    $query->where('school_id',$data['school_id']);
+                }
+                if(isset($data['return_visit']) && $data['return_visit'] != -1){
+                    $query->where('return_visit',$data['return_visit']);
+                }
+                if(isset($data['pay_type']) && $data['pay_type'] != -1){
+                    $query->where('pay_type',$data['pay_type']);
+                }
+                if(isset($data['classes']) && $data['classes'] != -1){
+                    $query->where('classes',$data['classes']);
+                }
+                if(isset($data['confirm_status']) && $data['confirm_status'] != -1){
+                    $query->where('confirm_status',$data['confirm_status']);
+                }
+                if(isset($data['keyword']) && !empty(isset($data['keyword']))){
+                    $query->where('name','like','%'.$data['keyword'].'%')->orWhere('mobile','like','%'.$data['keyword'].'%');
+                }
+            })->count();
+            //分页数据
+            $data = Pay_order_inside::select()->where("seas_status",0)->where("have_user_id",$user_id)->where(function($query) use ($data) {
+                if(isset($data['project_id']) && !empty($data['project_id'])){
+                    $query->where('project_id',$data['project_id']);
+                }
+                if(isset($data['subject_id']) && !empty($data['subject_id'])){
+                    $query->where('subject_id',$data['subject_id']);
+                }
+                if(isset($data['school_id']) && !empty($data['school_id'])){
+                    $query->where('school_id',$data['school_id']);
+                }
+                if(isset($data['return_visit']) && $data['return_visit'] != -1){
+                    $query->where('return_visit',$data['return_visit']);
+                }
+                if(isset($data['pay_type']) && $data['pay_type'] != -1){
+                    $query->where('pay_type',$data['pay_type']);
+                }
+                if(isset($data['classes']) && $data['classes'] != -1){
+                    $query->where('classes',$data['classes']);
+                }
+                if(isset($data['confirm_status']) && $data['confirm_status'] != -1){
+                    $query->where('confirm_status',$data['confirm_status']);
+                }
+                if(isset($data['keyword']) && !empty(isset($data['keyword']))){
+                    $query->where('name','like','%'.$data['keyword'].'%')->orWhere('mobile','like','%'.$data['keyword'].'%');
+                }
+            })->offset($offset)->limit($pagesize)->get()->toArray();
+        }
+        foreach($data as $k => &$v){
+                $v['school_name'] = School::select("school_name")->where("id",$v['school_id'])->first()['school_name'];
+                $v['project_name'] = Category::select("name")->where("id",$v['project_id'])->first()['name'];
+                $v['subject_name'] = Category::select("name")->where("id",$v['subject_id'])->first()['name'];
+                $v['course_name'] = Course::select("course_name")->where("id",$v['course_id'])->first()['course_name'];
+                if($v['first_pay'] == 1){
+                    $v['first_pay_name'] = "全款";
+                }else if($v['first_pay'] == 2){
+                    $v['first_pay_name'] = "定金";
+                }else if($v['first_pay'] == 3){
+                    $v['first_pay_name'] = "部分尾款";
+                }else{
+                    $v['first_pay_name'] = "最后一笔尾款";
+                }
+
+                if($v['confirm_order_type'] == 1){
+                    $v['confirm_order_type_name'] = "课程订单";
+                }else if($v['confirm_order_type'] == 2){
+                    $v['confirm_order_type_name'] = "报名订单";
+                }else{
+                    $v['confirm_order_type_name'] = "课程+报名订单";
+                }
+        }
         $page=[
             'pageSize'=>$pagesize,
             'page' =>$page,
@@ -427,6 +535,29 @@ class Student extends Model {
                 $query->where('name','like','%'.$data['keyword'].'%')->orWhere('mobile','like','%'.$data['keyword'].'%');
             }
         })->offset($offset)->limit($pagesize)->get()->toArray();
+        foreach($data as $k => &$v){
+            $v['school_name'] = School::select("school_name")->where("id",$v['school_id'])->first()['school_name'];
+            $v['project_name'] = Category::select("name")->where("id",$v['project_id'])->first()['name'];
+            $v['subject_name'] = Category::select("name")->where("id",$v['subject_id'])->first()['name'];
+            $v['course_name'] = Course::select("course_name")->where("id",$v['course_id'])->first()['course_name'];
+            if($v['first_pay'] == 1){
+                $v['first_pay_name'] = "全款";
+            }else if($v['first_pay'] == 2){
+                $v['first_pay_name'] = "定金";
+            }else if($v['first_pay'] == 3){
+                $v['first_pay_name'] = "部分尾款";
+            }else{
+                $v['first_pay_name'] = "最后一笔尾款";
+            }
+
+            if($v['confirm_order_type'] == 1){
+                $v['confirm_order_type_name'] = "课程订单";
+            }else if($v['confirm_order_type'] == 2){
+                $v['confirm_order_type_name'] = "报名订单";
+            }else{
+                $v['confirm_order_type_name'] = "课程+报名订单";
+            }
+    }
         $page=[
             'pageSize'=>$pagesize,
             'page' =>$page,

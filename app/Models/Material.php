@@ -33,7 +33,7 @@ class Material extends Model {
             }
         })->count();
         //分页数据
-        $data = self::select('material.submit_time', 'material.submit_name', 'material.school_id', 'material.status', 'material.id','material.courier_company','material.courier_number','material.courier_note','material.delivery_time')->where(function($query) use ($data) {
+        $data = self::select('material.submit_time', 'material.submit_name','create_name','create_id','material.school_id', 'material.status', 'material.id','material.courier_company','material.courier_number','material.courier_note','material.delivery_time')->where(function($query) use ($data) {
             if(isset($data['school_id']) && !empty($data['school_id'])){
                 $query->where('material.school_id',$data['school_id']);
             }

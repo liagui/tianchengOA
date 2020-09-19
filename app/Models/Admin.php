@@ -184,10 +184,10 @@ class Admin extends Model implements AuthenticatableContract, AuthorizableContra
                                 $query->where('username','like','%'.$body['search'].'%')
                                       ->orWhere('mobile','like','%'.$body['search'].'%');
                             }
-                            if(isset($body['use']) && !empty($body['use'])){
+                            if(isset($body['use']) &&  strlen($body['use'])>0){
                                 $query->where('is_use',$body['use']);     
                             }
-                            if(isset($body['forbid']) && !empty($body['forbid'])){
+                            if(isset($body['forbid']) && strlen($body['forbid'])>0){
                                 $query->where('is_forbid',$body['forbid']);     
                             }
                             if(isset($body['school']) && !empty($body['school'])){
@@ -204,10 +204,10 @@ class Admin extends Model implements AuthenticatableContract, AuthorizableContra
                                 $query->where('username','like','%'.$body['search'].'%')
                                       ->orWhere('mobile','like','%'.$body['search'].'%');
                             }
-                            if(isset($body['use']) && !empty($body['use'])){
+                            if(isset($body['use']) && strlen($body['use'])>0){
                                 $query->where('is_use',$body['use']);     
                             }
-                            if(isset($body['forbid']) && !empty($body['forbid'])){
+                            if(isset($body['forbid']) && strlen($body['forbid'])>0){
                                 $query->where('is_forbid',$body['forbid']);     
                             }
                             if(isset($body['school']) && !empty($body['school'])){
