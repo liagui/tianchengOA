@@ -89,9 +89,10 @@ class Pay_order_inside extends Model
                         ->orwhere('name',$data['order_on'])
                         ->orwhere('mobile',$data['order_on']);
                 }
-//                if($data['isBranchSchool'] == true){
-//                    $query->where('school_id','!=',null);
-//                }
+                if($data['isBranchSchool'] == true){
+                    $query->where('school_id','!=',null)
+                        ->orwhere('school_id','!=',0);
+                }
                 $query->whereIn('school_id',$schoolarr);
             })
             ->where($where)
@@ -103,9 +104,10 @@ class Pay_order_inside extends Model
                 $query->where('order_no', $data['order_on'])
                     ->orwhere('name', $data['order_on'])
                     ->orwhere('mobile', $data['order_on']);
-//            if($data['isBranchSchool'] == true){
-//                $query->where('school_id','!=',null);
-//            }
+            if($data['isBranchSchool'] == true){
+                $query->where('school_id','!=',null)
+                    ->orwhere('school_id','!=',0);
+            }
             }
         })->where($where)
         ->whereBetween('create_time', [$state_time, $end_time])
@@ -129,11 +131,7 @@ class Pay_order_inside extends Model
             foreach ($res as $k=>&$v){
                 //查学校
                 if(empty($v['school_id']) || $v['school_id'] == 0){
-//                    if(!empty($data['isBranchSchool']) && $data['isBranchSchool'] == true){
-//                        unset($res[$k]);
-//                    }else{
                         $v['school_name'] = '';
-//                    }
                 }else{
                     $school = School::where(['id'=>$v['school_id']])->first();
                     if($school){
