@@ -1,6 +1,5 @@
 <?php
 namespace App\Models;
-
 use Illuminate\Database\Eloquent\Model;
 use App\Models\Pay_order_inside;
 use App\Models\Orderdocumentary;
@@ -9,6 +8,7 @@ use Illuminate\Support\Facades\DB;
 use App\Models\School;
 use App\Models\Category;
 use App\Models\Course;
+use App\Models\StudentCourse;
 class Student extends Model {
     //指定别的表名
     public $table = 'student';
@@ -350,9 +350,9 @@ class Student extends Model {
                 if(isset($data['pay_type']) && $data['pay_type'] != -1){
                     $query->where('pay_type',$data['pay_type']);
                 }
-                if(isset($data['classes']) && $data['classes'] != -1){
-                    $query->where('classes',$data['classes']);
-                }
+                // if(isset($data['classes']) && $data['classes'] != -1){
+                //     $query->where('classes',$data['classes']);
+                // }
                 if(isset($data['confirm_status']) && $data['confirm_status'] != -1){
                     $query->where('confirm_status',$data['confirm_status']);
                 }
@@ -374,9 +374,9 @@ class Student extends Model {
                 if(isset($data['pay_type']) && $data['pay_type'] != -1){
                     $query->where('pay_type',$data['pay_type']);
                 }
-                if(isset($data['classes']) && $data['classes'] != -1){
-                    $query->where('classes',$data['classes']);
-                }
+                // if(isset($data['classes']) && $data['classes'] != -1){
+                //     $query->where('classes',$data['classes']);
+                // }
                 if(isset($data['confirm_status']) && $data['confirm_status'] != -1){
                     $query->where('confirm_status',$data['confirm_status']);
                 }
@@ -399,9 +399,9 @@ class Student extends Model {
                 if(isset($data['pay_type']) && $data['pay_type'] != -1){
                     $query->where('pay_type',$data['pay_type']);
                 }
-                if(isset($data['classes']) && $data['classes'] != -1){
-                    $query->where('classes',$data['classes']);
-                }
+                // if(isset($data['classes']) && $data['classes'] != -1){
+                //     $query->where('classes',$data['classes']);
+                // }
                 if(isset($data['confirm_status']) && $data['confirm_status'] != -1){
                     $query->where('confirm_status',$data['confirm_status']);
                 }
@@ -423,9 +423,9 @@ class Student extends Model {
                 if(isset($data['pay_type']) && $data['pay_type'] != -1){
                     $query->where('pay_type',$data['pay_type']);
                 }
-                if(isset($data['classes']) && $data['classes'] != -1){
-                    $query->where('classes',$data['classes']);
-                }
+                // if(isset($data['classes']) && $data['classes'] != -1){
+                //     $query->where('classes',$data['classes']);
+                // }
                 if(isset($data['confirm_status']) && $data['confirm_status'] != -1){
                     $query->where('confirm_status',$data['confirm_status']);
                 }
@@ -435,6 +435,14 @@ class Student extends Model {
             })->offset($offset)->limit($pagesize)->orderByDesc("id")->get()->toArray();
         }
         foreach($res as $k => &$v){
+                //是否开课
+                $c = StudentCourse::where(["order_no"=>$v['order_no'],"status"=>1])->first();
+                if(empty($c)){
+                    $v['classes'] = 0;
+                }else{
+                    $v['classes'] = 1;
+                }
+                //是否回访
                 $a = Orderdocumentary::where("order_id",$v['id'])->first();
                 if(empty($a)){
                     $v['return_visit'] = 0;
@@ -465,6 +473,10 @@ class Student extends Model {
         }
         if(isset($data['return_visit']) && $data['return_visit'] != -1){
             $res = array_filter($res, function($t) use ($data) { return $t['return_visit'] == $data['return_visit']; });
+            $count = count($res);
+        }
+        if(isset($data['classes']) && $data['classes'] != -1){
+            $res = array_filter($res, function($t) use ($data) { return $t['classes'] == $data['classes']; });
             $count = count($res);
         }
         $page=[
