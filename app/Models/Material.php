@@ -43,7 +43,7 @@ class Material extends Model {
             if(isset($data['submit_name']) && !empty($data['submit_name'])){
                 $query->where('material.submit_name',$data['submit_name']);
             }
-        })->offset($offset)->limit($pagesize)->get()->toArray();
+        })->offset($offset)->limit($pagesize)->orderByDesc("id")->get()->toArray();
         $desc = "";
         $school_name = "";
         foreach($data as $key =>&$material){
