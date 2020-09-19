@@ -46,9 +46,6 @@ class Material extends Model {
         })->offset($offset)->limit($pagesize)->orderByDesc("id")->get()->toArray();
 
         $school_name = "";
-        $contract = "";
-        $invoice = "";
-        $receipt = "";
         foreach($data as $key =>&$material){
             $desc = "";
             if($material['status'] == 1){
