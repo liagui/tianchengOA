@@ -277,7 +277,7 @@ class Teacher extends Model {
             if(isset($data['keyword']) && !empty(isset($data['keyword']))){
                 $query->where('name','like','%'.$data['keyword'].'%')->orWhere('mobile','like','%'.$data['keyword'].'%');
             }
-        })->get();
+        })->get()->toArray();
 
         foreach($res as $k =>&$v){
             //是否回访
