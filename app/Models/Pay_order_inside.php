@@ -1033,7 +1033,7 @@ class Pay_order_inside extends Model
             'remark' => $data['remark'], //备注
             'pay_voucher_user_id' => $admin['id'], //上传凭证人
             'pay_voucher_time' => date('Y-m-d H:i:s'), //上传凭证时间
-            'pay_voucher' => $data['pay_voucher'], //支付凭证
+            'pay_voucher' => isset($data['pay_voucher'])?$data['pay_voucher']:'', //支付凭证
             'course_Price' => isset($data['course_Price'])?$data['course_Price']:0,
             'sum_Price' => $external['pay_price'],
             'sign_Price' => isset($data['sign_Price'])?$data['sign_Price']:0,
