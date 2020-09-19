@@ -87,6 +87,8 @@ class Pay_order_inside extends Model
                 }
                 if(!empty($data['isBranchSchool']) && $data['isBranchSchool'] == true){
                     $query->where('school_id','!=',null);
+                    $query->where('school_id','!=','');
+                    $query->where('school_id','!=',0);
                 }
                 $query->whereIn('school_id',$schoolarr);
             })
@@ -101,6 +103,8 @@ class Pay_order_inside extends Model
                     ->orwhere('mobile', $data['order_on']);
                 if(!empty($data['isBranchSchool']) && $data['isBranchSchool'] == true){
                     $query->where('school_id','!=',null);
+                    $query->where('school_id','!=','');
+                    $query->where('school_id','!=',0);
                 }
             }
         })->where($where)
