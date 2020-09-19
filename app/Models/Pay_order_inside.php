@@ -111,6 +111,7 @@ class Pay_order_inside extends Model
         //分校只显示流转
         if(!empty($data['isBranchSchool']) && $data['isBranchSchool'] == true){
             $all = $order;
+            $count = count($order);
         }else{
             //两数组合并
             if (!empty($order) && !empty($external)) {
@@ -118,6 +119,8 @@ class Pay_order_inside extends Model
             } else {
                 $all = !empty($order) ? $order : $external;
             }
+            //循环查询分类
+            $count = count($order) + count($external);
         }
         $date = array_column($all, 'create_time');
         array_multisort($date, SORT_DESC, $all);
@@ -125,8 +128,7 @@ class Pay_order_inside extends Model
         if(empty($res)){
             $res = array_slice($all, 1, $pagesize);
         }
-        //循环查询分类
-        $count = count($order) + count($external);
+
         if(!empty($res)){
             foreach ($res as $k=>&$v){
                 //查学校
