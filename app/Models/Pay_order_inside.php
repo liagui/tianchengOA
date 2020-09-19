@@ -87,11 +87,12 @@ class Pay_order_inside extends Model
                 }
                 $query->whereIn('school_id',$schoolarr);
             })
-            ->where($where)
+//            ->where($where)
             ->whereBetween('create_time', [$state_time, $end_time])
             ->orderByDesc('id')
             ->offset($offset)->limit($pagesize)
             ->get()->toArray();
+        print_r($order);die;
 //        $external = Pay_order_external::where(function($query) use ($data,$schoolarr) {
 //            if (isset($data['order_no']) && !empty($data['order_no'])) {
 //                $query->where('order_no', $data['order_on'])
