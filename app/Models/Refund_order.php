@@ -61,7 +61,6 @@ class Refund_order extends Model
             'create_time' => date('Y-m-d H:i:s'),
             'refund_reason' => isset($data['refund_reason'])?$data['refund_reason']:'',
             'refund_plan' => 0,
-            'teacher_id' =>isset(AdminLog::getAdminInfo()->admin_user->id)?AdminLog::getAdminInfo()->admin_user->id:0,
             'course_id' => $data['course_id'],
             'project_id' => $data['project_id'],
             'subject_id' => $data['subject_id'],
@@ -355,6 +354,12 @@ class Refund_order extends Model
                 $up['subject_id'] = $parent[1];
             }
             $orderid = json_decode($data['order_id'],true);
+            foreach ($orderid as $k=>$v){
+               $orderdetail = Pay_order_inside::where(['id'=>$v['id']])->first();
+               if($orderdetail['first_pay'] == 1 || $orderdetail['first_pay'] == 2){
+                   $up['teacher_id'] = $orderdetail['have_user_id'];
+               }
+            }
             $credentials = json_decode($data['pay_credentials'],true);
             $up['course_id'] = $data['course_id'];
             $up['student_name'] = $data['student_name'];
