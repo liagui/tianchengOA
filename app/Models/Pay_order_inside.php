@@ -113,10 +113,9 @@ class Pay_order_inside extends Model
         }
         //循环查询分类
         $countprice = 0;
-        $count = 0;
+        $count = count($order) + count($external);
         if(!empty($res)){
             foreach ($res as $k=>&$v){
-                $count = $count + 1;
                 //查学校
                 if(empty($v['school_id']) || $v['school_id'] == 0){
                     $v['school_name'] = '';
