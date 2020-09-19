@@ -230,7 +230,7 @@ class Teacher extends Model {
         $one['completed_performance'] = Pay_order_inside::select("course_Price")->where(['have_user_id'=>$data['teacher_id']])->sum("course_Price");
 
         //查询详细数据
-        $count = Pay_order_inside::where(['have_user_id'=>$data['teacher_id'],'classes'=>1,'seas_status'=>0])->where(function($query) use ($data){
+        $count = Pay_order_inside::where(['have_user_id'=>$data['teacher_id'],'seas_status'=>0])->where(function($query) use ($data){
             if(isset($data['school_id']) && !empty(isset($data['school_id']))){
                 $query->where('school_id','like','%'.$data['school_id'].'%');
             }
@@ -247,7 +247,7 @@ class Teacher extends Model {
                 $query->where('name','like','%'.$data['keyword'].'%')->orWhere('mobile','like','%'.$data['keyword'].'%');
             }
         })->count();
-        $data = Pay_order_inside::where(['have_user_id'=>$data['teacher_id'],'classes'=>1,'seas_status'=>0])->where(function($query) use ($data){
+        $data = Pay_order_inside::where(['have_user_id'=>$data['teacher_id'],'seas_status'=>0])->where(function($query) use ($data){
             if(isset($data['school_id']) && !empty(isset($data['school_id']))){
                 $query->where('school_id','like','%'.$data['school_id'].'%');
             }
@@ -265,10 +265,30 @@ class Teacher extends Model {
             }
         })->offset($offset)->limit($pagesize)->get();
 
-        foreach($data as $k =>$v){
+        foreach($data as $k =>&$v){
             $school_name = School::select("school_name")->where('id',$v['school_id'])->first();
             if(!empty($school_name)){
-            $data[$k]['school_name'] = $school_name['school_name'];
+            $v['school_name'] = $school_name['school_name'];
+            }
+            $v['school_name'] = School::select("school_name")->where("id",$v['school_id'])->first()['school_name'];
+            $v['project_name'] = Category::select("name")->where("id",$v['project_id'])->first()['name'];
+            $v['subject_name'] = Category::select("name")->where("id",$v['subject_id'])->first()['name'];
+            $v['course_name'] = Course::select("course_name")->where("id",$v['course_id'])->first()['course_name'];
+            if($v['first_pay'] == 1){
+                $v['first_pay_name'] = "全款";
+            }else if($v['first_pay'] == 2){
+                $v['first_pay_name'] = "定金";
+            }else if($v['first_pay'] == 3){
+                $v['first_pay_name'] = "部分尾款";
+            }else{
+                $v['first_pay_name'] = "最后一笔尾款";
+            }
+            if($v['confirm_order_type'] == 1){
+                $v['confirm_order_type_name'] = "课程订单";
+            }else if($v['confirm_order_type'] == 2){
+                $v['confirm_order_type_name'] = "报名订单";
+            }else{
+                $v['confirm_order_type_name'] = "课程+报名订单";
             }
         }
         $page=[
