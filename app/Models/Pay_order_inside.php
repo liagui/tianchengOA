@@ -140,13 +140,19 @@ class Pay_order_inside extends Model
                     }
                 }
                 if($v['pay_type'] == 1){
-                    $v['pay_type_text'] = '微信扫码';
+                    $v['pay_type_text'] = '微信';
                 }else if ($v['pay_type'] == 2){
-                    $v['pay_type_text'] = '支付宝扫码';
+                    $v['pay_type_text'] = '支付宝';
                 }else if ($v['pay_type'] == 3){
-                    $v['pay_type_text'] = '汇聚微信扫码';
+                    $v['pay_type_text'] = '汇聚微信';
                 }else if ($v['pay_type'] == 4){
-                    $v['pay_type_text'] = '汇聚支付宝扫码';
+                    $v['pay_type_text'] = '汇聚支付宝';
+                }else if ($v['pay_type'] == 5){
+                    $v['pay_type_text'] = '银行卡支付';
+                }else if ($v['pay_type'] == 6){
+                    $v['pay_type_text'] = '对公转账';
+                }else if ($v['pay_type'] == 7){
+                    $v['pay_type_text'] = '支付宝账号对公';
                 }
                 if($v['pay_status'] == 0){
                     $v['pay_status_text'] = '未支付';
@@ -268,7 +274,7 @@ class Pay_order_inside extends Model
          * @param   major_id  院校id
          * @param   mobile  专业id
          * @param   pay_price  支付金额
-         * @param   pay_type  支付方式（1支付宝扫码2微信扫码3银联快捷支付4微信小程序5线下录入）
+         * @param   pay_type  支付方式（1微信扫码2支付宝扫码3汇聚微信4汇聚支付宝5银行卡支付6对公转账7支付宝账号对公）
          * @param   remark  备注
          * @param   name  姓名
          * @param   school_id  所属分校
@@ -323,6 +329,10 @@ class Pay_order_inside extends Model
         $data['admin_id'] = $admin['id'];
         $add = self::insert($data);
         if($add){
+            $exter = Pay_order_external::where(['pay_status'=>1,'name'=>$data['name'],'mobile'=>$data['mobile'],'course_id'=>$data['course_id'],'project_id'=>$data['project_id'],'subject_id'=>$data['subject_id']])->first();
+            if($exter){
+                $data['realy_pay_type'] = $exter['pay_type'];
+            }
             return ['code' => 200 , 'msg' => '报单成功'];
         }else{
             return ['code' => 201 , 'msg' => '报单失败'];
