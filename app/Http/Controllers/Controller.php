@@ -330,7 +330,7 @@ class Controller extends BaseController {
             }
             return ['code'=>200,'msg'=>'Success','data'=>$YesLookSchoolIds];
         }else{
-            
+            echo 111;die;
             $schoolData = \App\Models\School::whereIn('id',$schoolIds)->where(['is_del'=>0])->select('id','look_all_flag','level')->get()->toArray();
             if(empty($schoolData)){
                 return ['code'=>201,'msg'=>'暂无学校信息'];

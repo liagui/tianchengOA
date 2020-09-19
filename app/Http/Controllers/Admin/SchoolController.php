@@ -35,7 +35,11 @@ class SchoolController extends Controller {
         try{
             $body = self::$accept_data;
             $school_id =  isset(AdminLog::getAdminInfo()->admin_user->school_id) ? AdminLog::getAdminInfo()->admin_user->school_id : 0;
-            $body['school_id'] = $this->underlingLook($school_id)['data'];
+            if(!isset($body['school_id']) || empty($body['school_id'])){
+                $body['school_id'] = $this->underlingLook($school_id)['data'];
+            }else{
+                $body['school_id'] = [$body['school_id']];
+            }
             $data = School::getList($body);
             if($data['code'] == 200){
                 return response()->json($data);
