@@ -101,12 +101,13 @@ class Pay_order_inside extends Model
             ->whereBetween('create_time', [$state_time, $end_time])
             ->orderByDesc('id')
             ->get()->toArray();
-        //两数组合并 排序
+        //两数组合并
         if (!empty($order) && !empty($external)) {
             $all = array_merge($order, $external);//合并两个二维数组
         } else {
             $all = !empty($order) ? $order : $external;
         }
+        print_r($all);die;
         $res = array_slice($all, $offset, $pagesize);
         if(empty($res)){
             $res = array_slice($all, 1, $pagesize);
