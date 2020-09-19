@@ -118,59 +118,82 @@ class Pay_order_inside extends Model
             foreach ($res as $k=>&$v){
                 $count = $count + 1;
                 //查学校
-                $school = School::where(['id'=>$v['school_id']])->first();
-                if($school){
-                    $v['school_name'] = $school['school_name'];
+                if(empty($v['school_id']) || $v['school_id'] == 0){
+                    $v['school_name'] = '';
+                }else{
+                    $school = School::where(['id'=>$v['school_id']])->first();
+                    if($school){
+                        $v['school_name'] = $school['school_name'];
+                    }
                 }
                 $countprice = $countprice + $v['pay_price'];
                 if($v['pay_type'] == 1){
-                    $v['pay_type_text'] = '支付宝扫码';
-                }else if ($v['pay_type'] == 2){
                     $v['pay_type_text'] = '微信扫码';
+                }else if ($v['pay_type'] == 2){
+                    $v['pay_type_text'] = '支付宝扫码';
                 }else if ($v['pay_type'] == 3){
-                    $v['pay_type_text'] = '银联快捷支付';
+                    $v['pay_type_text'] = '汇聚微信扫码';
                 }else if ($v['pay_type'] == 4){
-                    $v['pay_type_text'] = '微信小程序';
-                }else if ($v['pay_type'] == 5){
-                    $v['pay_type_text'] = '线下录入';
+                    $v['pay_type_text'] = '汇聚支付宝扫码';
                 }
                 if($v['pay_status'] == 0){
                     $v['pay_status_text'] = '未支付';
                 }else{
                     $v['pay_status_text'] = '已支付';
                 }
-                if($v['return_visit'] == 0){
-                    $v['return_visit_text'] = '未回访';
+                if(empty($v['return_visit'])){
+                    $v['return_visit_text'] = '';
                 }else{
-                    $v['return_visit_text'] = '已回访';
+                    if($v['return_visit'] == 0){
+                        $v['return_visit_text'] = '未回访';
+                    }else{
+                        $v['return_visit_text'] = '已回访';
+                    }
                 }
-                if($v['classes'] == 0){
-                    $v['classes_text'] = '未开课';
+                if(empty($v['classes'])){
+                    $v['classes_text'] = '';
                 }else{
-                    $v['classes_text'] = '已开课';
+                    if( $v['classes'] == 0){
+                        $v['classes_text'] = '未开课';
+                    }else{
+                        $v['classes_text'] = '已开课';
+                    }
                 }
-                if($v['confirm_order_type'] == 1){
-                    $v['confirm_order_type_text'] = '课程订单';
-                }else if($v['confirm_order_type'] == 2){
-                    $v['confirm_order_type_text'] = '报名订单';
-                }else if($v['confirm_order_type'] == 3){
-                    $v['confirm_order_type_text'] = '课程+报名订单';
+                if(empty($v['confirm_order_type'])){
+                    $v['confirm_order_type_text'] = '';
+                }else{
+                    if($v['confirm_order_type'] == 1){
+                        $v['confirm_order_type_text'] = '课程订单';
+                    }else if($v['confirm_order_type'] == 2){
+                        $v['confirm_order_type_text'] = '报名订单';
+                    }else if($v['confirm_order_type'] == 3){
+                        $v['confirm_order_type_text'] = '课程+报名订单';
+                    }
                 }
-                if($v['first_pay'] == 1){
-                    $v['first_pay_text'] = '全款';
-                }else if($v['first_pay'] == 2){
-                    $v['first_pay_text'] = '定金';
-                }else if($v['first_pay'] == 3){
-                    $v['first_pay_text'] = '部分尾款';
-                }else if($v['first_pay'] == 4){
-                    $v['first_pay_text'] = '最后一笔尾款';
+
+                if(empty($v['first_pay'])){
+                    $v['first_pay_text'] = '';
+                }else{
+                    if($v['first_pay'] == 1){
+                        $v['first_pay_text'] = '全款';
+                    }else if($v['first_pay'] == 2){
+                        $v['first_pay_text'] = '定金';
+                    }else if($v['first_pay'] == 3){
+                        $v['first_pay_text'] = '部分尾款';
+                    }else if($v['first_pay'] == 4){
+                        $v['first_pay_text'] = '最后一笔尾款';
+                    }
                 }
-                if($v['confirm_status'] == 0){
-                    $v['confirm_status_text'] = '未确认';
-                }else if($v['confirm_status'] == 1){
-                    $v['confirm_status_text'] = '确认';
-                }else if($v['confirm_status'] == 2){
-                    $v['confirm_status_text'] = '驳回';
+                if(empty($v['confirm_status'])){
+                    $v['confirm_status_text'] = '';
+                }else{
+                    if($v['confirm_status'] == 0){
+                        $v['confirm_status_text'] = '未确认';
+                    }else if($v['confirm_status'] == 1){
+                        $v['confirm_status_text'] = '确认';
+                    }else if($v['confirm_status'] == 2){
+                        $v['confirm_status_text'] = '驳回';
+                    }
                 }
                 //course  课程
                 $course = Course::select('course_name')->where(['id'=>$v['course_id']])->first();
@@ -190,14 +213,26 @@ class Pay_order_inside extends Model
                     $v['major_name'] = $major['major_name'];
                 }
                 //根据上传凭证人id查询凭证名称
-                $adminname = Admin::where(['id'=>$v['pay_voucher_user_id']])->first();
-                $v['pay_voucher_name'] = $adminname['username'];
+                if(empty($v['pay_voucher_user_id'])){
+                    $v['pay_voucher_name'] = '';
+                }else{
+                    $adminname = Admin::where(['id'=>$v['pay_voucher_user_id']])->first();
+                    $v['pay_voucher_name'] = $adminname['username'];
+                }
                 //驳回人查询
-                $adminreject = Admin::where(['id'=>$v['reject_admin_id']])->first();
-                $v['reject_admin_name'] = $adminreject['username'];
+                if(empty($v['reject_admin_id'])){
+                    $v['reject_admin_name'] = '';
+                }else{
+                    $adminreject = Admin::where(['id'=>$v['reject_admin_id']])->first();
+                    $v['reject_admin_name'] = $adminreject['username'];
+                }
                 //备注人 admin_id
-                $adminbeizhu = Admin::where(['id'=>$v['admin_id']])->first();
-                $v['remark_admin_name'] = $adminbeizhu['username'];
+                if(empty($v['admin_id'])){
+                    $v['remark_admin_name'] = '';
+                }else{
+                    $adminbeizhu = Admin::where(['id'=>$v['admin_id']])->first();
+                    $v['remark_admin_name'] = $adminbeizhu['username'];
+                }
             }
         }
         $page=[
