@@ -91,28 +91,31 @@ class Pay_order_inside extends Model
             ->where($where)
             ->whereBetween('create_time', [$state_time, $end_time])
             ->orderByDesc('id')
-            ->offset($offset)->limit($pagesize)->get()->toArray();
+            ->get()->toArray();
+        print_r($order);die;
         $external = Pay_order_external::where(function($query) use ($data,$schoolarr) {
             if (isset($data['order_no']) && !empty($data['order_no'])) {
                 $query->where('order_no', $data['order_on'])
                     ->orwhere('name', $data['order_on'])
                     ->orwhere('mobile', $data['order_on']);
             }
-        })->where($where)
+        })->where($where)->where(['pay_status'=>1])
             ->whereBetween('create_time', [$state_time, $end_time])
             ->orderByDesc('id')
-            ->offset($offset)->limit($pagesize)->get()->toArray();
-
+            ->get()->toArray();
+        print_r($external);
         //两数组合并 排序
         if (!empty($order) && !empty($external)) {
             $all = array_merge($order, $external);//合并两个二维数组
         } else {
             $all = !empty($order) ? $order : $external;
         }
+        print_r($all);
         $res = array_slice($all, $offset, $pagesize);
         if(empty($res)){
             $res = array_slice($all, 1, $pagesize);
         }
+        print_r($res);die;
         //循环查询分类
         $countprice = 0;
         $count = 0;
