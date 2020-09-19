@@ -94,28 +94,10 @@ class Pay_order_inside extends Model
             ->whereBetween('create_time', [$state_time, $end_time])
             ->orderByDesc('id')
             ->get()->toArray();
-        $orderprice = self::where(function($query) use ($data,$schoolarr) {
-            if(isset($data['order_no']) && !empty($data['order_no'])){
-                $query->where('order_no',$data['order_on'])
-                    ->orwhere('name',$data['order_on'])
-                    ->orwhere('mobile',$data['order_on']);
-            }
-//                if($data['isBranchSchool'] == true){
-//                    $query->where('school_id','!=',null);
-//                }
-            $query->whereIn('school_id',$schoolarr);
-        })
-        ->where($where)->sum('pay_price');
-        $externalprice = Pay_order_external::where(function($query) use ($data,$schoolarr) {
-            if (isset($data['order_no']) && !empty($data['order_no'])) {
-                $query->where('order_no', $data['order_on'])
-                    ->orwhere('name', $data['order_on'])
-                    ->orwhere('mobile', $data['order_on']);
-//            if($data['isBranchSchool'] == true){
-//                $query->where('school_id','!=',null);
-//            }
-            }
-        })->where($where)->sum('pay_price');
+
+        //计算总数
+        $orderprice = self::whereIn('school_id',$schoolarr)->sum('pay_price');
+        $externalprice = Pay_order_external::where(['pay_status'=>1])->sum('pay_price');
         $countprice = $orderprice + $externalprice;
 
         $external = Pay_order_external::where(function($query) use ($data,$schoolarr) {
