@@ -300,10 +300,10 @@ class Pay_order_inside extends Model
         if(!isset($data['mobile']) || empty($data['mobile'])){
             return ['code' => 201 , 'msg' => '未输入手机号'];
         }
-        if(!isset($data['pay_price']) || empty($data['pay_price'])){
-            return ['code' => 201 , 'msg' => '未填写支付金额'];
-        }
-        if(!in_array($data['pay_type'],[1,2,3,4,5])){
+//        if(!isset($data['pay_price']) || empty($data['pay_price'])){
+//            return ['code' => 201 , 'msg' => '未填写支付金额'];
+//        }
+        if(!in_array($data['pay_type'],[1,2,3,4,5,6,7])){
             return ['code' => 201 , 'msg' => '未选择支付方式'];
         }
         if(!isset($data['name']) || empty($data['name'])){
