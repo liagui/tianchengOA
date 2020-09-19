@@ -50,7 +50,7 @@ class Pay_order_inside extends Model
             $where['pay_type'] = $data['pay_type'];
         }
         //支付状态
-        if(!empty($data['pay_status'])){
+        if(isset($data['pay_status'])){
             $where['pay_status'] = $data['pay_status'];
         }
         //订单类型
