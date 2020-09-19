@@ -172,6 +172,8 @@ class Teacher extends Model {
             })->count();
             //总回放单数
             $v['sum_singular'] = $v['yet_singular'] + $v['not_singular'];
+
+
             //已完成业绩
             $v['completed_performance'] = Pay_order_inside::select("course_Price")->where(['have_user_id'=>$v['id']])
             ->where(function($query) use ($data){
@@ -220,12 +222,36 @@ class Teacher extends Model {
         $one = self::select("real_name")->where("id",$data['teacher_id'])->first()->toArray();
         //退费金额
         $one['return_premium'] = DB::table("refund_order")->where(["teacher_id"=>$data['teacher_id'],"refund_plan"=>2,"confirm_status"=>1])->sum("refund_Price");
+
+        $res1 = Pay_order_inside::select()->where("seas_status",0)->where("have_user_id",$data['teacher_id'])->get()->toArray();
+        foreach($res1 as $k => &$v){
+            //是否回访
+            $a = Orderdocumentary::where("order_id",$v['id'])->first();
+            if(empty($a)){
+                $v['return_visit'] = 0;
+            }else{
+                $v['return_visit'] = 1;
+            }
+            //是否开课
+            $c = StudentCourse::where(["order_no"=>$v['order_no'],"status"=>1])->first();
+            if(empty($c)){
+                $v['classes'] = 0;
+            }else{
+                $v['classes'] = 1;
+            }
+        }
         //已回访单数
-        $one['yet_singular'] = Pay_order_inside::where(['return_visit'=>1,'have_user_id'=>$data['teacher_id']])->count();
-        //未回访单数
-        $one['not_singular'] = Pay_order_inside::where(['return_visit'=>0,'have_user_id'=>$data['teacher_id']])->count();
+        $yet_singular = array_filter($res1, function($t) use ($data) { return $t['return_visit'] == 1; });
+        $yet_singular = array_merge($yet_singular);
+        $one['yet_singular'] =  count($yet_singular);
+        //未回放单数
+        $not_singular = array_filter($res1, function($t) use ($data) { return $t['return_visit'] == 0; });
+        $not_singular = array_merge($not_singular);
+        $one['not_singular'] = count($not_singular);
         //总回放单数
         $one['sum_singular'] = $one['yet_singular'] + $one['not_singular'];
+
+
         //已完成业绩
         $one['completed_performance'] = Pay_order_inside::select("course_Price")->where(['have_user_id'=>$data['teacher_id']])->sum("course_Price");
 
@@ -234,38 +260,41 @@ class Teacher extends Model {
             if(isset($data['school_id']) && !empty(isset($data['school_id']))){
                 $query->where('school_id','like','%'.$data['school_id'].'%');
             }
-            if(isset($data['classes']) && $data['classes'] != -1){
-                $query->where(['classes'=>$data['classes']]);
-            }
             if(isset($data['project_id']) && $data['project_id'] != -1){
                 $query->where(['project_id'=>$data['project_id']]);
-            }
-            if(isset($data['return_visit']) && $data['return_visit'] != -1){
-                $query->where(['return_visit'=>$data['return_visit']]);
             }
             if(isset($data['keyword']) && !empty(isset($data['keyword']))){
                 $query->where('name','like','%'.$data['keyword'].'%')->orWhere('mobile','like','%'.$data['keyword'].'%');
             }
         })->count();
-        $data = Pay_order_inside::where(['have_user_id'=>$data['teacher_id'],'seas_status'=>0])->where(function($query) use ($data){
+        $res = Pay_order_inside::where(['have_user_id'=>$data['teacher_id'],'seas_status'=>0])->where(function($query) use ($data){
             if(isset($data['school_id']) && !empty(isset($data['school_id']))){
                 $query->where('school_id','like','%'.$data['school_id'].'%');
-            }
-            if(isset($data['classes']) && $data['classes'] != -1){
-                $query->where(['classes'=>$data['classes']]);
             }
             if(isset($data['project_id']) && $data['project_id'] != -1){
                 $query->where(['project_id'=>$data['project_id']]);
             }
-            if(isset($data['return_visit']) && $data['return_visit'] != -1){
-                $query->where(['return_visit'=>$data['return_visit']]);
-            }
             if(isset($data['keyword']) && !empty(isset($data['keyword']))){
                 $query->where('name','like','%'.$data['keyword'].'%')->orWhere('mobile','like','%'.$data['keyword'].'%');
             }
-        })->offset($offset)->limit($pagesize)->get();
+        })->get();
 
-        foreach($data as $k =>&$v){
+        foreach($res as $k =>&$v){
+            //是否回访
+            $a = Orderdocumentary::where("order_id",$v['id'])->first();
+            if(empty($a)){
+                $v['return_visit'] = 0;
+            }else{
+                $v['return_visit'] = 1;
+            }
+            //是否开课
+            $c = StudentCourse::where(["order_no"=>$v['order_no'],"status"=>1])->first();
+            if(empty($c)){
+                $v['classes'] = 0;
+            }else{
+                $v['classes'] = 1;
+            }
+
             $school_name = School::select("school_name")->where('id',$v['school_id'])->first();
             if(!empty($school_name)){
             $v['school_name'] = $school_name['school_name'];
@@ -291,13 +320,38 @@ class Teacher extends Model {
                 $v['confirm_order_type_name'] = "课程+报名订单";
             }
         }
+
+        if(isset($data['return_visit']) && $data['return_visit'] != -1){
+            $res = array_filter($res, function($t) use ($data) { return $t['return_visit'] == $data['return_visit']; });
+            $res = array_merge($res);
+            $count = count($res);
+        }
+        if(isset($data['classes']) && $data['classes'] != -1){
+            $res = array_filter($res, function($t) use ($data) { return $t['classes'] == $data['classes']; });
+            $res = array_merge($res);
+            $count = count($res);
+        }
+        $total = $count;
+        if($total > 0){
+            $arr = array_merge($res);
+            $start=($page-1)*$pagesize;
+            $limit_s=$start+$pagesize;
+            $list=[];
+            for($i=$start;$i<$limit_s;$i++){
+                if(!empty($arr[$i])){
+                    array_push($list,$arr[$i]);
+                }
+            }
+        }else{
+            $list=[];
+        }
         $page=[
             'pageSize'=>$pagesize,
             'page' =>$page,
             'total'=>$count
         ];
-        if($one){
-            return ['code' => 200, 'msg' => '查询成功', 'data' => $data,'one'=>$one,'page'=>$page];
+        if($list){
+            return ['code' => 200, 'msg' => '查询成功', 'data' => $list,'one'=>$one,'page'=>$page];
         }else{
             return ['code' => 200, 'msg' => '查询暂无数据', 'data' => [],'one'=>[],'page'=>$page];
         }

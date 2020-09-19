@@ -148,7 +148,7 @@ class Student extends Model {
 
 
         $page=[
-            'pageSize'=>$pagesize,
+            'pagesize'=>$pagesize,
             'page' =>$page,
             'total'=>$count
         ];
@@ -373,7 +373,7 @@ class Student extends Model {
             $list=[];
         }
         $page=[
-            'pageSize'=>$pagesize,
+            'pagesize'=>$pagesize,
             'page' =>$page,
             'total'=>$count
         ];
@@ -562,7 +562,7 @@ class Student extends Model {
             $list=[];
         }
         $page=[
-            'pageSize'=>$pagesize,
+            'pagesize'=>$pagesize,
             'page' =>$page,
             'total'=>$count
         ];
@@ -680,7 +680,7 @@ class Student extends Model {
                 $list=[];
             }
         $page=[
-            'pageSize'=>$pagesize,
+            'pagesize'=>$pagesize,
             'page' =>$page,
             'total'=>$count
         ];
