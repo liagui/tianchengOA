@@ -92,7 +92,7 @@ class Pay_order_inside extends Model
             ->whereBetween('create_time', [$state_time, $end_time])
             ->orderByDesc('id')
             ->get()->toArray();
-        print_r($order);
+        print_r($order);die;
         $external = Pay_order_external::where(function($query) use ($data,$schoolarr) {
             if (isset($data['order_no']) && !empty($data['order_no'])) {
                 $query->where('order_no', $data['order_on'])
