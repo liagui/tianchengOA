@@ -448,28 +448,29 @@ class Pay_order_inside extends Model
          */
     public static function awaitOrder($data,$schoolarr){
         $where['del_flag'] = 0;  //未删除
-
         //科目id&学科id
         if(!empty($data['project_id'])){
             $parent = json_decode($data['project_id'], true);
-            $where['project_id'] = $parent[0];
-            if(!empty($parent[1])){
-                $where['subject_id'] = $parent[1];
+            if(!empty($parent)){
+                $where['project_id'] = $parent[0];
+                if(!empty($parent[1])){
+                    $where['subject_id'] = $parent[1];
+                }
             }
         }
-        if(isset($data['school_id']) && !empty($data['school_id'])){
+        if(isset($data['school_id'])){
             $where['school_id'] = $data['school_id'];
         }
-        if(isset($data['pay_type']) && !empty($data['pay_type'])){
+        if(isset($data['pay_type'])){
             $where['pay_type'] = $data['pay_type'];
         }
-        if(isset($data['confirm_order_type']) && !empty($data['confirm_order_type'])){
+        if(isset($data['confirm_order_type'])){
             $where['confirm_order_type'] = $data['confirm_order_type'];
         }
-        if(isset($data['return_visit']) && !empty($data['return_visit'])){
+        if(isset($data['return_visit'])){
             $where['return_visit'] = $data['return_visit'];
         }
-        if(isset($data['classes']) && !empty($data['classes'])){
+        if(isset($data['classes'])){
             $where['classes'] = $data['classes'];
         }
 
@@ -779,24 +780,26 @@ class Pay_order_inside extends Model
         //科目id&学科id
         if(!empty($data['project_id'])){
             $parent = json_decode($data['project_id'], true);
-            $where['project_id'] = $parent[0];
-            if(!empty($parent[1])){
-                $where['subject_id'] = $parent[1];
+            if(!empty($parent[0])){
+                $where['project_id'] = $parent[0];
+                if(!empty($parent[1])){
+                    $where['subject_id'] = $parent[1];
+                }
             }
         }
-        if(isset($data['school_id']) && !empty($data['school_id'])){
+        if(isset($data['school_id'])){
             $where['school_id'] = $data['school_id'];
         }
-        if(isset($data['pay_type']) && !empty($data['pay_type'])){
+        if(isset($data['pay_type'])){
             $where['pay_type'] = $data['pay_type'];
         }
-        if(isset($data['confirm_order_type']) && !empty($data['confirm_order_type'])){
+        if(isset($data['confirm_order_type']) ){
             $where['confirm_order_type'] = $data['confirm_order_type'];
         }
-        if(isset($data['return_visit']) && !empty($data['return_visit'])){
+        if(isset($data['return_visit'])){
             $where['return_visit'] = $data['return_visit'];
         }
-        if(isset($data['classes']) && !empty($data['classes'])){
+        if(isset($data['classes']) ){
             $where['classes'] = $data['classes'];
         }
 
@@ -925,11 +928,10 @@ class Pay_order_inside extends Model
     public static function unsubmittedOrder($data){
         //默认不传订单号   展示空页面
         $res=[];
-        if(!isset($data['order_no']) || empty($data['order_no'])){
+        if(!isset($data['order_no'])){
             return ['code' => 200 , 'msg' => '获取成功','data'=>$res];
         }
-        $res = Pay_order_external::
-        where(function($query) use ($data) {
+        $res = Pay_order_external::where(function($query) use ($data) {
             if(isset($data['order_no']) && !empty($data['order_no'])){
                 $query->where('order_no',$data['order_no'])
                     ->orwhere('name',$data['order_no'])
@@ -1134,9 +1136,11 @@ class Pay_order_inside extends Model
         //科目id&学科id
         if(!empty($data['project_id'])){
             $parent = json_decode($data['project_id'], true);
-            $where['project_id'] = $parent[0];
-            if(!empty($parent[1])){
-                $where['subject_id'] = $parent[1];
+            if(!empty($parent[0])){
+                $where['project_id'] = $parent[0];
+                if(!empty($parent[1])){
+                    $where['subject_id'] = $parent[1];
+                }
             }
         }
         $begindata="2020-03-04";
@@ -1145,16 +1149,16 @@ class Pay_order_inside extends Model
         $endtime = !empty($data['end_time'])?$data['end_time']:$enddate;
         $state_time = $statetime." 00:00:00";
         $end_time = $endtime." 23:59:59";
-        if(isset($data['pay_type']) && !empty($data['pay_type'])){
+        if(isset($data['pay_type']) ){
             $where['pay_type'] = $data['pay_type'];
         }
-        if(isset($data['confirm_order_type']) && !empty($data['confirm_order_type'])){
+        if(isset($data['confirm_order_type']) ){
             $where['confirm_order_type'] = $data['confirm_order_type'];
         }
-        if(isset($data['return_visit']) && !empty($data['return_visit'])){
+        if(isset($data['return_visit']) ){
             $where['return_visit'] = $data['return_visit'];
         }
-        if(isset($data['classes']) && !empty($data['classes'])){
+        if(isset($data['classes'])){
             $where['classes'] = $data['classes'];
         }
 
