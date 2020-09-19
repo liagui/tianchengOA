@@ -148,18 +148,18 @@ class Pay_order_inside extends Model
                     $v['return_visit_text'] = '';
                 }else{
                     if($v['return_visit'] == 0){
-                        $v['return_visit_text'] = '未回访';
+                        $v['return_visit_text'] = '否';
                     }else{
-                        $v['return_visit_text'] = '已回访';
+                        $v['return_visit_text'] = '是';
                     }
                 }
                 if(empty($v['classes'])){
                     $v['classes_text'] = '';
                 }else{
                     if( $v['classes'] == 0){
-                        $v['classes_text'] = '未开课';
+                        $v['classes_text'] = '否';
                     }else{
-                        $v['classes_text'] = '已开课';
+                        $v['classes_text'] = '是';
                     }
                 }
                 if(empty($v['confirm_order_type'])){
@@ -501,15 +501,13 @@ class Pay_order_inside extends Model
                     $v['school_name'] = $school['school_name'];
                 }
                 if($v['pay_type'] == 1){
-                    $v['pay_type_text'] = '支付宝扫码';
-                }else if ($v['pay_type'] == 2){
                     $v['pay_type_text'] = '微信扫码';
+                }else if ($v['pay_type'] == 2){
+                    $v['pay_type_text'] = '支付宝扫码';
                 }else if ($v['pay_type'] == 3){
-                    $v['pay_type_text'] = '银联快捷支付';
+                    $v['pay_type_text'] = '汇聚微信扫码';
                 }else if ($v['pay_type'] == 4){
-                    $v['pay_type_text'] = '微信小程序';
-                }else if ($v['pay_type'] == 5){
-                    $v['pay_type_text'] = '线下录入';
+                    $v['pay_type_text'] = '汇聚支付宝扫码';
                 }
                 if($v['pay_status'] == 0){
                     $v['pay_status_text'] = '未支付';
@@ -792,15 +790,13 @@ class Pay_order_inside extends Model
         if(!empty($order)){
             foreach ($order as $k=>&$v){
                 if($v['pay_type'] == 1){
-                    $v['pay_type_text'] = '支付宝扫码';
-                }else if ($v['pay_type'] == 2){
                     $v['pay_type_text'] = '微信扫码';
+                }else if ($v['pay_type'] == 2){
+                    $v['pay_type_text'] = '支付宝扫码';
                 }else if ($v['pay_type'] == 3){
-                    $v['pay_type_text'] = '银联快捷支付';
+                    $v['pay_type_text'] = '汇聚微信扫码';
                 }else if ($v['pay_type'] == 4){
-                    $v['pay_type_text'] = '微信小程序';
-                }else if ($v['pay_type'] == 5){
-                    $v['pay_type_text'] = '线下录入';
+                    $v['pay_type_text'] = '汇聚支付宝扫码';
                 }
                 if($v['pay_status'] == 0){
                     $v['pay_status_text'] = '未支付';
@@ -1152,15 +1148,13 @@ class Pay_order_inside extends Model
         if(!empty($order)){
             foreach ($order as $k=>&$v){
                 if($v['pay_type'] == 1){
-                    $v['pay_type_text'] = '支付宝扫码';
-                }else if ($v['pay_type'] == 2){
                     $v['pay_type_text'] = '微信扫码';
+                }else if ($v['pay_type'] == 2){
+                    $v['pay_type_text'] = '支付宝扫码';
                 }else if ($v['pay_type'] == 3){
-                    $v['pay_type_text'] = '银联快捷支付';
+                    $v['pay_type_text'] = '汇聚微信扫码';
                 }else if ($v['pay_type'] == 4){
-                    $v['pay_type_text'] = '微信小程序';
-                }else if ($v['pay_type'] == 5){
-                    $v['pay_type_text'] = '线下录入';
+                    $v['pay_type_text'] = '汇聚支付宝扫码';
                 }
                 if($v['pay_status'] == 0){
                     $v['pay_status_text'] = '未支付';
@@ -1524,7 +1518,7 @@ class Pay_order_inside extends Model
         $order_count = self::where('name' , $name)->where('mobile' , $mobile)->where('school_id' , $school_id)->where('project_id' , $project_id)->where('subject_id' , $subject_id)->where('course_id' , $course_id)->where('del_flag' , 0)->count();
 
         //支付方式数组
-        $pay_type_array = [1=>'支付宝扫码',2=>'微信扫码',3=>'银联快捷支付',4=>'微信小程序',5=>'线下录入'];
+        $pay_type_array = [1=>'微信扫码',2=>'支付宝扫码',3=>'汇聚微信扫码',4=>'汇聚支付宝扫码'];
 
         //支付状态数组
         $pay_status_array = [0=>'未支付',1=>'已支付',2=>'支付失败',3=>'已退款'];
