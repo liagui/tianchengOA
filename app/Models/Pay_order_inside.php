@@ -683,12 +683,19 @@ class Pay_order_inside extends Model
                 $dailibaozhengjin = $erjichoulijine * (100/$school['deposit']);
                 //三级分校的实际返佣=三级分校的返佣金额
             }
+            //查成本
+            $chengben=0;
+            if(!empty($data['education_id'])){
+                $majorprice = Major::where(['id'=>$data['major_id']])->first();
+                $chengben = $majorprice['price'] + $data['sign_Price'];
+            }
             $data['after_tax_amount'] = $suihou;   //税后金额
             $data['return_commission_amount'] = $fanyong;  //返佣金额
             $data['earnest_money'] = $baozhengjin;    //保证金
             $data['agent_margin'] = $dailibaozhengjin;    //代理保证金
             $data['first_out_of_amount'] = $yijichoulijine;    //1级抽离金额
             $data['second_out_of_amount'] = $erjichoulijine;    //2级抽离金额
+            $data['sum_Price'] = $chengben;    //成本价
         }
         if($data['confirm_status'] == 2){
             $data['reject_time'] = date('Y-m-d H:i:s');
