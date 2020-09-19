@@ -5,6 +5,8 @@ use Illuminate\Database\Eloquent\Model;
 use App\Models\MaterialListing;
 use App\Models\Teacher;
 use App\Models\School;
+use App\Models\Category;
+use App\Models\Course;
 class Material extends Model {
     //指定别的表名
     public $table = 'material';
@@ -102,8 +104,11 @@ class Material extends Model {
                 $material_listing1['material_id'] = $material_id;
                 $material_listing1['material_type'] = 1;
                 $material_listing1['project_id'] = $material_list['project_id'];
+                $material_listing1['project_name'] = Category::select("name")->where("id",$material_list['project_id'])->first()['name'];
                 $material_listing1['subject_id'] = $material_list['subject_id'];
+                $material_listing1['subject_name'] = Category::select("name")->where("id",$material_list['subject_id'])->first()['name'];
                 $material_listing1['course_id'] = $material_list['course_id'];
+                $material_listing1['course_name'] = Course::select("course_name")->where("id",$material_list['course_id'])->first()['course_name'];
                 $material_listing1['contract_number'] = $material_list['contract_number'];
                 $res = MaterialListing::insert($material_listing1);
             }else if($material_list['type']  == 2){
@@ -137,8 +142,11 @@ class Material extends Model {
                 $material_listing1['material_id'] = $material_id;
                 $material_listing1['material_type'] = 1;
                 $material_listing1['project_id'] = $material_list['project_id'];
+                $material_listing1['project_name'] = Category::select("name")->where("id",$material_list['project_id'])->first()['name'];
                 $material_listing1['subject_id'] = $material_list['subject_id'];
+                $material_listing1['subject_name'] = Category::select("name")->where("id",$material_list['subject_id'])->first()['name'];
                 $material_listing1['course_id'] = $material_list['course_id'];
+                $material_listing1['course_name'] = Course::select("course_name")->where("id",$material_list['course_id'])->first()['course_name'];
                 $material_listing1['contract_number'] = $material_list['contract_number'];
                 $res = MaterialListing::where(["material_id"=>$material_id,"material_type"=>1])->update($material_listing1);
             }else if($material_list['type']  == 2){
