@@ -85,9 +85,9 @@ class Pay_order_inside extends Model
                         ->orwhere('name',$data['order_on'])
                         ->orwhere('mobile',$data['order_on']);
                 }
-                if($data['isBranchSchool'] == true){
-                    $query->where('school_id','!=',null);
-                }
+//                if($data['isBranchSchool'] == true){
+//                    $query->where('school_id','!=',null);
+//                }
                 $query->whereIn('school_id',$schoolarr);
             })
             ->where($where)
@@ -99,9 +99,9 @@ class Pay_order_inside extends Model
                 $query->where('order_no', $data['order_on'])
                     ->orwhere('name', $data['order_on'])
                     ->orwhere('mobile', $data['order_on']);
-            if($data['isBranchSchool'] == true){
-                $query->where('school_id','!=',null);
-            }
+//            if($data['isBranchSchool'] == true){
+//                $query->where('school_id','!=',null);
+//            }
             }
         })->where($where)
             ->whereBetween('create_time', [$state_time, $end_time])
@@ -113,6 +113,8 @@ class Pay_order_inside extends Model
         } else {
             $all = !empty($order) ? $order : $external;
         }
+        $date = array_column($all, 'create_time');
+        array_multisort($date, SORT_DESC, $all);
         $res = array_slice($all, $offset, $pagesize);
         if(empty($res)){
             $res = array_slice($all, 1, $pagesize);
