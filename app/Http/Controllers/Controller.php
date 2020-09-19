@@ -329,6 +329,7 @@ class Controller extends BaseController {
                 $YesLookSchoolIds = array_column($YesLookSchoolIds,'id');
             }
             return ['code'=>200,'msg'=>'Success','data'=>$YesLookSchoolIds];
+
         }else{
             
             $schoolData = \App\Models\School::whereIn('id',$schoolIds)->where(['is_del'=>0])->select('id','look_all_flag','level')->get()->toArray();
@@ -339,7 +340,7 @@ class Controller extends BaseController {
                     if($v['look_all_flag'] == 1){ //1级看二、三级
                         if($v['level'] == 1){
                             array_push($oneSchoolIds,$v['id']);
-                            $childOneSchoolData  = \App\Models\School::whereIn('parent_id',$oneSchoolIds)->where(['is_del'=>0])->select('id','look_all_flag','level')->get()->toArray();
+                            $childOneSchoolData  = \App\Models\School::whereIn('parent_id',$oneSchoolIds)->where(['is_del'=>0])->select('id')->get()->toArray();
                             if(!empty($childOneSchoolData)){
                                 $oneChildSchoolIdsArr = array_column($childOneSchoolData,'id'); //所有二级分校的id
                                 $oneChildSchoolIdsArr = array_values($oneChildSchoolIdsArr);
@@ -361,7 +362,7 @@ class Controller extends BaseController {
                         }else if($v['level'] == 2){  
                             //二级看三级
                             array_push($twoSchoolIds,$v['id']);
-                            $childTwoSchoolData  = \App\Models\School::whereIn('parent_id',$twoSchoolIds)->where(['is_del'=>0])->select('id','look_all_flag','level')->get()->toArray();
+                            $childTwoSchoolData  = \App\Models\School::whereIn('parent_id',$twoSchoolIds)->where(['is_del'=>0])->select('id')->get()->toArray();
                             if(!empty($childTwoSchoolData)){
                                 $twoChildSchoolIdsArr= array_column($childTwoSchoolData,'id');
                             }
@@ -369,9 +370,9 @@ class Controller extends BaseController {
                     }
                 }
                 $look_school = array_merge($oneChildSchoolIdsArr,$twoChildSchoolIdsArr,$thereChildSchoolIdsArr); 
-                $look_school_all = array_intersect($childOneSchoolData, $look_school); 
+                $look_school_all = array_intersect($oneChildSchoolIdsArr, $look_school); 
                 $look_school  = array_values(array_unique(array_merge($look_school,$look_school_all)));
-                
+                   
                 return ['code'=>200,'msg'=>'Success','data'=>$look_school];
             }    
         }
