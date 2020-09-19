@@ -5,7 +5,9 @@ use App\Http\Controllers\Controller;
 use App\Models\Project;
 use App\Models\Course;
 use App\Models\RegionFee;
+use App\Models\CategoryRegion;
 use App\Models\Education;
+use App\Models\CategoryEducation;
 use App\Models\Major;
 
 class ProjectController extends Controller {
@@ -332,6 +334,29 @@ class ProjectController extends Controller {
     }
     
     /*
+     * @param  description   项目管理-地区关联项目添加方法
+     * @param  参数说明       body包含以下参数[
+     *     project_id        项目id
+     * ]
+     * @param author    dzj
+     * @param ctime     2020-09-04
+     * return string
+     */
+    public function doInsertCategoryRegion() {
+        //获取提交的参数
+        try{
+            $data = CategoryRegion::doInsertCategoryRegion(self::$accept_data);
+            if($data['code'] == 200){
+                return response()->json(['code' => 200 , 'msg' => '添加成功']);
+            } else {
+                return response()->json(['code' => $data['code'] , 'msg' => $data['msg']]);
+            }
+        } catch (Exception $ex) {
+            return response()->json(['code' => 500 , 'msg' => $ex->getMessage()]);
+        }
+    }
+    
+    /*
      * @param  description   项目管理-地区所有项目列表接口
      * @param  参数说明       body包含以下参数[
      *     project_id        项目id
@@ -344,9 +369,32 @@ class ProjectController extends Controller {
         //获取提交的参数
         try{
             //获取地区列表
-            $data = RegionFee::getRegionProjectList(self::$accept_data);
+            $data = CategoryRegion::getRegionProjectList(self::$accept_data);
             if($data['code'] == 200){
                 return response()->json(['code' => 200 , 'msg' => '获取列表成功' , 'data' => $data['data']]);
+            } else {
+                return response()->json(['code' => $data['code'] , 'msg' => $data['msg']]);
+            }
+        } catch (Exception $ex) {
+            return response()->json(['code' => 500 , 'msg' => $ex->getMessage()]);
+        }
+    }
+    
+    /*
+     * @param  description   项目管理-学历成本关联项目添加方法
+     * @param  参数说明       body包含以下参数[
+     *     project_id        项目id
+     * ]
+     * @param author    dzj
+     * @param ctime     2020-09-04
+     * return string
+     */
+    public function doInsertCategoryEducation() {
+        //获取提交的参数
+        try{
+            $data = CategoryEducation::doInsertCategoryEducation(self::$accept_data);
+            if($data['code'] == 200){
+                return response()->json(['code' => 200 , 'msg' => '添加成功']);
             } else {
                 return response()->json(['code' => $data['code'] , 'msg' => $data['msg']]);
             }
@@ -365,7 +413,7 @@ class ProjectController extends Controller {
         //获取提交的参数
         try{
             //获取学历提升成本项目列表
-            $data = Education::getEducationProjectList(self::$accept_data);
+            $data = CategoryEducation::getEducationProjectList(self::$accept_data);
             if($data['code'] == 200){
                 return response()->json(['code' => 200 , 'msg' => '获取列表成功' , 'data' => $data['data']]);
             } else {
