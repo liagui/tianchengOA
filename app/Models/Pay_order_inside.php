@@ -68,9 +68,11 @@ class Pay_order_inside extends Model
         //科目id&学科id
         if(!empty($data['project_id'])){
             $parent = json_decode($data['project_id'], true);
-            $where['project_id'] = $parent[0];
-            if(!empty($parent[1])){
-                $where['subject_id'] = $parent[1];
+            if(!empty($parent[0])){
+                $where['project_id'] = $parent[0];
+                if(!empty($parent[1])){
+                    $where['subject_id'] = $parent[1];
+                }
             }
         }
         //每页显示的条数
