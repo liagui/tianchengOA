@@ -275,12 +275,8 @@ class Student extends Model {
             if(isset($data['keyword']) && !empty(isset($data['keyword']))){
                 $query->where('name','like','%'.$data['keyword'].'%')->orWhere('mobile','like','%'.$data['keyword'].'%');
             }
-        })->offset($offset)->limit($pagesize)->get()->toArray();
-        $page=[
-            'pageSize'=>$pagesize,
-            'page' =>$page,
-            'total'=>$count
-        ];
+        })->get()->toArray();
+
         foreach($res as $k => &$v){
             //是否回访
             $a = Orderdocumentary::where("order_id",$v['id'])->first();
@@ -329,8 +325,28 @@ class Student extends Model {
             $res = array_merge($res);
             $count = count($res);
         }
+
+        $total = $count;
+        if($total > 0){
+            $arr = array_merge($res);
+            $start=($page-1)*$pagesize;
+            $limit_s=$start+$pagesize;
+            $list=[];
+            for($i=$start;$i<$limit_s;$i++){
+                if(!empty($arr[$i])){
+                    array_push($list,$arr[$i]);
+                }
+            }
+        }else{
+            $list=[];
+        }
+        $page=[
+            'pageSize'=>$pagesize,
+            'page' =>$page,
+            'total'=>$count
+        ];
         if($data){
-            return ['code' => 200, 'msg' => '查询成功', 'data' => $res,'page'=>$page,'one'=>$one];
+            return ['code' => 200, 'msg' => '查询成功', 'data' => $list,'page'=>$page,'one'=>$one];
         }else{
             return ['code' => 200, 'msg' => '查询暂无数据','data' => [],'page'=>$page,'one'=>[]];
         }
