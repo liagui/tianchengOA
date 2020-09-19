@@ -88,7 +88,7 @@ class Teacher extends Model {
         //账户唯一验证
         $admin = self::where('username',$data['username'])->first();
         if($admin){
-            return ['code' => 200 , 'msg' => '账户已存在'];
+            return ['code' => 202 , 'msg' => '账户已存在'];
         }
         $teacher['password'] = password_hash($data['password'], PASSWORD_DEFAULT);
         $teacher['create_time'] = date("Y-m-d H:i:s");
