@@ -61,10 +61,6 @@ class Pay_order_inside extends Model
         if(isset($data['return_visit'])){
             $where['return_visit'] = $data['return_visit'];
         }
-        //订单是否开课
-        if(isset($data['classes'])){
-            $where['begin_class'] = $data['classes'];
-        }
         //订单状态
         if(isset($data['confirm_status'])){
             $where['confirm_status'] = $data['confirm_status'];
@@ -92,6 +88,9 @@ class Pay_order_inside extends Model
                     $query->where('order_no',$data['order_on'])
                         ->orwhere('name',$data['order_on'])
                         ->orwhere('mobile',$data['order_on']);
+                }
+                if(isset($data['classes'])){
+                    $where['classes'] = $data['classes'];
                 }
                 $query->whereIn('school_id',$schoolarr);
             })
