@@ -63,7 +63,7 @@ class Pay_order_inside extends Model
         }
         //订单是否开课
         if(isset($data['classes'])){
-            $where['classes'] = $data['classes'];
+            $where['begin_class'] = $data['classes'];
         }
         //订单状态
         if(isset($data['confirm_status'])){
