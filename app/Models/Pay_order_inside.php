@@ -94,6 +94,30 @@ class Pay_order_inside extends Model
             ->whereBetween('create_time', [$state_time, $end_time])
             ->orderByDesc('id')
             ->get()->toArray();
+        $orderprice = self::where(function($query) use ($data,$schoolarr) {
+            if(isset($data['order_no']) && !empty($data['order_no'])){
+                $query->where('order_no',$data['order_on'])
+                    ->orwhere('name',$data['order_on'])
+                    ->orwhere('mobile',$data['order_on']);
+            }
+//                if($data['isBranchSchool'] == true){
+//                    $query->where('school_id','!=',null);
+//                }
+            $query->whereIn('school_id',$schoolarr);
+        })
+        ->where($where)->sum('pay_price');
+        $externalprice = Pay_order_external::where(function($query) use ($data,$schoolarr) {
+            if (isset($data['order_no']) && !empty($data['order_no'])) {
+                $query->where('order_no', $data['order_on'])
+                    ->orwhere('name', $data['order_on'])
+                    ->orwhere('mobile', $data['order_on']);
+//            if($data['isBranchSchool'] == true){
+//                $query->where('school_id','!=',null);
+//            }
+            }
+        })->where($where)->sum('pay_price');
+        $countprice = $orderprice + $externalprice;
+
         $external = Pay_order_external::where(function($query) use ($data,$schoolarr) {
             if (isset($data['order_no']) && !empty($data['order_no'])) {
                 $query->where('order_no', $data['order_on'])
@@ -104,9 +128,9 @@ class Pay_order_inside extends Model
 //            }
             }
         })->where($where)
-            ->whereBetween('create_time', [$state_time, $end_time])
-            ->orderByDesc('id')
-            ->get()->toArray();
+        ->whereBetween('create_time', [$state_time, $end_time])
+        ->orderByDesc('id')
+        ->get()->toArray();
         //两数组合并
         if (!empty($order) && !empty($external)) {
             $all = array_merge($order, $external);//合并两个二维数组
@@ -120,7 +144,7 @@ class Pay_order_inside extends Model
             $res = array_slice($all, 1, $pagesize);
         }
         //循环查询分类
-        $countprice = 0;
+
         $count = count($order) + count($external);
         if(!empty($res)){
             foreach ($res as $k=>&$v){
@@ -133,7 +157,6 @@ class Pay_order_inside extends Model
                         $v['school_name'] = $school['school_name'];
                     }
                 }
-                $countprice = $countprice + $v['pay_price'];
                 if($v['pay_type'] == 1){
                     $v['pay_type_text'] = '微信扫码';
                 }else if ($v['pay_type'] == 2){
@@ -661,29 +684,30 @@ class Pay_order_inside extends Model
 //保证金=返佣金额*后台分校管理中押金比例
             $school = School::where(['id'=>$data['school_id']])->first();
             $daokuan = $order['pay_price'];
-            $kousui = $daokuan * $school['tax_point'];
+            $kousui = $daokuan * (100/$school['tax_point']);
             $suihou = $daokuan - $kousui; //税后金额
-            $fanyong = $daokuan * $school['commission']; //返佣金额
-            $baozhengjin = $daokuan * $school['deposit']; //保证金
+            $fanyong = $daokuan * (100/$school['commission']); //返佣金额
+            $baozhengjin = $daokuan * (100/$school['deposit']); //保证金
             //一级没有保证金  二级给一级代理保证金  三级给二级代理保证金
             if($school['level'] == 1){
                 $dailibaozhengjin = 0;
                 $yijichoulijine = 0;
                 $erjichoulijine = 0;
-                //一级分校的实际返佣=返佣金额-一级分校的保证金+（二级分校的一级抽离金额+三级分校的一级抽离金额）*（1-押金比例）-（一级分校退费*返佣比例+二级分校退费*二级分校1级抽离比例+三级分校退费*二级分校1级抽离比例）
+                //一级分校的实际返佣=返佣金额-一级分校的保证金+（二级分校的一级抽离金额+三级分校的一级抽离金额）*（1-押金比例）
+
             }else if($school['level'] == 2){
                 //一级抽离金额
-                $yijichoulijine = $daokuan * $school['one_extraction_ratio'];
+                $yijichoulijine = $daokuan * (100/$school['one_extraction_ratio']);
                 $dailibaozhengjin = $yijichoulijine * $school['deposit'];
                 $erjichoulijine = 0;
-                //二级分校的实际返佣=二级分校的返佣金额-二级分校的保证金+三级分校的二级抽离金额*（1-押金比例）-（二级分校退费*返佣比例+三级分校退费*三级分校2级抽离比例）
+                //二级分校的实际返佣=二级分校的返佣金额-二级分校的保证金+三级分校的二级抽离金额*（1-押金比例）
             }else if($school['level'] == 3){
                 //一级抽离金额
-                $yijichoulijine = $daokuan * $school['one_extraction_ratio'];
+                $yijichoulijine = $daokuan * (100/$school['one_extraction_ratio']);
                 //二级抽离金额
-                $erjichoulijine = $daokuan * $school['two_extraction_ratio'];
-                $dailibaozhengjin = $erjichoulijine * $school['deposit'];
-                //三级分校的实际返佣=三级分校的返佣金额-三级分校的保证金-三级分校退费*三级分校返佣比例
+                $erjichoulijine = $daokuan * (100/$school['two_extraction_ratio']);
+                $dailibaozhengjin = $erjichoulijine * (100/$school['deposit']);
+                //三级分校的实际返佣=三级分校的返佣金额
 
             }
         }
