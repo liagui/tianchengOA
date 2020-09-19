@@ -406,7 +406,7 @@ class Student extends Model {
                 if(isset($data['keyword']) && !empty(isset($data['keyword']))){
                     $query->where('name','like','%'.$data['keyword'].'%')->orWhere('mobile','like','%'.$data['keyword'].'%');
                 }
-            })->offset($offset)->limit($pagesize)->orderByDesc("id")->get()->toArray();
+            })->orderByDesc("id")->get()->toArray();
         }else{
             //计算总数
             $count = Pay_order_inside::select()->where("seas_status",0)->where("have_user_id",$user_id)->where(function($query) use ($data) {
@@ -449,7 +449,7 @@ class Student extends Model {
                 if(isset($data['keyword']) && !empty(isset($data['keyword']))){
                     $query->where('name','like','%'.$data['keyword'].'%')->orWhere('mobile','like','%'.$data['keyword'].'%');
                 }
-            })->offset($offset)->limit($pagesize)->orderByDesc("id")->get()->toArray();
+            })->orderByDesc("id")->get()->toArray();
         }
         foreach($res as $k => &$v){
 
@@ -499,14 +499,27 @@ class Student extends Model {
             $res = array_merge($res);
             $count = count($res);
         }
-
+        $total = $count;
+        if($total > 0){
+            $arr = array_merge($res);
+            $start=($page-1)*$pagesize;
+            $limit_s=$start+$pagesize;
+            $list=[];
+            for($i=$start;$i<$limit_s;$i++){
+                if(!empty($arr[$i])){
+                    array_push($list,$arr[$i]);
+                }
+            }
+        }else{
+            $list=[];
+        }
         $page=[
             'pageSize'=>$pagesize,
             'page' =>$page,
             'total'=>$count
         ];
         if($data){
-            return ['code' => 200, 'msg' => '查询成功', 'data' => $res,'page'=>$page];
+            return ['code' => 200, 'msg' => '查询成功', 'data' => $list,'page'=>$page];
         }else{
             return ['code' => 200, 'msg' => '查询暂无数据', 'data' => [],'page'=>$page];
         }
