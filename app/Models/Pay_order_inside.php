@@ -79,20 +79,7 @@ class Pay_order_inside extends Model
         $page     = isset($data['page']) && $data['page'] > 0 ? $data['page'] : 1;
         $offset   = ($page - 1) * $pagesize;
 
-        //計算總數
-        $count = self::where(function($query) use ($data,$schoolarr) {
-                if(isset($data['order_no']) && !empty($data['order_no'])){
-                    $query->where('order_no',$data['order_on'])
-                        ->orwhere('name',$data['order_on'])
-                        ->orwhere('mobile',$data['order_on']);
-                }
-                $query->whereIn('school_id',$schoolarr);
-            })
-            ->where($where)
-            ->whereBetween('create_time', [$state_time, $end_time])
-            ->count();
-
-        //数据
+        //数据   流转订单 + 第三方支付订单
         $order = self::where(function($query) use ($data,$schoolarr) {
                 if(isset($data['order_no']) && !empty($data['order_no'])){
                     $query->where('order_no',$data['order_on'])
@@ -105,10 +92,33 @@ class Pay_order_inside extends Model
             ->whereBetween('create_time', [$state_time, $end_time])
             ->orderByDesc('id')
             ->offset($offset)->limit($pagesize)->get()->toArray();
+        $external = Pay_order_external::where(function($query) use ($data,$schoolarr) {
+            if (isset($data['order_no']) && !empty($data['order_no'])) {
+                $query->where('order_no', $data['order_on'])
+                    ->orwhere('name', $data['order_on'])
+                    ->orwhere('mobile', $data['order_on']);
+            }
+        })->where($where)
+            ->whereBetween('create_time', [$state_time, $end_time])
+            ->orderByDesc('id')
+            ->offset($offset)->limit($pagesize)->get()->toArray();
+
+        //两数组合并 排序
+        if (!empty($order) && !empty($external)) {
+            $all = array_merge($order, $external);//合并两个二维数组
+        } else {
+            $all = !empty($order) ? $order : $external;
+        }
+        $res = array_slice($all, $offset, $pagesize);
+        if(empty($res)){
+            $res = array_slice($all, 1, $pagesize);
+        }
         //循环查询分类
         $countprice = 0;
-        if(!empty($order)){
-            foreach ($order as $k=>&$v){
+        $count = 0;
+        if(!empty($res)){
+            foreach ($res as $k=>&$v){
+                $count = $count + 1;
                 //查学校
                 $school = School::where(['id'=>$v['school_id']])->first();
                 if($school){
@@ -198,7 +208,7 @@ class Pay_order_inside extends Model
             'total'=>$count
         ];
         //总金额
-        return ['code' => 200 , 'msg' => '查询成功','data'=>$order,'countprice'=>$countprice,'where'=>$data,'page'=>$page];
+        return ['code' => 200 , 'msg' => '查询成功','data'=>$res,'countprice'=>$countprice,'where'=>$data,'page'=>$page];
     }
     /*
          * @param  手动报单
