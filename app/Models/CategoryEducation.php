@@ -130,6 +130,7 @@ class CategoryEducation extends Model {
 
         //更新数据信息
         if(false !== Education::whereIn('id',$education_ids)->update(['parent_id' => $last_category_id[0] , 'child_id' => $last_category_id_1 , 'update_time' => date('Y-m-d H:i:s')])){
+            self::where('parent_id' , $pre_category_id[0])->update(['is_del' => 1 , 'update_time' => date('Y-m-d H:i:s')]);
             $is_exists = self::where('parent_id' , $last_category_id[0])->where('is_del' , 0)->count();
             if(!$is_exists || $is_exists <= 0){
                 //数组信息
