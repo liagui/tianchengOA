@@ -2042,19 +2042,15 @@ class Pay_order_inside extends Model
                     //代理保证金
                     $agent_margin = $v['agent_margin'];
 
-                    //一级分校下面的所有二级分校
-                    $seond_school_id = School::select('id')->where('parent_id' , $v['school_id'])->where('level' , 2)->get()->toArray();
-                    $seond_school_ids= array_column($seond_school_id, 'id');
-
                     //二级下面的所有三级分校
-                    $three_school_id = School::select('id')->whereIn('parent_id' , $seond_school_ids)->where('level' , 3)->get()->toArray();
+                    $three_school_id = School::select('id')->whereIn('parent_id' , $v['school_id'])->where('level' , 3)->get()->toArray();
                     $three_school_ids= array_column($three_school_id, 'id');
 
                     //三级分校的二级抽离金额
                     $second_out_of_amount2 = self::whereIn('school_id' , $three_school_ids)->sum('second_out_of_amount');
 
                     //二级分校退费金额
-                    $send_refund_Price     = Refund_order::whereIn('school_id' , $seond_school_ids)->where('confirm_status' , 1)->sum('refund_Price');
+                    $send_refund_Price     = Refund_order::whereIn('school_id' , $v['school_id'])->where('confirm_status' , 1)->sum('refund_Price');
                     //三级分校退费金额
                     $three_refund_Price    = Refund_order::whereIn('school_id' , $three_school_ids)->where('confirm_status' , 1)->sum('refund_Price');
 

@@ -108,6 +108,9 @@ class CategoryRegion extends Model {
             return ['code' => 203 , 'msg' => '此项目名称不存在'];
         }
         
+        //获取后端的操作员id
+        $admin_id = isset(AdminLog::getAdminInfo()->admin_user->id) ? AdminLog::getAdminInfo()->admin_user->id : 0;
+        
         //根据项目的id获取地区的id
         $region_id = RegionFee::select('id')->where('category_id' , $body['pre_project_id'])->get()->toArray();
         $region_ids= array_column($region_id , 'id');
@@ -117,6 +120,16 @@ class CategoryRegion extends Model {
 
         //更新数据信息
         if(false !== RegionFee::whereIn('id',$region_ids)->update(['category_id' => $body['last_project_id'] , 'update_time' => date('Y-m-d H:i:s')])){
+            $is_exists = self::where('parent_id' , $body['last_project_id'])->where('is_del' , 0)->count();
+            if(!$is_exists || $is_exists <= 0){
+                //数组信息
+                $array = [
+                    'parent_id'           =>   $body['last_project_id'] ,
+                    'admin_id'            =>   $admin_id ,
+                    'create_time'         =>   date('Y-m-d H:i:s')
+                ];
+                self::insertGetId($array);
+            }
             //事务提交
             DB::commit();
             return ['code' => 200 , 'msg' => '修改成功'];
