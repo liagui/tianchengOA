@@ -109,7 +109,7 @@ class Refund_order extends Model
 
         //計算總數
         $count = self::where(function($query) use ($data,$admin) {
-            if(isset($data['refund_no']) && !empty($data['order_no'])){
+            if(isset($data['order_on']) && !empty($data['order_on'])){
                 $query->where('order_no',$data['order_on'])
                     ->orwhere('student_name',$data['order_on'])
                     ->orwhere('phone',$data['order_on']);
