@@ -674,7 +674,6 @@ class Pay_order_inside extends Model
                 $yijichoulijine = 0;
                 $erjichoulijine = 0;
                 //一级分校的实际返佣=返佣金额-一级分校的保证金+（二级分校的一级抽离金额+三级分校的一级抽离金额）*（1-押金比例）
-
             }else if($school['level'] == 2){
                 //一级抽离金额
                 $yijichoulijine = $daokuan * (100/$school['one_extraction_ratio']);
@@ -688,8 +687,13 @@ class Pay_order_inside extends Model
                 $erjichoulijine = $daokuan * (100/$school['two_extraction_ratio']);
                 $dailibaozhengjin = $erjichoulijine * (100/$school['deposit']);
                 //三级分校的实际返佣=三级分校的返佣金额
-
             }
+            $data['after_tax_amount'] = $suihou;   //税后金额
+            $data['return_commission_amount'] = $fanyong;  //返佣金额
+            $data['earnest_money'] = $baozhengjin;    //保证金
+            $data['agent_margin'] = $dailibaozhengjin;    //代理保证金
+            $data['first_out_of_amount'] = $yijichoulijine;    //1级抽离金额
+            $data['second_out_of_amount'] = $erjichoulijine;    //2级抽离金额
         }
         if($data['confirm_status'] == 2){
             $data['reject_time'] = date('Y-m-d H:i:s');
