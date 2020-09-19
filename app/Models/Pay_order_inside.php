@@ -73,7 +73,6 @@ class Pay_order_inside extends Model
                 $where['subject_id'] = $parent[1];
             }
         }
-
         //每页显示的条数
         $pagesize = (int)isset($data['pagesize']) && $data['pagesize'] > 0 ? $data['pagesize'] : 20;
         $page     = isset($data['page']) && $data['page'] > 0 ? $data['page'] : 1;
@@ -86,6 +85,9 @@ class Pay_order_inside extends Model
                         ->orwhere('name',$data['order_on'])
                         ->orwhere('mobile',$data['order_on']);
                 }
+                if($data['isBranchSchool'] == true){
+                    $query->where('school_id','!=',null);
+                }
                 $query->whereIn('school_id',$schoolarr);
             })
             ->where($where)
@@ -97,6 +99,9 @@ class Pay_order_inside extends Model
                 $query->where('order_no', $data['order_on'])
                     ->orwhere('name', $data['order_on'])
                     ->orwhere('mobile', $data['order_on']);
+            if($data['isBranchSchool'] == true){
+                $query->where('school_id','!=',null);
+            }
             }
         })->where($where)
             ->whereBetween('create_time', [$state_time, $end_time])
@@ -644,26 +649,29 @@ class Pay_order_inside extends Model
             $daokuan = $order['pay_price'];
             $kousui = $daokuan * $school['tax_point'];
             $suihou = $daokuan - $kousui; //税后金额
-            $fanyong = $daokuan * $school['commission']; //佣金比例
+            $fanyong = $daokuan * $school['commission']; //返佣金额
             $baozhengjin = $daokuan * $school['deposit']; //保证金
             //一级没有保证金  二级给一级代理保证金  三级给二级代理保证金
             if($school['level'] == 1){
                 $dailibaozhengjin = 0;
                 $yijichoulijine = 0;
                 $erjichoulijine = 0;
+                //一级分校的实际返佣=返佣金额-一级分校的保证金+（二级分校的一级抽离金额+三级分校的一级抽离金额）*（1-押金比例）-（一级分校退费*返佣比例+二级分校退费*二级分校1级抽离比例+三级分校退费*二级分校1级抽离比例）
             }else if($school['level'] == 2){
                 //一级抽离金额
-                $choulijine = $daokuan * $school['one_extraction_ratio'];
-                $dailibaozhengjin = $choulijine * $school['deposit'];
+                $yijichoulijine = $daokuan * $school['one_extraction_ratio'];
+                $dailibaozhengjin = $yijichoulijine * $school['deposit'];
+                $erjichoulijine = 0;
+                //二级分校的实际返佣=二级分校的返佣金额-二级分校的保证金+三级分校的二级抽离金额*（1-押金比例）-（二级分校退费*返佣比例+三级分校退费*三级分校2级抽离比例）
             }else if($school['level'] == 3){
                 //一级抽离金额
-                $choulijine = $daokuan * $school['one_extraction_ratio'];
-                $dailibaozhengjin = $choulijine * $school['deposit'];
-            }
-            // 1级抽离金额
+                $yijichoulijine = $daokuan * $school['one_extraction_ratio'];
+                //二级抽离金额
+                $erjichoulijine = $daokuan * $school['two_extraction_ratio'];
+                $dailibaozhengjin = $erjichoulijine * $school['deposit'];
+                //三级分校的实际返佣=三级分校的返佣金额-三级分校的保证金-三级分校退费*三级分校返佣比例
 
-            //  second_out_of_amount  2级抽离金额
-            //  actual_commission  实际佣金
+            }
         }
         if($data['confirm_status'] == 2){
             $data['reject_time'] = date('Y-m-d H:i:s');
