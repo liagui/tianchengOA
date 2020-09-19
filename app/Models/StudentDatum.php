@@ -231,7 +231,7 @@ class StudentDatum extends Model {
         }else{
             if($StudentDatumArr['audit_status'] == 2 && $StudentDatumArr['audit_id']>0 && $StudentDatumArr['gather_id']>0 ){
                 //正常流程走完一边（驳回）
-                $datumDelRes=Datum::where('id',$StudentDatumArr['id'])->update(['id_del'=>0,'update_time'=>date('Y-m-d H:i:s')]);
+                $datumDelRes=Datum::where('id',$StudentDatumArr['id'])->update(['is_del'=>0,'update_time'=>date('Y-m-d H:i:s')]);
                 if(!$datumDelRes){
                      DB::rollBack();
                     return ['code'=>203,'msg'=>' 资料提交失败，请重试 '];
