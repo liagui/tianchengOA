@@ -67,6 +67,7 @@ $router->group(['prefix' => 'admin' , 'namespace' => 'Admin','middleware'=> ['jw
         $router->post('unsubmittedOrderDetail', 'OrderController@unsubmittedOrderDetail');//分校未提交详情
         $router->post('DoSubmitted', 'OrderController@DoSubmitted');//分校未提交订单进行提交
         $router->post('submittedOrderCancel', 'OrderController@submittedOrderCancel');//分校已提交订单进行取消
+        $router->post('branchsubmittedOrderCancel', 'OrderController@branchsubmittedOrderCancel');//被驳回订单重新提交
         //退费订单操作
         $router->post('returnOrder', 'OrderController@returnOrder');//退款订单列表
         $router->post('returnOne', 'OrderController@returnOne');//退款订单单条详情
@@ -130,7 +131,7 @@ $router->group(['prefix' => 'admin' , 'namespace' => 'Admin','middleware'=> ['jw
     $router->post('getCommonList', 'CommonController@getCommonList');  //OA项目公共参数接口
 
     //上传到OSS图片接口
-    $router->post('doUploadOssImage', 'CommonController@doUploadOssImage'); 
+    $router->post('doUploadOssImage', 'CommonController@doUploadOssImage');
 
 
 

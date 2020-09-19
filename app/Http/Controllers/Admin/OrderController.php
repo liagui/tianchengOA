@@ -98,6 +98,11 @@ class OrderController extends Controller {
         $list = Pay_order_inside::submittedOrderCancel(self::$accept_data);
         return response()->json($list);
     }
+    //分校被驳回订单重新提交
+    public function branchsubmittedOrderCancel(){
+        $list = Pay_order_inside::branchsubmittedOrderCancel(self::$accept_data);
+        return response()->json($list);
+    }
 
     /*=============================================*/
     //退费订单list

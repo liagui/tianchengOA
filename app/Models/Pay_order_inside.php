@@ -952,7 +952,6 @@ class Pay_order_inside extends Model
         if(!isset($data['first_pay']) || empty($data['first_pay'])){
             return ['code' => 201 , 'msg' => '未选择缴费类型'];
         }
-        unset($data['begin_class']);
         //获取操作员信息
         $admin = isset(AdminLog::getAdminInfo()->admin_user) ? AdminLog::getAdminInfo()->admin_user : [];
         //第三方订单数据
@@ -977,8 +976,8 @@ class Pay_order_inside extends Model
             'consignee_status' => 0,//0带收集 1收集中 2已收集 3重新收集
             'confirm_order_type' => $data['confirm_order_type'],//确认的订单类型 1课程订单 2报名订单3课程+报名订单
             'first_pay' => $data['first_pay'],//支付类型 1全款 2定金 3部分尾款 4最后一笔尾款
-//            'classes' => $data['classes'],//开课状态
-//            'return_visit' => $data['return_visit'],//回访状态
+            'classes' => $data['classes'],//开课状态
+            'return_visit' => $data['return_visit'],//回访状态
             'remark' => $data['remark'], //备注
             'pay_voucher_user_id' => $admin['id'], //上传凭证人
             'pay_voucher_time' => date('Y-m-d H:i:s'), //上传凭证时间
@@ -1227,8 +1226,62 @@ class Pay_order_inside extends Model
             return ['code' => 201 , 'msg' => '操作失败'];
         }
     }
-
-
+    /*
+         * @param  分校被驳回订单重新提交
+         * @param  id   流转订单id
+         * @param  project_id    项目id
+         * @param  subject_id   学科id
+         * @param  course_id  课程id
+         * @param  education_id  院校id
+         * @param  major_id  专业id
+         * @param  name   姓名
+         * @param  mobile   手机号
+         * @param  confirm_order_type   订单类型
+         * @param  first_pay   缴费类型
+         * @param  return_visit   回访状态 0未回访 1 已回访
+         * @param  classes   是否开课 0不开课 1开课
+         * @param  remark   订单备注
+         * @param  pay_voucher   上传凭证
+         * @param  course_Price   课程金额
+         * @param  sign_Price   报名金额
+         * @param  author  苏振文
+         * @param  ctime   2020/9/4 15:06
+         * return  array
+         */
+    public static function branchsubmittedOrderCancel($data){
+        if(!isset($data['id']) || empty($data['id'])){
+            return ['code' => 201 , 'msg' => '参数有误'];
+        }
+        if(!isset($data['project_id']) || empty($data['project_id'])){
+            return ['code' => 201 , 'msg' => '未选择项目'];
+        }
+        if(!isset($data['subject_id']) || empty($data['subject_id'])){
+            return ['code' => 201 , 'msg' => '未选择学科'];
+        }
+        if(!isset($data['course_id']) || empty($data['course_id'])){
+            return ['code' => 201 , 'msg' => '未选择课程'];
+        }
+        if(!isset($data['name']) || empty($data['name'])){
+            return ['code' => 201 , 'msg' => '未填写姓名'];
+        }
+        if(!isset($data['mobile']) || empty($data['mobile'])){
+            return ['code' => 201 , 'msg' => '未填写手机号'];
+        }
+        if(!isset($data['confirm_order_type']) || empty($data['confirm_order_type'])){
+            return ['code' => 201 , 'msg' => '未选择订单类型'];
+        }
+        if(!isset($data['first_pay']) || empty($data['first_pay'])){
+            return ['code' => 201 , 'msg' => '未选择缴费类型'];
+        }
+        $data['confirm_status'] = 0;
+        //获取操作员信息
+        $up = Pay_order_inside::where(['id'=>$data['id']])->update($data);
+        if($up){
+            return ['code' => 200 , 'msg' => '提交成功'];
+        }else{
+            return ['code' => 201 , 'msg' => '提交失败'];
+        }
+    }
     /*
      * @param  description   开课管理列表接口
      * @param  参数说明       body包含以下参数[
