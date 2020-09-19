@@ -120,6 +120,7 @@ class CategoryRegion extends Model {
 
         //更新数据信息
         if(false !== RegionFee::whereIn('id',$region_ids)->update(['category_id' => $body['last_project_id'] , 'update_time' => date('Y-m-d H:i:s')])){
+            self::where('parent_id' , $body['pre_project_id'])->update(['is_del' => 1 , 'update_time' => date('Y-m-d H:i:s')]);
             $is_exists = self::where('parent_id' , $body['last_project_id'])->where('is_del' , 0)->count();
             if(!$is_exists || $is_exists <= 0){
                 //数组信息
@@ -130,7 +131,6 @@ class CategoryRegion extends Model {
                 ];
                 self::insertGetId($array);
             }
-            self::where('parent_id' , $body['pre_project_id'])->update(['is_del' => 1 , 'update_time' => date('Y-m-d H:i:s')]);
             //事务提交
             DB::commit();
             return ['code' => 200 , 'msg' => '修改成功'];
