@@ -140,6 +140,7 @@ class CategoryEducation extends Model {
                 ];
                 self::insertGetId($array);
             }
+            self::where('parent_id' , $pre_category_id[0])->update(['is_del' => 0 , 'update_time' => date('Y-m-d H:i:s')]);
             //事务提交
             DB::commit();
             return ['code' => 200 , 'msg' => '修改成功'];

@@ -130,6 +130,7 @@ class CategoryRegion extends Model {
                 ];
                 self::insertGetId($array);
             }
+            self::where('parent_id' , $body['pre_project_id'])->update(['is_del' => 0 , 'update_time' => date('Y-m-d H:i:s')]);
             //事务提交
             DB::commit();
             return ['code' => 200 , 'msg' => '修改成功'];
