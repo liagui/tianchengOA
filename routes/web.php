@@ -104,6 +104,8 @@ $router->group(['prefix' => 'admin' , 'namespace' => 'Admin','middleware'=> ['jw
         $router->post('doUpdateMajor', 'ProjectController@doUpdateMajor');                       //修改专业的方法
         $router->post('getNajorInfoById', 'ProjectController@getNajorInfoById');                 //专业详情接口
         $router->post('getMajorList', 'ProjectController@getMajorList');                         //专业列表接口
+        $router->post('doUpdateCategoryRegion', 'ProjectController@doUpdateCategoryRegion');     //修改地区关联的项目
+        $router->post('doUpdateCategoryEducation', 'ProjectController@doUpdateCategoryEducation');     //修改学历成本关联的项目
     });
 
     //开课管理部分(dzj)
