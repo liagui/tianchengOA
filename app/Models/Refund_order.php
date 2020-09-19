@@ -89,7 +89,7 @@ class Refund_order extends Model
         //退费状态
         $where=[];
         if(isset($data['confirm_status'])){
-            $where['confirm_status'] = $data['pay_confirm_statusstatus'];
+            $where['confirm_status'] = $data['confirm_status'];
         }
         //打款状态
         if(isset($data['refund_plan'])){
