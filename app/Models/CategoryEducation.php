@@ -112,15 +112,34 @@ class CategoryEducation extends Model {
             return ['code' => 203 , 'msg' => '此项目名称不存在'];
         }
         
+        //获取后端的操作员id
+        $admin_id = isset(AdminLog::getAdminInfo()->admin_user->id) ? AdminLog::getAdminInfo()->admin_user->id : 0;
+        
+        //学科id
+        $pre_category_id_1 = isset($pre_category_id[1]) && $pre_category_id[1] > 0 ? $pre_category_id[1] : 0;
+        
         //根据项目的id获取学历成本的id
-        $education_id = Education::select('id')->where('parent_id' , $pre_category_id[0])->where('child_id' , $pre_category_id[1])->get()->toArray();
+        $education_id = Education::select('id')->where('parent_id' , $pre_category_id[0])->where('child_id' , $pre_category_id_1)->get()->toArray();
         $education_ids= array_column($education_id , 'id');
+        
+        //学科id
+        $last_category_id_1 = isset($last_category_id[1]) && $last_category_id[1] > 0 ? $last_category_id[1] : 0;
         
         //开启事务
         DB::beginTransaction();
 
         //更新数据信息
-        if(false !== Education::whereIn('id',$education_ids)->update(['parent_id' => $last_category_id[0] , 'child_id' => $last_category_id[1] , 'update_time' => date('Y-m-d H:i:s')])){
+        if(false !== Education::whereIn('id',$education_ids)->update(['parent_id' => $last_category_id[0] , 'child_id' => $last_category_id_1 , 'update_time' => date('Y-m-d H:i:s')])){
+            $is_exists = self::where('parent_id' , $last_category_id[0])->where('child_id' , $last_category_id_1)->where('is_del' , 0)->count();
+            if(!$is_exists || $is_exists <= 0){
+                //数组信息
+                $array = [
+                    'parent_id'           =>   $last_category_id[0] ,
+                    'admin_id'            =>   $admin_id ,
+                    'create_time'         =>   date('Y-m-d H:i:s')
+                ];
+                self::insertGetId($array);
+            }
             //事务提交
             DB::commit();
             return ['code' => 200 , 'msg' => '修改成功'];
