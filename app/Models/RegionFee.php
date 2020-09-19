@@ -217,7 +217,7 @@ class RegionFee extends Model {
         }
         
         //通过项目的id获取地区列表
-        $region_list = self::select('id as region_id' , 'region_name' , 'cost')->where('category_id' , $body['project_id'])->where('is_del' , 0)->get();
+        $region_list = self::select('id as region_id' , 'region_name' , 'cost' , 'region_name as label' , 'id as value')->where('category_id' , $body['project_id'])->where('is_del' , 0)->get();
         return ['code' => 200 , 'msg' => '获取地区列表成功' , 'data' => $region_list];
     }
     

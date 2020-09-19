@@ -210,7 +210,7 @@ class Major extends Model {
         }
         
         //通过院校的id获取专业列表
-        $major_list = self::select('id as major_id' , 'major_name')->where('education_id' , $body['education_id'])->where('is_del' , 0)->get();
+        $major_list = self::select('id as major_id' , 'major_name' , 'major_name as label' , 'id as value')->where('education_id' , $body['education_id'])->where('is_del' , 0)->get();
         return ['code' => 200 , 'msg' => '获取专业列表成功' , 'data' => $major_list];
     }
 }
