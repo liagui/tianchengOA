@@ -58,16 +58,20 @@ class Pay_order_inside extends Model
             $where['confirm_order_type'] = $data['confirm_order_type'];
         }
         //订单是否回访
-        if(!empty($data['return_visit'])){
+        if(isset($data['return_visit'])){
             $where['return_visit'] = $data['return_visit'];
         }
         //订单是否开课
-        if(!empty($data['classes'])){
+        if(isset($data['classes'])){
             $where['classes'] = $data['classes'];
         }
         //订单状态
-        if(!empty($data['confirm_status'])){
+        if(isset($data['confirm_status'])){
             $where['confirm_status'] = $data['confirm_status'];
+        }
+        //学校id
+        if(isset($data['school_id'])){
+            $where['school_id'] = $data['school_id'];
         }
         //科目id&学科id
         if(!empty($data['project_id'])){
