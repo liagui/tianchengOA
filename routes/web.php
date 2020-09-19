@@ -121,6 +121,7 @@ $router->group(['prefix' => 'admin' , 'namespace' => 'Admin','middleware'=> ['jw
         $router->post('doUpdateSchool', 'SchoolController@doUpdateSchool');                      //修改分校接口
         $router->post('getSchoolInfoById', 'SchoolController@getSchoolInfoById');                //分校详情接口
         $router->post('getSchoolListByLevel', 'SchoolController@getSchoolListByLevel');          //上级分校列表接口
+        $router->post('getSchoolListByLevels', 'SchoolController@getSchoolListByLevels');          //上级分校列表接口（lys）
         $router->post('getSchoolList', 'SchoolController@getSchoolList');                        //分校列表接口
         $router->post('doDelSchool', 'SchoolController@doDelSchool');                            //分校删除接口  （lys）
         $router->post('doOpenSchool', 'SchoolController@doOpenSchool');                          //分校启用禁用接口（lys）

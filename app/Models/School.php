@@ -313,6 +313,45 @@ class School extends Model {
             return ['code' => 203 , 'msg' => '此分校不存在或已删除'];
         }
     }
+    /*
+     * @param  description   分校管理-上级分校列表方法
+     * @param  参数说明       body包含以下参数[
+     *     level         分校级别[1,2,3]
+     * ]
+     * @param author    lys
+     * @param ctime     2020-09-07
+     * return string
+     */
+    public static function getSchoolListByLevels($body=[]){
+        //判断传过来的数组数据是否为空
+        if(!$body || !is_array($body)){
+            return ['code' => 202 , 'msg' => '传递数据不合法'];
+        }
+
+        //判断分校级别是否合法
+        if(!isset($body['level']) || !in_array($body['level'] , [1,2,3])){
+            return ['code' => 201 , 'msg' => '分校级别不合法'];
+        }
+        //判断分校级别是否合法
+        if(!isset($body['school_id']) || empty($body['school_id']) ){
+            return ['code' => 201 , 'msg' => '学校标识不合法'];
+        }
+        //根据分校的级别获取分校列表
+        if($body['level'] > 1){
+            $level = $body['level'] - 1;
+            $school_list = self::select('id as school_id' , 'school_name')->where('level' , $level)->where('is_del' , 0)->get();
+            if(!empty($school_list)){
+                foreach($school_list as $k=>$v){
+                    if($v['school_id'] == $body['school_id']){
+                        unset($school_list[$k]);
+                    }
+                }
+            }
+            return ['code' => 200 , 'msg' => '获取列表成功' , 'data' => $school_list];
+        } else {
+            return ['code' => 200 , 'msg' => '获取列表成功' , 'data' => []];
+        }
+    }
 
     /*
      * @param  description   分校管理-上级分校列表方法
@@ -333,7 +372,6 @@ class School extends Model {
         if(!isset($body['level']) || !in_array($body['level'] , [1,2,3])){
             return ['code' => 202 , 'msg' => '分校级别不合法'];
         }
-
         //根据分校的级别获取分校列表
         if($body['level'] > 1){
             $level = $body['level'] - 1;
