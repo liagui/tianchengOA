@@ -88,11 +88,11 @@ class Refund_order extends Model
         $admin = isset(AdminLog::getAdminInfo()->admin_user) ? AdminLog::getAdminInfo()->admin_user: [];
         //退费状态
         $where=[];
-        if(!empty($data['confirm_status'])){
+        if(isset($data['confirm_status'])){
             $where['confirm_status'] = $data['pay_confirm_statusstatus'];
         }
         //打款状态
-        if(!empty($data['refund_plan'])){
+        if(isset($data['refund_plan'])){
             $where['refund_plan'] = $data['refund_plan'];
         }
         //判断时间

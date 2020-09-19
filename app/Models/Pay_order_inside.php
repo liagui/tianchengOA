@@ -53,10 +53,6 @@ class Pay_order_inside extends Model
         if(isset($data['pay_status'])){
             $where['pay_status'] = $data['pay_status'];
         }
-        //订单类型
-        if(!empty($data['confirm_order_type'])){
-            $where['confirm_order_type'] = $data['confirm_order_type'];
-        }
         //订单是否回访
         if(isset($data['return_visit'])){
             $where['return_visit'] = $data['return_visit'];
@@ -91,6 +87,9 @@ class Pay_order_inside extends Model
                 }
                 if(isset($data['classes'])){
                     $query->where('classes',$data['classes']);
+                }
+                if(!empty($data['confirm_order_type'])){
+                    $where['confirm_order_type'] = $data['confirm_order_type'];
                 }
                 $query->whereIn('school_id',$schoolarr);
             })
