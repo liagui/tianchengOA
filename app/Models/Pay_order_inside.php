@@ -608,7 +608,12 @@ class Pay_order_inside extends Model
         $admin = isset(AdminLog::getAdminInfo()->admin_user) ? AdminLog::getAdminInfo()->admin_user : [];
         $order = self::where(['id'=>$data['id']])->first();
         unset($data['/admin/order/notarizeOrder']);
-        if($data['confirm_order_type'] == 2 || $data['confirm_order_type'] == 3){
+//        if($data['confirm_order_type'] == 2){
+//            if($order['sign_Price'] > $order['pay_price']){
+//                return ['code' => 201 , 'msg' => '所填金额大于支付金额'];
+//            }
+//        }
+        if($data['confirm_order_type'] == 3){
             $ppppp = $data['course_Price'] + $data['sign_Price'];
             if($ppppp > $order['pay_price']){
                 return ['code' => 201 , 'msg' => '所填金额大于支付金额'];
@@ -2036,8 +2041,8 @@ class Pay_order_inside extends Model
                     //二级分校无二级抽离比例、押金
 
                     //二级分校的一级抽离比例一级抽离比例
-                    $first_out_of_amount  = $v['first_out_of_amount'];
-                    $first_out_of_money   = ($first_out_of_amount / 100) * $actual_receipt;
+                    $first_out_of_amount  = $v['one_extraction_ratio'];
+                    $first_out_of_money   = $v['first_out_of_amount'];
                     $second_out_of_amount = '-';
                     $second_out_of_money  = '-';
                     //代理保证金
@@ -2063,41 +2068,43 @@ class Pay_order_inside extends Model
                     //三级分校的二级抽离比例=后台分校管理中二级抽离比例
                     //三级分校的二级抽离金额=三级分校的二级抽比例*实际到款
                     //三级分校的实际返佣=三级分校的返佣金额-三级分校的保证金-三级分校退费*三级分校返佣比例
-                    $first_out_of_amount  = $v['first_out_of_amount'];
-                    $first_out_of_money   = ($first_out_of_amount / 100) * $actual_receipt;
+                    $first_out_of_amount  = $v['one_extraction_ratio'];
+                    $first_out_of_money   = $v['first_out_of_amount'];
 
                     //二级抽离比例
-                    $second_out_of_amount= $v['second_out_of_amount'];
-                    $second_out_of_money = ($second_out_of_amount / 100) * $actual_receipt;
+                    $second_out_of_amount= $v['two_extraction_ratio'];
+                    $second_out_of_money = $v['second_out_of_amount'];
                     //三级分校无代理保证金
                     $agent_margin = '-';
+                    
+                    //三级分校退费金额
+                    $three_refund_Price    = Refund_order::whereIn('school_id' , $v['school_id'])->where('confirm_status' , 1)->sum('refund_Price');
 
                     //三级分校的实际返佣=三级分校的返佣金额-三级分校的保证金-三级分校退费*三级分校返佣比例
-                    $actual_commission_refund = $commission_money - $bond;
+                    $actual_commission_refund = $commission_money - $bond - $three_refund_Price * $v['commission'];
                 }
-
-
 
 
                 //数组赋值
                 $array[] = [
-                    'create_time'   =>  date('Ymd' ,strtotime($v['create_time'])) ,
                     'first_school_name'   =>  $first_school_name ,
                     'two_school_name'     =>  $two_school_name ,
                     'three_school_name'   =>  $three_school_name ,
-                    'actual_receipt'      =>  $actual_receipt ,
-
-
-
-
-
-                    'received_order'=>  0 ,  //到账订单数量
-                    'refund_order'  =>  0 ,  //退费订单数量
-                    'received_money'=>  0 ,  //到账金额
-                    'refund_money'  =>  0 ,  //退费金额
-                    'enroll_price'  =>  $v['sign_Price'] ,  //报名费用
-                    'prime_cost'    =>  $v['sum_Price']  ,  //成本
-                    'return_commission_amount' => $v['return_commission_amount'] ,  //返佣金额(实际佣金)
+                    'payment_performance' =>  $payment_performance ,
+                    'actual_receipt'      =>  $actual_receipt ,   //实际到款
+                    'tax_deduction_ratio' =>  $tax_deduction_ratio ,
+                    'after_tax_amount'    =>  $after_tax_amount ,
+                    'order_number'        =>  $order_number ,
+                    'sum_cost'            =>  $sum_cost ,
+                    'commission_rebate'   =>  $commission_rebate ,
+                    'commission_money'    =>  $commission_money ,
+                    'bond'                =>  $bond ,
+                    'agent_margin'        =>  $agent_margin ,
+                    'first_out_of_amount' =>  $first_out_of_amount ,
+                    'first_out_of_money'  =>  $first_out_of_money ,
+                    'second_out_of_amount'=>  $second_out_of_amount ,
+                    'second_out_of_money' =>  $second_out_of_money ,
+                    'actual_commission_refund' => $actual_commission_refund
                 ];
             }
             return ['code' => 200 , 'msg' => '获取列表成功' , 'data' => ['list' => $array , 'total' => $count , 'pagesize' => $pagesize , 'page' => $page]];
