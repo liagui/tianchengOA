@@ -1,6 +1,5 @@
 <?php
 namespace App\Models;
-
 use Illuminate\Database\Eloquent\Model;
 use App\Models\Pay_order_inside;
 use App\Models\Orderdocumentary;
@@ -9,6 +8,7 @@ use Illuminate\Support\Facades\DB;
 use App\Models\School;
 use App\Models\Category;
 use App\Models\Course;
+use App\Models\StudentCourse;
 class Student extends Model {
     //指定别的表名
     public $table = 'student';
@@ -347,15 +347,12 @@ class Student extends Model {
                 if(isset($data['school_id']) && !empty($data['school_id'])){
                     $query->where('school_id',$data['school_id']);
                 }
-                if(isset($data['return_visit']) && $data['return_visit'] != -1){
-                    $query->where('return_visit',$data['return_visit']);
-                }
                 if(isset($data['pay_type']) && $data['pay_type'] != -1){
                     $query->where('pay_type',$data['pay_type']);
                 }
-                if(isset($data['classes']) && $data['classes'] != -1){
-                    $query->where('classes',$data['classes']);
-                }
+                // if(isset($data['classes']) && $data['classes'] != -1){
+                //     $query->where('classes',$data['classes']);
+                // }
                 if(isset($data['confirm_status']) && $data['confirm_status'] != -1){
                     $query->where('confirm_status',$data['confirm_status']);
                 }
@@ -364,7 +361,7 @@ class Student extends Model {
                 }
             })->count();
             //分页数据
-            $data = Pay_order_inside::where("seas_status",0)->where(function($query) use ($data) {
+            $res = Pay_order_inside::where("seas_status",0)->where(function($query) use ($data) {
                 if(isset($data['project_id']) && !empty($data['project_id'])){
                     $query->where('project_id',$data['project_id']);
                 }
@@ -374,15 +371,12 @@ class Student extends Model {
                 if(isset($data['school_id']) && !empty($data['school_id'])){
                     $query->where('school_id',$data['school_id']);
                 }
-                if(isset($data['return_visit']) && $data['return_visit'] != -1){
-                    $query->where('return_visit',$data['return_visit']);
-                }
                 if(isset($data['pay_type']) && $data['pay_type'] != -1){
                     $query->where('pay_type',$data['pay_type']);
                 }
-                if(isset($data['classes']) && $data['classes'] != -1){
-                    $query->where('classes',$data['classes']);
-                }
+                // if(isset($data['classes']) && $data['classes'] != -1){
+                //     $query->where('classes',$data['classes']);
+                // }
                 if(isset($data['confirm_status']) && $data['confirm_status'] != -1){
                     $query->where('confirm_status',$data['confirm_status']);
                 }
@@ -402,15 +396,12 @@ class Student extends Model {
                 if(isset($data['school_id']) && !empty($data['school_id'])){
                     $query->where('school_id',$data['school_id']);
                 }
-                if(isset($data['return_visit']) && $data['return_visit'] != -1){
-                    $query->where('return_visit',$data['return_visit']);
-                }
                 if(isset($data['pay_type']) && $data['pay_type'] != -1){
                     $query->where('pay_type',$data['pay_type']);
                 }
-                if(isset($data['classes']) && $data['classes'] != -1){
-                    $query->where('classes',$data['classes']);
-                }
+                // if(isset($data['classes']) && $data['classes'] != -1){
+                //     $query->where('classes',$data['classes']);
+                // }
                 if(isset($data['confirm_status']) && $data['confirm_status'] != -1){
                     $query->where('confirm_status',$data['confirm_status']);
                 }
@@ -419,7 +410,7 @@ class Student extends Model {
                 }
             })->count();
             //分页数据
-            $data = Pay_order_inside::select()->where("seas_status",0)->where("have_user_id",$user_id)->where(function($query) use ($data) {
+            $res = Pay_order_inside::select()->where("seas_status",0)->where("have_user_id",$user_id)->where(function($query) use ($data) {
                 if(isset($data['project_id']) && !empty($data['project_id'])){
                     $query->where('project_id',$data['project_id']);
                 }
@@ -429,15 +420,12 @@ class Student extends Model {
                 if(isset($data['school_id']) && !empty($data['school_id'])){
                     $query->where('school_id',$data['school_id']);
                 }
-                if(isset($data['return_visit']) && $data['return_visit'] != -1){
-                    $query->where('return_visit',$data['return_visit']);
-                }
                 if(isset($data['pay_type']) && $data['pay_type'] != -1){
                     $query->where('pay_type',$data['pay_type']);
                 }
-                if(isset($data['classes']) && $data['classes'] != -1){
-                    $query->where('classes',$data['classes']);
-                }
+                // if(isset($data['classes']) && $data['classes'] != -1){
+                //     $query->where('classes',$data['classes']);
+                // }
                 if(isset($data['confirm_status']) && $data['confirm_status'] != -1){
                     $query->where('confirm_status',$data['confirm_status']);
                 }
@@ -446,7 +434,22 @@ class Student extends Model {
                 }
             })->offset($offset)->limit($pagesize)->orderByDesc("id")->get()->toArray();
         }
-        foreach($data as $k => &$v){
+        foreach($res as $k => &$v){
+
+                //是否回访
+                $a = Orderdocumentary::where("order_id",$v['id'])->first();
+                if(empty($a)){
+                    $v['return_visit'] = 0;
+                }else{
+                    $v['return_visit'] = 1;
+                }
+                //是否开课
+                $c = StudentCourse::where(["order_no"=>$v['order_no'],"status"=>1])->first();
+                if(empty($c)){
+                    $v['classes'] = 0;
+                }else{
+                    $v['classes'] = 1;
+                }
                 $v['school_name'] = School::select("school_name")->where("id",$v['school_id'])->first()['school_name'];
                 $v['project_name'] = Category::select("name")->where("id",$v['project_id'])->first()['name'];
                 $v['subject_name'] = Category::select("name")->where("id",$v['subject_id'])->first()['name'];
@@ -469,13 +472,24 @@ class Student extends Model {
                     $v['confirm_order_type_name'] = "课程+报名订单";
                 }
         }
+        if(isset($data['return_visit']) && $data['return_visit'] != -1){
+            $res = array_filter($res, function($t) use ($data) { return $t['return_visit'] == $data['return_visit']; });
+            $res = array_merge($res);
+            $count = count($res);
+        }
+        if(isset($data['classes']) && $data['classes'] != -1){
+            $res = array_filter($res, function($t) use ($data) { return $t['classes'] == $data['classes']; });
+            $res = array_merge($res);
+            $count = count($res);
+        }
+
         $page=[
             'pageSize'=>$pagesize,
             'page' =>$page,
             'total'=>$count
         ];
         if($data){
-            return ['code' => 200, 'msg' => '查询成功', 'data' => $data,'page'=>$page];
+            return ['code' => 200, 'msg' => '查询成功', 'data' => $res,'page'=>$page];
         }else{
             return ['code' => 200, 'msg' => '查询暂无数据', 'data' => [],'page'=>$page];
         }
