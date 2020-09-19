@@ -35,10 +35,10 @@ class StudentDatum extends Model {
             	}else{
                     $query->whereIn('student_information.school_id',$body['school_ids']['data']);
                 }
-            	if(isset($body['audit_state']) && !empty($body['audit_state'])){ //所属审核状态
+            	if(isset($body['audit_state']) && strlen($body['audit_state'])>0){ //所属审核状态
                 	$query->where('student_information.audit_status',$body['audit_state']);
             	}
-            	if(isset($body['gather_state']) && !empty($body['gather_state'])){
+            	if(isset($body['gather_state']) && strlen($body['gather_state'])>0){
                 	$query->where('student_information.consignee_status',$body['gather_state']);
             	}
             	if(isset($body['search']) && !empty($body['search'])){
@@ -56,7 +56,7 @@ class StudentDatum extends Model {
     		if(!empty($adminArr)){
     			$adminArr  = array_column($adminArr,'real_name','id');
     		}
-    		$courseArr = Course::where(['is_del'=>1])->select('id','course_name')->get()->toArray();
+    		$courseArr = Course::where(['is_del'=>0])->select('id','course_name')->get()->toArray();
     		if(!empty($courseArr)){
     			$courseArr  = array_column($courseArr,'course_name','id');
     		}
@@ -76,10 +76,10 @@ class StudentDatum extends Model {
 	            	}else{
                         $query->whereIn('student_information.school_id',$body['school_ids']['data']);
                     }
-	            	if(isset($body['audit_state']) && !empty($body['audit_state'])){ //所属审核状态
+	            	if(isset($body['audit_state']) &&strlen($body['audit_state'])>0){ //所属审核状态
 	                	$query->where('student_information.audit_status',$body['audit_state']);
 	            	}
-	            	if(isset($body['gather_state']) && !empty($body['gather_state'])){
+	            	if(isset($body['gather_state']) && strlen($body['gather_state'])>0){
 	                	$query->where('student_information.consignee_status',$body['gather_state']);
 	            	}
 	            	if(isset($body['search']) && !empty($body['search'])){
