@@ -85,9 +85,9 @@ class Pay_order_inside extends Model
                         ->orwhere('name',$data['order_on'])
                         ->orwhere('mobile',$data['order_on']);
                 }
-//                if($data['isBranchSchool'] == true){
-//                    $query->where('school_id','!=',null);
-//                }
+                if(!empty($data['isBranchSchool']) && $data['isBranchSchool'] == true){
+                    $query->where('school_id','!=',null);
+                }
                 $query->whereIn('school_id',$schoolarr);
             })
             ->where($where)
@@ -99,9 +99,9 @@ class Pay_order_inside extends Model
                 $query->where('order_no', $data['order_on'])
                     ->orwhere('name', $data['order_on'])
                     ->orwhere('mobile', $data['order_on']);
-//            if($data['isBranchSchool'] == true){
-//                $query->where('school_id','!=',null);
-//            }
+                if(!empty($data['isBranchSchool']) && $data['isBranchSchool'] == true){
+                    $query->where('school_id','!=',null);
+                }
             }
         })->where($where)
         ->whereBetween('create_time', [$state_time, $end_time])
@@ -467,12 +467,12 @@ class Pay_order_inside extends Model
                     ->orwhere('name',$data['order_no'])
                     ->orwhere('mobile',$data['order_no']);
             }
-//            if($data['isBranchSchool'] == true){
-//                $query->where('confirm_status',0)
-//                    ->orwhere('confirm_status',1);
-//            }else{
-//                $query->where('confirm_status',0);
-//            }
+            if(!empty($data['isBranchSchool']) && $data['isBranchSchool'] == true){
+                $query->where('confirm_status',0)
+                    ->orwhere('confirm_status',1);
+            }else{
+                $query->where('confirm_status',0);
+            }
             $query->whereIn('school_id',$schoolarr);
         })
         ->where($where)
@@ -484,12 +484,12 @@ class Pay_order_inside extends Model
                     ->orwhere('name',$data['order_no'])
                     ->orwhere('mobile',$data['order_no']);
             }
-//            if($data['isBranchSchool'] == true){
-//                $query->where('confirm_status',0)
-//                    ->orwhere('confirm_status',1);
-//            }else{
-//                $query->where('confirm_status',0);
-//            }
+            if(!empty($data['isBranchSchool']) &&$data['isBranchSchool'] == true){
+                $query->where('confirm_status',0)
+                    ->orwhere('confirm_status',1);
+            }else{
+                $query->where('confirm_status',0);
+            }
             $query->whereIn('school_id',$schoolarr);
         })
         ->where($where)
