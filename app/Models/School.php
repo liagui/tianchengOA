@@ -25,12 +25,19 @@ class School extends Model {
         return [
 
         ];
-
-
     }
     public static function getList($body){
         $school_name = isset($body['search']) && !empty($body['search']) ? $body['search'] :'';
-        $schoolData = self::where(['is_del'=>0,'is_open'=>0])->where('school_name','like','%'.$school_name.'%')->select('id','school_name','id as value','school_name as label')->get();
+        $schoolData = self::where(['is_del'=>0,'is_open'=>0])
+        ->where(function($query) use ($body,$school_name){
+            //判断分校名称是否为空
+            if(isset($body['search']) && !empty($body['search'])){
+                $query->where('school_name','like','%'.$school_name.'%');
+            }
+            if(isset($body['school_id']) && !empty($body['school_id'])){
+                $query->whereIn('id',$body['school_id']);
+            }
+        })->select('id','school_name','id as value','school_name as label')->get();
         return ['code'=>200,'msg'=>'Success','data'=>$schoolData];
     }
     /*

@@ -33,7 +33,10 @@ class SchoolController extends Controller {
     public function getList(){
             //获取提交的参数
         try{
-            $data = School::getList(self::$accept_data);
+            $body = self::$accept_data;
+            $school_id =  isset(AdminLog::getAdminInfo()->admin_user->school_id) ? AdminLog::getAdminInfo()->admin_user->school_id : 0;
+            $body['school_id'] = $this->underlingLook($school_id)['data'];
+            $data = School::getList($body);
             if($data['code'] == 200){
                 return response()->json($data);
             } else {
