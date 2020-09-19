@@ -78,7 +78,6 @@ class Pay_order_inside extends Model
         $pagesize = (int)isset($data['pagesize']) && $data['pagesize'] > 0 ? $data['pagesize'] : 20;
         $page     = isset($data['page']) && $data['page'] > 0 ? $data['page'] : 1;
         $offset   = ($page - 1) * $pagesize;
-
         //数据   流转订单 + 第三方支付订单
         $order = self::where(function($query) use ($data,$schoolarr) {
                 if(isset($data['order_no']) && !empty($data['order_no'])){
@@ -86,7 +85,7 @@ class Pay_order_inside extends Model
                         ->orwhere('name',$data['order_on'])
                         ->orwhere('mobile',$data['order_on']);
                 }
-                $query->whereIn('school_id',$schoolarr);
+//                $query->whereIn('school_id',$schoolarr);
             })
             ->where($where)
             ->whereBetween('create_time', [$state_time, $end_time])
