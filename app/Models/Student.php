@@ -58,7 +58,7 @@ class Student extends Model {
             }
         })->get()->toArray();
         //获取分校名称
-        foreach($res as $k =>$v){
+        foreach($res as $k =>&$v){
 
             //是否回访
             $a = Orderdocumentary::where("order_id",$v['id'])->first();
