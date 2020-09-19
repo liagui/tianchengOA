@@ -18,8 +18,8 @@ class ExcelController extends Controller {
         $school_id = isset($body['school_id'])&& $body['school_id'] >0?$body['school_id']:'';
         if(isset($body['subject']) && !empty($body['subject'])){
             $subject = json_decode($body['subject'],1);
-            if(!isset($subject[1]) || empty($subject[1])){
-                return ['code'=>201,'msg'=>'请选择项目-学科'];
+            if(!isset($subject[0]) || empty($subject[0])){
+                return ['code'=>201,'msg'=>'请选择项目'];
             }else{
                 $body['subject'] = $subject;
             }

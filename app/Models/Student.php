@@ -435,19 +435,20 @@ class Student extends Model {
             })->offset($offset)->limit($pagesize)->orderByDesc("id")->get()->toArray();
         }
         foreach($res as $k => &$v){
-                //是否开课
-                $c = StudentCourse::where(["order_no"=>$v['order_no'],"status"=>1])->first();
-                if(empty($c)){
-                    $v['classes'] = 0;
-                }else{
-                    $v['classes'] = 1;
-                }
+
                 //是否回访
                 $a = Orderdocumentary::where("order_id",$v['id'])->first();
                 if(empty($a)){
                     $v['return_visit'] = 0;
                 }else{
                     $v['return_visit'] = 1;
+                }
+                //是否开课
+                $c = StudentCourse::where(["order_no"=>$v['order_no'],"status"=>1])->first();
+                if(empty($c)){
+                    $v['classes'] = 0;
+                }else{
+                    $v['classes'] = 1;
                 }
                 $v['school_name'] = School::select("school_name")->where("id",$v['school_id'])->first()['school_name'];
                 $v['project_name'] = Category::select("name")->where("id",$v['project_id'])->first()['name'];
@@ -473,12 +474,15 @@ class Student extends Model {
         }
         if(isset($data['return_visit']) && $data['return_visit'] != -1){
             $res = array_filter($res, function($t) use ($data) { return $t['return_visit'] == $data['return_visit']; });
+            $res = array_merge($res);
             $count = count($res);
         }
         if(isset($data['classes']) && $data['classes'] != -1){
             $res = array_filter($res, function($t) use ($data) { return $t['classes'] == $data['classes']; });
+            $res = array_merge($res);
             $count = count($res);
         }
+
         $page=[
             'pageSize'=>$pagesize,
             'page' =>$page,
