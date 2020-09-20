@@ -17,11 +17,16 @@ class StudentDatum extends Model {
         $pagesize = (int)isset($body['pageSize']) && $body['pageSize'] > 0 ? $body['pageSize'] : 20;
         $page     = isset($body['page']) && $body['page'] > 0 ? $body['page'] : 1;
         $offset   = ($page - 1) * $pagesize;
-        if(isset($body['project_id']) && !empty($body['project_id'])){
+        if(isset($body['project_id'])){
         	$subject = json_decode($body['project_id'],1);
-        	$oneSubject = $subject[0];
-
-        	$twoSubject = isset($subject[1]) && $subject[1]>0 ?$subject[1]:0;
+            if(!empty($subject)){
+                $oneSubject = $subject[0];
+                if(!empty($subject[1])){
+                    $twoSubject = $subject[1];
+                }
+            }else{
+                unset($body['project_id']);
+            }
     	}  
 
 
@@ -46,9 +51,16 @@ class StudentDatum extends Model {
                 		->orWhere('student.mobile','like','%'.$body['search'].'%');
             	}
             	if(isset($body['project_id']) && !empty($body['project_id'])){
-                	$query->where('student_information.project_id',$oneSubject);
-                	$query->where('student_information.subject_id',$twoSubject);
-            	}
+                    if(!empty($oneSubject)){
+                        $query->where('student_information.project_id',$oneSubject);
+                    }
+                    if(!empty($twoSubject)){
+                       $query->where('student_information.subject_id',$twoSubject);
+                    } 
+                }
+                     
+                	
+            	
         	})->count();
           
     	if($count >0){
@@ -87,8 +99,12 @@ class StudentDatum extends Model {
 	                		->orWhere('student.mobile','like','%'.$body['search'].'%');
 	            	}
 	            	if(isset($body['project_id']) && !empty($body['project_id'])){
-	                	$query->where('student_information.project_id',$oneSubject);
-	                	$query->where('student_information.subject_id',$twoSubject);
+    	                if(!empty($oneSubject)){
+                            $query->where('student_information.project_id',$oneSubject);
+                        }
+                        if(!empty($twoSubject)){
+                           $query->where('student_information.subject_id',$twoSubject);
+                        } 
 	            	}   
 	        	})->select('student_information.student_id','student_information.project_id','student_information.subject_id','student_information.audit_id','student_information.gather_id','student_information.initiator_id','student_information.datum_create_time','student.mobile','student.user_name as student_name','pay_order_inside.consignee_status','student_information.audit_status','student_information.id','student_information.course_id','student_information.school_id','student_information.information_id')->orderBy('datum_create_time','desc')->offset($offset)->limit($pagesize)->get();
 	        foreach($StudentDatumArr as $k=>&$v){
