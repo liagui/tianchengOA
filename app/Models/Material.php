@@ -13,7 +13,7 @@ class Material extends Model {
     //时间戳设置
     public $timestamps = false;
 
-    public static function getMaterialList($data){
+    public static function getMaterialList($data,$school_id){
         //未处理物料条数
         $nocount = self::select('submit_time', 'submit_name', 'school_id', 'status','id')->where('status',0)->count();
         //每页显示的条数
@@ -21,9 +21,12 @@ class Material extends Model {
         $page     = isset($data['page']) && $data['page'] > 0 ? $data['page'] : 1;
         $offset   = ($page - 1) * $pagesize;
         //计算总数
-        $count = self::select('material.submit_time', 'material.submit_name', 'material.school_id', 'material.status', 'material.id')->where(function($query) use ($data) {
+        $count = self::select('material.submit_time', 'material.submit_name', 'material.school_id', 'material.status', 'material.id')->where(function($query) use ($data,$school_id) {
+
             if(isset($data['school_id']) && !empty($data['school_id'])){
                 $query->where('material.school_id',$data['school_id']);
+            }else{
+                $query->whereIn('material.school_id',$school_id);
             }
             if(isset($data['status']) && $data['status'] != -1){
                 $query->where('material.status',$data['status']);
@@ -33,9 +36,11 @@ class Material extends Model {
             }
         })->count();
         //分页数据
-        $data = self::select('material.submit_time', 'material.submit_name','create_name','create_id','material.school_id', 'material.status', 'material.id','material.courier_company','material.courier_number','material.courier_note','material.delivery_time')->where(function($query) use ($data) {
+        $data = self::select('material.submit_time', 'material.submit_name','create_name','create_id','material.school_id', 'material.status', 'material.id','material.courier_company','material.courier_number','material.courier_note','material.delivery_time')->where(function($query) use ($data,$school_id) {
             if(isset($data['school_id']) && !empty($data['school_id'])){
                 $query->where('material.school_id',$data['school_id']);
+            }else{
+                $query->whereIn('material.school_id',$school_id);
             }
             if(isset($data['status']) && $data['status'] != -1){
                 $query->where('material.status',$data['status']);
