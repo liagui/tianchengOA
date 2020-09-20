@@ -96,15 +96,13 @@ class StudentDatumExport implements FromCollection, WithHeadings {
                 $Datum[$kk]['card_photo_scanning'] = $vv['card_photo_scanning'];
                 $Datum[$kk]['diploma_photo'] = $vv['diploma_photo'];
                 $Datum[$kk]['diploma_scanning'] = $vv['diploma_scanning'];
-                unset($v['address_province_id']);
-                unset($v['address_city_id']);
-                unset($v['sign_region_province_id']);
-                unset($v['sign_region_city_id']);
-                unset($v['reference_region_province_id']);
-                unset($v['reference_region_city_id']);
+                unset($vv['address_province_id']);
+                unset($vv['address_city_id']);
+                unset($vv['sign_region_province_id']);
+                unset($vv['sign_region_city_id']);
+                unset($vv['reference_region_province_id']);
+                unset($vv['reference_region_city_id']);
             }
-            echo "<pre>";
-            print_r($Datum);die;
         }   
         
         return $Datum;
@@ -112,7 +110,7 @@ class StudentDatumExport implements FromCollection, WithHeadings {
 
     public function headings(): array
     {
-        return ['学员','性别','手机号码','身份证号码','报考月份','报考地区','备考地区','文化程度','毕业学院','毕业专业','毕业年月','学信网账号','学信网密码','所属学校','2寸白底照片','身份证正面照片','身份证背面照片','身份证正反面扫描','毕业证照片','毕业证扫描件','户籍地区'];
+        return ['学员','性别','手机号码','身份证号码','报考月份','文化程度','毕业学院','毕业专业','毕业年月','学信网账号','学信网密码','所属学校','2寸白底照片','身份证正面照片','身份证背面照片','身份证正反面扫描','毕业证照片','毕业证扫描件','户籍地区','报考地区','备考地区'];
         // return [
         //     '所属分校','学员姓名','报考地区','备考地区','学员姓名','学员性别','学员手机号','学员身份证号','户籍地址','报考月份','报考地区','备考地区','文化程度','毕业学院','毕业专业','毕业年月','学信网账号','学信网密码','2寸白底照片','身份证正面照片','身份证背面照片','身份证正反面扫描','毕业证照片','毕业证扫描件','本人手持身份证照片',
         // ];

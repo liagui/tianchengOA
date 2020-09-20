@@ -34,12 +34,13 @@ class SchoolController extends Controller {
             //获取提交的参数
         try{
             $body = self::$accept_data;
-            // $school_id =  isset(AdminLog::getAdminInfo()->admin_user->school_id) ? AdminLog::getAdminInfo()->admin_user->school_id : 0;
-            // if(!isset($body['school_id']) || empty($body['school_id'])){
-            //     $body['school_id'] = $this->underlingLook($school_id)['data'];
-            // }else{  
-            //     $body['school_id'] = explode(',',$body['school_id']);
-            // }
+
+            $school_id =  isset(AdminLog::getAdminInfo()->admin_user->school_id) ? AdminLog::getAdminInfo()->admin_user->school_id : 0;
+            if(!isset($body['school_id']) || empty($body['school_id'])){
+                $body['school_id'] = $this->underlingLook($school_id)['data'];
+            }else{  
+                $body['school_id'] =explode(',',$body['school_id']);
+            }
             $data = School::getList($body);
             if($data['code'] == 200){
                 return response()->json($data);
