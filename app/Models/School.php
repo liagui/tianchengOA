@@ -33,12 +33,7 @@ class School extends Model {
             //判断分校名称是否为空
             if(isset($body['search']) && !empty($body['search'])){
                 $query->where('school_name','like','%'.$school_name.'%');
-            }else{
-                if(isset($body['school_id']) && !empty($body['school_id'])){
-                    $query->whereIn('id',$body['school_id']);
-                }        
             }
-            
         })->select('id','school_name','id as value','school_name as label')->get();
         return ['code'=>200,'msg'=>'Success','data'=>$schoolData];
     }
