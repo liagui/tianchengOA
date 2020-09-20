@@ -1503,6 +1503,7 @@ class Pay_order_inside extends Model
                     'phone'         =>  $v['phone'] ,
                     'student_name'  =>  $v['student_name'] ,
                     'status'        =>  (int)$v['status'] ,
+                    'open_time'       =>  $v['open_time'] ,
                     'status_name'   =>  $v['status'] > 0 ? '已开课' : '未开课' ,
                     'project_name'  =>  $project_name && !empty($project_name) ? $project_name : '' ,
                     'subject_name'  =>  $subject_name && !empty($subject_name) ? $subject_name : '' ,
