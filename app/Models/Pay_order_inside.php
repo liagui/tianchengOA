@@ -83,9 +83,9 @@ class Pay_order_inside extends Model
         //数据   流转订单 + 第三方支付订单
         $order = self::where(function($query) use ($data,$schoolarr) {
                 if(isset($data['order_no']) && !empty($data['order_no'])){
-                    $query->where('order_no',$data['order_on'])
-                        ->orwhere('name',$data['order_on'])
-                        ->orwhere('mobile',$data['order_on']);
+                    $query->where('order_no',$data['order_no'])
+                        ->orwhere('name',$data['order_no'])
+                        ->orwhere('mobile',$data['order_no']);
                 }
                 if(isset($data['classes'])){
                     $query->where('classes',$data['classes']);
