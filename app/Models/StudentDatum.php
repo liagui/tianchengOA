@@ -201,8 +201,8 @@ class StudentDatum extends Model {
         }
         $body['reference_region_province_id'] = $reference_region_address[0];
         $body['reference_region_city_id'] = $reference_region_address[1];
-        unset($reference_region_address['reference_region']);
-
+        unset($body['reference_region']);
+        
         // if($body['sign_region_id'] != $body['reference_region_id']){
         //     return ['code' => 201 , 'msg' => '报考地区与备考地区不一致！'];
         // }
