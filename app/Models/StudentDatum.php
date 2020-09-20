@@ -11,7 +11,8 @@ class StudentDatum extends Model {
     public $timestamps = false;
 
     public static function getStudentDatumList($body){
-    	$StudentDatumArr = [];
+    	$StudentDatumArr =  [];
+        $oneSubject  = $twoSubject ='';
     	 //每页显示的条数
         $pagesize = (int)isset($body['pageSize']) && $body['pageSize'] > 0 ? $body['pageSize'] : 20;
         $page     = isset($body['page']) && $body['page'] > 0 ? $body['page'] : 1;
@@ -19,14 +20,16 @@ class StudentDatum extends Model {
         if(isset($body['project_id']) && !empty($body['project_id'])){
         	$subject = json_decode($body['project_id'],1);
         	$oneSubject = $subject[0];
+
         	$twoSubject = isset($subject[1]) && $subject[1]>0 ?$subject[1]:0;
     	}  
+
 
 
         $count = self::leftJoin('pay_order_inside','student_information.order_id','=','pay_order_inside.id')
         	->leftJoin('student','student.id','=','student_information.student_id')
 
-        	->where(function($query) use ($body) {
+        	->where(function($query) use ($body,$oneSubject,$twoSubject) {
         		if(isset($body['school_id']) && !empty($body['school_id'])){ //所属学校
                 	$query->where('student_information.school_id',$body['school_id']);
             	}else{
@@ -67,7 +70,7 @@ class StudentDatum extends Model {
             }
     		$StudentDatumArr  = self::leftJoin('pay_order_inside','student_information.order_id','=','pay_order_inside.id')
 	        	->leftJoin('student','student.id','=','student_information.student_id')
-	        	->where(function($query) use ($body) {
+	        	->where(function($query) use ($body,$oneSubject,$twoSubject) {
 	        		if(isset($body['school_id']) && !empty($body['school_id'])){ //所属学校
 	                	$query->where('student_information.school_id',$body['school_id']);
 	            	}else{
