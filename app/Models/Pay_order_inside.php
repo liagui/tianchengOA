@@ -732,6 +732,9 @@ class Pay_order_inside extends Model
             $data['sum_Price'] = $chengben;    //成本价
         }
         if($data['confirm_status'] == 2){
+            if(!isset($data['reject_des'])){
+                return ['code' => 201 , 'msg' => '请填写驳回原因'];
+            }
             $data['reject_time'] = date('Y-m-d H:i:s');
             $data['reject_admin_id'] = $admin['id'];
         }
