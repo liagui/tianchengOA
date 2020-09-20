@@ -7,6 +7,7 @@ use App\Models\Teacher;
 use App\Models\School;
 use App\Models\Category;
 use App\Models\Course;
+
 class Material extends Model {
     //指定别的表名
     public $table = 'material';
@@ -26,7 +27,7 @@ class Material extends Model {
             if(isset($data['school_id']) && !empty($data['school_id'])){
                 $query->where('material.school_id',$data['school_id']);
             }else{
-                $query->whereIn('material.school_id',$school_id);
+                $query->whereIn('material.school_id',$school_id['data']);
             }
             if(isset($data['status']) && $data['status'] != -1){
                 $query->where('material.status',$data['status']);
@@ -40,7 +41,7 @@ class Material extends Model {
             if(isset($data['school_id']) && !empty($data['school_id'])){
                 $query->where('material.school_id',$data['school_id']);
             }else{
-                $query->whereIn('material.school_id',$school_id);
+                $query->whereIn('material.school_id',$school_id['data']);
             }
             if(isset($data['status']) && $data['status'] != -1){
                 $query->where('material.status',$data['status']);
