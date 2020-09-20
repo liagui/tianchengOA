@@ -450,9 +450,9 @@ class Pay_order_inside extends Model
                 }
             }
         }
-//        if(isset($data['school_id'])){
-//            $where['school_id'] = $data['school_id'];
-//        }
+       if(isset($data['school_id'])){
+           $where['school_id'] = $data['school_id'];
+       }
         if(isset($data['pay_type'])){
             $where['pay_type'] = $data['pay_type'];
         }
@@ -473,35 +473,39 @@ class Pay_order_inside extends Model
 
         //計算總數
         $count = self::where(function($query) use ($data,$schoolarr) {
+         
             if(isset($data['order_no']) && !empty($data['order_no'])){
                 $query->where('order_no',$data['order_no'])
                     ->orwhere('name',$data['order_no'])
                     ->orwhere('mobile',$data['order_no']);
             }
+            
+            $query->whereIn('school_id',$schoolarr);
             if(!empty($data['isBranchSchool']) && $data['isBranchSchool'] == true){
                 $query->where('confirm_status',0)
                     ->orwhere('confirm_status',1);
             }else{
                 $query->where('confirm_status',0);
             }
-            $query->whereIn('school_id',$schoolarr);
         })
         ->where($where)
         ->count();
 
         $order = self::where(function($query) use ($data,$schoolarr) {
+           
             if(isset($data['order_no']) && !empty($data['order_no'])){
                 $query->where('order_no',$data['order_no'])
                     ->orwhere('name',$data['order_no'])
                     ->orwhere('mobile',$data['order_no']);
             }
+           
+            $query->whereIn('school_id',$schoolarr);
             if(!empty($data['isBranchSchool']) &&$data['isBranchSchool'] == true){
                 $query->where('confirm_status',0)
                     ->orwhere('confirm_status',1);
             }else{
                 $query->where('confirm_status',0);
             }
-            $query->whereIn('school_id',$schoolarr);
         })
         ->where($where)
         ->orderByDesc('id')
