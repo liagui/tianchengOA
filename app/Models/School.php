@@ -343,6 +343,7 @@ class School extends Model {
         }
         //判断分校级别是否合法
         if(!isset($body['school_id']) || empty($body['school_id']) ){
+            $level = $body['level'] - 1;
             $school_list = self::select('id as school_id' , 'school_name')->where('level' , $level)->where('is_del' , 0)->get();
             return ['code' => 200 , 'msg' => '获取列表成功' , 'data' => $school_list];
         }
