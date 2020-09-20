@@ -40,6 +40,7 @@ $router->group(['prefix' => 'admin' , 'namespace' => 'Admin','middleware'=> 'cor
     $router->post('paylist', 'OrderController@paylist');//支付通道
     $router->post('oapay', 'OrderController@oapay');//支付
     $router->get('hjnotify', 'NotifyController@hjnotify');//汇聚 支付回调
+    $router->post('getIncomeeList', 'OrderController@getIncomeeList'); //收支明细
 
 });
 //后端登录权限认证相关接口
