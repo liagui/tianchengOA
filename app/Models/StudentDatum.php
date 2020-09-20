@@ -16,8 +16,8 @@ class StudentDatum extends Model {
         $pagesize = (int)isset($body['pageSize']) && $body['pageSize'] > 0 ? $body['pageSize'] : 20;
         $page     = isset($body['page']) && $body['page'] > 0 ? $body['page'] : 1;
         $offset   = ($page - 1) * $pagesize;
-        if(isset($body['subject']) && !empty($body['subject'])){
-        	$subject = json_decode($body['subject'],1);
+        if(isset($body['project_id']) && !empty($body['project_id'])){
+        	$subject = json_decode($body['project_id'],1);
         	$oneSubject = $subject[0];
         	$twoSubject = isset($subject[1]) && $subject[1]>0 ?$subject[1]:0;
     	}  
@@ -42,7 +42,7 @@ class StudentDatum extends Model {
                 	$query->where('student.user_name','like','%'.$body['search'].'%')
                 		->orWhere('student.mobile','like','%'.$body['search'].'%');
             	}
-            	if(isset($body['subject']) && !empty($body['subject'])){
+            	if(isset($body['project_id']) && !empty($body['project_id'])){
                 	$query->where('student_information.project_id',$oneSubject);
                 	$query->where('student_information.subject_id',$twoSubject);
             	}
@@ -83,7 +83,7 @@ class StudentDatum extends Model {
 	                	$query->where('student.user_name','like','%'.$body['search'].'%')
 	                		->orWhere('student.mobile','like','%'.$body['search'].'%');
 	            	}
-	            	if(isset($body['subject']) && !empty($body['subject'])){
+	            	if(isset($body['project_id']) && !empty($body['project_id'])){
 	                	$query->where('student_information.project_id',$oneSubject);
 	                	$query->where('student_information.subject_id',$twoSubject);
 	            	}   
