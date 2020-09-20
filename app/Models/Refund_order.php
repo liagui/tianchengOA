@@ -488,7 +488,7 @@ class Refund_order extends Model
                 }else{
                     $orderone['pay_status_text'] = '已支付';
                 }
-                if(empty($orderone['return_visit'])){
+                if(!isset($orderone['return_visit'])){
                     $orderone['return_visit_text'] = '';
                 }else{
                     if($orderone['return_visit'] == 0){
@@ -497,7 +497,7 @@ class Refund_order extends Model
                         $orderone['return_visit_text'] = '是';
                     }
                 }
-                if(empty($orderone['classes'])){
+                if(!isset($orderone['classes'])){
                     $orderone['classes_text'] = '';
                 }else{
                     if( $orderone['classes'] == 0){
