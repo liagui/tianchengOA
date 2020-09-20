@@ -1,14 +1,8 @@
 <?php
 namespace App\Models;
 
-use App\Models\AdminLog;
-use App\Models\Education;
-use App\Models\Major;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Support\Facades\DB;
-use App\Models\StudentCourse;
-use App\Models\School;
-use App\Models\Refund_order;
 use Illuminate\Support\Facades\Redis;
 
 class Pay_order_inside extends Model
