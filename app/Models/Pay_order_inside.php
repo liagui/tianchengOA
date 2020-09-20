@@ -623,11 +623,11 @@ class Pay_order_inside extends Model
         $admin = isset(AdminLog::getAdminInfo()->admin_user) ? AdminLog::getAdminInfo()->admin_user : [];
         $order = self::where(['id'=>$data['id']])->first();
         unset($data['/admin/order/notarizeOrder']);
-//        if($data['confirm_order_type'] == 2){
-//            if($order['sign_Price'] > $order['pay_price']){
-//                return ['code' => 201 , 'msg' => '所填金额大于支付金额'];
-//            }
-//        }
+        if($data['confirm_order_type'] == 2){
+            if($order['sign_Price'] > $order['pay_price']){
+                return ['code' => 201 , 'msg' => '所填金额大于支付金额'];
+            }
+        }
         if($data['confirm_order_type'] == 3){
             $ppppp = $data['course_Price'] + $data['sign_Price'];
             if($ppppp > $order['pay_price']){
@@ -647,8 +647,6 @@ class Pay_order_inside extends Model
         }
         if($data['confirm_status'] == 1){
             $data['comfirm_time'] = date('Y-m-d H:i:s');
-//            $data['have_user_id'] = $admin['id'];
-//            $data['have_user_name'] = $admin['username'];
             //确认订单  排课
             //值班班主任 排课
             $classlead = Admin::where(['is_del'=>1,'is_forbid'=>1,'status'=>1,'is_use'=>1])->get()->toArray();
@@ -735,6 +733,7 @@ class Pay_order_inside extends Model
             $data['reject_time'] = date('Y-m-d H:i:s');
             $data['reject_admin_id'] = $admin['id'];
         }
+        $data['update_time'] = date('Y-m-d H:i:s');
         $up = self::where(['id'=>$data['id']])->update($data);
         if($up){
             //确认或驳回订单之后 将用户信息加入学生表中    在学生与课程关联表中加数据   班主任排课
@@ -1292,32 +1291,12 @@ class Pay_order_inside extends Model
         if(empty($data['id'])){
             return ['code' => 201 , 'msg' => '参数错误'];
         }
-        DB::beginTransaction();  
-        $insideOrder =  self::where(['id'=>$data['id'],'del_flag'=>1])->select('order_no')->first();
-        if(empty($insideOrder)){
-            return ['code'=>201,'msg'=>'暂无订单'];
+        $up = self::where(['id'=>$data['id']])->update(['confirm_status'=>0]);
+        if($up){
+            return ['code' => 200 , 'msg' => '操作成功'];
         }else{
-            $insideRes = self::where(['id'=>$data['id']])->update(['del_flag'=>0]); //流转订单表状态
-            if(!$insideRes){
-                DB::rollBack();
-                return ['code' => 201 , 'msg' => '操作失败'];
-            }
-            $externalRes = Pay_order_external::where(['order_no'=>$insideOrder['order_no']])->update(['status'=>0]);
-            if(!$externalRes){
-                DB::rollBack();
-                return ['code' => 201 , 'msg' => '操作失败!'];
-            }else{
-                 DB::commit();
-                return ['code' => 200 , 'msg' => '操作成功'];
-            }
-        }    
-        
-        // $up = self::where(['id'=>$data['id']])->update(['del_flag'=>0]);        
-        // if($up){
-        //     return ['code' => 200 , 'msg' => '操作成功'];
-        // }else{
-        //     return ['code' => 201 , 'msg' => '操作失败'];
-        // }
+            return ['code' => 201 , 'msg' => '操作失败'];
+        }
     }
     /*
         * @param  驳回订单
