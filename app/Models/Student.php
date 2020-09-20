@@ -56,7 +56,7 @@ class Student extends Model {
             if(isset($data['keyword']) && !empty(isset($data['keyword']))){
                 $query->where('name','like','%'.$data['keyword'].'%')->orWhere('mobile','like','%'.$data['keyword'].'%');
             }
-        })->get()->toArray();
+        })->orderByDesc("id")->get()->toArray();
         //获取分校名称
         foreach($res as $k =>&$v){
 
@@ -74,7 +74,10 @@ class Student extends Model {
             }else{
                 $v['classes'] = 1;
             }
-
+            $v['school_name'] = School::select("school_name")->where("id",$v['school_id'])->first()['school_name'];
+            $v['project_name'] = Category::select("name")->where("id",$v['project_id'])->first()['name'];
+            $v['subject_name'] = Category::select("name")->where("id",$v['subject_id'])->first()['name'];
+            $v['course_name'] = Course::select("course_name")->where("id",$v['course_id'])->first()['course_name'];
 
             //confirm_order_type 确认的订单类型 1课程订单 2报名订单3课程+报名订单
             //first_pay  支付类型 1全款 2定金 3部分尾款 4最后一笔尾款
