@@ -1,14 +1,8 @@
 <?php
 namespace App\Models;
 
-use App\Models\AdminLog;
-use App\Models\Education;
-use App\Models\Major;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Support\Facades\DB;
-use App\Models\StudentCourse;
-use App\Models\School;
-use App\Models\Refund_order;
 use Illuminate\Support\Facades\Redis;
 
 class Pay_order_inside extends Model
@@ -587,6 +581,9 @@ class Pay_order_inside extends Model
                 //根据上传凭证人id查询凭证名称
                 $adminname = Admin::where(['id'=>$v['pay_voucher_user_id']])->first();
                 $v['pay_voucher_name'] = $adminname['username'];
+                //备注人
+                $adminname = Admin::where(['id'=>$v['admin_id']])->first();
+                $v['remark_name'] = $adminname['username'];
             }
         }
         $page=[
