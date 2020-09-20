@@ -15,8 +15,11 @@ class Material extends Model {
     public $timestamps = false;
 
     public static function getMaterialList($data,$school_id){
+        //总校
         //未处理物料条数
-        $nocount = self::select('submit_time', 'submit_name', 'school_id', 'status','id')->where('status',0)->count();
+        $nocount = self::select('submit_time', 'submit_name', 'school_id', 'status','id')->whereIn('material.school_id',$school_id['data'])->where('status',0)->count();
+        //分校
+
         //每页显示的条数
         $pagesize = (int)isset($data['pagesize']) && $data['pagesize'] > 0 ? $data['pagesize'] : 20;
         $page     = isset($data['page']) && $data['page'] > 0 ? $data['page'] : 1;
