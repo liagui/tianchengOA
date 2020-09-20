@@ -105,6 +105,8 @@ class Pay_order_inside extends Model
         ->get()->toArray();
         //分校只显示流转
         if(!empty($data['isBranchSchool']) && $data['isBranchSchool'] == true){
+            $orderprice = self::whereIn('school_id',$schoolarr)->sum('pay_price');
+            $externalprice = 0;
             $all = $order;
             $count = count($order);
         }else{
@@ -114,6 +116,8 @@ class Pay_order_inside extends Model
             } else {
                 $all = !empty($order) ? $order : $external;
             }
+            $orderprice = self::whereIn('school_id',$schoolarr)->sum('pay_price');
+            $externalprice = Pay_order_external::where(['pay_status'=>1])->sum('pay_price');
             //循环查询分类
             $count = count($order) + count($external);
         }
@@ -255,8 +259,6 @@ class Pay_order_inside extends Model
             'total'=>$count
         ];
         //计算总数
-        $orderprice = self::whereIn('school_id',$schoolarr)->sum('pay_price');
-        $externalprice = Pay_order_external::where(['pay_status'=>1])->sum('pay_price');
         $countprice = $orderprice + $externalprice;
         //总金额
         return ['code' => 200 , 'msg' => '查询成功','data'=>$res,'countprice'=>$countprice,'where'=>$data,'page'=>$page];
