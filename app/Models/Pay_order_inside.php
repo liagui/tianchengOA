@@ -101,9 +101,12 @@ class Pay_order_inside extends Model
             ->get()->toArray();
         $external = Pay_order_external::where(function($query) use ($data,$schoolarr) {
             if (isset($data['order_no']) && !empty($data['order_no'])) {
-                $query->where('order_no', $data['order_on'])
-                    ->orwhere('name', $data['order_on'])
-                    ->orwhere('mobile', $data['order_on']);
+                $query->where('order_no', $data['order_no'])
+                    ->orwhere('name', $data['order_no'])
+                    ->orwhere('mobile', $data['order_no']);
+            }
+            if(!empty($data['confirm_order_type'])){
+                $where['confirm_order_type'] = $data['confirm_order_type'];
             }
         })->where($where)
         ->whereBetween('create_time', [$state_time, $end_time])
