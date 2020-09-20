@@ -320,7 +320,8 @@ class Pay_order_inside extends Model
         $data['pay_voucher_user_id'] = $admin['id']; //上传凭证人
         $data['pay_voucher_time'] = date('Y-m-d H:i:s');//上传凭证时间
         $data['admin_id'] = $admin['id'];
-        $data['pay_price'] = isset($data['course_Price'])?$data['course_Price']:0 + isset($data['sign_Price'])?$data['sign_Price']:0;
+//        $data['pay_price'] = isset($data['course_Price'])?$data['course_Price']:0 + isset($data['sign_Price'])?$data['sign_Price']:0;
+//        $data['pay_price'] = $data['pay_price'];
         $add = self::insert($data);
         if($add){
             $exter = Pay_order_external::where(['pay_status'=>1,'name'=>$data['name'],'mobile'=>$data['mobile'],'course_id'=>$data['course_id'],'project_id'=>$data['project_id'],'subject_id'=>$data['subject_id']])->first();
@@ -473,13 +474,12 @@ class Pay_order_inside extends Model
 
         //計算總數
         $count = self::where(function($query) use ($data,$schoolarr) {
-         
+
             if(isset($data['order_no']) && !empty($data['order_no'])){
                 $query->where('order_no',$data['order_no'])
                     ->orwhere('name',$data['order_no'])
                     ->orwhere('mobile',$data['order_no']);
             }
-            
             $query->whereIn('school_id',$schoolarr);
             if(!empty($data['isBranchSchool']) && $data['isBranchSchool'] == true){
                 $query->where('confirm_status',0)
@@ -492,13 +492,13 @@ class Pay_order_inside extends Model
         ->count();
 
         $order = self::where(function($query) use ($data,$schoolarr) {
-           
+
             if(isset($data['order_no']) && !empty($data['order_no'])){
                 $query->where('order_no',$data['order_no'])
                     ->orwhere('name',$data['order_no'])
                     ->orwhere('mobile',$data['order_no']);
             }
-           
+
             $query->whereIn('school_id',$schoolarr);
             if(!empty($data['isBranchSchool']) &&$data['isBranchSchool'] == true){
                 $query->where('confirm_status',0)
@@ -1080,6 +1080,7 @@ class Pay_order_inside extends Model
             'mobile' =>$data['mobile'],//手机号
             'order_no' => $external['order_no'],//订单编号
             'create_time' => date('Y-m-d H:i:s'),//订单创建时间
+            'add_time' => $external['create_time'],//第三方生成订单时间
             'pay_time' => $external['pay_time'],//支付成功时间
             'pay_price' => $external['pay_price'],//支付金额
             'course_id' => $data['course_id'],//课程id
