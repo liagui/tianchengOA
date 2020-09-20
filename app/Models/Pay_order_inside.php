@@ -301,9 +301,6 @@ class Pay_order_inside extends Model
         if(!isset($data['mobile']) || empty($data['mobile'])){
             return ['code' => 201 , 'msg' => '未输入手机号'];
         }
-//        if(!isset($data['pay_price']) || empty($data['pay_price'])){
-//            return ['code' => 201 , 'msg' => '未填写支付金额'];
-//        }
         if(!in_array($data['pay_type'],[1,2,3,4,5,6,7])){
             return ['code' => 201 , 'msg' => '未选择支付方式'];
         }
@@ -937,7 +934,7 @@ class Pay_order_inside extends Model
                     ->orwhere('name',$data['order_no'])
                     ->orwhere('mobile',$data['order_no']);
             }
-        })->where(['status'=>0])->first();
+        })->where(['status'=>0])->get()->toArray();
         if(!empty($res)){
             if($res['pay_type'] == 1 || $res['pay_type'] == 3){
                     $res['pay_type_text'] = '微信支付';
