@@ -326,6 +326,7 @@ class Pay_order_inside extends Model
         $data['pay_voucher_user_id'] = $admin['id']; //上传凭证人
         $data['pay_voucher_time'] = date('Y-m-d H:i:s');//上传凭证时间
         $data['admin_id'] = $admin['id'];
+        $data['pay_price'] = isset($data['course_Price'])?$data['course_Price']:0 + isset($data['sign_Price'])?$data['sign_Price']:0;
         $add = self::insert($data);
         if($add){
             $exter = Pay_order_external::where(['pay_status'=>1,'name'=>$data['name'],'mobile'=>$data['mobile'],'course_id'=>$data['course_id'],'project_id'=>$data['project_id'],'subject_id'=>$data['subject_id']])->first();
