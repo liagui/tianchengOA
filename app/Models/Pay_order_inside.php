@@ -932,7 +932,7 @@ class Pay_order_inside extends Model
                     ->orwhere('name',$data['order_no'])
                     ->orwhere('mobile',$data['order_no']);
             }
-        })->where(['status'=>0])->get()->toArray();
+        })->where(['status'=>0,'pay_status'=>1])->get()->toArray();
         if(!empty($res)){
             foreach ($res as $k=>&$v){
                 if($v['pay_type'] == 1 || $v['pay_type'] == 3){
