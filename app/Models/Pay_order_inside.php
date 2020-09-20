@@ -1446,7 +1446,7 @@ class Pay_order_inside extends Model
             $order_array = [];
 
             //获取开课列表
-            $open_class_list = StudentCourse::select('id as open_id' , 'create_time' , 'phone' , 'student_name' , 'course_id' , 'project_id' , 'subject_id' , 'school_id' , 'status')->where(function($query) use ($body){
+            $open_class_list = StudentCourse::select('id as open_id' , 'create_time' , 'phone' , 'student_name' , 'course_id' , 'project_id' , 'subject_id' , 'school_id' , 'status','open_time')->where(function($query) use ($body){
                 //判断项目-学科大小类是否为空
                 if(isset($body['category_id']) && !empty($body['category_id'])){
                     $category_id= json_decode($body['category_id'] , true);
