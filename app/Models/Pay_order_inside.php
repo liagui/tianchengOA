@@ -450,9 +450,9 @@ class Pay_order_inside extends Model
                 }
             }
         }
-        if(isset($data['school_id'])){
-            $where['school_id'] = $data['school_id'];
-        }
+//        if(isset($data['school_id'])){
+//            $where['school_id'] = $data['school_id'];
+//        }
         if(isset($data['pay_type'])){
             $where['pay_type'] = $data['pay_type'];
         }
