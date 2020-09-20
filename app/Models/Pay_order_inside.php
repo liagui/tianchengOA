@@ -934,7 +934,7 @@ class Pay_order_inside extends Model
                     ->orwhere('name',$data['order_no'])
                     ->orwhere('mobile',$data['order_no']);
             }
-        })->where(['status'=>0])->get()->toArray();
+        })->where(['status'=>0])->first();
         if(!empty($res)){
             if($res['pay_type'] == 1 || $res['pay_type'] == 3){
                     $res['pay_type_text'] = '微信支付';
