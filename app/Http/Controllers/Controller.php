@@ -336,9 +336,11 @@ class Controller extends BaseController {
             if(empty($schoolData)){
                 return ['code'=>201,'msg'=>'暂无学校信息'];
             }else{
+
                 foreach($schoolData as $k=>$v){
+                     array_push($look_school_all_arr, $v['id']); 
                     if($v['look_all_flag'] == 1){ //1级看二、三级
-                        array_push($look_school_all_arr, $v['id']); //能看下属的所属分校id组
+                       //能看下属的所属分校id组
                         if($v['level'] == 1){
                             array_push($oneSchoolIds,$v['id']);
                             $childOneSchoolData  = \App\Models\School::whereIn('parent_id',$oneSchoolIds)->where(['is_del'=>0])->select('id')->get()->toArray();
@@ -373,7 +375,6 @@ class Controller extends BaseController {
                 $look_school = array_merge($oneChildSchoolIdsArr,$twoChildSchoolIdsArr,$thereChildSchoolIdsArr,$twoChildSchoolIdsArrs);
 
                 $look_school_all = array_intersect($oneChildSchoolIdsArr, $look_school);
-
                 $look_school  = array_values(array_unique(array_merge($look_school,$look_school_all,$look_school_all_arr)));
 
                 return ['code'=>200,'msg'=>'Success','data'=>$look_school];

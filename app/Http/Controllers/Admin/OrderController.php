@@ -14,6 +14,7 @@ class OrderController extends Controller {
     //总校&分校
     public function orderList(){
         $schoolarr = $this->underlingLook(AdminLog::getAdminInfo()->admin_user->school_id);
+      
         $list = Pay_order_inside::orderList(self::$accept_data,$schoolarr['data']);
         return response()->json($list);
     }
