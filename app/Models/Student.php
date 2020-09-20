@@ -195,7 +195,8 @@ class Student extends Model {
     public static function transferOrder($data){
         unset($data['/admin/transferOrder']);
         $update['have_user_id'] = $data['teacher_id'];
-        $update['have_user_name'] = $data['teacher_name'];
+        $teacher_name = Teacher::select("username")->where("id",$data['teacher_id'])->first();
+        $update['have_user_name'] = $teacher_name['username'];
         $order = Pay_order_inside::where("order_no",$data['order_id'])->first();
         if(empty($order)){
             return ['code' => 202 , 'msg' => '订单记录不存在，请检查'];
