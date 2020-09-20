@@ -1292,12 +1292,32 @@ class Pay_order_inside extends Model
         if(empty($data['id'])){
             return ['code' => 201 , 'msg' => '参数错误'];
         }
-        $up = self::where(['id'=>$data['id']])->update(['confirm_status'=>0]);
-        if($up){
-            return ['code' => 200 , 'msg' => '操作成功'];
+        DB::beginTransaction();  
+        $insideOrder =  self::where(['id'=>$data['id'],'del_flag'=>1])->select('order_no')->first();
+        if(empty($insideOrder)){
+            return ['code'=>201,'msg'=>'暂无订单'];
         }else{
-            return ['code' => 201 , 'msg' => '操作失败'];
-        }
+            $insideRes = self::where(['id'=>$data['id']])->update(['del_flag'=>0]); //流转订单表状态
+            if(!$insideRes){
+                DB::rollBack();
+                return ['code' => 201 , 'msg' => '操作失败'];
+            }
+            $externalRes = Pay_order_external::where(['order_no'=>$insideOrder['order_no']])->update(['status'=>0]);
+            if(!$externalRes){
+                DB::rollBack();
+                return ['code' => 201 , 'msg' => '操作失败!'];
+            }else{
+                 DB::commit();
+                return ['code' => 200 , 'msg' => '操作成功'];
+            }
+        }    
+        
+        // $up = self::where(['id'=>$data['id']])->update(['del_flag'=>0]);        
+        // if($up){
+        //     return ['code' => 200 , 'msg' => '操作成功'];
+        // }else{
+        //     return ['code' => 201 , 'msg' => '操作失败'];
+        // }
     }
     /*
         * @param  驳回订单
