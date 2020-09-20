@@ -160,7 +160,7 @@ class Pay_order_inside extends Model
                 }else{
                     $v['pay_status_text'] = '已支付';
                 }
-                if(isset($v['return_visit'])){
+                if(!isset($v['return_visit'])){
                     $v['return_visit_text'] = '';
                 }else{
                     if($v['return_visit'] == 0){
@@ -169,7 +169,7 @@ class Pay_order_inside extends Model
                         $v['return_visit_text'] = '是';
                     }
                 }
-                if(isset($v['classes'])){
+                if(!isset($v['classes'])){
                     $v['classes_text'] = '';
                 }else{
                     if( $v['classes'] == 0){

@@ -264,12 +264,47 @@ class Refund_order extends Model
                     $v['select'] = true;
                     $school = School::where(['id' => $v['school_id']])->first();
                     $v['school_name'] = $school['school_name'];
+                    //course  课程
+                    $course = Course::select('course_name')->where(['id'=>$v['course_id']])->first();
+                    $v['course_name'] = $course['course_name'];
+                    //Project  项目
+                    $project = Project::select('name')->where(['id'=>$v['project_id']])->first();
+                    $v['project_name'] = $project['name'];
+                    //Subject  学科
+                    $subject = Project::select('name')->where(['id'=>$v['subject_id']])->first();
+                    $v['subject_name'] = $subject['name'];
+                    if(!empty($v['education_id']) && $v['education_id'] != 0){
+                        //查院校
+                        $education = Education::select('education_name')->where(['id'=>$v['education_id']])->first();
+                        $v['education_name'] = $education['education_name'];
+                        //查专业
+                        $major = Major::where(['id'=>$v['major_id']])->first();
+                        $v['major_name'] = $major['major_name'];
+                    }
                 }
             }
         }else{
             $orderid = explode($res['order_id'],true);
             foreach ($orderid as $k=>$v){
-                $order[] = Pay_order_inside::where(['id'=>$v])->first();
+                $orderone = Pay_order_inside::where(['id'=>$v])->first();
+                //course  课程
+                $course = Course::select('course_name')->where(['id'=>$orderone['course_id']])->first();
+                $orderone['course_name'] = $course['course_name'];
+                //Project  项目
+                $project = Project::select('name')->where(['id'=>$orderone['project_id']])->first();
+                $orderone['project_name'] = $project['name'];
+                //Subject  学科
+                $subject = Project::select('name')->where(['id'=>$orderone['subject_id']])->first();
+                $orderone['subject_name'] = $subject['name'];
+                if(!empty($v['education_id']) && $v['education_id'] != 0){
+                    //查院校
+                    $education = Education::select('education_name')->where(['id'=>$orderone['education_id']])->first();
+                    $orderone['education_name'] = $education['education_name'];
+                    //查专业
+                    $major = Major::where(['id'=>$orderone['major_id']])->first();
+                    $orderone['major_name'] = $major['major_name'];
+                }
+                $order[] = $orderone;
             }
 
         }
