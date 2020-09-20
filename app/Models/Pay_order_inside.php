@@ -90,8 +90,8 @@ class Pay_order_inside extends Model
                 if(isset($data['classes'])){
                     $query->where('classes',$data['classes']);
                 }
-                if(!empty($data['confirm_order_type'])){
-                    $where['confirm_order_type'] = $data['confirm_order_type'];
+                if(isset($data['confirm_order_type'])){
+                    $query->where('confirm_order_type',$data['confirm_order_type']);
                 }
                 $query->whereIn('school_id',$schoolarr);
             })
@@ -104,9 +104,6 @@ class Pay_order_inside extends Model
                 $query->where('order_no', $data['order_no'])
                     ->orwhere('name', $data['order_no'])
                     ->orwhere('mobile', $data['order_no']);
-            }
-            if(!empty($data['confirm_order_type'])){
-                $where['confirm_order_type'] = $data['confirm_order_type'];
             }
         })->where($where)
         ->whereBetween('create_time', [$state_time, $end_time])
