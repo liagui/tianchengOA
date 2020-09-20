@@ -100,6 +100,7 @@ class Pay_order_inside extends Model
                     ->orwhere('mobile', $data['order_no']);
             }
         })->where($where)
+            ->where(['pay_status'=>1,'status'=>0])
         ->whereBetween('create_time', [$state_time, $end_time])
         ->orderByDesc('id')
         ->get()->toArray();

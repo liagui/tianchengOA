@@ -360,7 +360,12 @@ class Refund_order extends Model
                    $up['teacher_id'] = $orderdetail['have_user_id'];
                }
             }
-            $credentials = json_decode($data['pay_credentials'],true);
+            if(!isset($data['pay_credentials']) || empty($data['pay_credentials'])) {
+                $credentialss = '';
+            }else{
+                $credentials = json_decode($data['pay_credentials'],true);
+                $credentialss = implode(',',$credentials);
+            }
             $up['course_id'] = $data['course_id'];
             $up['student_name'] = $data['student_name'];
             $up['phone'] = $data['phone'];
@@ -369,7 +374,7 @@ class Refund_order extends Model
             $up['reality_price'] = $data['reality_price'];
             $up['school_id'] = $data['school_id'];
             $up['refund_reason'] = $data['refund_reason'];
-            $up['pay_credentials'] = implode(',',$credentials);
+            $up['pay_credentials'] = $credentialss;
             $up['refund_time'] = date('Y-m-d H:i:s');
             if($order['refund_plan'] == 0){
                 $up['refund_plan'] = 1;
