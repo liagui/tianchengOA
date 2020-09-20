@@ -91,7 +91,7 @@ class Pay_order_inside extends Model
                     $query->where('classes',$data['classes']);
                 }
                 if(isset($data['confirm_order_type'])){
-                    $where['confirm_order_type'] = $data['confirm_order_type'];
+                    $query->where('confirm_order_type',$data['confirm_order_type']);
                 }
                 $query->whereIn('school_id',$schoolarr);
             })
