@@ -2,12 +2,12 @@
 namespace App\Models;
 
 use App\Models\AdminLog;
+use App\Models\Education;
+use App\Models\Major;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Support\Facades\DB;
 use App\Models\StudentCourse;
 use App\Models\School;
-use App\Models\Education;
-use App\Models\Major;
 use App\Models\Refund_order;
 use Illuminate\Support\Facades\Redis;
 
@@ -937,27 +937,29 @@ class Pay_order_inside extends Model
             }
         })->where(['status'=>0])->get()->toArray();
         if(!empty($res)){
-            if($res['pay_type'] == 1 || $res['pay_type'] == 3){
-                    $res['pay_type_text'] = '微信支付';
-            }else{
-                $res['pay_type_text'] = '支付宝支付';
-            }
-            //course  课程
-            $course = Course::select('course_name')->where(['id'=>$res['course_id']])->first();
-            $res['course_name'] = $course['course_name'];
-            //Project  项目
-            $project = Project::select('name')->where(['id'=>$res['project_id']])->first();
-            $res['project_name'] = $project['name'];
-            //Subject  学科
-            $subject = Project::select('name')->where(['id'=>$res['subject_id']])->first();
-            $res['subject_name'] = $subject['name'];
-            if(!empty($res['education_id']) && $res['education_id'] != 0){
-                //查院校
-                $education = Education::select('education_name')->where(['id'=>$res['education_id']])->first();
-                $res['education_name'] = $education['education_name'];
-                //查专业
-                $major = Major::where(['id'=>$res['major_id']])->first();
-                $res['major_name'] = $major['major_name'];
+            foreach ($res as $k=>&$v){
+                if($v['pay_type'] == 1 || $v['pay_type'] == 3){
+                    $v['pay_type_text'] = '微信支付';
+                }else{
+                    $v['pay_type_text'] = '支付宝支付';
+                }
+                //course  课程
+                $course = Course::select('course_name')->where(['id'=>$v['course_id']])->first();
+                $v['course_name'] = $course['course_name'];
+                //Project  项目
+                $project = Project::select('name')->where(['id'=>$v['project_id']])->first();
+                $v['project_name'] = $project['name'];
+                //Subject  学科
+                $subject = Project::select('name')->where(['id'=>$v['subject_id']])->first();
+                $v['subject_name'] = $subject['name'];
+                if(!empty($res['education_id']) && $v['education_id'] != 0){
+                    //查院校
+                    $education = Education::select('education_name')->where(['id'=>$v['education_id']])->first();
+                    $v['education_name'] = $education['education_name'];
+                    //查专业
+                    $major = Major::where(['id'=>$v['major_id']])->first();
+                    $v['major_name'] = $major['major_name'];
+                }
             }
             return ['code' => 200 , 'msg' => '获取成功','data'=>$res];
         }else{
