@@ -30,7 +30,7 @@ class StudentDatumExport implements FromCollection, WithHeadings {
                         }
                     }
                     $query->where('audit_status',1);//所属审核状态
-                })->select('information.student_name','information.student_sex','information.student_phone','information.student_card','information.address_province_id','information.address_city_id','information.month','information.sign_region_id','information.reference_region_id','information.culture','information.graduated_school','information.professional','information.years','information.xx_account','information.xx_password','information.branch_school','information.photo','information.card_photo_front','information.card_photo_contrary','information.card_photo_scanning','information.diploma_photo','information.diploma_scanning')->get();
+                })->select('information.student_name','information.student_sex','information.student_phone','information.student_card','information.address_province_id','information.address_city_id','information.month','information.sign_region_province_id','information.sign_region_city_id','information.reference_region_province_id','information.reference_region_city_id','information.culture','information.graduated_school','information.professional','information.years','information.xx_account','information.xx_password','information.branch_school','information.photo','information.card_photo_front','information.card_photo_contrary','information.card_photo_scanning','information.diploma_photo','information.diploma_scanning')->get();
         $datumArr = [];
         if(!empty($Datum)){
             $adminArr = Admin::where(['is_del'=>1,'is_forbid'=>1])->select('id','real_name')->get()->toArray(); //学员id
@@ -57,9 +57,17 @@ class StudentDatumExport implements FromCollection, WithHeadings {
                 }else{
                     $v['address'] = '';
                 }
+                if(isset($regionArr[$v['sign_region_province_id']]) && isset($regionArr[$v['sign_region_city_id']]) ){
+                    $v['sign_region'] = $regionArr[$v['sign_region_province_id']].'-'.$regionArr[$v['sign_region_city_id']];
+                }else{
+                    $v['sign_region'] = '';
+                }
+                if(isset($regionArr[$v['reference_region_province_id']]) && isset($regionArr[$v['reference_region_city_id']]) ){
+                    $v['reference_region'] = $regionArr[$v['reference_region_province_id']].'-'.$regionArr[$v['reference_region_city_id']];
+                }else{
+                    $v['reference_region'] = '';
+                }
                 $v['month'] = substr($v['month'],5,2).'月份';
-                $v['sign_region_id'] = isset($regionArr[$v['sign_region_id']]) ? $regionArr[$v['sign_region_id']] :'';
-                $v['reference_region_id'] = isset($regionArr[$v['reference_region_id']]) ? $regionArr[$v['reference_region_id']] :'';
                 $v['culture']  = isset($cultureArr[$v['culture']])?$cultureArr[$v['culture']]:'';
                 $v['years'] = substr($v['years'],0,7);
                 $v['branch_school'] = isset($schoolArr[$v['branch_school']])?$schoolArr[$v['branch_school']]:'';
@@ -71,8 +79,8 @@ class StudentDatumExport implements FromCollection, WithHeadings {
                 $Datum[$kk]['student_card'] = $vv['student_card'];
                 $Datum[$kk]['address'] = $vv['address'];
                 $Datum[$kk]['month'] = $vv['month'];
-                // $Datum[$kk]['sign_region'] = $vv['sign_region_id'];
-                // $Datum[$kk]['reference_region'] = $vv['reference_region_id'];
+                $Datum[$kk]['sign_region'] = $vv['sign_region'];
+                $Datum[$kk]['reference_region'] = $vv['reference_region'];
                 $Datum[$kk]['culture'] = $vv['culture'];
                 $Datum[$kk]['graduated_school'] = $vv['graduated_school'];
                 $Datum[$kk]['professional'] = $vv['professional'];
@@ -88,6 +96,10 @@ class StudentDatumExport implements FromCollection, WithHeadings {
                 $Datum[$kk]['diploma_scanning'] = $vv['diploma_scanning'];
                 unset($v['address_province_id']);
                 unset($v['address_city_id']);
+                unset($v['sign_region_province_id']);
+                unset($v['sign_region_city_id']);
+                unset($v['reference_region_province_id']);
+                unset($v['reference_region_city_id']);
             }
 
         }   
