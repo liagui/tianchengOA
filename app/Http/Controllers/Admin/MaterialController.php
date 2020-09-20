@@ -14,7 +14,8 @@ class MaterialController extends Controller
     public function getMaterialList(){
         //获取提交的参数
         try{
-            $data = Material::getMaterialList(self::$accept_data);
+            $school_id = isset(AdminLog::getAdminInfo()->school_id) ? AdminLog::getAdminInfo()->school_id: 0;
+            $data = Material::getMaterialList(self::$accept_data,$school_id);
             return response()->json($data);
         } catch (Exception $ex) {
             return response()->json(['code' => 500 , 'msg' => $ex->getMessage()]);
