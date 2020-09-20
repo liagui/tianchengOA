@@ -13,12 +13,7 @@ use App\Models\Refund_order;
 class OrderController extends Controller {
     //总校&分校
     public function orderList(){
-
         $schoolarr = $this->underlingLook(AdminLog::getAdminInfo()->admin_user->school_id);
-        $orderprice = self::whereIn('school_id',$schoolarr['data'])->sum('pay_price');
-        $externalprice = Pay_order_external::where(['pay_status'=>1])->sum('pay_price');
-        echo $orderprice.'--------------';
-        echo $externalprice;die;
         $list = Pay_order_inside::orderList(self::$accept_data,$schoolarr['data']);
         return response()->json($list);
     }

@@ -261,7 +261,7 @@ class Pay_order_inside extends Model
         //计算总数
         $countprice = $orderprice + $externalprice;
         //总金额
-        return ['code' => 200 , 'msg' => '查询成功','data'=>$res,'countprice'=>$countprice,'where'=>$data,'page'=>$page];
+        return ['code' => 200 , 'msg' => '查询成功','data'=>$res,'countprice'=>number_format($countprice,2),'where'=>$data,'page'=>$page];
     }
     /*
          * @param  手动报单
