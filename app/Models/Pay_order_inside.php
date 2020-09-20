@@ -719,7 +719,7 @@ class Pay_order_inside extends Model
             $chengben=0;
             if(!empty($data['education_id'])){
                 $majorprice = Major::where(['id'=>$data['major_id']])->first();
-                $chengben = $majorprice['price'] + $data['sign_Price'];
+                $chengben = $majorprice['price'] + isset($data['sign_Price'])?$data['sign_Price']:0;
             }
             $data['after_tax_amount'] = $suihou;   //税后金额
             $data['return_commission_amount'] = $fanyong;  //返佣金额
