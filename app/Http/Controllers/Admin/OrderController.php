@@ -14,7 +14,6 @@ class OrderController extends Controller {
     //总校&分校
     public function orderList(){
         $schoolarr = $this->underlingLook(AdminLog::getAdminInfo()->admin_user->school_id);
-      
         $list = Pay_order_inside::orderList(self::$accept_data,$schoolarr['data']);
         return response()->json($list);
     }
@@ -139,6 +138,16 @@ class OrderController extends Controller {
     //修改打款状态
     public function remitOrder(){
         $list = Refund_order::remitOrder(self::$accept_data);
+        return response()->json($list);
+    }
+    //关联退费订单
+    public function relevanceOrder(){
+        $list = Refund_order::relevanceOrder(self::$accept_data);
+        return response()->json($list);
+    }
+    //关联支付凭证
+    public function relevanceVoucher(){
+        $list = Refund_order::relevanceVoucher(self::$accept_data);
         return response()->json($list);
     }
 
@@ -278,7 +287,7 @@ class OrderController extends Controller {
             return response()->json(['code' => 500 , 'msg' => $ex->getMessage()]);
         }
     }
-    
+
     /*
      * @param  description   财务管理-分校业绩列表
      * @param  参数说明       body包含以下参数[

@@ -411,4 +411,138 @@ class Refund_order extends Model
             return ['code' => 201, 'msg' => '修改失败'];
         }
     }
+    //关联订单列表 id  订单id
+    public static function relevanceOrder($data){
+        $returnorder = self::where(['id'=>$data['id']])->first();
+        $order=[];
+        if(!empty($returnorder)){
+            $orderid = explode(',',$returnorder['order_id']);
+            foreach ($orderid as $k=>$v){
+                $orderone = Pay_order_inside::where(['id'=>$v])->first();
+                //查学校
+                if(empty($orderone['school_id']) || $orderone['school_id'] == 0){
+                    $orderone['school_name'] = '';
+                }else{
+                    $school = School::where(['id'=>$orderone['school_id']])->first();
+                    if($school){
+                        $orderone['school_name'] = $school['school_name'];
+                    }
+                }
+                if($orderone['pay_type'] == 1){
+                    $orderone['pay_type_text'] = '微信';
+                }else if ($orderone['pay_type'] == 2){
+                    $orderone['pay_type_text'] = '支付宝';
+                }else if ($orderone['pay_type'] == 3){
+                    $orderone['pay_type_text'] = '汇聚微信';
+                }else if ($orderone['pay_type'] == 4){
+                    $orderone['pay_type_text'] = '汇聚支付宝';
+                }else if ($orderone['pay_type'] == 5){
+                    $orderone['pay_type_text'] = '银行卡支付';
+                }else if ($orderone['pay_type'] == 6){
+                    $orderone['pay_type_text'] = '对公转账';
+                }else if ($orderone['pay_type'] == 7){
+                    $orderone['pay_type_text'] = '支付宝账号对公';
+                }
+                if($orderone['pay_status'] == 0){
+                    $orderone['pay_status_text'] = '未支付';
+                }else{
+                    $orderone['pay_status_text'] = '已支付';
+                }
+                if(empty($orderone['return_visit'])){
+                    $orderone['return_visit_text'] = '';
+                }else{
+                    if($orderone['return_visit'] == 0){
+                        $orderone['return_visit_text'] = '否';
+                    }else{
+                        $orderone['return_visit_text'] = '是';
+                    }
+                }
+                if(empty($orderone['classes'])){
+                    $orderone['classes_text'] = '';
+                }else{
+                    if( $orderone['classes'] == 0){
+                        $orderone['classes_text'] = '否';
+                    }else{
+                        $orderone['classes_text'] = '是';
+                    }
+                }
+                if(empty($orderone['confirm_order_type'])){
+                    $orderone['confirm_order_type_text'] = '';
+                }else{
+                    if($orderone['confirm_order_type'] == 1){
+                        $orderone['confirm_order_type_text'] = '课程订单';
+                    }else if($orderone['confirm_order_type'] == 2){
+                        $orderone['confirm_order_type_text'] = '报名订单';
+                    }else if($orderone['confirm_order_type'] == 3){
+                        $orderone['confirm_order_type_text'] = '课程+报名订单';
+                    }
+                }
+
+                if(empty($orderone['first_pay'])){
+                    $orderone['first_pay_text'] = '';
+                }else{
+                    if($orderone['first_pay'] == 1){
+                        $orderone['first_pay_text'] = '全款';
+                    }else if($orderone['first_pay'] == 2){
+                        $orderone['first_pay_text'] = '定金';
+                    }else if($orderone['first_pay'] == 3){
+                        $orderone['first_pay_text'] = '部分尾款';
+                    }else if($orderone['first_pay'] == 4){
+                        $orderone['first_pay_text'] = '最后一笔尾款';
+                    }
+                }
+                if(empty($orderone['confirm_status'])){
+                    $orderone['confirm_status_text'] = '';
+                }else{
+                    if($orderone['confirm_status'] == 0){
+                        $orderone['confirm_status_text'] = '未确认';
+                    }else if($orderone['confirm_status'] == 1){
+                        $orderone['confirm_status_text'] = '确认';
+                    }else if($orderone['confirm_status'] == 2){
+                        $orderone['confirm_status_text'] = '驳回';
+                    }
+                }
+                //course  课程
+                $course = Course::select('course_name')->where(['id'=>$orderone['course_id']])->first();
+                $orderone['course_name'] = $course['course_name'];
+                //Project  项目
+                $project = Project::select('name')->where(['id'=>$orderone['project_id']])->first();
+                $orderone['project_name'] = $project['name'];
+                //Subject  学科
+                $subject = Project::select('name')->where(['id'=>$orderone['subject_id']])->first();
+                $orderone['subject_name'] = $subject['name'];
+                if(!empty($orderone['education_id']) && $orderone['education_id'] != 0){
+                    //查院校
+                    $education = Education::select('education_name')->where(['id'=>$orderone['education_id']])->first();
+                    $orderone['education_name'] = $education['education_name'];
+                    //查专业
+                    $major = Major::where(['id'=>$orderone['major_id']])->first();
+                    $orderone['major_name'] = $major['major_name'];
+                }
+                $order[] = $orderone;
+            }
+        }
+        return ['code' => 200 , 'msg' => '获取成功','data'=>$order];
+    }
+    //关联支付凭证 id  订单id
+    public static function relevanceVoucher($data){
+        $returnorder = self::select('order_id')->where(['id'=>$data['id']])->first();
+        if(empty($returnorder)){
+            return ['code' => 201 , 'msg' => '数据错误'];
+        }
+        $payvoucher=[];
+        if(!empty($returnorder)){
+            $orderid = explode(',',$returnorder['order_id']);
+            foreach ($orderid as $k=>$v) {
+                $orderone = Pay_order_inside::where(['id' => $v])->first();
+                $arr=[
+                    'pay_voucher_time' => $orderone['pay_voucher_time'],
+                    'order_no' => $orderone['order_no'],
+                    'pay_voucher' => $orderone['pay_voucher']
+                ];
+                $payvoucher[] = $arr;
+            }
+        }
+        return ['code' => 200 , 'msg' => '获取成功','data'=>$payvoucher];
+    }
 }
