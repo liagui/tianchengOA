@@ -255,7 +255,7 @@ class OrderController extends Controller {
     }
 
     /*
-     * @param  description   财务管理-收入详情
+     * @param  description   财务管理-总校收入详情
      * @param  参数说明       body包含以下参数[
      *     education_id      院校id
      *     project_id        项目id
@@ -278,6 +278,115 @@ class OrderController extends Controller {
 
             //获取专业列表
             $data = Pay_order_inside::getIncomeeList(self::$accept_data);
+            if($data['code'] == 200){
+                return response()->json(['code' => 200 , 'msg' => '获取列表成功' , 'data' => $data['data']]);
+            } else {
+                return response()->json(['code' => $data['code'] , 'msg' => $data['msg']]);
+            }
+        } catch (Exception $ex) {
+            return response()->json(['code' => 500 , 'msg' => $ex->getMessage()]);
+        }
+    }
+    
+    /*
+     * @param  description   财务管理-分校收入详情
+     * @param  参数说明       body包含以下参数[
+     *     education_id      院校id
+     *     category_id       项目-学科大小类(例如:[1,2])
+     *     course_id         课程id
+     *     search_time       搜索时间(例如:2020-09-01至2020-09-20)
+     * ]
+     * @param author    dzj
+     * @param ctime     2020-09-21
+     * return string
+     */
+    public function getBranchSchoolIncomeeList(){
+        //获取提交的参数
+        try{
+            //获取院校id(1,2,3)
+            $school_id  = isset(AdminLog::getAdminInfo()->admin_user->school_id) ? AdminLog::getAdminInfo()->admin_user->school_id : 0;
+            $school_arr = parent::underlingLook($school_id);
+
+            //分校的id传递
+            self::$accept_data['schoolId'] = $school_arr['data'];
+
+            //获取专业列表
+            $data = Pay_order_inside::getBranchSchoolIncomeeList(self::$accept_data);
+            if($data['code'] == 200){
+                return response()->json(['code' => 200 , 'msg' => '获取列表成功' , 'data' => $data['data']]);
+            } else {
+                return response()->json(['code' => $data['code'] , 'msg' => $data['msg']]);
+            }
+        } catch (Exception $ex) {
+            return response()->json(['code' => 500 , 'msg' => $ex->getMessage()]);
+        }
+    }
+    
+    /*
+     * @param  description   财务管理-分校收入详情-已确认订单
+     * @param  参数说明       body包含以下参数[
+     *     school_id         分校id
+     *     order_time        订单时间
+     * ]
+     * @param author    dzj
+     * @param ctime     2020-09-21
+     * return string
+     */
+    public function getBranchSchoolConfirmOrderList(){
+        //获取提交的参数
+        try{
+            //获取专业列表
+            $data = Pay_order_inside::getBranchSchoolConfirmOrderList(self::$accept_data);
+            if($data['code'] == 200){
+                return response()->json(['code' => 200 , 'msg' => '获取列表成功' , 'data' => $data['data']]);
+            } else {
+                return response()->json(['code' => $data['code'] , 'msg' => $data['msg']]);
+            }
+        } catch (Exception $ex) {
+            return response()->json(['code' => 500 , 'msg' => $ex->getMessage()]);
+        }
+    }
+    
+    /*
+     * @param  description   财务管理-分校收入详情-已退费订单
+     * @param  参数说明       body包含以下参数[
+     *     school_id         分校id
+     *     order_time        订单时间
+     * ]
+     * @param author    dzj
+     * @param ctime     2020-09-21
+     * return string
+     */
+    public function getBranchSchoolRefundOrderList(){
+        //获取提交的参数
+        try{
+            //获取专业列表
+            $data = Pay_order_inside::getBranchSchoolRefundOrderList(self::$accept_data);
+            if($data['code'] == 200){
+                return response()->json(['code' => 200 , 'msg' => '获取列表成功' , 'data' => $data['data']]);
+            } else {
+                return response()->json(['code' => $data['code'] , 'msg' => $data['msg']]);
+            }
+        } catch (Exception $ex) {
+            return response()->json(['code' => 500 , 'msg' => $ex->getMessage()]);
+        }
+    }
+    
+    /*
+     * @param  description   财务管理-分校订单明细公共接口
+     * @param  参数说明       body包含以下参数[
+     *     school_id         分校id
+     *     order_time        订单时间
+     * ]
+     * @param author    dzj
+     * @param ctime     2020-09-21
+     * return string
+     */
+    public function getBranchSchoolOrderInfo(){
+        //获取提交的参数
+        try{
+            //获取专业列表
+            $data = Pay_order_inside::getBranchSchoolOrderInfo(self::$accept_data);
             if($data['code'] == 200){
                 return response()->json(['code' => 200 , 'msg' => '获取列表成功' , 'data' => $data['data']]);
             } else {
