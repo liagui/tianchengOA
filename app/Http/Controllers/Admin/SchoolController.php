@@ -36,7 +36,7 @@ class SchoolController extends Controller {
             $body = self::$accept_data;
 
             $school_id =  isset(AdminLog::getAdminInfo()->admin_user->school_id) ? AdminLog::getAdminInfo()->admin_user->school_id : 0;
-            if(!isset($body['school_id']) || empty($body['school_id'])){
+            if(!isset($body['school_id']) || empty($body['school_id'])){  
                 $schoolArr = $this->underlingLook($school_id);
                 $body['school_id']   = $schoolArr['data'];
             }else{  
