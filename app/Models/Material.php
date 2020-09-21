@@ -7,23 +7,30 @@ use App\Models\Teacher;
 use App\Models\School;
 use App\Models\Category;
 use App\Models\Course;
+
 class Material extends Model {
     //指定别的表名
     public $table = 'material';
     //时间戳设置
     public $timestamps = false;
 
-    public static function getMaterialList($data){
+    public static function getMaterialList($data,$school_id){
+        //总校
         //未处理物料条数
-        $nocount = self::select('submit_time', 'submit_name', 'school_id', 'status','id')->where('status',0)->count();
+        $nocount = self::select('submit_time', 'submit_name', 'school_id', 'status','id')->whereIn('material.school_id',$school_id['data'])->where('status',0)->count();
+        //分校
+
         //每页显示的条数
         $pagesize = (int)isset($data['pagesize']) && $data['pagesize'] > 0 ? $data['pagesize'] : 20;
         $page     = isset($data['page']) && $data['page'] > 0 ? $data['page'] : 1;
         $offset   = ($page - 1) * $pagesize;
         //计算总数
-        $count = self::select('material.submit_time', 'material.submit_name', 'material.school_id', 'material.status', 'material.id')->where(function($query) use ($data) {
+        $count = self::select('material.submit_time', 'material.submit_name', 'material.school_id', 'material.status', 'material.id')->where(function($query) use ($data,$school_id) {
+
             if(isset($data['school_id']) && !empty($data['school_id'])){
                 $query->where('material.school_id',$data['school_id']);
+            }else{
+                $query->whereIn('material.school_id',$school_id['data']);
             }
             if(isset($data['status']) && $data['status'] != -1){
                 $query->where('material.status',$data['status']);
@@ -33,9 +40,11 @@ class Material extends Model {
             }
         })->count();
         //分页数据
-        $data = self::select('material.submit_time', 'material.submit_name','create_name','create_id','material.school_id', 'material.status', 'material.id','material.courier_company','material.courier_number','material.courier_note','material.delivery_time')->where(function($query) use ($data) {
+        $data = self::select('material.submit_time', 'material.submit_name','create_name','create_id','material.school_id', 'material.status', 'material.id','material.courier_company','material.courier_number','material.courier_note','material.delivery_time')->where(function($query) use ($data,$school_id) {
             if(isset($data['school_id']) && !empty($data['school_id'])){
                 $query->where('material.school_id',$data['school_id']);
+            }else{
+                $query->whereIn('material.school_id',$school_id['data']);
             }
             if(isset($data['status']) && $data['status'] != -1){
                 $query->where('material.status',$data['status']);
@@ -46,9 +55,6 @@ class Material extends Model {
         })->offset($offset)->limit($pagesize)->orderByDesc("id")->get()->toArray();
 
         $school_name = "";
-        $contract = "";
-        $invoice = "";
-        $receipt = "";
         foreach($data as $key =>&$material){
             $desc = "";
             if($material['status'] == 1){

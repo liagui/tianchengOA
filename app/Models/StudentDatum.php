@@ -11,25 +11,30 @@ class StudentDatum extends Model {
     public $timestamps = false;
 
     public static function getStudentDatumList($body){
-
-
-
-    	$StudentDatumArr = [];
+    	$StudentDatumArr =  [];
+        $oneSubject  = $twoSubject ='';
     	 //每页显示的条数
         $pagesize = (int)isset($body['pageSize']) && $body['pageSize'] > 0 ? $body['pageSize'] : 20;
         $page     = isset($body['page']) && $body['page'] > 0 ? $body['page'] : 1;
         $offset   = ($page - 1) * $pagesize;
-        if(isset($body['subject']) && !empty($body['subject'])){
-        	$subject = json_decode($body['subject'],1);
-        	$oneSubject = $subject[0];
-        	$twoSubject = isset($subject[1]) && $subject[1]>0 ?$subject[1]:0;
+        if(isset($body['project_id'])){
+        	$subject = json_decode($body['project_id'],1);
+            if(!empty($subject)){
+                $oneSubject = $subject[0];
+                if(!empty($subject[1])){
+                    $twoSubject = $subject[1];
+                }
+            }else{
+                unset($body['project_id']);
+            }
     	}  
+
 
 
         $count = self::leftJoin('pay_order_inside','student_information.order_id','=','pay_order_inside.id')
         	->leftJoin('student','student.id','=','student_information.student_id')
 
-        	->where(function($query) use ($body) {
+        	->where(function($query) use ($body,$oneSubject,$twoSubject) {
         		if(isset($body['school_id']) && !empty($body['school_id'])){ //所属学校
                 	$query->where('student_information.school_id',$body['school_id']);
             	}else{
@@ -45,10 +50,17 @@ class StudentDatum extends Model {
                 	$query->where('student.user_name','like','%'.$body['search'].'%')
                 		->orWhere('student.mobile','like','%'.$body['search'].'%');
             	}
-            	if(isset($body['subject']) && !empty($body['subject'])){
-                	$query->where('student_information.project_id',$oneSubject);
-                	$query->where('student_information.subject_id',$twoSubject);
-            	}
+            	if(isset($body['project_id']) && !empty($body['project_id'])){
+                    if(!empty($oneSubject)){
+                        $query->where('student_information.project_id',$oneSubject);
+                    }
+                    if(!empty($twoSubject)){
+                       $query->where('student_information.subject_id',$twoSubject);
+                    } 
+                }
+                     
+                	
+            	
         	})->count();
           
     	if($count >0){
@@ -70,7 +82,7 @@ class StudentDatum extends Model {
             }
     		$StudentDatumArr  = self::leftJoin('pay_order_inside','student_information.order_id','=','pay_order_inside.id')
 	        	->leftJoin('student','student.id','=','student_information.student_id')
-	        	->where(function($query) use ($body) {
+	        	->where(function($query) use ($body,$oneSubject,$twoSubject) {
 	        		if(isset($body['school_id']) && !empty($body['school_id'])){ //所属学校
 	                	$query->where('student_information.school_id',$body['school_id']);
 	            	}else{
@@ -86,11 +98,15 @@ class StudentDatum extends Model {
 	                	$query->where('student.user_name','like','%'.$body['search'].'%')
 	                		->orWhere('student.mobile','like','%'.$body['search'].'%');
 	            	}
-	            	if(isset($body['subject']) && !empty($body['subject'])){
-	                	$query->where('student_information.project_id',$oneSubject);
-	                	$query->where('student_information.subject_id',$twoSubject);
+	            	if(isset($body['project_id']) && !empty($body['project_id'])){
+    	                if(!empty($oneSubject)){
+                            $query->where('student_information.project_id',$oneSubject);
+                        }
+                        if(!empty($twoSubject)){
+                           $query->where('student_information.subject_id',$twoSubject);
+                        } 
 	            	}   
-	        	})->select('student_information.student_id','student_information.project_id','student_information.subject_id','student_information.audit_id','student_information.gather_id','student_information.initiator_id','student_information.datum_create_time','student.mobile','student.user_name as student_name','pay_order_inside.consignee_status','student_information.audit_status','student_information.id','student_information.course_id','student_information.school_id','student_information.information_id')->offset($offset)->limit($pagesize)->get();
+	        	})->select('student_information.student_id','student_information.project_id','student_information.subject_id','student_information.audit_id','student_information.gather_id','student_information.initiator_id','student_information.datum_create_time','student.mobile','student.user_name as student_name','pay_order_inside.consignee_status','student_information.audit_status','student_information.id','student_information.course_id','student_information.school_id','student_information.information_id')->orderBy('datum_create_time','desc')->offset($offset)->limit($pagesize)->get();
 	        foreach($StudentDatumArr as $k=>&$v){
 	        	$v['school_name'] = isset($schoolArr[$v['school_id']]) ? $schoolArr[$v['school_id']] :'';
 	        	$v['project_name'] = isset($categoryArr[$v['project_id']]) ? $categoryArr[$v['project_id']] :'';
@@ -157,16 +173,39 @@ class StudentDatum extends Model {
             return ['code' => 201 , 'msg' => '请选择报考月份'];
         }
         //判断报考地区是否为空
-        if(!isset($body['sign_region_id']) || empty($body['sign_region_id'])){
+        if(!isset($body['sign_region']) || empty($body['sign_region'])){   //报考地区数组
             return ['code' => 201 , 'msg' => '请选择报考地区'];
         }
+        $sign_region_address = json_decode($body['sign_region'],1);
+        if(!isset($sign_region_address[0])){
+            return ['code' => 201 , 'msg' => '请选择报考地区省份'];
+        }else{
+            if(!isset($sign_region_address[1])){
+                return ['code' => 201 , 'msg' => '请选择报考地区市区'];
+            }
+        }
+        $body['sign_region_province_id'] = $sign_region_address[0];
+        $body['sign_region_city_id'] = $sign_region_address[1];
+        unset($body['sign_region']);
         //判断备考地区是否为空
-        if(!isset($body['reference_region_id']) || empty($body['reference_region_id'])){
+        if(!isset($body['reference_region']) || empty($body['reference_region'])){  //备考地区数组  
             return ['code' => 201 , 'msg' => '请选择备考地区'];
         }
-        if($body['sign_region_id'] != $body['reference_region_id']){
-            return ['code' => 201 , 'msg' => '报考地区与备考地区不一致！'];
+        $reference_region_address = json_decode($body['reference_region'],1);
+        if(!isset($reference_region_address[0])){
+            return ['code' => 201 , 'msg' => '请选择备考地区省份'];
+        }else{
+            if(!isset($reference_region_address[1])){
+                return ['code' => 201 , 'msg' => '请选择备考地区市区'];
+            }
         }
+        $body['reference_region_province_id'] = $reference_region_address[0];
+        $body['reference_region_city_id'] = $reference_region_address[1];
+        unset($body['reference_region']);
+        
+        // if($body['sign_region_id'] != $body['reference_region_id']){
+        //     return ['code' => 201 , 'msg' => '报考地区与备考地区不一致！'];
+        // }
         //判断文化程度是否为空
         if(!isset($body['culture']) || empty($body['culture'])){
             return ['code' => 201 , 'msg' => '请选择文化程度'];
@@ -280,6 +319,8 @@ class StudentDatum extends Model {
         if(is_null($datumArr)){
             $datumArr = [];
         }else{
+            $datumArr['sign_region']= [$datumArr['sign_region_province_id'],$datumArr['sign_region_city_id']];
+            $datumArr['reference_region']= [$datumArr['reference_region_province_id'],$datumArr['reference_region_city_id']];
             $datumArr['address']= [$datumArr['address_province_id'],$datumArr['address_city_id']];
         }
         return ['code'=>200,'msg'=>'Success','data'=>$datumArr];
@@ -342,18 +383,16 @@ class StudentDatum extends Model {
         $school_id = isset($body['school_id'])&& $body['school_id'] >0?$body['school_id']:'';
         if(isset($body['subject']) && !empty($body['subject'])){
             $subject = json_decode($body['subject'],1);
-            
-            if(!isset($subject[1]) || empty($subject[1])){
-                return ['code'=>201,'msg'=>'请选择项目-学科'];
-            }
         }
         $count = self::where(function($query) use ($school_id,$subject) {
                     if(!empty($school_id)){
                          $query->where('school_id',$school_id); //所属分校      
                     }
                     if(!empty($subject)){ //所属审核状态
-                        $query->where('project_id',$project[0]);
-                        $query->where('subject_id',$project[1]);
+                        $query->where('project_id',$subject[0]);
+                        if(isset($subject[1]) && $subject[1]>0 ){
+                            $query->where('subject_id',$subject[1]);
+                        }
                     }
                     $query->where('audit_status',1);
                 })->select('id')->count();

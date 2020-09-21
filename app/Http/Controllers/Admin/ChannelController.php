@@ -135,19 +135,22 @@ class ChannelController extends Controller {
         }
         DB::beginTransaction();
         try{
+            $count = Channel::where(['is_del'=>0,'is_forbid'=>0])->where('id','!=',$data['id'])->count();
+            if($count>=1){
+                $noUseRes = Channel::where('id','!=',$data['id'])->where(['is_del'=>0,'is_forbid'=>0])->update(['is_use'=>1,'update_time'=>date('Y-m-d H:i:s')]);
+                if($noUseRes){
+                    DB::rollback();
+                    return response()->json(['code'=>203,'msg'=>'选择失败']);
+                }
+            }
         	$UseRes = Channel::where(['id'=>$data['id'],'is_del'=>0,'is_forbid'=>0])->update(['is_use'=>0,'update_time'=>date('Y-m-d H:i:s')]);
         	if(!$UseRes){
         		DB::rollback();
         		return response()->json(['code'=>203,'msg'=>'选择失败']);
-        	}
-	        $noUseRes = Channel::where('id','!=',$data['id'])->where(['is_del'=>0,'is_forbid'=>0])->update(['is_use'=>1,'update_time'=>date('Y-m-d H:i:s')]);
-	        if($noUseRes){
-	        	 DB::commit();
-	            return response()->json(['code'=>200,'msg'=>'选择成功']);
-	        }else{
-	        	DB::rollback();
-	            return response()->json(['code'=>203,'msg'=>'选择失败']);
-	        }
+        	}else{
+                DB::commit();
+                return response()->json(['code'=>200,'msg'=>'选择成功']);
+            }
     	} catch (Exception $e) {
             return ['code' => 500 , 'msg' => $ex->getMessage()];
         }

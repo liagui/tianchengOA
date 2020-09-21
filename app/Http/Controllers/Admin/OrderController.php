@@ -140,6 +140,16 @@ class OrderController extends Controller {
         $list = Refund_order::remitOrder(self::$accept_data);
         return response()->json($list);
     }
+    //关联退费订单
+    public function relevanceOrder(){
+        $list = Refund_order::relevanceOrder(self::$accept_data);
+        return response()->json($list);
+    }
+    //关联支付凭证
+    public function relevanceVoucher(){
+        $list = Refund_order::relevanceVoucher(self::$accept_data);
+        return response()->json($list);
+    }
 
     /*
      * @param  description   开课管理列表接口
@@ -277,7 +287,7 @@ class OrderController extends Controller {
             return response()->json(['code' => 500 , 'msg' => $ex->getMessage()]);
         }
     }
-    
+
     /*
      * @param  description   财务管理-分校业绩列表
      * @param  参数说明       body包含以下参数[
@@ -397,7 +407,7 @@ class OrderController extends Controller {
                     'p2_OrderNo'=>$insert['order_no'],
                     'p3_Amount'=>$data['pay_price'],
                     'p4_Cur'=>1,
-                    'p5_ProductName'=>'龙德产品1',
+                    'p5_ProductName'=> $course['course_name'],
                     'p9_NotifyUrl'=>$notify,
                     'q1_FrpCode'=>'WEIXIN_NATIVE',
                     'q4_IsShowPic'=>1,
@@ -426,7 +436,7 @@ class OrderController extends Controller {
                     'p2_OrderNo'=>$insert['order_no'],
                     'p3_Amount'=>$data['pay_price'],
                     'p4_Cur'=>1,
-                    'p5_ProductName'=>'龙德产品1',
+                    'p5_ProductName'=>$course['course_name'],
                     'p9_NotifyUrl'=>$notify,
                     'q1_FrpCode'=>'ALIPAY_NATIVE',
                     'q4_IsShowPic'=>1,

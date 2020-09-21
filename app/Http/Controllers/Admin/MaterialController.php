@@ -8,13 +8,16 @@ use Illuminate\Support\Facades\DB;
 use Maatwebsite\Excel\Facades\Excel;
 use Illuminate\Http\Request;
 use App\Models\Material;
+use App\Models\AdminLog;
 class MaterialController extends Controller
 {
     //获取物料列表
     public function getMaterialList(){
         //获取提交的参数
         try{
-            $data = Material::getMaterialList(self::$accept_data);
+            $school_id = isset(AdminLog::getAdminInfo()->admin_user->school_id) ? AdminLog::getAdminInfo()->admin_user->school_id: 0;
+            $school_id = $this->underlingLook($school_id);
+            $data = Material::getMaterialList(self::$accept_data,$school_id);
             return response()->json($data);
         } catch (Exception $ex) {
             return response()->json(['code' => 500 , 'msg' => $ex->getMessage()]);
