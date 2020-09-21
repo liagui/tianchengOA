@@ -2000,6 +2000,45 @@ class Pay_order_inside extends Model
             }
         })->whereIn('school_id' , $body['schoolId'])->groupBy(DB::raw("date_format(create_time , '%Y%m%d')"))->get()->count();
         
+        /*$count = DB::table('pay_order_inside')->selectRaw("count(date_format(pay_order_inside.create_time , '%Y%m%d')) as t_count")->leftjoin("school" , function($join){
+            $join->on('pay_order_inside.school_id', '=', 'school.id');
+        })->where(function($query) use ($body){
+            //判断分校id是否为空和合法
+            if(isset($body['school_id']) && !empty($body['school_id']) && $body['school_id'] > 0){
+                $query->where('pay_order_inside.school_id' , '=' , $body['school_id']);
+            }
+                
+            //判断项目-学科大小类是否为空
+            if(isset($body['category_id']) && !empty($body['category_id'])){
+                $category_id= json_decode($body['category_id'] , true);
+                $project_id = isset($category_id[0]) && $category_id[0] ? $category_id[0] : 0;
+                $subject_id = isset($category_id[1]) && $category_id[1] ? $category_id[1] : 0;
+
+                //判断项目id是否传递
+                if($project_id && $project_id > 0){
+                    $query->where('pay_order_inside.project_id' , '=' , $project_id);
+                }
+
+                //判断学科id是否传递
+                if($subject_id && $subject_id > 0){
+                    $query->where('pay_order_inside.subject_id' , '=' , $subject_id);
+                }
+            }
+
+            //判断课程id是否为空和合法
+            if(isset($body['course_id']) && !empty($body['course_id']) && $body['course_id'] > 0){
+                $query->where('pay_order_inside.course_id' , '=' , $body['course_id']);
+            }
+
+            //获取日期
+            if(isset($body['create_time']) && !empty($body['create_time'])){
+                $create_time = json_decode($body['create_time'] , true);
+                $state_time  = $create_time[0]." 00:00:00";
+                $end_time    = $create_time[1]." 23:59:59";
+                $query->whereBetween('pay_order_inside.create_time', [$state_time, $end_time]);
+            }
+        })->where('pay_order_inside.school_id' , $body['schoolId'])->where('school.look_all_flag' , 1)->groupBy(DB::raw("date_format(pay_order_inside.create_time , '%Y%m%d')"))->get()->count();*/
+        
         if($count > 0){
             //新数组赋值
             $array = [];
@@ -2044,27 +2083,27 @@ class Pay_order_inside extends Model
 
             //循环获取相关信息
             foreach($list as $k=>$v){
+                //时间赋值
+                $order_time     = date('Y-m-d' ,strtotime($v['create_time']));
+                $startTime      = $order_time.' 00:00:00';
+                $endTime        = $order_time.' 23:59:59';
+                    
                 //判断分校id是否为空和合法
                 if(isset($body['school_id']) && !empty($body['school_id']) && $body['school_id'] > 0){
                     //分校的名称
                     $school_name  = School::where('id' , $body['school_id'])->value('school_name');
                     
                     //到账订单数
-                    $received_order = 0;
+                    $received_order = self::where('school_id' , $body['school_id'])->where('create_time', '>=' , $startTime)->where('create_time', '<=' , $endTime)->where('pay_status' , 1)->count();
 
                     //到账金额
-                    $received_money = 0;
+                    $received_money = self::where('school_id' , $body['school_id'])->where('create_time', '>=' , $startTime)->where('create_time', '<=' , $endTime)->where('pay_status' , 1)->sum('pay_price');
 
                     //退费订单数量
-                    $refund_order   = 0;
+                    $refund_order   = Refund_order::where('school_id' , $body['school_id'])->where('create_time', '>=' , $startTime)->where('create_time', '<=' , $endTime)->count();
 
                     //退费金额
-                    $refund_money   = 0;
-
-                    //时间赋值
-                    $order_time     = date('Y-m-d' ,strtotime($v['create_time']));
-                    $startTime      = $order_time.' 00:00:00';
-                    $endTime        = $order_time.' 23:59:59';
+                    $refund_money   = Refund_order::where('school_id' , $body['school_id'])->where('create_time', '>=' , $startTime)->where('create_time', '<=' , $endTime)->sum('refund_Price');
 
                     //报名总费用
                     $enroll_price   = self::where('school_id' , $body['school_id'])->where('create_time', '>=' , $startTime)->where('create_time', '<=' , $endTime)->sum('sign_Price');
@@ -2078,21 +2117,16 @@ class Pay_order_inside extends Model
                     $school_name  = "所有分校";
                     
                     //到账订单数
-                    $received_order = 0;
+                    $received_order = self::where('create_time', '>=' , $startTime)->where('create_time', '<=' , $endTime)->where('pay_status' , 1)->count();
 
                     //到账金额
-                    $received_money = 0;
+                    $received_money = self::where('create_time', '>=' , $startTime)->where('create_time', '<=' , $endTime)->where('pay_status' , 1)->sum('pay_price');
 
                     //退费订单数量
-                    $refund_order   = 0;
+                    $refund_order   = Refund_order::where('create_time', '>=' , $startTime)->where('create_time', '<=' , $endTime)->count();
 
                     //退费金额
-                    $refund_money   = 0;
-
-                    //时间赋值
-                    $order_time     = date('Y-m-d' ,strtotime($v['create_time']));
-                    $startTime      = $order_time.' 00:00:00';
-                    $endTime        = $order_time.' 23:59:59';
+                    $refund_money   = Refund_order::where('create_time', '>=' , $startTime)->where('create_time', '<=' , $endTime)->sum('refund_Price');
 
                     //报名总费用
                     $enroll_price   = self::where('create_time', '>=' , $startTime)->where('create_time', '<=' , $endTime)->sum('sign_Price');
