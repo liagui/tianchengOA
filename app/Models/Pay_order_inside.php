@@ -1626,7 +1626,8 @@ class Pay_order_inside extends Model
          * return  array
          */
     public static function offlinepay($data){
-        $list = OfflinePay::where(['type'=>$data['type'],'is_show'=>1])->get()->toArray();
+        $type = $data['type'] - 4;
+        $list = OfflinePay::where(['type'=>$type,'is_show'=>1,'is_del'=>0])->get()->toArray();
         return ['code' => 200 , 'msg' => '查询成功','data'=>$list];
     }
     /*
