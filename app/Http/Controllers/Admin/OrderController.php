@@ -150,6 +150,22 @@ class OrderController extends Controller {
         $list = Refund_order::relevanceVoucher(self::$accept_data);
         return response()->json($list);
     }
+    /*=================核对订单====================================*/
+    //核对订单列表
+    public function auditOrder(){
+        $list = Pay_order_inside::auditOrder(self::$accept_data);
+        return response()->json($list);
+    }
+    //根据类型查询账户号
+    public function offlinepay(){
+        $list = Pay_order_inside::offlinepay(self::$accept_data);
+        return response()->json($list);
+    }
+    //修改
+    public function offlineing(){
+        $list = Pay_order_inside::offlineing(self::$accept_data);
+        return response()->json($list);
+    }
 
     /*
      * @param  description   开课管理列表接口
