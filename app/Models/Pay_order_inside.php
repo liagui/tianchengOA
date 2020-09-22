@@ -292,13 +292,6 @@ class Pay_order_inside extends Model
     public static function handOrder($data){
         $admin = isset(AdminLog::getAdminInfo()->admin_user) ? AdminLog::getAdminInfo()->admin_user : [];
         //科目id&学科id
-        if(!empty($data['project_id'])){
-            $parent = json_decode($data['project_id'], true);
-            $where['project_id'] = $parent[0];
-            if(!empty($parent[1])){
-                $where['subject_id'] = $parent[1];
-            }
-        }
         if(!isset($data['course_id']) || empty($data['course_id'])){
             return ['code' => 201 , 'msg' => '未选择课程'];
         }
@@ -324,7 +317,7 @@ class Pay_order_inside extends Model
         }
         $data['order_no'] = date('YmdHis', time()) . rand(1111, 9999); //订单号  随机生成
         $data['create_time'] =date('Y-m-d H:i:s');
-        $data['add_time'] =date('Y-m-d H:i:s');
+        $data['add_time '] =date('Y-m-d H:i:s');
         $data['pay_time'] =date('Y-m-d H:i:s');
         $data['pay_status'] = 3;  //3是待审核
         $data['confirm_status'] = 0;
