@@ -110,7 +110,7 @@ class  OfflinePay extends Model {
             return ['code'=>201,'msg'=>'账户信息不存在或已删除']; 
         }else{
             if(isset($body['is_del'])){
-                $delRes = self::where(['id'=>$body['id']])->update(['is_del'=>1,'update_time'=>date('Y-m-d')]); //删除操作
+                $delRes = self::where(['id'=>$body['id']])->update(['is_del'=>0,'update_time'=>date('Y-m-d')]); //删除操作
                 if(!$delRes){
                     DB::rollBack();
                     return ['code'=>203,'msg'=>'编辑失败！'];
@@ -119,7 +119,7 @@ class  OfflinePay extends Model {
                     return ['code'=>200,'msg'=>'编辑成功！'];   
                 }
             }else{  
-                $count  = self::where(['is_del'=>1,'type'=>$body['type'],'account_name'=>$body['account_name']])->where('id','!=',$body['id'])->count();
+                $count  = self::where(['is_del'=>0,'type'=>$body['type'],'account_name'=>$body['account_name']])->where('id','!=',$body['id'])->count();
                 if($count>=1){
                     return ['code'=>201,'msg'=>'账户信息已存在！'];
                 }else{
