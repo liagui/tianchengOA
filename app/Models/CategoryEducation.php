@@ -127,27 +127,42 @@ class CategoryEducation extends Model {
         
         //开启事务
         DB::beginTransaction();
-
-        //更新数据信息
-        if(false !== Education::whereIn('id',$education_ids)->update(['parent_id' => $last_category_id[0] , 'child_id' => $last_category_id_1 , 'update_time' => date('Y-m-d H:i:s')])){
-            self::where('parent_id' , $pre_category_id[0])->update(['is_del' => 1 , 'update_time' => date('Y-m-d H:i:s')]);
-            $is_exists = self::where('parent_id' , $last_category_id[0])->where('is_del' , 0)->count();
-            if(!$is_exists || $is_exists <= 0){
-                //数组信息
-                $array = [
-                    'parent_id'           =>   $last_category_id[0] ,
-                    'admin_id'            =>   $admin_id ,
-                    'create_time'         =>   date('Y-m-d H:i:s')
-                ];
-                self::insertGetId($array);
+        
+        //判断是否删除
+        if(isset($body['is_del']) && $body['is_del'] == 1){
+            //更新数据信息
+            if(false !== self::where('parent_id' , $pre_category_id[0])->update(['is_del' => 1 , 'update_time' => date('Y-m-d H:i:s')])){
+                Education::where('parent_id',$pre_category_id[0])->update(['is_del' => 1 , 'update_time' => date('Y-m-d H:i:s')]);
+                //事务提交
+                DB::commit();
+                return ['code' => 200 , 'msg' => '修改成功'];
+            } else {
+                //事务回滚
+                DB::rollBack();
+                return ['code' => 203 , 'msg' => '修改失败'];
             }
-            //事务提交
-            DB::commit();
-            return ['code' => 200 , 'msg' => '修改成功'];
         } else {
-            //事务回滚
-            DB::rollBack();
-            return ['code' => 203 , 'msg' => '修改失败'];
+            //更新数据信息
+            if(false !== Education::whereIn('id',$education_ids)->update(['parent_id' => $last_category_id[0] , 'child_id' => $last_category_id_1 , 'update_time' => date('Y-m-d H:i:s')])){
+                self::where('parent_id' , $pre_category_id[0])->update(['is_del' => 1 , 'update_time' => date('Y-m-d H:i:s')]);
+                $is_exists = self::where('parent_id' , $last_category_id[0])->where('is_del' , 0)->count();
+                if(!$is_exists || $is_exists <= 0){
+                    //数组信息
+                    $array = [
+                        'parent_id'           =>   $last_category_id[0] ,
+                        'admin_id'            =>   $admin_id ,
+                        'create_time'         =>   date('Y-m-d H:i:s')
+                    ];
+                    self::insertGetId($array);
+                }
+                //事务提交
+                DB::commit();
+                return ['code' => 200 , 'msg' => '修改成功'];
+            } else {
+                //事务回滚
+                DB::rollBack();
+                return ['code' => 203 , 'msg' => '修改失败'];
+            }
         }
     }
     
@@ -159,7 +174,7 @@ class CategoryEducation extends Model {
      */
     public static function getEducationProjectList(){
         //获取地区下面所有的项目列表
-        $project_list = self::select('parent_id as id')->where('is_del' , 0)->get()->toArray();
+        $project_list = self::select('parent_id as id')->where('is_del' , 0)->orderByDesc('create_time')->get()->toArray();
         //判断是否为空
         if($project_list && !empty($project_list)){
             //空数组赋值
