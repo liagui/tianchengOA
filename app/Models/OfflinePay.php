@@ -31,7 +31,7 @@ class  OfflinePay extends Model {
     //获取列表
     public static function getList($body){
         $oneArr = $twoArr = $thereArr = [];
-        $arr = self::where('is_del',1)->select('id','account_name','type')->get()->toArray();
+        $arr = self::where('is_del',1)->select('id','account_name','type','is_show')->get()->toArray();
         if(!empty($arr)){
 
             foreach($arr as $k=>$v){
