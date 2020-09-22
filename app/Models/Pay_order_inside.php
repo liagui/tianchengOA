@@ -324,6 +324,7 @@ class Pay_order_inside extends Model
         }
         $data['order_no'] = date('YmdHis', time()) . rand(1111, 9999); //订单号  随机生成
         $data['create_time'] =date('Y-m-d H:i:s');
+        $data['add_time'] =date('Y-m-d H:i:s');
         $data['pay_time'] =date('Y-m-d H:i:s');
         $data['pay_status'] = 3;  //3是待审核
         $data['confirm_status'] = 0;
