@@ -1630,7 +1630,8 @@ class Pay_order_inside extends Model
          * return  array
          */
     public static function offlinepay($data){
-//        $list =
+        $list = OfflinePay::where(['type'=>$data['type'],'is_show'=>1])->get()->toArray();
+        return ['code' => 200 , 'msg' => '查询成功','data'=>$list];
     }
     /*
          * @param  进行审核
@@ -1651,14 +1652,13 @@ class Pay_order_inside extends Model
         if(!isset($data['pay_status']) || empty($data['pay_status'])){
             return ['code' => 201 , 'msg' => '请判断类型'];
         }
+        $data['update_time'] = date('Y-m-d H:i:s');
         $up = Pay_order_inside::where(['id'=>$data['id']])->up($data);
         if($up){
             return ['code' => 200 , 'msg' => '成功'];
         }else{
             return ['code' => 201 , 'msg' => '失败'];
         }
-
-
     }
 
     /*------------------------------------------------------------------------------------------------------------------------*/
@@ -2223,7 +2223,7 @@ class Pay_order_inside extends Model
             if(isset($body['school_id']) && !empty($body['school_id']) && $body['school_id'] > 0){
                 $query->where('school_id' , '=' , $body['school_id']);
             }
-                
+
             //判断项目-学科大小类是否为空
             if(isset($body['category_id']) && !empty($body['category_id'])){
                 $category_id= json_decode($body['category_id'] , true);
@@ -2254,7 +2254,7 @@ class Pay_order_inside extends Model
                 $query->whereBetween('create_time', [$state_time, $end_time]);
             }
         })->whereIn('school_id' , $body['schoolId'])->groupBy(DB::raw("date_format(create_time , '%Y%m%d')"))->get()->count();
-        
+
         /*$count = DB::table('pay_order_inside')->selectRaw("count(date_format(pay_order_inside.create_time , '%Y%m%d')) as t_count")->leftjoin("school" , function($join){
             $join->on('pay_order_inside.school_id', '=', 'school.id');
         })->where(function($query) use ($body){
@@ -2262,7 +2262,7 @@ class Pay_order_inside extends Model
             if(isset($body['school_id']) && !empty($body['school_id']) && $body['school_id'] > 0){
                 $query->where('pay_order_inside.school_id' , '=' , $body['school_id']);
             }
-                
+
             //判断项目-学科大小类是否为空
             if(isset($body['category_id']) && !empty($body['category_id'])){
                 $category_id= json_decode($body['category_id'] , true);
@@ -2293,7 +2293,7 @@ class Pay_order_inside extends Model
                 $query->whereBetween('pay_order_inside.create_time', [$state_time, $end_time]);
             }
         })->where('pay_order_inside.school_id' , $body['schoolId'])->where('school.look_all_flag' , 1)->groupBy(DB::raw("date_format(pay_order_inside.create_time , '%Y%m%d')"))->get()->count();*/
-        
+
         if($count > 0){
             //新数组赋值
             $array = [];
@@ -2304,7 +2304,7 @@ class Pay_order_inside extends Model
                 if(isset($body['school_id']) && !empty($body['school_id']) && $body['school_id'] > 0){
                     $query->where('school_id' , '=' , $body['school_id']);
                 }
-            
+
                 //判断项目-学科大小类是否为空
                 if(isset($body['category_id']) && !empty($body['category_id'])){
                     $category_id= json_decode($body['category_id'] , true);
@@ -2342,12 +2342,12 @@ class Pay_order_inside extends Model
                 $order_time     = date('Y-m-d' ,strtotime($v['create_time']));
                 $startTime      = $order_time.' 00:00:00';
                 $endTime        = $order_time.' 23:59:59';
-                    
+
                 //判断分校id是否为空和合法
                 if(isset($body['school_id']) && !empty($body['school_id']) && $body['school_id'] > 0){
                     //分校的名称
                     $school_name  = School::where('id' , $body['school_id'])->value('school_name');
-                    
+
                     //到账订单数
                     $received_order = self::where('school_id' , $body['school_id'])->where('create_time', '>=' , $startTime)->where('create_time', '<=' , $endTime)->where('pay_status' , 1)->count();
 
@@ -2363,14 +2363,14 @@ class Pay_order_inside extends Model
                     //报名总费用
                     $enroll_price   = self::where('school_id' , $body['school_id'])->where('create_time', '>=' , $startTime)->where('create_time', '<=' , $endTime)->sum('sign_Price');
 
-                    //成本总费用 
+                    //成本总费用
                     $prime_cost     = self::where('school_id' , $body['school_id'])->where('create_time', '>=' , $startTime)->where('create_time', '<=' , $endTime)->sum('sum_Price');
 
                     //实际佣金总费用
                     $actual_commission = self::where('school_id' , $body['school_id'])->where('create_time', '>=' , $startTime)->where('create_time', '<=' , $endTime)->sum('actual_commission');
                 } else {
                     $school_name  = "所有分校";
-                    
+
                     //到账订单数
                     $received_order = self::where('create_time', '>=' , $startTime)->where('create_time', '<=' , $endTime)->where('pay_status' , 1)->count();
 
@@ -2386,13 +2386,13 @@ class Pay_order_inside extends Model
                     //报名总费用
                     $enroll_price   = self::where('create_time', '>=' , $startTime)->where('create_time', '<=' , $endTime)->sum('sign_Price');
 
-                    //成本总费用 
+                    //成本总费用
                     $prime_cost     = self::where('create_time', '>=' , $startTime)->where('create_time', '<=' , $endTime)->sum('sum_Price');
 
                     //实际佣金总费用
                     $actual_commission = self::where('create_time', '>=' , $startTime)->where('create_time', '<=' , $endTime)->sum('actual_commission');
                 }
-                
+
                 //判断项目-学科大小类是否为空
                 if(isset($body['category_id']) && !empty($body['category_id'])){
                     $category_id= json_decode($body['category_id'] , true);
@@ -2418,7 +2418,7 @@ class Pay_order_inside extends Model
                     $project_name = "所有项目";
                     $subject_name = "所有学科";
                 }
-                
+
                 //判断课程id是否为空和合法
                 if(isset($body['course_id']) && !empty($body['course_id']) && $body['course_id'] > 0){
                     //课程名称
@@ -2447,7 +2447,7 @@ class Pay_order_inside extends Model
         }
         return ['code' => 200 , 'msg' => '获取列表成功' , 'data' => ['list' => [] , 'total' => 0 , 'pagesize' => $pagesize , 'page' => $page]];
     }
-    
+
     /*
      * @param  description   财务管理-分校收入详情-已确认订单
      * @param  参数说明       body包含以下参数[
@@ -2470,7 +2470,7 @@ class Pay_order_inside extends Model
             if(isset($body['school_id']) && !empty($body['school_id']) && $body['school_id'] > 0){
                 $query->where('school_id' , '=' , $body['school_id']);
             }
-                
+
             //判断项目-学科大小类是否为空
             if(isset($body['category_id']) && !empty($body['category_id'])){
                 $category_id= json_decode($body['category_id'] , true);
@@ -2502,19 +2502,19 @@ class Pay_order_inside extends Model
             }
             $query->where('confirm_status' , '=' , 1);
         })->count();
-        
+
         //支付方式
         $pay_type_array = [1=>'支付宝扫码',2=>'微信扫码',3=>'银联快捷支付',4=>'微信小程序',5=>'线下录入'];
-        
+
         //回访状态
         $return_visit_array = [0=>'否',1=>'是'];
-        
+
         //开课状态
         $classes_array  = [0=>'否',1=>'是'];
-        
+
         //订单类型
         $order_type_array = [1=>'课程订单',2=>'报名订单',3=>'课程+报名订单'];
-        
+
         if($count > 0){
             //新数组赋值
             $array = [];
@@ -2525,7 +2525,7 @@ class Pay_order_inside extends Model
                 if(isset($body['school_id']) && !empty($body['school_id']) && $body['school_id'] > 0){
                     $query->where('school_id' , '=' , $body['school_id']);
                 }
-            
+
                 //判断项目-学科大小类是否为空
                 if(isset($body['category_id']) && !empty($body['category_id'])){
                     $category_id= json_decode($body['category_id'] , true);
@@ -2562,24 +2562,24 @@ class Pay_order_inside extends Model
             foreach($list as $k=>$v){
                 //获取分校的名称
                 $school_name = School::where('id' , $v['school_id'])->value('school_name');
-                
+
                 //项目名称
                 $project_name= Project::where('id' , $v['project_id'])->value('name');
-                
+
                 //学科名称
                 $subject_name = Project::where('parent_id' , $v['project_id'])->where('id' , $v['subject_id'])->value('name');
-                
+
                 //课程名称
                 $course_name  = Course::where('id' , $v['course_id'])->value('course_name');
-                
+
                 //根据班主任id获取班主任名称
                 $have_user_name = Admin::where('id' , $v['have_user_id'])->value('real_name');
-                
-                
+
+
                 //数组赋值
                 $array[] = [
                     'order_no'      =>  $v['order_no'] && !empty($v['order_no']) ? $v['order_no'] : '-' ,    //订单编号
-                    'create_time'   =>  $v['create_time'] && !empty($v['create_time']) ? $v['create_time'] : '-'  ,   //订单创建时间                                        
+                    'create_time'   =>  $v['create_time'] && !empty($v['create_time']) ? $v['create_time'] : '-'  ,   //订单创建时间
                     'name'          =>  $v['name'] && !empty($v['name']) ? $v['name'] : '-'  , //姓名
                     'mobile'        =>  $v['mobile'] && !empty($v['mobile']) ? $v['mobile'] : '-' ,  //手机号
                     'have_user_name'=>  $have_user_name && !empty($have_user_name) ? $have_user_name : '-' , //班主任姓名
@@ -2601,7 +2601,7 @@ class Pay_order_inside extends Model
         }
         return ['code' => 200 , 'msg' => '获取列表成功' , 'data' => ['list' => [] , 'total' => 0 , 'pagesize' => $pagesize , 'page' => $page]];
     }
-    
+
     /*
      * @param  description   财务管理-分校订单明细公共接口
      * @param  参数说明       body包含以下参数[
@@ -2692,7 +2692,7 @@ class Pay_order_inside extends Model
         ];
         return ['code' => 200 , 'msg' => '获取列表成功' , 'data' => $info_array];
     }
-    
+
     /*
      * @param  description   财务管理-分校收入详情-已退费订单
      * @param  参数说明       body包含以下参数[
@@ -2715,7 +2715,7 @@ class Pay_order_inside extends Model
             if(isset($body['school_id']) && !empty($body['school_id']) && $body['school_id'] > 0){
                 $query->where('school_id' , '=' , $body['school_id']);
             }
-                
+
             //判断项目-学科大小类是否为空
             if(isset($body['category_id']) && !empty($body['category_id'])){
                 $category_id= json_decode($body['category_id'] , true);
@@ -2746,7 +2746,7 @@ class Pay_order_inside extends Model
                 $query->where('create_time', '>=' , $create_time)->where('create_time', '<=' , $end_time);
             }
         })->count();
-        
+
         if($count > 0){
             //新数组赋值
             $array = [];
@@ -2757,7 +2757,7 @@ class Pay_order_inside extends Model
                 if(isset($body['school_id']) && !empty($body['school_id']) && $body['school_id'] > 0){
                     $query->where('school_id' , '=' , $body['school_id']);
                 }
-            
+
                 //判断项目-学科大小类是否为空
                 if(isset($body['category_id']) && !empty($body['category_id'])){
                     $category_id= json_decode($body['category_id'] , true);
@@ -2794,11 +2794,11 @@ class Pay_order_inside extends Model
             foreach($list as $k=>$v){
                 //获取分校的名称
                 $school_name = School::where('id' , $v['school_id'])->value('school_name');
-                
+
                 //数组赋值
                 $array[] = [
                     'order_no'      =>  $v['refund_no'] && !empty($v['refund_no']) ? $v['refund_no'] : '-' ,    //退费单号
-                    'create_time'   =>  $v['create_time'] && !empty($v['create_time']) ? $v['create_time'] : '-'  ,   //退费发起时间                                        
+                    'create_time'   =>  $v['create_time'] && !empty($v['create_time']) ? $v['create_time'] : '-'  ,   //退费发起时间
                     'name'          =>  $v['student_name'] && !empty($v['student_name']) ? $v['student_name'] : '-'  , //姓名
                     'mobile'        =>  $v['phone'] && !empty($v['phone']) ? $v['phone'] : '-' ,  //手机号
                     'school_name'   =>  $school_name && !empty($school_name) ? $school_name : '-' ,    //所属分校
@@ -2993,7 +2993,7 @@ class Pay_order_inside extends Model
                     $second_out_of_money = $v['second_out_of_amount'];
                     //三级分校无代理保证金
                     $agent_margin = '-';
-                    
+
                     //三级分校退费金额
                     $three_refund_Price    = Refund_order::whereIn('school_id' , $v['school_id'])->where('confirm_status' , 1)->sum('refund_Price');
 
