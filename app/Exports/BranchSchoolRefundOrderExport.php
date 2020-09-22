@@ -22,6 +22,11 @@ class BranchSchoolRefundOrderExport implements FromCollection, WithHeadings {
         $pagesize = isset($body['pagesize']) && $body['pagesize'] > 0 ? $body['pagesize'] : 20;
         $page     = isset($body['page']) && $body['page'] > 0 ? $body['page'] : 1;
         $offset   = ($page - 1) * $pagesize;
+        
+        //获取日期
+        if(!isset($body['create_time']) || empty($body['create_time'])){
+            return ['code' => 201 , 'msg' => '明细日期不能为空'];
+        }
 
         //获取收入详情的总数量
         $count = Refund_order::where(function($query) use ($body){
@@ -53,12 +58,9 @@ class BranchSchoolRefundOrderExport implements FromCollection, WithHeadings {
             }
 
             //获取日期
-            if(isset($body['create_time']) && !empty($body['create_time'])){
-                $create_time = json_decode($body['create_time'] , true);
-                $state_time  = $create_time[0]." 00:00:00";
-                $end_time    = $create_time[1]." 23:59:59";
-                $query->where('create_time', '>=' , $create_time)->where('create_time', '<=' , $end_time);
-            }
+            $state_time  = $body['create_time']." 00:00:00";
+            $end_time    = $body['create_time']." 23:59:59";
+            $query->where('create_time', '>=' , $state_time)->where('create_time', '<=' , $end_time);
         })->count();
         
         if($count > 0){
@@ -95,13 +97,9 @@ class BranchSchoolRefundOrderExport implements FromCollection, WithHeadings {
                 }
 
                 //获取日期
-                if(isset($body['create_time']) && !empty($body['create_time'])){
-                    $create_time = json_decode($body['create_time'] , true);
-                    $state_time  = $create_time[0]." 00:00:00";
-                    $end_time    = $create_time[1]." 23:59:59";
-                    $query->where('create_time', '>=' , $state_time)->where('create_time' , '<=' , $end_time);
-                }
-                $query->where('confirm_status' , '=' , 1);
+                $state_time  = $body['create_time']." 00:00:00";
+                $end_time    = $body['create_time']." 23:59:59";
+                $query->where('create_time', '>=' , $state_time)->where('create_time', '<=' , $end_time);
             })->orderBy('create_time' , 'asc')->offset($offset)->limit($pagesize)->get()->toArray();
 
             //循环获取相关信息
