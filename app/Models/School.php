@@ -209,7 +209,7 @@ class School extends Model {
             return ['code' => 202 , 'msg' => '查看方式不合法'];
         }
 
-        //判断分校级别是否合法
+        //判断分校级别是否合法    
         if(!isset($body['level']) || !in_array($body['level'] , [1,2,3])){
             return ['code' => 202 , 'msg' => '分校级别不合法'];
         }
