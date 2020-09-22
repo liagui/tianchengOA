@@ -41,6 +41,9 @@ $router->group(['prefix' => 'admin' , 'namespace' => 'Admin','middleware'=> 'cor
     $router->post('oapay', 'OrderController@oapay');//支付
     $router->get('hjnotify', 'NotifyController@hjnotify');//汇聚 支付回调
 
+    $router->get('doExportBranchSchoolExcel', 'OrderExcelController@doExportBranchSchoolExcel');           //导出分校收入详情
+    $router->get('doExportBranchSchoolConfirmOrderExcel', 'OrderExcelController@doExportBranchSchoolConfirmOrderExcel');           //导出分校已确认订单
+    $router->get('doExportBranchSchoolRefundOrderExcel', 'OrderExcelController@doExportBranchSchoolRefundOrderExcel');             //导出分校已退费订单
 });
 //后端登录权限认证相关接口
 //
@@ -124,8 +127,12 @@ $router->group(['prefix' => 'admin' , 'namespace' => 'Admin','middleware'=> ['jw
 
     //财务管理部分(dzj)
     $router->group(['prefix' => 'finance'], function () use ($router) {
-        $router->post('getIncomeeList', 'OrderController@getIncomeeList');                       //财务管理-收入详情
-        $router->post('getAchievementSchoolList', 'OrderController@getAchievementSchoolList');   //财务管理-分校业绩列表
+        $router->post('getIncomeeList', 'OrderController@getIncomeeList');                                     //财务管理-总校收入详情
+        $router->post('getBranchSchoolIncomeeList', 'OrderController@getBranchSchoolIncomeeList');             //财务管理-分校收入详情
+        $router->post('getBranchSchoolConfirmOrderList', 'OrderController@getBranchSchoolConfirmOrderList');   //财务管理-分校收入详情-已确认订单
+        $router->post('getBranchSchoolRefundOrderList', 'OrderController@getBranchSchoolRefundOrderList');     //财务管理-分校收入详情-已退费订单
+        $router->post('getBranchSchoolOrderInfo', 'OrderController@getBranchSchoolOrderInfo');                 //财务管理-分校收入详情-分校订单明细公共接口
+        $router->post('getAchievementSchoolList', 'OrderController@getAchievementSchoolList');                 //财务管理-分校业绩列表
     });
 
 
@@ -280,6 +287,13 @@ $router->group(['prefix' => 'admin' , 'namespace' => 'Admin','middleware'=> ['jw
         $router->post('getRegionList', 'StudentDatumController@getRegionList');  //获取户籍地区地址
         $router->post('getDatumCount', 'StudentDatumController@getDatumCount');  //获取资料数量
     });
+     $router->group(['prefix' => 'offlinepay'], function () use ($router) {
+        $router->post('getList', 'OfflinePayController@getList');              //线下支付列表
+        $router->post('doInsertOfflinePay', 'OfflinePayController@doInsertPay');        //线下支付添加
+        $router->post('getOfflinePayById', 'OfflinePayController@getOfflinePayById');  //线下支付查看（编辑）
+        $router->post('doUpdateOfflinePay', 'OfflinePayController@doUpdateOfflinePay');  //线下支付编辑（编辑）
+    });
+
 
 });
 

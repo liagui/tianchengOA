@@ -6,6 +6,8 @@ use Illuminate\Support\Facades\Redis;
 use Illuminate\Support\Facades\DB;
 use App\Models\Course;
 use App\Models\RegionFee;
+use App\Models\CategoryRegion;
+use App\Models\CategoryEducation;
 use App\Models\Education;
 use App\Models\AdminLog;
 
@@ -216,6 +218,18 @@ class Project extends Model {
                 $education_count = Education::where('parent_id' , $body['prosub_id'])->where('is_del' , 0)->count();
                 if($education_count && $education_count > 0){
                     Education::where('parent_id' , $body['prosub_id'])->update(['is_del' => 1 , 'update_time' => date('Y-m-d H:i:s')]);
+                }
+                
+                //删除地区关联项目的所有信息
+                $category_region = CategoryRegion::where('parent_id' , $body['prosub_id'])->where('is_del' , 0)->count();
+                if($category_region && $category_region > 0){
+                    CategoryRegion::where('parent_id' , $body['prosub_id'])->update(['is_del' => 1 , 'update_time' => date('Y-m-d H:i:s')]);
+                }
+                
+                //删除学历成本项目关联所有信息
+                $category_education = CategoryEducation::where('parent_id' , $body['prosub_id'])->where('is_del' , 0)->count();
+                if($category_education && $category_education > 0){
+                    CategoryEducation::where('parent_id' , $body['prosub_id'])->update(['is_del' => 1 , 'update_time' => date('Y-m-d H:i:s')]);
                 }
             }
         }
