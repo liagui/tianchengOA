@@ -69,17 +69,17 @@ class School extends Model {
         }
 
         //判断佣金比例是否为空
-        if(!isset($body['commission']) || $body['commission'] <=0){
+        if(!isset($body['commission']) || strlen($body['commission']) <=0){
             return ['code' => 201 , 'msg' => '请输入佣金比例'];
         }
 
         //判断押金比例是否为空
-        if(!isset($body['deposit']) || $body['deposit'] <=0){
+        if(!isset($body['deposit']) || strlen($body['deposit']) <=0){
             return ['code' => 201 , 'msg' => '请输入押金比例'];
         }
 
         //判断税点比例是否为空
-        if(!isset($body['tax_point']) || $body['tax_point'] <=0){
+        if(!isset($body['tax_point']) || strlen($body['tax_point']) <=0 ){
             return ['code' => 201 , 'msg' => '请输入税点比例'];
         }
 
@@ -190,17 +190,17 @@ class School extends Model {
         }
 
         //判断佣金比例是否为空
-        if(!isset($body['commission']) || empty($body['commission'])){
+        if(!isset($body['commission']) || strlen($body['commission']) <=0){
             return ['code' => 201 , 'msg' => '请输入佣金比例'];
         }
 
         //判断押金比例是否为空
-        if(!isset($body['deposit']) || empty($body['deposit'])){
+        if(!isset($body['deposit']) || strlen($body['deposit']) <=0){
             return ['code' => 201 , 'msg' => '请输入押金比例'];
         }
 
         //判断税点比例是否为空
-        if(!isset($body['tax_point']) || empty($body['tax_point'])){
+        if(!isset($body['tax_point']) || strlen($body['tax_point']) <=0){
             return ['code' => 201 , 'msg' => '请输入税点比例'];
         }
 
@@ -209,7 +209,7 @@ class School extends Model {
             return ['code' => 202 , 'msg' => '查看方式不合法'];
         }
 
-        //判断分校级别是否合法
+        //判断分校级别是否合法    
         if(!isset($body['level']) || !in_array($body['level'] , [1,2,3])){
             return ['code' => 202 , 'msg' => '分校级别不合法'];
         }

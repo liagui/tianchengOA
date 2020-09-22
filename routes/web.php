@@ -81,6 +81,10 @@ $router->group(['prefix' => 'admin' , 'namespace' => 'Admin','middleware'=> ['jw
         $router->post('remitOrder', 'OrderController@remitOrder');//修改打款状态
         $router->post('relevanceOrder', 'OrderController@relevanceOrder');//关联订单列表
         $router->post('relevanceVoucher', 'OrderController@relevanceVoucher');//关联支付凭证列表
+        //核对订单
+        $router->post('auditOrder', 'OrderController@auditOrder');//核对款订单列表
+        $router->post('offlinepay', 'OrderController@offlinepay');//核对款根据类型查账户
+        $router->post('offlineing', 'OrderController@offlineing');//修改核对ing
 
 
     });
@@ -283,6 +287,13 @@ $router->group(['prefix' => 'admin' , 'namespace' => 'Admin','middleware'=> ['jw
         $router->post('getRegionList', 'StudentDatumController@getRegionList');  //获取户籍地区地址
         $router->post('getDatumCount', 'StudentDatumController@getDatumCount');  //获取资料数量
     });
+     $router->group(['prefix' => 'offlinepay'], function () use ($router) {
+        $router->post('getList', 'OfflinePayController@getList');              //线下支付列表
+        $router->post('doInsertOfflinePay', 'OfflinePayController@doInsertPay');        //线下支付添加
+        $router->post('getOfflinePayById', 'OfflinePayController@getOfflinePayById');  //线下支付查看（编辑）
+        $router->post('doUpdateOfflinePay', 'OfflinePayController@doUpdateOfflinePay');  //线下支付编辑（编辑）
+    });
+
 
 });
 
