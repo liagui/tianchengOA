@@ -2621,6 +2621,12 @@ class Pay_order_inside extends Model
                     $endTime    = $createTime." 23:59:59";
                     $query->where('create_time', '>=' , $startTime)->where('create_time', '<=' , $endTime);
                 })->sum('actual_commission');
+                
+                //分校支出=退费金额+报名费用+成本
+                $campus_expenditure = $refund_money+$enroll_price+$prime_cost;
+                
+                //实际收入=到账金额-退费金额
+                $real_income  = $received_money-$refund_money > 0 ? $received_money-$refund_money : 0;
 
                 //数组赋值
                 $array[] = [
@@ -2635,6 +2641,8 @@ class Pay_order_inside extends Model
                     'refund_money'  =>  $refund_money > 0 ? floatval($refund_money) : 0 ,      //退费金额
                     'enroll_price'  =>  $enroll_price > 0 ? floatval($enroll_price) : 0 ,      //报名费用
                     'prime_cost'    =>  $prime_cost > 0 ? floatval($prime_cost) : 0 ,          //成本
+                    'campus_expenditure'=> (float)number_format($campus_expenditure ,2) , //分校支出
+                    'real_income'       => (float)number_format($real_income ,2) ,  //实际收入
                     'actual_commission' => $actual_commission > 0 ? floatval($actual_commission) : 0 ,  //实际佣金
                 ];
             }
@@ -3065,7 +3073,7 @@ class Pay_order_inside extends Model
             'campus_expenditure' => floatval($campus_expenditure) , //分校支出=退费金额+报名费用+成本
             'enroll_price'       => floatval($registration_fee) ,   //报名费用
             'prime_cost'         => floatval($cost) , //成本
-            'actual_commission'  => floatval($amount_received)-floatval($refund_amount) > 0 ? floatval($amount_received)-floatval($refund_amount) : 0 , //实际收入=到账金额-退费金额
+            'real_income'        => floatval($amount_received)-floatval($refund_amount) > 0 ? floatval($amount_received)-floatval($refund_amount) : 0 , //实际收入=到账金额-退费金额
             'detailed_date'      => $detailed_date //明细日期
         ];
         return ['code' => 200 , 'msg' => '获取列表成功' , 'data' => $info_array];

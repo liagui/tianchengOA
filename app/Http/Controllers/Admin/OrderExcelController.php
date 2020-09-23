@@ -31,7 +31,11 @@ class OrderExcelController extends Controller {
 
         //分校的id传递
         $body['schoolId'] = $school_arr['data'];
-        return Excel::download(new \App\Exports\BranchSchoolExport($body), '分校收入详情.xlsx');
+        if($school_id == 0){
+            return Excel::download(new \App\Exports\ZongBranchSchoolExport($body), '总校收入详情.xlsx');
+        } else {
+            return Excel::download(new \App\Exports\BranchSchoolExport($body), '分校收入详情.xlsx');
+        }
     }
 
     /*
