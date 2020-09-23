@@ -2784,9 +2784,9 @@ class Pay_order_inside extends Model
                     'subject_name'  =>  $subject_name && !empty($subject_name) ? $subject_name : '-' , //学科名称
                     'course_name'   =>  $course_name && !empty($course_name) ? $course_name : '-' ,  //课程名称
                     'pay_type'      =>  isset($pay_type_array[$v['pay_type']]) && !empty($pay_type_array[$v['pay_type']]) ? $pay_type_array[$v['pay_type']] : '-' , //支付方式
-                    'course_price'  =>  $v['course_Price'] && $v['course_Price'] > 0 ? floatval($v['course_Price']) : '-' ,  //课程金额
-                    'sign_price'    =>  $v['sign_Price'] && $v['sign_Price'] > 0 ? floatval($v['sign_Price']) : '-' ,        //报名金额
-                    'sum_money'     =>  0 ,  //总金额
+                    'course_price'  =>  $v['course_Price'] && $v['course_Price'] > 0 ? (float)$v['course_Price'] : 0 ,  //课程金额
+                    'sign_price'    =>  $v['sign_Price'] && $v['sign_Price'] > 0 ? (float)$v['sign_Price'] : 0 ,        //报名金额
+                    'sum_money'     =>  $v['course_Price'] + $v['sign_Price'] ,  //总金额
                     'return_visit'  =>  isset($return_visit_array[$v['return_visit']]) && !empty($return_visit_array[$v['return_visit']]) ? $return_visit_array[$v['return_visit']] : '-' , //是否回访
                     'classes'       =>  isset($classes_array[$v['classes']]) && !empty($classes_array[$v['classes']]) ? $classes_array[$v['classes']] : '-' , //是否开课
                     'pay_time'      =>  $v['pay_time'] && !empty($v['pay_time']) ? $v['pay_time'] : '-'  ,   //支付成功时间
@@ -3051,6 +3051,8 @@ class Pay_order_inside extends Model
 
         //明细日期
         $detailed_date = isset($body['create_time']) && !empty($body['create_time']) ? $body['create_time'] : '-';
+        
+        $campus_expenditure = floatval($refund_amount)+floatval($registration_fee)+floatval($cost);
 
         //封装数组
         $info_array = [
@@ -3060,10 +3062,10 @@ class Pay_order_inside extends Model
             'course_name'     =>   $courseName ,   //课程名称
             'received_money'  =>   floatval($amount_received) , //到账金额
             'refund_money'    =>   floatval($refund_amount) ,  //退费金额
-            'campus_expenditure' => floatval($campus_expenditure) , //分校支出
+            'campus_expenditure' => floatval($campus_expenditure) , //分校支出=退费金额+报名费用+成本
             'enroll_price'       => floatval($registration_fee) ,   //报名费用
             'prime_cost'         => floatval($cost) , //成本
-            'actual_commission'  => floatval($real_income) , //实际收入
+            'actual_commission'  => floatval($amount_received)-floatval($refund_amount) > 0 ? floatval($amount_received)-floatval($refund_amount) : 0 , //实际收入=到账金额-退费金额
             'detailed_date'      => $detailed_date //明细日期
         ];
         return ['code' => 200 , 'msg' => '获取列表成功' , 'data' => $info_array];
