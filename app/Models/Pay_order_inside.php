@@ -326,12 +326,20 @@ class Pay_order_inside extends Model
         $data['is_handorder'] = 1;   //手动报单
         if($data['pay_type'] <= 4){
             $exorder = Pay_order_external::where(['name'=>$data['name'],'mobile'=>$data['mobile'],'course_id'=>$data['course_id'],'project_id'=>$data['project_id'],'subject_id'=>$data['subject_id'],'pay_status'=>1])->first();
-            $data['order_no'] = $exorder['order_no'];
-            $data['create_time'] =$exorder['create_time'];
-            $data['pay_time'] = $exorder['pay_time'];
-            $data['pay_status'] = 1;
-            $data['pay_price'] = $exorder['pay_price'];
-            $data['realy_pay_type'] = $exorder['pay_type'];
+            if(!empty($exorder)){
+                $data['order_no'] = $exorder['order_no'];
+                $data['create_time'] =$exorder['create_time'];
+                $data['pay_time'] = $exorder['pay_time'];
+                $data['pay_status'] = 1;
+                $data['pay_price'] = $exorder['pay_price'];
+                $data['realy_pay_type'] = $exorder['pay_type'];
+            }else{
+                $data['order_no'] = date('YmdHis', time()) . rand(1111, 9999); //订单号  随机生成
+                $data['create_time'] =date('Y-m-d H:i:s');
+                $data['pay_time'] =date('Y-m-d H:i:s');
+                $data['pay_status'] = 3;  //3是待审核
+                $data['pay_price'] = $data['course_Price'] + $data['sign_Price'];
+            }
         }else{
             $data['order_no'] = date('YmdHis', time()) . rand(1111, 9999); //订单号  随机生成
             $data['create_time'] =date('Y-m-d H:i:s');
@@ -2238,7 +2246,7 @@ class Pay_order_inside extends Model
             } else {
                 $query->whereIn('school_id' , $body['schoolId']);
             }
-                    
+
             //判断项目-学科大小类是否为空
             if(isset($body['category_id']) && !empty($body['category_id'])){
                 $category_id= json_decode($body['category_id'] , true);
@@ -2269,7 +2277,7 @@ class Pay_order_inside extends Model
                 $query->where('create_time', '>=' , $state_time)->where('create_time', '<=' , $end_time);
             }
         })->groupBy(DB::raw("date_format(create_time , '%Y%m%d')"))->get()->count();
-        
+
         //判断数量是否大于0
         if($count > 0){
             //新数组赋值
@@ -2314,7 +2322,7 @@ class Pay_order_inside extends Model
                     $query->where('create_time', '>=' , $state_time)->where('create_time', '<=' , $end_time);
                 }
             })->orderBy('create_time' , 'asc')->groupBy(DB::raw("date_format(create_time , '%Y%m%d')"))->offset($offset)->limit($pagesize)->get()->toArray();
-            
+
             //条件赋值
             $where = [];
 
@@ -2353,7 +2361,7 @@ class Pay_order_inside extends Model
                 } else {
                     $course_name  = "所有课程";
                 }
-                
+
                 //判断分校id是否为空和合法
                 if(isset($body['school_id']) && !empty($body['school_id']) && $body['school_id'] > 0){
                     //分校的名称
@@ -2553,7 +2561,7 @@ class Pay_order_inside extends Model
                     $query->where('create_time', '>=' , $startTime)->where('create_time', '<=' , $endTime);
                 })->sum('sign_Price');
 
-                //成本总费用 
+                //成本总费用
                 $prime_cost     = self::where(function($query) use ($body){
                     //判断分校id是否为空和合法
                     if(isset($body['school_id']) && !empty($body['school_id']) && $body['school_id'] > 0){
@@ -2628,10 +2636,10 @@ class Pay_order_inside extends Model
                     $endTime    = $createTime." 23:59:59";
                     $query->where('create_time', '>=' , $startTime)->where('create_time', '<=' , $endTime);
                 })->sum('actual_commission');
-                
+
                 //分校支出=退费金额+报名费用+成本
                 $campus_expenditure = $refund_money+$enroll_price+$prime_cost;
-                
+
                 //实际收入=到账金额-退费金额
                 $real_income  = $received_money-$refund_money > 0 ? $received_money-$refund_money : 0;
 
@@ -2673,7 +2681,7 @@ class Pay_order_inside extends Model
         $pagesize = isset($body['pagesize']) && $body['pagesize'] > 0 ? $body['pagesize'] : 20;
         $page     = isset($body['page']) && $body['page'] > 0 ? $body['page'] : 1;
         $offset   = ($page - 1) * $pagesize;
-        
+
         //获取日期
         if(!isset($body['create_time']) || empty($body['create_time'])){
             return ['code' => 201 , 'msg' => '明细日期不能为空'];
@@ -2828,7 +2836,7 @@ class Pay_order_inside extends Model
         if(!isset($body['create_time']) || empty($body['create_time'])){
             return ['code' => 201 , 'msg' => '明细日期不能为空'];
         }
-        
+
         //判断分校id是否为空和合法
         if(isset($body['school_id']) && !empty($body['school_id']) && $body['school_id'] > 0){
             //获取分校的名称
@@ -3066,7 +3074,7 @@ class Pay_order_inside extends Model
 
         //明细日期
         $detailed_date = isset($body['create_time']) && !empty($body['create_time']) ? $body['create_time'] : '-';
-        
+
         $campus_expenditure = floatval($refund_amount)+floatval($registration_fee)+floatval($cost);
 
         //封装数组
@@ -3101,7 +3109,7 @@ class Pay_order_inside extends Model
         $pagesize = isset($body['pagesize']) && $body['pagesize'] > 0 ? $body['pagesize'] : 20;
         $page     = isset($body['page']) && $body['page'] > 0 ? $body['page'] : 1;
         $offset   = ($page - 1) * $pagesize;
-        
+
         //获取日期
         if(!isset($body['create_time']) || empty($body['create_time'])){
             return ['code' => 201 , 'msg' => '明细日期不能为空'];
