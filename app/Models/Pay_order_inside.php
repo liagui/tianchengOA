@@ -93,7 +93,7 @@ class Pay_order_inside extends Model
                 $query->whereIn('school_id',$schoolarr);
             })
             ->where($where)
-            ->where('pay_status','<',2)
+//            ->where('pay_status','<',2)
             ->whereBetween('create_time', [$state_time, $end_time])
             ->orderByDesc('id')
             ->get()->toArray();
@@ -499,7 +499,7 @@ class Pay_order_inside extends Model
         $count = self::where(function($query) use ($data,$schoolarr) {
             $query->whereIn('school_id',$schoolarr);
             if(!empty($data['isBranchSchool']) && $data['isBranchSchool'] == true){
-                $query->where('pay_status','!=',2);
+                $query->where('pay_status','=',1);
                 $query->where('confirm_status',0)
                     ->orwhere('confirm_status',1);
             }else{
@@ -518,9 +518,9 @@ class Pay_order_inside extends Model
         $order = self::where(function($query) use ($data,$schoolarr) {
             $query->whereIn('school_id',$schoolarr);
             if(!empty($data['isBranchSchool']) &&$data['isBranchSchool'] == true){
-                $query->where('pay_status','!=',2);
-                $query->where('confirm_status',0)
-                    ->orwhere('confirm_status',1);
+                $query->where('pay_status','=',1);
+//                $query->where('confirm_status',0)
+                $query->where('confirm_status',1);
             }else{
                 $query->where('confirm_status',0);
                 $query->where('pay_status',1);
