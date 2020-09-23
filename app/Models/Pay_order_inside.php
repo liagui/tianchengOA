@@ -325,7 +325,7 @@ class Pay_order_inside extends Model
         $data['admin_id'] = $admin['id'];
         $data['is_handorder'] = 1;   //手动报单
         if($data['pay_type'] <= 4){
-            $exorder = Pay_order_external::where(['name'=>$data['name'],'mobile'=>$data['mobile'],'course_id'=>$data['course_id'],'project_id'=>$data['project_id'],'subject_id'=>$data['subject_id'],'pay_status'=>1])->first();
+            $exorder = Pay_order_external::where(['name'=>$data['name'],'mobile'=>$data['mobile'],'course_id'=>$data['course_id'],'project_id'=>$data['project_id'],'subject_id'=>$data['subject_id'],'pay_status'=>1,'status'=>0])->first();
             if(!empty($exorder)){
                 $data['order_no'] = $exorder['order_no'];
                 $data['create_time'] =$exorder['create_time'];
@@ -1642,17 +1642,36 @@ class Pay_order_inside extends Model
          * return  array
          */
     public static function offlinepay($data){
-        if($data['type'] == 5){
-            $type = 2;
+        if($data['type'] <= 4){
+            $channel = Channel::where(['is_use'=>0,'is_del'=>0,'is_forbid'=>0])->first();
+            $paylist = PaySet::where(['channel_id'=>$channel['id']])->first();
+            $list['id'] = $paylist['id'];
+            if($data['type'] == 1){ //微信
+               $list['account_name'] = $paylist['wx_app_id'];
+            }
+            if($data['type'] == 1){ //支付宝
+                $list['account_name'] = $paylist['zfb_app_id'];
+            }
+            if($data['type'] == 1){ //汇聚微信
+                $list['account_name'] = $paylist['hj_wx_commercial_tenant_deal_number'];
+            }
+            if($data['type'] == 1){ //汇聚支付宝
+                $list['account_name'] = $paylist['hj_zfb_commercial_tenant_deal_number'];
+            }
+            return ['code' => 200 , 'msg' => '查询成功','data'=>$list];
+        }else{
+            if($data['type'] == 5){ //银行卡支付
+                $type = 2;
+            }
+            if($data['type'] == 6){ //对公转账
+                $type = 1;
+            }
+            if($data['type'] == 7){ //支付宝账号对公
+                $type = 3;
+            }
+            $list = OfflinePay::where(['type'=>$type,'is_show'=>1,'is_del'=>1])->get()->toArray();
+            return ['code' => 200 , 'msg' => '查询成功','data'=>$list];
         }
-        if($data['type'] == 6){
-            $type = 1;
-        }
-        if($data['type'] == 7){
-            $type = 3;
-        }
-        $list = OfflinePay::where(['type'=>$type,'is_show'=>1,'is_del'=>1])->get()->toArray();
-        return ['code' => 200 , 'msg' => '查询成功','data'=>$list];
     }
     /*
          * @param  进行审核
