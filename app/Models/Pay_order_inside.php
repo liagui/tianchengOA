@@ -500,8 +500,8 @@ class Pay_order_inside extends Model
             $query->whereIn('school_id',$schoolarr);
             if(!empty($data['isBranchSchool']) && $data['isBranchSchool'] == true){
                 $query->where('pay_status','=',1);
-                $query->where('confirm_status',0)
-                    ->orwhere('confirm_status',1);
+//                $query->where('confirm_status',0)
+//                    ->orwhere('confirm_status',1);
             }else{
                 $query->where('confirm_status',0);
                 $query->where('pay_status',1);
@@ -520,7 +520,7 @@ class Pay_order_inside extends Model
             if(!empty($data['isBranchSchool']) &&$data['isBranchSchool'] == true){
                 $query->where('pay_status','=',1);
 //                $query->where('confirm_status',0)
-                $query->where('confirm_status',1);
+//                $query->where('confirm_status',1);
             }else{
                 $query->where('confirm_status',0);
                 $query->where('pay_status',1);
