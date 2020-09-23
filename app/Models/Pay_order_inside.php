@@ -676,14 +676,14 @@ class Pay_order_inside extends Model
         }
         if($data['confirm_status'] == 1){
             if($data['confirm_order_type'] == 2){
-                if($data['sign_Price'] == $order['pay_price']){
-                    return ['code' => 201 , 'msg' => '所填金额大于支付金额'];
+                if($data['sign_Price'] != $order['pay_price']){
+                    return ['code' => 201 , 'msg' => '所填金额不等于支付金额'];
                 }
             }
             if($data['confirm_order_type'] == 3){
                 $ppppp = $data['course_Price'] + $data['sign_Price'];
-                if($ppppp == $order['pay_price']){
-                    return ['code' => 201 , 'msg' => '所填金额大于支付金额'];
+                if($ppppp != $order['pay_price']){
+                    return ['code' => 201 , 'msg' => '所填金额不等于支付金额'];
                 }
             }
             $data['comfirm_time'] = date('Y-m-d H:i:s');
