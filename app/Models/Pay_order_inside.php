@@ -497,7 +497,6 @@ class Pay_order_inside extends Model
 
         //計算總數
         $count = self::where(function($query) use ($data,$schoolarr) {
-
             if(isset($data['order_no']) && !empty($data['order_no'])){
                 $query->where('order_no',$data['order_no'])
                     ->orwhere('name',$data['order_no'])
@@ -509,9 +508,9 @@ class Pay_order_inside extends Model
                     ->orwhere('confirm_status',1);
             }else{
                 $query->where('confirm_status',0);
+                $query->where('pay_status','<',2);
             }
         })
-            ->where('pay_status','<',2)
         ->where($where)
         ->count();
 
@@ -529,9 +528,9 @@ class Pay_order_inside extends Model
                     ->orwhere('confirm_status',1);
             }else{
                 $query->where('confirm_status',0);
+                $query->where('pay_status','<',2);
             }
         })
-        ->where('pay_status','<',2)
         ->where($where)
         ->orderByDesc('id')
         ->offset($offset)->limit($pagesize)->get()->toArray();
@@ -551,8 +550,16 @@ class Pay_order_inside extends Model
                     $v['pay_type_text'] = '微信扫码';
                 }else if ($v['pay_type'] == 4){
                     $v['pay_type_text'] = '支付宝扫码';
+                }else if ($v['pay_type'] == 5){
+                    $v['pay_type_text'] = '银行卡支付';
+                }else if ($v['pay_type'] == 6){
+                    $v['pay_type_text'] = '对公转账';
+                }else if ($v['pay_type'] == 7){
+                    $v['pay_type_text'] = '支付宝账号对公';
                 }
-                else if($v['pay_status'] == 1){
+                if($v['pay_status'] == 0){
+                    $v['pay_status_text'] = '未支付';
+                }else if($v['pay_status'] == 1){
                     $v['pay_status_text'] = '已支付';
                 }else if($v['pay_status'] == 2){
                     $v['pay_status_text'] = '支付失败';
@@ -3381,7 +3388,7 @@ class Pay_order_inside extends Model
 
                 //保证金=返佣金额*后台分校管理中押金比例
                 $bond  = sprintf("%.2f" , $commission_money * ($v['deposit'] / 100));
-                
+
                 $one_extraction_ratio = $v['one_extraction_ratio'] && !empty($v['one_extraction_ratio']) ? $v['one_extraction_ratio'] : 0;
                 $two_extraction_ratio = $v['two_extraction_ratio'] && !empty($v['two_extraction_ratio']) ? $v['two_extraction_ratio'] : 0;
 
