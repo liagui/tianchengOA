@@ -530,7 +530,7 @@ class Pay_order_inside extends Model
                 $query->where('confirm_status',0);
             }
         })
-        ->where('pay_status','<',2)
+//        ->where('pay_status','<',2)
         ->where($where)
         ->orderByDesc('id')
         ->offset($offset)->limit($pagesize)->get()->toArray();
@@ -551,7 +551,9 @@ class Pay_order_inside extends Model
                 }else if ($v['pay_type'] == 4){
                     $v['pay_type_text'] = '支付宝扫码';
                 }
-                else if($v['pay_status'] == 1){
+                if($v['pay_status'] == 0){
+                    $v['pay_status_text'] = '未支付';
+                }else if($v['pay_status'] == 1){
                     $v['pay_status_text'] = '已支付';
                 }else if($v['pay_status'] == 2){
                     $v['pay_status_text'] = '支付失败';
