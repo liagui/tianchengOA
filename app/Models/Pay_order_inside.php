@@ -166,7 +166,7 @@ class Pay_order_inside extends Model
                 }else if($v['pay_status'] == 2){
                     $v['pay_status_text'] = '支付失败';
                 }else if($v['pay_status'] == 3){
-                    $v['pay_status_text'] = '未审核';
+                    $v['pay_status_text'] = '待审核';
                 }
                 if(!isset($v['return_visit'])){
                     $v['return_visit_text'] = '';
@@ -564,7 +564,7 @@ class Pay_order_inside extends Model
                 }else if($v['pay_status'] == 2){
                     $v['pay_status_text'] = '支付失败';
                 }else if($v['pay_status'] == 3){
-                    $v['pay_status_text'] = '未审核';
+                    $v['pay_status_text'] = '待审核';
                 }
                 if($v['return_visit'] == 0){
                     $v['return_visit_text'] = '否';
@@ -896,7 +896,7 @@ class Pay_order_inside extends Model
                 }else if($v['pay_status'] == 2){
                     $v['pay_status_text'] = '支付失败';
                 }else if($v['pay_status'] == 3){
-                    $v['pay_status_text'] = '未审核';
+                    $v['pay_status_text'] = '待审核';
                 }
                 if($v['return_visit'] == 0){
                     $v['return_visit_text'] = '否';
@@ -1281,7 +1281,7 @@ class Pay_order_inside extends Model
                 }else if($v['pay_status'] == 2){
                     $v['pay_status_text'] = '支付失败';
                 }else if($v['pay_status'] == 3){
-                    $v['pay_status_text'] = '未审核';
+                    $v['pay_status_text'] = '待审核';
                 }
                 if($v['return_visit'] == 0){
                     $v['return_visit_text'] = '否';
@@ -1573,7 +1573,7 @@ class Pay_order_inside extends Model
                 }else if($v['pay_status'] == 2){
                     $v['pay_status_text'] = '支付失败';
                 }else if($v['pay_status'] == 3){
-                    $v['pay_status_text'] = '未审核';
+                    $v['pay_status_text'] = '待审核';
                 }
                 if(!isset($v['return_visit'])){
                     $v['return_visit_text'] = '';
