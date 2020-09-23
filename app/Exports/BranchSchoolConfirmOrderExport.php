@@ -36,6 +36,8 @@ class BranchSchoolConfirmOrderExport implements FromCollection, WithHeadings {
             //判断分校id是否为空和合法
             if(isset($body['school_id']) && !empty($body['school_id']) && $body['school_id'] > 0){
                 $query->where('school_id' , '=' , $body['school_id']);
+            } else {
+                $query->whereIn('school_id' , $body['schoolId']);
             }
                 
             //判断项目-学科大小类是否为空

@@ -2669,6 +2669,8 @@ class Pay_order_inside extends Model
             //判断分校id是否为空和合法
             if(isset($body['school_id']) && !empty($body['school_id']) && $body['school_id'] > 0){
                 $query->where('school_id' , '=' , $body['school_id']);
+            } else {
+                $query->whereIn('school_id' , $body['schoolId']);
             }
 
             //判断项目-学科大小类是否为空
@@ -2807,12 +2809,17 @@ class Pay_order_inside extends Model
      * return string
      */
     public static function getBranchSchoolOrderInfo($body=[]){
+        //获取日期
+        if(!isset($body['create_time']) || empty($body['create_time'])){
+            return ['code' => 201 , 'msg' => '明细日期不能为空'];
+        }
+        
         //判断分校id是否为空和合法
         if(isset($body['school_id']) && !empty($body['school_id']) && $body['school_id'] > 0){
             //获取分校的名称
             $schoolName = School::where('id' , $body['school_id'])->value('school_name');
         } else {
-            $schoolName = '-';
+            $schoolName = '所有分校';
         }
 
         //判断项目-学科大小类是否为空
@@ -2826,7 +2833,7 @@ class Pay_order_inside extends Model
                 //项目名称
                 $projectName= Project::where('id' , $project_id)->value('name');
             } else {
-                $projectName= '-';
+                $projectName= '所有项目';
             }
 
             //判断学科id是否传递
@@ -2834,11 +2841,11 @@ class Pay_order_inside extends Model
                 //学科名称
                 $subjectName = Project::where('parent_id' , $project_id)->where('id' , $subject_id)->value('name');
             } else {
-                $subjectName = '-';
+                $subjectName = '所有学科';
             }
         } else {
-            $projectName = '-';
-            $subjectName = '-';
+            $projectName = '所有项目';
+            $subjectName = '所有学科';
         }
 
         //判断课程id是否为空和合法
@@ -2846,26 +2853,201 @@ class Pay_order_inside extends Model
             //课程名称
             $courseName  = Course::where('id' , $body['course_id'])->value('course_name');
         } else {
-            $courseName  = '-';
+            $courseName  = '所有课程';
         }
 
         //到账金额
-        $amount_received = 0;
+        $amount_received = self::where(function($query) use ($body){
+            //判断分校id是否为空和合法
+            if(isset($body['school_id']) && !empty($body['school_id']) && $body['school_id'] > 0){
+                $query->where('school_id' , $body['school_id']);
+            } else {
+                $query->whereIn('school_id' , $body['schoolId']);
+            }
+
+            //判断项目-学科大小类是否为空
+            if(isset($body['category_id']) && !empty($body['category_id'])){
+                $category_id= json_decode($body['category_id'] , true);
+                $project_id = isset($category_id[0]) && $category_id[0] ? $category_id[0] : 0;
+                $subject_id = isset($category_id[1]) && $category_id[1] ? $category_id[1] : 0;
+
+                //判断项目id是否传递
+                if($project_id && $project_id > 0){
+                    $query->where('project_id' , $project_id);
+                }
+
+                //判断学科id是否传递
+                if($subject_id && $subject_id > 0){
+                    $query->where('subject_id' , $subject_id);
+                }
+            }
+
+            //判断课程id是否为空和合法
+            if(isset($body['course_id']) && !empty($body['course_id']) && $body['course_id'] > 0){
+                $query->where('course_id' , $body['course_id']);
+            }
+
+            //获取日期
+            $createTime = date('Y-m-d' , strtotime($body['create_time']));
+            $startTime  = $createTime." 00:00:00";
+            $endTime    = $createTime." 23:59:59";
+            $query->where('create_time', '>=' , $startTime)->where('create_time', '<=' , $endTime);
+        })->where('pay_status' , 1)->sum('pay_price');
 
         //退费金额
-        $refund_amount   = 0;
+        $refund_amount   = Refund_order::where(function($query) use ($body){
+            //判断分校id是否为空和合法
+            if(isset($body['school_id']) && !empty($body['school_id']) && $body['school_id'] > 0){
+                $query->where('school_id' , $body['school_id']);
+            } else {
+                $query->whereIn('school_id' , $body['schoolId']);
+            }
+
+            //判断项目-学科大小类是否为空
+            if(isset($body['category_id']) && !empty($body['category_id'])){
+                $category_id= json_decode($body['category_id'] , true);
+                $project_id = isset($category_id[0]) && $category_id[0] ? $category_id[0] : 0;
+                $subject_id = isset($category_id[1]) && $category_id[1] ? $category_id[1] : 0;
+
+                //判断项目id是否传递
+                if($project_id && $project_id > 0){
+                    $query->where('project_id' , $project_id);
+                }
+
+                //判断学科id是否传递
+                if($subject_id && $subject_id > 0){
+                    $query->where('subject_id' , $subject_id);
+                }
+            }
+
+            //判断课程id是否为空和合法
+            if(isset($body['course_id']) && !empty($body['course_id']) && $body['course_id'] > 0){
+                $query->where('course_id' , $body['course_id']);
+            }
+
+            //获取日期
+            $createTime = date('Y-m-d' , strtotime($body['create_time']));
+            $startTime  = $createTime." 00:00:00";
+            $endTime    = $createTime." 23:59:59";
+            $query->where('create_time', '>=' , $startTime)->where('create_time', '<=' , $endTime);
+        })->sum('refund_Price');
 
         //分校支出
         $campus_expenditure = 0;
 
         //报名费用
-        $registration_fee  = 0;
+        $registration_fee  = self::where(function($query) use ($body){
+            //判断分校id是否为空和合法
+            if(isset($body['school_id']) && !empty($body['school_id']) && $body['school_id'] > 0){
+                $query->where('school_id' , $body['school_id']);
+            } else {
+                $query->whereIn('school_id' , $body['schoolId']);
+            }
+
+            //判断项目-学科大小类是否为空
+            if(isset($body['category_id']) && !empty($body['category_id'])){
+                $category_id= json_decode($body['category_id'] , true);
+                $project_id = isset($category_id[0]) && $category_id[0] ? $category_id[0] : 0;
+                $subject_id = isset($category_id[1]) && $category_id[1] ? $category_id[1] : 0;
+
+                //判断项目id是否传递
+                if($project_id && $project_id > 0){
+                    $query->where('project_id' , $project_id);
+                }
+
+                //判断学科id是否传递
+                if($subject_id && $subject_id > 0){
+                    $query->where('subject_id' , $subject_id);
+                }
+            }
+
+            //判断课程id是否为空和合法
+            if(isset($body['course_id']) && !empty($body['course_id']) && $body['course_id'] > 0){
+                $query->where('course_id' , $body['course_id']);
+            }
+
+            //获取日期
+            $createTime = date('Y-m-d' , strtotime($body['create_time']));
+            $startTime  = $createTime." 00:00:00";
+            $endTime    = $createTime." 23:59:59";
+            $query->where('create_time', '>=' , $startTime)->where('create_time', '<=' , $endTime);
+        })->sum('sign_Price');
 
         //成本
-        $cost  = 0;
+        $cost  = self::where(function($query) use ($body){
+            //判断分校id是否为空和合法
+            if(isset($body['school_id']) && !empty($body['school_id']) && $body['school_id'] > 0){
+                $query->where('school_id' , $body['school_id']);
+            } else {
+                $query->whereIn('school_id' , $body['schoolId']);
+            }
+
+            //判断项目-学科大小类是否为空
+            if(isset($body['category_id']) && !empty($body['category_id'])){
+                $category_id= json_decode($body['category_id'] , true);
+                $project_id = isset($category_id[0]) && $category_id[0] ? $category_id[0] : 0;
+                $subject_id = isset($category_id[1]) && $category_id[1] ? $category_id[1] : 0;
+
+                //判断项目id是否传递
+                if($project_id && $project_id > 0){
+                    $query->where('project_id' , $project_id);
+                }
+
+                //判断学科id是否传递
+                if($subject_id && $subject_id > 0){
+                    $query->where('subject_id' , $subject_id);
+                }
+            }
+
+            //判断课程id是否为空和合法
+            if(isset($body['course_id']) && !empty($body['course_id']) && $body['course_id'] > 0){
+                $query->where('course_id' , $body['course_id']);
+            }
+
+            //获取日期
+            $createTime = date('Y-m-d' , strtotime($body['create_time']));
+            $startTime  = $createTime." 00:00:00";
+            $endTime    = $createTime." 23:59:59";
+            $query->where('create_time', '>=' , $startTime)->where('create_time', '<=' , $endTime);
+        })->sum('sum_Price');
 
         //实际收入
-        $real_income = 0;
+        $real_income = self::where(function($query) use ($body){
+            //判断分校id是否为空和合法
+            if(isset($body['school_id']) && !empty($body['school_id']) && $body['school_id'] > 0){
+                $query->where('school_id' , $body['school_id']);
+            } else {
+                $query->whereIn('school_id' , $body['schoolId']);
+            }
+
+            //判断项目-学科大小类是否为空
+            if(isset($body['category_id']) && !empty($body['category_id'])){
+                $category_id= json_decode($body['category_id'] , true);
+                $project_id = isset($category_id[0]) && $category_id[0] ? $category_id[0] : 0;
+                $subject_id = isset($category_id[1]) && $category_id[1] ? $category_id[1] : 0;
+
+                //判断项目id是否传递
+                if($project_id && $project_id > 0){
+                    $query->where('project_id' , $project_id);
+                }
+
+                //判断学科id是否传递
+                if($subject_id && $subject_id > 0){
+                    $query->where('subject_id' , $subject_id);
+                }
+            }
+
+            //判断课程id是否为空和合法
+            if(isset($body['course_id']) && !empty($body['course_id']) && $body['course_id'] > 0){
+                $query->where('course_id' , $body['course_id']);
+            }
+
+            //获取日期
+            $createTime = date('Y-m-d' , strtotime($body['create_time']));
+            $startTime  = $createTime." 00:00:00";
+            $endTime    = $createTime." 23:59:59";
+            $query->where('create_time', '>=' , $startTime)->where('create_time', '<=' , $endTime);
+        })->sum('actual_commission');
 
         //明细日期
         $detailed_date = isset($body['create_time']) && !empty($body['create_time']) ? $body['create_time'] : '-';
@@ -2876,12 +3058,12 @@ class Pay_order_inside extends Model
             'project_name'    =>   $projectName ,  //项目名称
             'subject_name'    =>   $subjectName ,  //学科名称
             'course_name'     =>   $courseName ,   //课程名称
-            'amount_received' =>   $amount_received, //到账金额
-            'refund_amount'   =>   $refund_amount ,  //退费金额
-            'campus_expenditure' => $campus_expenditure , //分校支出
-            'registration_fee'   => $registration_fee ,   //报名费用
-            'cost'               => $cost , //成本
-            'real_income'        => $real_income , //实际收入
+            'received_money'  =>   floatval($amount_received) , //到账金额
+            'refund_money'    =>   floatval($refund_amount) ,  //退费金额
+            'campus_expenditure' => floatval($campus_expenditure) , //分校支出
+            'enroll_price'       => floatval($registration_fee) ,   //报名费用
+            'prime_cost'         => floatval($cost) , //成本
+            'actual_commission'  => floatval($real_income) , //实际收入
             'detailed_date'      => $detailed_date //明细日期
         ];
         return ['code' => 200 , 'msg' => '获取列表成功' , 'data' => $info_array];
@@ -2913,6 +3095,8 @@ class Pay_order_inside extends Model
             //判断分校id是否为空和合法
             if(isset($body['school_id']) && !empty($body['school_id']) && $body['school_id'] > 0){
                 $query->where('school_id' , '=' , $body['school_id']);
+            } else {
+                $query->whereIn('school_id' , $body['schoolId']);
             }
 
             //判断项目-学科大小类是否为空

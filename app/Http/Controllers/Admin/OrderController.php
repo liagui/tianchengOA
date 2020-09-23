@@ -351,6 +351,13 @@ class OrderController extends Controller {
     public function getBranchSchoolConfirmOrderList(){
         //获取提交的参数
         try{
+            //获取院校id(1,2,3)
+            $school_id  = isset(AdminLog::getAdminInfo()->admin_user->school_id) ? AdminLog::getAdminInfo()->admin_user->school_id : 0;
+            $school_arr = parent::underlingLook($school_id);
+
+            //分校的id传递
+            self::$accept_data['schoolId'] = $school_arr['data'];
+            
             //获取专业列表
             $data = Pay_order_inside::getBranchSchoolConfirmOrderList(self::$accept_data);
             if($data['code'] == 200){
@@ -376,6 +383,13 @@ class OrderController extends Controller {
     public function getBranchSchoolRefundOrderList(){
         //获取提交的参数
         try{
+            //获取院校id(1,2,3)
+            $school_id  = isset(AdminLog::getAdminInfo()->admin_user->school_id) ? AdminLog::getAdminInfo()->admin_user->school_id : 0;
+            $school_arr = parent::underlingLook($school_id);
+
+            //分校的id传递
+            self::$accept_data['schoolId'] = $school_arr['data'];
+            
             //获取专业列表
             $data = Pay_order_inside::getBranchSchoolRefundOrderList(self::$accept_data);
             if($data['code'] == 200){
@@ -401,6 +415,13 @@ class OrderController extends Controller {
     public function getBranchSchoolOrderInfo(){
         //获取提交的参数
         try{
+            //获取院校id(1,2,3)
+            $school_id  = isset(AdminLog::getAdminInfo()->admin_user->school_id) ? AdminLog::getAdminInfo()->admin_user->school_id : 0;
+            $school_arr = parent::underlingLook($school_id);
+
+            //分校的id传递
+            self::$accept_data['schoolId'] = $school_arr['data'];
+            
             //获取专业列表
             $data = Pay_order_inside::getBranchSchoolOrderInfo(self::$accept_data);
             if($data['code'] == 200){
