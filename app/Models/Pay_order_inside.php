@@ -315,25 +315,32 @@ class Pay_order_inside extends Model
             unset($data['education_id']);
             unset($data['major_id']);
         }
+        //根据条件查询第三方订单，如果有，直接到流转，否则就进去审核订单
         $data['course_Price'] = isset($data['course_Price'])?$data['course_Price']:0;
         $data['sign_Price'] = isset($data['sign_Price'])?$data['sign_Price']:0;
-        $data['order_no'] = date('YmdHis', time()) . rand(1111, 9999); //订单号  随机生成
-        $data['create_time'] =date('Y-m-d H:i:s');
         $data['add_time'] =date('Y-m-d H:i:s');
-        $data['pay_time'] =date('Y-m-d H:i:s');
-        $data['pay_status'] = 3;  //3是待审核
         $data['confirm_status'] = 0;
         $data['pay_voucher_user_id'] = $admin['id']; //上传凭证人
         $data['pay_voucher_time'] = date('Y-m-d H:i:s');//上传凭证时间
         $data['admin_id'] = $admin['id'];
         $data['is_handorder'] = 1;   //手动报单
-        $data['pay_price'] = $data['course_Price'] + $data['sign_Price'];
+        if($data['pay_type'] <= 4){
+            $exorder = Pay_order_external::where(['name'=>$data['name'],'mobile'=>$data['mobile'],'course_id'=>$data['course_id'],'project_id'=>$data['project_id'],'subject_id'=>$data['subject_id'],'pay_status'=>1])->first();
+            $data['order_no'] = $exorder['order_no'];
+            $data['create_time'] =$exorder['create_time'];
+            $data['pay_time'] = $exorder['pay_time'];
+            $data['pay_status'] = 1;
+            $data['pay_price'] = $exorder['pay_price'];
+            $data['realy_pay_type'] = $exorder['pay_type'];
+        }else{
+            $data['order_no'] = date('YmdHis', time()) . rand(1111, 9999); //订单号  随机生成
+            $data['create_time'] =date('Y-m-d H:i:s');
+            $data['pay_time'] =date('Y-m-d H:i:s');
+            $data['pay_status'] = 3;  //3是待审核
+            $data['pay_price'] = $data['course_Price'] + $data['sign_Price'];
+        }
         $add = self::insert($data);
         if($add){
-            $exter = Pay_order_external::where(['pay_status'=>1,'name'=>$data['name'],'mobile'=>$data['mobile'],'course_id'=>$data['course_id'],'project_id'=>$data['project_id'],'subject_id'=>$data['subject_id']])->first();
-            if($exter){
-                $data['realy_pay_type'] = $exter['pay_type'];
-            }
             return ['code' => 200 , 'msg' => '报单成功'];
         }else{
             return ['code' => 201 , 'msg' => '报单失败'];
