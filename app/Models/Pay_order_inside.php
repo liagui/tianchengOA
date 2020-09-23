@@ -894,7 +894,9 @@ class Pay_order_inside extends Model
                 }else if ($v['pay_type'] == 7){
                     $v['pay_type_text'] = '支付宝账号对公';
                 }
-                else if($v['pay_status'] == 1){
+                if($v['pay_status'] == 0){
+                    $v['pay_status_text'] = '待支付';
+                }else if($v['pay_status'] == 1){
                     $v['pay_status_text'] = '已支付';
                 }else if($v['pay_status'] == 2){
                     $v['pay_status_text'] = '支付失败';
