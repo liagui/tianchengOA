@@ -1649,13 +1649,13 @@ class Pay_order_inside extends Model
             if($data['type'] == 1){ //微信
                $list['account_name'] = $paylist['wx_app_id'];
             }
-            if($data['type'] == 1){ //支付宝
+            if($data['type'] == 2){ //支付宝
                 $list['account_name'] = $paylist['zfb_app_id'];
             }
-            if($data['type'] == 1){ //汇聚微信
+            if($data['type'] == 3){ //汇聚微信
                 $list['account_name'] = $paylist['hj_wx_commercial_tenant_deal_number'];
             }
-            if($data['type'] == 1){ //汇聚支付宝
+            if($data['type'] == 4){ //汇聚支付宝
                 $list['account_name'] = $paylist['hj_zfb_commercial_tenant_deal_number'];
             }
             return ['code' => 200 , 'msg' => '查询成功','data'=>$list];
