@@ -497,38 +497,39 @@ class Pay_order_inside extends Model
 
         //計算總數
         $count = self::where(function($query) use ($data,$schoolarr) {
+
+            $query->whereIn('school_id',$schoolarr);
+            if(!empty($data['isBranchSchool']) && $data['isBranchSchool'] == true){
+                $query->where('pay_status','<',2);
+                $query->where('confirm_status',0)
+                    ->orwhere('confirm_status',1);
+            }else{
+                $query->where('confirm_status',0);
+                $query->where('pay_status',1);
+            }
             if(isset($data['order_no']) && !empty($data['order_no'])){
                 $query->where('order_no',$data['order_no'])
                     ->orwhere('name',$data['order_no'])
                     ->orwhere('mobile',$data['order_no']);
-            }
-            $query->whereIn('school_id',$schoolarr);
-            if(!empty($data['isBranchSchool']) && $data['isBranchSchool'] == true){
-                $query->where('confirm_status',0)
-                    ->orwhere('confirm_status',1);
-                $query->where('pay_status','<',2);
-            }else{
-                $query->where('confirm_status',0);
-                $query->where('pay_status',1);
             }
         })
         ->where($where)
         ->count();
 
         $order = self::where(function($query) use ($data,$schoolarr) {
+            $query->whereIn('school_id',$schoolarr);
+            if(!empty($data['isBranchSchool']) &&$data['isBranchSchool'] == true){
+                $query->where('pay_status','<',2);
+                $query->where('confirm_status',0)
+                    ->orwhere('confirm_status',1);
+            }else{
+                $query->where('confirm_status',0);
+                $query->where('pay_status',1);
+            }
             if(isset($data['order_no']) && !empty($data['order_no'])){
                 $query->where('order_no',$data['order_no'])
                     ->orwhere('name',$data['order_no'])
                     ->orwhere('mobile',$data['order_no']);
-            }
-            $query->whereIn('school_id',$schoolarr);
-            if(!empty($data['isBranchSchool']) &&$data['isBranchSchool'] == true){
-                $query->where('confirm_status',0)
-                    ->orwhere('confirm_status',1);
-                $query->where('pay_status','<',2);
-            }else{
-                $query->where('confirm_status',0);
-                $query->where('pay_status',1);
             }
         })
         ->where($where)
