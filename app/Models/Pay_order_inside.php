@@ -551,6 +551,12 @@ class Pay_order_inside extends Model
                     $v['pay_type_text'] = '微信扫码';
                 }else if ($v['pay_type'] == 4){
                     $v['pay_type_text'] = '支付宝扫码';
+                }else if ($v['pay_type'] == 5){
+                    $v['pay_type_text'] = '银行卡支付';
+                }else if ($v['pay_type'] == 6){
+                    $v['pay_type_text'] = '对公转账';
+                }else if ($v['pay_type'] == 7){
+                    $v['pay_type_text'] = '支付宝账号对公';
                 }
                 if($v['pay_status'] == 0){
                     $v['pay_status_text'] = '未支付';
