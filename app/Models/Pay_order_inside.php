@@ -333,6 +333,7 @@ class Pay_order_inside extends Model
                 $data['pay_status'] = 1;
                 $data['pay_price'] = $exorder['pay_price'];
                 $data['realy_pay_type'] = $exorder['pay_type'];
+                Pay_order_external::where(['id'=>$exorder['id']])->update(['status'=>1]);
             }else{
                 $data['order_no'] = date('YmdHis', time()) . rand(1111, 9999); //订单号  随机生成
                 $data['create_time'] =date('Y-m-d H:i:s');
