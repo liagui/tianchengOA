@@ -497,7 +497,6 @@ class Pay_order_inside extends Model
 
         //計算總數
         $count = self::where(function($query) use ($data,$schoolarr) {
-
             if(isset($data['order_no']) && !empty($data['order_no'])){
                 $query->where('order_no',$data['order_no'])
                     ->orwhere('name',$data['order_no'])
@@ -509,9 +508,9 @@ class Pay_order_inside extends Model
                     ->orwhere('confirm_status',1);
             }else{
                 $query->where('confirm_status',0);
+                $query->where('pay_status','<',2);
             }
         })
-//            ->where('pay_status','<',2)
         ->where($where)
         ->count();
 
@@ -529,9 +528,9 @@ class Pay_order_inside extends Model
                     ->orwhere('confirm_status',1);
             }else{
                 $query->where('confirm_status',0);
+                $query->where('pay_status','<',2);
             }
         })
-//        ->where('pay_status','<',2)
         ->where($where)
         ->orderByDesc('id')
         ->offset($offset)->limit($pagesize)->get()->toArray();
