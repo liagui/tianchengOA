@@ -9,6 +9,9 @@ use App\Models\Pay_order_external;
 use App\Models\Pay_order_inside;
 use App\Models\PaySet;
 use App\Models\Refund_order;
+use App\Tools\AlipayFactory;
+use App\Tools\QRcode;
+use App\Tools\WxpayFactory;
 
 class OrderController extends Controller {
     //总校&分校
@@ -303,7 +306,7 @@ class OrderController extends Controller {
             return response()->json(['code' => 500 , 'msg' => $ex->getMessage()]);
         }
     }
-    
+
     /*
      * @param  description   财务管理-分校收入详情
      * @param  参数说明       body包含以下参数[
@@ -337,7 +340,7 @@ class OrderController extends Controller {
             return response()->json(['code' => 500 , 'msg' => $ex->getMessage()]);
         }
     }
-    
+
     /*
      * @param  description   财务管理-分校收入详情-已确认订单
      * @param  参数说明       body包含以下参数[
@@ -357,7 +360,7 @@ class OrderController extends Controller {
 
             //分校的id传递
             self::$accept_data['schoolId'] = $school_arr['data'];
-            
+
             //获取专业列表
             $data = Pay_order_inside::getBranchSchoolConfirmOrderList(self::$accept_data);
             if($data['code'] == 200){
@@ -369,7 +372,7 @@ class OrderController extends Controller {
             return response()->json(['code' => 500 , 'msg' => $ex->getMessage()]);
         }
     }
-    
+
     /*
      * @param  description   财务管理-分校收入详情-已退费订单
      * @param  参数说明       body包含以下参数[
@@ -389,7 +392,7 @@ class OrderController extends Controller {
 
             //分校的id传递
             self::$accept_data['schoolId'] = $school_arr['data'];
-            
+
             //获取专业列表
             $data = Pay_order_inside::getBranchSchoolRefundOrderList(self::$accept_data);
             if($data['code'] == 200){
@@ -401,7 +404,7 @@ class OrderController extends Controller {
             return response()->json(['code' => 500 , 'msg' => $ex->getMessage()]);
         }
     }
-    
+
     /*
      * @param  description   财务管理-分校订单明细公共接口
      * @param  参数说明       body包含以下参数[
@@ -421,7 +424,7 @@ class OrderController extends Controller {
 
             //分校的id传递
             self::$accept_data['schoolId'] = $school_arr['data'];
-            
+
             //获取专业列表
             $data = Pay_order_inside::getBranchSchoolOrderInfo(self::$accept_data);
             if($data['code'] == 200){
@@ -534,18 +537,35 @@ class OrderController extends Controller {
         $add = Pay_order_external::insertGetId($insert);
         if($add){
             $course = Course::where(['id'=>$data['course_id']])->first();
+            $list = Channel::where(['is_use'=>0])->first();
+            $paylist = PaySet::where(['channel_id'=>$list['id']])->first();
             //微信
             if($data['pay_type'] == 1){
-
+//                $wxpay = new WxpayFactory();
+//                $number = $insert['order_no'];
+//                $price = $insert['price'];
+//                $return = $wxpay->getPcPayOrder($number, $price,$course['title']);
+                return response()->json(['code' => 202, 'msg' => '生成二维码失败']);
             }
             //支付宝
             if($data['pay_type'] == 2){
-
+                $alipay = new AlipayFactory($paylist);
+                $return = $alipay->convergecreatePcPay($insert['order_no'],$insert['price'],$course['title']);
+                if($return['alipay_trade_precreate_response']['code'] == 10000){
+                    require_once realpath(dirname(__FILE__).'/../../../Tools/phpqrcode/QRcode.php');
+                    $code = new QRcode();
+                    ob_start();//开启缓冲区
+                    $returnData  = $code->pngString($return['alipay_trade_precreate_response']['qr_code'], false, 'L', 10, 1);//生成二维码
+                    $imageString = base64_encode(ob_get_contents());
+                    ob_end_clean();
+                    $str = "data:image/png;base64," . $imageString;
+                    return response()->json(['code' => 200, 'msg' => '预支付订单生成成功', 'data' => $str]);
+                } else {
+                    return response()->json(['code' => 202, 'msg' => '生成二维码失败']);
+                }
             }
             //汇聚微信
             if($data['pay_type'] == 3){
-                $list = Channel::where(['is_use'=>0])->first();
-                $paylist = PaySet::where(['channel_id'=>$list['id']])->first();
                 $notify = 'AB|'."http://".$_SERVER['HTTP_HOST']."/admin/hjnotify";
                 $pay=[
                     'p0_Version'=>'1.0',
@@ -573,8 +593,6 @@ class OrderController extends Controller {
             }
             //汇聚支付宝
             if($data['pay_type'] == 4){
-                $list = Channel::where(['is_use'=>0])->first();
-                $paylist = PaySet::where(['channel_id'=>$list['id']])->first();
                 $notify = 'AB|'."http://".$_SERVER['HTTP_HOST']."/admin/hjnotify";
                 $pay=[
                     'p0_Version'=>'1.0',
