@@ -1,6 +1,7 @@
 <?php
 namespace App\Models;
 
+use App\Models\Admin;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Redis;
@@ -1024,6 +1025,10 @@ class Pay_order_inside extends Model
                     //查专业
                     $major = Major::where(['id'=>$v['major_id']])->first();
                     $v['major_name'] = $major['major_name'];
+                }
+                if(!empty($v['pay_voucher_user_id'])){
+                    $adminname = Admin::where(['id'=>$v['pay_voucher_user_id']])->first();
+                    $v['pay_voucher_name'] = $adminname['username'];
                 }
             }
             return ['code' => 200 , 'msg' => '获取成功','data'=>$res];
