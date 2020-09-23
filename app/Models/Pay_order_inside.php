@@ -93,7 +93,7 @@ class Pay_order_inside extends Model
                 $query->whereIn('school_id',$schoolarr);
             })
             ->where($where)
-            ->where('pay_status','<',2)
+//            ->where('pay_status','<',2)
             ->whereBetween('create_time', [$state_time, $end_time])
             ->orderByDesc('id')
             ->get()->toArray();
@@ -1709,7 +1709,7 @@ class Pay_order_inside extends Model
         if(!isset($data['offline_id']) || empty($data['offline_id'])){
             return ['code' => 201 , 'msg' => '请选择收款账号'];
         }
-        if(!isset($data['pay_status']) || empty($data['pay_status'])){
+        if(!isset($data['pay_status'])){
             return ['code' => 201 , 'msg' => '请判断类型'];
         }
         unset($data['/admin/order/offlineing']);
