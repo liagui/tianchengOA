@@ -149,9 +149,9 @@ class Pay_order_inside extends Model
                 }else if ($v['pay_type'] == 2){
                     $v['pay_type_text'] = '支付宝';
                 }else if ($v['pay_type'] == 3){
-                    $v['pay_type_text'] = '汇聚微信';
+                    $v['pay_type_text'] = '微信';
                 }else if ($v['pay_type'] == 4){
-                    $v['pay_type_text'] = '汇聚支付宝';
+                    $v['pay_type_text'] = '支付宝';
                 }else if ($v['pay_type'] == 5){
                     $v['pay_type_text'] = '银行卡支付';
                 }else if ($v['pay_type'] == 6){
@@ -316,25 +316,41 @@ class Pay_order_inside extends Model
             unset($data['education_id']);
             unset($data['major_id']);
         }
+        //根据条件查询第三方订单，如果有，直接到流转，否则就进去审核订单
         $data['course_Price'] = isset($data['course_Price'])?$data['course_Price']:0;
         $data['sign_Price'] = isset($data['sign_Price'])?$data['sign_Price']:0;
-        $data['order_no'] = date('YmdHis', time()) . rand(1111, 9999); //订单号  随机生成
-        $data['create_time'] =date('Y-m-d H:i:s');
         $data['add_time'] =date('Y-m-d H:i:s');
-        $data['pay_time'] =date('Y-m-d H:i:s');
-        $data['pay_status'] = 3;  //3是待审核
         $data['confirm_status'] = 0;
         $data['pay_voucher_user_id'] = $admin['id']; //上传凭证人
         $data['pay_voucher_time'] = date('Y-m-d H:i:s');//上传凭证时间
         $data['admin_id'] = $admin['id'];
         $data['is_handorder'] = 1;   //手动报单
-        $data['pay_price'] = $data['course_Price'] + $data['sign_Price'];
+        if($data['pay_type'] <= 4){
+            $exorder = Pay_order_external::where(['name'=>$data['name'],'mobile'=>$data['mobile'],'course_id'=>$data['course_id'],'project_id'=>$data['project_id'],'subject_id'=>$data['subject_id'],'pay_status'=>1,'status'=>0])->first();
+            if(!empty($exorder)){
+                $data['order_no'] = $exorder['order_no'];
+                $data['create_time'] =$exorder['create_time'];
+                $data['pay_time'] = $exorder['pay_time'];
+                $data['pay_status'] = 1;
+                $data['pay_price'] = $exorder['pay_price'];
+                $data['realy_pay_type'] = $exorder['pay_type'];
+                Pay_order_external::where(['id'=>$exorder['id']])->update(['status'=>1]);
+            }else{
+                $data['order_no'] = date('YmdHis', time()) . rand(1111, 9999); //订单号  随机生成
+                $data['create_time'] =date('Y-m-d H:i:s');
+                $data['pay_time'] =date('Y-m-d H:i:s');
+                $data['pay_status'] = 3;  //3是待审核
+                $data['pay_price'] = $data['course_Price'] + $data['sign_Price'];
+            }
+        }else{
+            $data['order_no'] = date('YmdHis', time()) . rand(1111, 9999); //订单号  随机生成
+            $data['create_time'] =date('Y-m-d H:i:s');
+            $data['pay_time'] =date('Y-m-d H:i:s');
+            $data['pay_status'] = 3;  //3是待审核
+            $data['pay_price'] = $data['course_Price'] + $data['sign_Price'];
+        }
         $add = self::insert($data);
         if($add){
-            $exter = Pay_order_external::where(['pay_status'=>1,'name'=>$data['name'],'mobile'=>$data['mobile'],'course_id'=>$data['course_id'],'project_id'=>$data['project_id'],'subject_id'=>$data['subject_id']])->first();
-            if($exter){
-                $data['realy_pay_type'] = $exter['pay_type'];
-            }
             return ['code' => 200 , 'msg' => '报单成功'];
         }else{
             return ['code' => 201 , 'msg' => '报单失败'];
@@ -532,9 +548,9 @@ class Pay_order_inside extends Model
                 }else if ($v['pay_type'] == 2){
                     $v['pay_type_text'] = '支付宝扫码';
                 }else if ($v['pay_type'] == 3){
-                    $v['pay_type_text'] = '汇聚微信扫码';
+                    $v['pay_type_text'] = '微信扫码';
                 }else if ($v['pay_type'] == 4){
-                    $v['pay_type_text'] = '汇聚支付宝扫码';
+                    $v['pay_type_text'] = '支付宝扫码';
                 }
                 else if($v['pay_status'] == 1){
                     $v['pay_status_text'] = '已支付';
@@ -858,9 +874,9 @@ class Pay_order_inside extends Model
                 }else if ($v['pay_type'] == 2){
                     $v['pay_type_text'] = '支付宝扫码';
                 }else if ($v['pay_type'] == 3){
-                    $v['pay_type_text'] = '汇聚微信扫码';
+                    $v['pay_type_text'] = '微信扫码';
                 }else if ($v['pay_type'] == 4){
-                    $v['pay_type_text'] = '汇聚支付宝扫码';
+                    $v['pay_type_text'] = '支付宝扫码';
                 }
                 else if($v['pay_status'] == 1){
                     $v['pay_status_text'] = '已支付';
@@ -1237,9 +1253,9 @@ class Pay_order_inside extends Model
                 }else if ($v['pay_type'] == 2){
                     $v['pay_type_text'] = '支付宝扫码';
                 }else if ($v['pay_type'] == 3){
-                    $v['pay_type_text'] = '汇聚微信扫码';
+                    $v['pay_type_text'] = '微信扫码';
                 }else if ($v['pay_type'] == 4){
-                    $v['pay_type_text'] = '汇聚支付宝扫码';
+                    $v['pay_type_text'] = '支付宝扫码';
                 }
                 else if($v['pay_status'] == 1){
                     $v['pay_status_text'] = '已支付';
@@ -1521,9 +1537,9 @@ class Pay_order_inside extends Model
                 }else if ($v['pay_type'] == 2){
                     $v['pay_type_text'] = '支付宝';
                 }else if ($v['pay_type'] == 3){
-                    $v['pay_type_text'] = '汇聚微信';
+                    $v['pay_type_text'] = '微信';
                 }else if ($v['pay_type'] == 4){
-                    $v['pay_type_text'] = '汇聚支付宝';
+                    $v['pay_type_text'] = '支付宝';
                 }else if ($v['pay_type'] == 5){
                     $v['pay_type_text'] = '银行卡支付';
                 }else if ($v['pay_type'] == 6){
@@ -1627,17 +1643,36 @@ class Pay_order_inside extends Model
          * return  array
          */
     public static function offlinepay($data){
-        if($data['type'] == 5){
-            $type = 2;
+        if($data['type'] <= 4){
+            $channel = Channel::where(['is_use'=>0,'is_del'=>0,'is_forbid'=>0])->first();
+            $paylist = PaySet::where(['channel_id'=>$channel['id']])->first();
+            $list[0]['id'] = $paylist['id'];
+            if($data['type'] == 1){ //微信
+               $list[0]['account_name'] = $paylist['wx_app_id'];
+            }
+            if($data['type'] == 2){ //支付宝
+                $list[0]['account_name'] = $paylist['zfb_app_id'];
+            }
+            if($data['type'] == 3){ //汇聚微信
+                $list[0]['account_name'] = $paylist['hj_wx_commercial_tenant_deal_number'];
+            }
+            if($data['type'] == 4){ //汇聚支付宝
+                $list[0]['account_name'] = $paylist['hj_zfb_commercial_tenant_deal_number'];
+            }
+            return ['code' => 200 , 'msg' => '查询成功','data'=>$list];
+        }else{
+            if($data['type'] == 5){ //银行卡支付
+                $type = 2;
+            }
+            if($data['type'] == 6){ //对公转账
+                $type = 1;
+            }
+            if($data['type'] == 7){ //支付宝账号对公
+                $type = 3;
+            }
+            $list = OfflinePay::where(['type'=>$type,'is_show'=>1,'is_del'=>1])->get()->toArray();
+            return ['code' => 200 , 'msg' => '查询成功','data'=>$list];
         }
-        if($data['type'] == 6){
-            $type = 1;
-        }
-        if($data['type'] == 7){
-            $type = 3;
-        }
-        $list = OfflinePay::where(['type'=>$type,'is_show'=>1,'is_del'=>1])->get()->toArray();
-        return ['code' => 200 , 'msg' => '查询成功','data'=>$list];
     }
     /*
          * @param  进行审核
@@ -1854,7 +1889,7 @@ class Pay_order_inside extends Model
         $order_count = self::where('name' , $name)->where('mobile' , $mobile)->where('school_id' , $school_id)->where('project_id' , $project_id)->where('subject_id' , $subject_id)->where('course_id' , $course_id)->where('del_flag' , 0)->count();
 
         //支付方式数组
-        $pay_type_array = [1=>'微信扫码',2=>'支付宝扫码',3=>'汇聚微信扫码',4=>'汇聚支付宝扫码'];
+        $pay_type_array = [1=>'微信扫码',2=>'支付宝扫码',3=>'微信扫码',4=>'支付宝扫码'];
 
         //支付状态数组
         $pay_status_array = [0=>'未支付',1=>'已支付',2=>'支付失败',3=>'已退款'];
@@ -2232,7 +2267,7 @@ class Pay_order_inside extends Model
             } else {
                 $query->whereIn('school_id' , $body['schoolId']);
             }
-                    
+
             //判断项目-学科大小类是否为空
             if(isset($body['category_id']) && !empty($body['category_id'])){
                 $category_id= json_decode($body['category_id'] , true);
@@ -2263,7 +2298,7 @@ class Pay_order_inside extends Model
                 $query->where('create_time', '>=' , $state_time)->where('create_time', '<=' , $end_time);
             }
         })->groupBy(DB::raw("date_format(create_time , '%Y%m%d')"))->get()->count();
-        
+
         //判断数量是否大于0
         if($count > 0){
             //新数组赋值
@@ -2308,7 +2343,7 @@ class Pay_order_inside extends Model
                     $query->where('create_time', '>=' , $state_time)->where('create_time', '<=' , $end_time);
                 }
             })->orderBy('create_time' , 'asc')->groupBy(DB::raw("date_format(create_time , '%Y%m%d')"))->offset($offset)->limit($pagesize)->get()->toArray();
-            
+
             //条件赋值
             $where = [];
 
@@ -2347,7 +2382,7 @@ class Pay_order_inside extends Model
                 } else {
                     $course_name  = "所有课程";
                 }
-                
+
                 //判断分校id是否为空和合法
                 if(isset($body['school_id']) && !empty($body['school_id']) && $body['school_id'] > 0){
                     //分校的名称
@@ -2547,7 +2582,7 @@ class Pay_order_inside extends Model
                     $query->where('create_time', '>=' , $startTime)->where('create_time', '<=' , $endTime);
                 })->sum('sign_Price');
 
-                //成本总费用 
+                //成本总费用
                 $prime_cost     = self::where(function($query) use ($body){
                     //判断分校id是否为空和合法
                     if(isset($body['school_id']) && !empty($body['school_id']) && $body['school_id'] > 0){
@@ -2622,10 +2657,10 @@ class Pay_order_inside extends Model
                     $endTime    = $createTime." 23:59:59";
                     $query->where('create_time', '>=' , $startTime)->where('create_time', '<=' , $endTime);
                 })->sum('actual_commission');
-                
+
                 //分校支出=退费金额+报名费用+成本
                 $campus_expenditure = $refund_money+$enroll_price+$prime_cost;
-                
+
                 //实际收入=到账金额-退费金额
                 $real_income  = $received_money-$refund_money > 0 ? $received_money-$refund_money : 0;
 
@@ -2667,7 +2702,7 @@ class Pay_order_inside extends Model
         $pagesize = isset($body['pagesize']) && $body['pagesize'] > 0 ? $body['pagesize'] : 20;
         $page     = isset($body['page']) && $body['page'] > 0 ? $body['page'] : 1;
         $offset   = ($page - 1) * $pagesize;
-        
+
         //获取日期
         if(!isset($body['create_time']) || empty($body['create_time'])){
             return ['code' => 201 , 'msg' => '明细日期不能为空'];
@@ -2822,7 +2857,7 @@ class Pay_order_inside extends Model
         if(!isset($body['create_time']) || empty($body['create_time'])){
             return ['code' => 201 , 'msg' => '明细日期不能为空'];
         }
-        
+
         //判断分校id是否为空和合法
         if(isset($body['school_id']) && !empty($body['school_id']) && $body['school_id'] > 0){
             //获取分校的名称
@@ -3060,7 +3095,7 @@ class Pay_order_inside extends Model
 
         //明细日期
         $detailed_date = isset($body['create_time']) && !empty($body['create_time']) ? $body['create_time'] : '-';
-        
+
         $campus_expenditure = floatval($refund_amount)+floatval($registration_fee)+floatval($cost);
 
         //封装数组
@@ -3095,7 +3130,7 @@ class Pay_order_inside extends Model
         $pagesize = isset($body['pagesize']) && $body['pagesize'] > 0 ? $body['pagesize'] : 20;
         $page     = isset($body['page']) && $body['page'] > 0 ? $body['page'] : 1;
         $offset   = ($page - 1) * $pagesize;
-        
+
         //获取日期
         if(!isset($body['create_time']) || empty($body['create_time'])){
             return ['code' => 201 , 'msg' => '明细日期不能为空'];

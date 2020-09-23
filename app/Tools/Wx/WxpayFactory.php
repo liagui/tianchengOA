@@ -47,11 +47,11 @@ class WxpayFactory{
     }
 
     //pc扫码支付
-    public function getPcPayOrder($order_number,$total_fee){
+    public function getPcPayOrder($order_number,$total_fee,$title){
         //获取商品名称
-        $shopname = "龙德教育";
+        $shopname = $title;
         $url = "https://api.mch.weixin.qq.com/pay/unifiedorder";
-        $notify_url = 'https://'.$_SERVER['HTTP_HOST'].'/Admin/order/wxnotify_url';
+        $notify_url = 'https://'.$_SERVER['HTTP_HOST'].'/admin/wxnotify';
         $out_trade_no = $order_number;
         $onoce_str = $this->getRandChar(32);
         $data["appid"] = 'wx7663a456bb43d30b';
