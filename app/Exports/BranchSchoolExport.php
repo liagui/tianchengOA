@@ -195,7 +195,7 @@ class BranchSchoolExport implements FromCollection, WithHeadings {
                     $startTime  = $createTime." 00:00:00";
                     $endTime    = $createTime." 23:59:59";
                     $query->where('create_time', '>=' , $startTime)->where('create_time', '<=' , $endTime);
-                })->where('pay_status'  ,1)->count();
+                })->where('pay_status'  ,1)->where('confirm_status'  ,1)->count();
 
                 //到账金额
                 $received_money = Pay_order_inside::where(function($query) use ($body){
@@ -233,7 +233,7 @@ class BranchSchoolExport implements FromCollection, WithHeadings {
                     $startTime  = $createTime." 00:00:00";
                     $endTime    = $createTime." 23:59:59";
                     $query->where('create_time', '>=' , $startTime)->where('create_time', '<=' , $endTime);
-                })->where('pay_status' , 1)->sum('pay_price');
+                })->where('pay_status' , 1)->where('confirm_status'  ,1)->sum('pay_price');
 
                 //退费订单数量
                 $refund_order   = Refund_order::where(function($query) use ($body){
