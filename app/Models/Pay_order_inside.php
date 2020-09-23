@@ -777,6 +777,9 @@ class Pay_order_inside extends Model
             $data['reject_time'] = date('Y-m-d H:i:s');
             $data['reject_admin_id'] = $admin['id'];
         }
+        if($data['confirm_status'] == 0){
+            return ['code' => 201 , 'msg' => '请选择状态'];
+        }
         $data['update_time'] = date('Y-m-d H:i:s');
         $up = self::where(['id'=>$data['id']])->update($data);
         if($up){
