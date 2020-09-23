@@ -999,7 +999,7 @@ class Pay_order_inside extends Model
                     ->orwhere('name',$data['order_no'])
                     ->orwhere('mobile',$data['order_no']);
             }
-        })->where(['confirm_status'=>0,'pay_status'=>1])->get()->toArray();
+        })->where(['pay_status'=>1,'del_flag'=>1])->get()->toArray();
         $res = array_merge($resss,$ress);
         if(!empty($res)){
             foreach ($res as $k=>&$v){
