@@ -1000,7 +1000,7 @@ class Pay_order_inside extends Model
                     ->orwhere('mobile',$data['order_no']);
             }
         })->where(['pay_status'=>1,'del_flag'=>1])->get()->toArray();
-        $res = array_merge($resss,$ress);
+        $res = array_merge($ress,$resss);
         if(!empty($res)){
             foreach ($res as $k=>&$v){
                 if($v['pay_type'] == 1 || $v['pay_type'] == 3){
