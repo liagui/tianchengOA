@@ -506,9 +506,10 @@ class Pay_order_inside extends Model
             if(!empty($data['isBranchSchool']) && $data['isBranchSchool'] == true){
                 $query->where('confirm_status',0)
                     ->orwhere('confirm_status',1);
+                $query->where('pay_status','<',2);
             }else{
                 $query->where('confirm_status',0);
-                $query->where('pay_status','<',2);
+                $query->where('pay_status',1);
             }
         })
         ->where($where)
@@ -526,7 +527,7 @@ class Pay_order_inside extends Model
             if(!empty($data['isBranchSchool']) &&$data['isBranchSchool'] == true){
                 $query->where('confirm_status',0)
                     ->orwhere('confirm_status',1);
-                $query->where('pay_status','!=',2);
+                $query->where('pay_status','<',2);
             }else{
                 $query->where('confirm_status',0);
                 $query->where('pay_status',1);
