@@ -884,6 +884,12 @@ class Pay_order_inside extends Model
                     $v['pay_type_text'] = '微信扫码';
                 }else if ($v['pay_type'] == 4){
                     $v['pay_type_text'] = '支付宝扫码';
+                }else if ($v['pay_type'] == 5){
+                    $v['pay_type_text'] = '银行卡支付';
+                }else if ($v['pay_type'] == 6){
+                    $v['pay_type_text'] = '对公转账';
+                }else if ($v['pay_type'] == 7){
+                    $v['pay_type_text'] = '支付宝账号对公';
                 }
                 else if($v['pay_status'] == 1){
                     $v['pay_status_text'] = '已支付';
@@ -1263,6 +1269,12 @@ class Pay_order_inside extends Model
                     $v['pay_type_text'] = '微信扫码';
                 }else if ($v['pay_type'] == 4){
                     $v['pay_type_text'] = '支付宝扫码';
+                }else if ($v['pay_type'] == 5){
+                    $v['pay_type_text'] = '银行卡支付';
+                }else if ($v['pay_type'] == 6){
+                    $v['pay_type_text'] = '对公转账';
+                }else if ($v['pay_type'] == 7){
+                    $v['pay_type_text'] = '支付宝账号对公';
                 }
                 else if($v['pay_status'] == 1){
                     $v['pay_status_text'] = '已支付';
@@ -1896,7 +1908,7 @@ class Pay_order_inside extends Model
         $order_count = self::where('name' , $name)->where('mobile' , $mobile)->where('school_id' , $school_id)->where('project_id' , $project_id)->where('subject_id' , $subject_id)->where('course_id' , $course_id)->where('del_flag' , 0)->count();
 
         //支付方式数组
-        $pay_type_array = [1=>'微信扫码',2=>'支付宝扫码',3=>'微信扫码',4=>'支付宝扫码'];
+        $pay_type_array = [1=>'微信扫码',2=>'支付宝扫码',3=>'微信扫码',4=>'支付宝扫码',5=>'银行卡支付',6=>'对公转账',7=>'支付宝账号对公'];
 
         //支付状态数组
         $pay_status_array = [0=>'未支付',1=>'已支付',2=>'支付失败',3=>'已退款'];
@@ -2754,7 +2766,7 @@ class Pay_order_inside extends Model
         })->count();
 
         //支付方式
-        $pay_type_array = [1=>'支付宝扫码',2=>'微信扫码',3=>'银联快捷支付',4=>'微信小程序',5=>'线下录入'];
+        $pay_type_array = [1=>'微信',2=>'支付宝',3=>'微信',4=>'支付宝',5=>'银行卡转账',6=>'对公转账',7=>'支付宝账号对公转账'];
 
         //回访状态
         $return_visit_array = [0=>'否',1=>'是'];
