@@ -309,4 +309,35 @@ class Project extends Model {
             return ['code' => 200 , 'msg' => '获取列表成功' , 'data' => []];
         }
     }
+    
+    /*
+     * @param  description   项目管理-根据项目id获取学科列表
+     * @param  参数说明       body包含以下参数[
+     *     project_id        项目id
+     * ]
+     * @param author    dzj
+     * @param ctime     2020-09-03
+     * return string
+     */
+    public static function getSubjectList($body=[]) {
+        //判断传过来的数组数据是否为空
+        if(!$body || !is_array($body)){
+            return ['code' => 202 , 'msg' => '传递数据不合法'];
+        }
+        
+        //判断项目id是否合法
+        if(!isset($body['project_id']) || empty($body['project_id']) || $body['project_id'] <= 0){
+            return ['code' => 202 , 'msg' => '项目id不合法'];
+        }
+
+        //学科列表
+        $subject_list = self::select('id','name','id as value','name as label','is_del','is_hide')->where('parent_id' , $body['project_id'])->where('is_del' , 0)->orderByDesc('create_time')->get()->toArray();
+
+        //判断是否为空
+        if($subject_list && !empty($subject_list)){
+            return ['code' => 200 , 'msg' => '获取列表成功' , 'data' => $subject_list];
+        } else {
+            return ['code' => 200 , 'msg' => '获取列表成功' , 'data' => []];
+        }
+    }
 }

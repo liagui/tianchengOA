@@ -10,7 +10,7 @@ use Maatwebsite\Excel\Concerns\FromCollection;
 use Maatwebsite\Excel\Concerns\WithHeadings;
 use Illuminate\Support\Facades\DB;
 
-class BranchSchoolExport implements FromCollection, WithHeadings {
+class ZongBranchSchoolExport implements FromCollection, WithHeadings {
     protected $where;
     protected $resultSetType = 'collection';
 
@@ -424,6 +424,12 @@ class BranchSchoolExport implements FromCollection, WithHeadings {
                     $endTime    = $createTime." 23:59:59";
                     $query->where('create_time', '>=' , $startTime)->where('create_time', '<=' , $endTime);
                 })->sum('actual_commission');
+                
+                //分校支出=退费金额+报名费用+成本
+                $campus_expenditure = $refund_money+$enroll_price+$prime_cost;
+                
+                //实际收入=到账金额-退费金额
+                $real_income  = $received_money-$refund_money > 0 ? $received_money-$refund_money : 0;
 
                 //数组赋值
                 $array[] = [
@@ -436,9 +442,10 @@ class BranchSchoolExport implements FromCollection, WithHeadings {
                     'refund_order'  =>  $refund_order > 0 ? $refund_order : 0 ,      //退费订单数量
                     'received_money'=>  $received_money > 0 ? floatval($received_money) : 0 ,  //到账金额
                     'refund_money'  =>  $refund_money > 0 ? floatval($refund_money) : 0 ,      //退费金额
+                    'campus_expenditure'=> (float)number_format($campus_expenditure ,2) , //分校支出
                     'enroll_price'  =>  $enroll_price > 0 ? floatval($enroll_price) : 0 ,      //报名费用
                     'prime_cost'    =>  $prime_cost > 0 ? floatval($prime_cost) : 0 ,          //成本
-                    'actual_commission' => $actual_commission > 0 ? floatval($actual_commission) : 0 ,  //实际佣金
+                    'real_income'       => (float)number_format($real_income ,2)               //实际收入
                 ];
             }
         }
@@ -446,7 +453,7 @@ class BranchSchoolExport implements FromCollection, WithHeadings {
     }
 
     public function headings(): array {
-        return ['日期', '分校', '项目', '学科', '课程', '到账订单数', '退费订单数', '到账金额', '退费金额', '报名费用', '成本', '实际佣金'];
+        return ['日期', '分校', '项目', '学科', '课程', '到账订单数', '退费订单数', '到账金额', '退费金额', '分校支出' , '报名费用', '成本', '实际收入'];
     }
 
 }

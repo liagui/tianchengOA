@@ -102,6 +102,7 @@ $router->group(['prefix' => 'admin' , 'namespace' => 'Admin','middleware'=> ['jw
         $router->post('getRegionInfoById', 'ProjectController@getRegionInfoById');               //地区报名费详情方法
         $router->post('getRegionList', 'ProjectController@getRegionList');                       //地区列表接口
         $router->post('getRegionProjectList', 'ProjectController@getRegionProjectList');         //地区所有项目列表接口
+        $router->post('getSubjectList', 'ProjectController@getSubjectList');                     //所有学科列表接口
         $router->post('doInsertCategoryRegion', 'ProjectController@doInsertCategoryRegion');     //地区关联项目添加接口
         $router->post('doInsertEducation', 'ProjectController@doInsertEducation');               //添加院校的方法
         $router->post('doUpdateEducation', 'ProjectController@doUpdateEducation');               //修改院校的方法

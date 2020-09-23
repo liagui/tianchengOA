@@ -214,7 +214,7 @@ class Admin extends Model implements AuthenticatableContract, AuthorizableContra
                                 $query->where('school_id',$body['school']);     
                             }
                             $query->where('is_del',1); 
-                })->select('username','real_name','mobile','wx','role_id','school_id','is_use','is_forbid','create_time','id')->offset($offset)->limit($pagesize)->get()->toArray();
+                })->select('username','real_name','mobile','wx','role_id','school_id','is_use','is_forbid','create_time','license','hand_card','card_front','card_side','id')->offset($offset)->limit($pagesize)->get()->toArray();
             $roleArr = Roleauth::where('is_del',0)->select('id','role_name')->get()->toArray();
             $roleArr = array_column($roleArr,'role_name','id');
   
