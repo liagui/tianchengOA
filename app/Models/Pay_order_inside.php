@@ -500,7 +500,7 @@ class Pay_order_inside extends Model
 
             $query->whereIn('school_id',$schoolarr);
             if(!empty($data['isBranchSchool']) && $data['isBranchSchool'] == true){
-                $query->where('pay_status','<',2);
+                $query->where('pay_status','!=',2);
                 $query->where('confirm_status',0)
                     ->orwhere('confirm_status',1);
             }else{
