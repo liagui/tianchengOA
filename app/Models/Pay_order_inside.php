@@ -986,13 +986,21 @@ class Pay_order_inside extends Model
         if(!isset($data['order_no'])){
             return ['code' => 200 , 'msg' => '获取成功','data'=>$res];
         }
-        $res = Pay_order_external::where(function($query) use ($data) {
+        $resss = Pay_order_external::where(function($query) use ($data) {
             if(isset($data['order_no']) && !empty($data['order_no'])){
                 $query->where('order_no',$data['order_no'])
                     ->orwhere('name',$data['order_no'])
                     ->orwhere('mobile',$data['order_no']);
             }
         })->where(['status'=>0,'pay_status'=>1])->get()->toArray();
+        $ress = Pay_order_inside::where(function($query) use ($data) {
+            if(isset($data['order_no']) && !empty($data['order_no'])){
+                $query->where('order_no',$data['order_no'])
+                    ->orwhere('name',$data['order_no'])
+                    ->orwhere('mobile',$data['order_no']);
+            }
+        })->where(['confirm_status'=>0,'pay_status'=>1])->get()->toArray();
+        $res = array_merge($resss,$ress);
         if(!empty($res)){
             foreach ($res as $k=>&$v){
                 if($v['pay_type'] == 1 || $v['pay_type'] == 3){
