@@ -5,7 +5,6 @@ use App\Models\Admin;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Redis;
-use App\Models\Admin;
 use App\Models\School;
 use App\Models\Refund_order;
 
