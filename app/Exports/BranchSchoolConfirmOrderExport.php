@@ -66,6 +66,7 @@ class BranchSchoolConfirmOrderExport implements FromCollection, WithHeadings {
             $state_time  = $body['create_time']." 00:00:00";
             $end_time    = $body['create_time']." 23:59:59";
             $query->where('create_time', '>=' , $state_time)->where('create_time', '<=' , $end_time);
+            $query->where('pay_status' , '=' , 1);
             $query->where('confirm_status' , '=' , 1);
         })->count();
         
@@ -90,6 +91,8 @@ class BranchSchoolConfirmOrderExport implements FromCollection, WithHeadings {
                 //判断分校id是否为空和合法
                 if(isset($body['school_id']) && !empty($body['school_id']) && $body['school_id'] > 0){
                     $query->where('school_id' , '=' , $body['school_id']);
+                } else {
+                    $query->whereIn('school_id' , $body['schoolId']);
                 }
             
                 //判断项目-学科大小类是否为空
@@ -118,6 +121,7 @@ class BranchSchoolConfirmOrderExport implements FromCollection, WithHeadings {
                 $state_time  = $body['create_time']." 00:00:00";
                 $end_time    = $body['create_time']." 23:59:59";
                 $query->where('create_time', '>=' , $state_time)->where('create_time', '<=' , $end_time);
+                $query->where('pay_status' , '=' , 1);
                 $query->where('confirm_status' , '=' , 1);
             })->orderBy('create_time' , 'asc')->offset($offset)->limit($pagesize)->get()->toArray();
 
