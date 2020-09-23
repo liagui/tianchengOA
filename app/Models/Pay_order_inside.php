@@ -511,7 +511,7 @@ class Pay_order_inside extends Model
                 $query->where('confirm_status',0);
             }
         })
-            ->where('pay_status','<',2)
+//            ->where('pay_status','<',2)
         ->where($where)
         ->count();
 
@@ -3379,7 +3379,7 @@ class Pay_order_inside extends Model
 
                 //保证金=返佣金额*后台分校管理中押金比例
                 $bond  = sprintf("%.2f" , $commission_money * ($v['deposit'] / 100));
-                
+
                 $one_extraction_ratio = $v['one_extraction_ratio'] && !empty($v['one_extraction_ratio']) ? $v['one_extraction_ratio'] : 0;
                 $two_extraction_ratio = $v['two_extraction_ratio'] && !empty($v['two_extraction_ratio']) ? $v['two_extraction_ratio'] : 0;
 
