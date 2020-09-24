@@ -209,8 +209,6 @@ class Refund_order extends Model
                 }
             }
         }
-        $where['state_time'] = $state_time;
-        $where['end_time'] = $end_time;
         $page=[
             'pagesize'=>$pagesize,
             'page' =>$page,
@@ -233,7 +231,7 @@ class Refund_order extends Model
             'yituicount' => $yituicount,
             'weisum' => $weisum,
         ];
-        return ['code' => 200 , 'msg' => '查询成功','data'=>$order,'where'=>$data,'page'=>$page,'count'=>$count];
+        return ['code' => 200 , 'msg' => '查询成功','data'=>$order,'page'=>$page,'count'=>$count];
     }
 
     /*
