@@ -390,7 +390,7 @@ class Student extends Model {
     }
     //学员总览 班主任自己的学员
     public static function getStudent($data){
-        //查询条件   项目-学科  分校 开课状态  回访状态  手机号/姓名 订单状态 付款形式
+        //查询条件   项目-学科  分校 开课状态  回访状态  手机号/姓名 订单类型 付款形式
         //获取登录id
         $admin = isset(AdminLog::getAdminInfo()->admin_user) ? AdminLog::getAdminInfo()->admin_user: [];
         $user_id  = $admin['id'];
@@ -431,8 +431,8 @@ class Student extends Model {
                 if(isset($data['pay_type']) && $data['pay_type'] != -1){
                     $query->where('pay_type',$data['pay_type']);
                 }
-                if(isset($data['confirm_status']) && $data['confirm_status'] != -1){
-                    $query->where('confirm_status',$data['confirm_status']);
+                if(isset($data['confirm_order_type']) && $data['confirm_order_type'] != -1){
+                    $query->where('confirm_order_type',$data['confirm_order_type']);
                 }
                 if(isset($data['keyword']) && !empty(isset($data['keyword']))){
                     $query->where('name','like','%'.$data['keyword'].'%')->orWhere('mobile','like','%'.$data['keyword'].'%');
@@ -452,8 +452,8 @@ class Student extends Model {
                 if(isset($data['pay_type']) && $data['pay_type'] != -1){
                     $query->where('pay_type',$data['pay_type']);
                 }
-                if(isset($data['confirm_status']) && $data['confirm_status'] != -1){
-                    $query->where('confirm_status',$data['confirm_status']);
+                if(isset($data['confirm_order_type']) && $data['confirm_order_type'] != -1){
+                    $query->where('confirm_order_type',$data['confirm_order_type']);
                 }
                 if(isset($data['keyword']) && !empty(isset($data['keyword']))){
                     $query->where('name','like','%'.$data['keyword'].'%')->orWhere('mobile','like','%'.$data['keyword'].'%');
@@ -474,8 +474,8 @@ class Student extends Model {
                 if(isset($data['pay_type']) && $data['pay_type'] != -1){
                     $query->where('pay_type',$data['pay_type']);
                 }
-                if(isset($data['confirm_status']) && $data['confirm_status'] != -1){
-                    $query->where('confirm_status',$data['confirm_status']);
+                if(isset($data['confirm_order_type']) && $data['confirm_order_type'] != -1){
+                    $query->where('confirm_order_type',$data['confirm_order_type']);
                 }
                 if(isset($data['keyword']) && !empty(isset($data['keyword']))){
                     $query->where('name','like','%'.$data['keyword'].'%')->orWhere('mobile','like','%'.$data['keyword'].'%');
@@ -495,8 +495,8 @@ class Student extends Model {
                 if(isset($data['pay_type']) && $data['pay_type'] != -1){
                     $query->where('pay_type',$data['pay_type']);
                 }
-                if(isset($data['confirm_status']) && $data['confirm_status'] != -1){
-                    $query->where('confirm_status',$data['confirm_status']);
+                if(isset($data['confirm_order_type']) && $data['confirm_order_type'] != -1){
+                    $query->where('confirm_order_type',$data['confirm_order_type']);
                 }
                 if(isset($data['keyword']) && !empty(isset($data['keyword']))){
                     $query->where('name','like','%'.$data['keyword'].'%')->orWhere('mobile','like','%'.$data['keyword'].'%');
