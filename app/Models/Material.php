@@ -36,7 +36,7 @@ class Material extends Model {
                 $query->where('material.status',$data['status']);
             }
             if(isset($data['create_name']) && !empty($data['create_name'])){
-                $query->where('material.create_name',$data['create_name']);
+                $query->where('material.submit_name',$data['create_name']);
             }
         })->count();
         //分页数据
@@ -50,7 +50,7 @@ class Material extends Model {
                 $query->where('material.status',$data['status']);
             }
             if(isset($data['create_name']) && !empty($data['create_name'])){
-                $query->where('material.create_name',$data['create_name']);
+                $query->where('material.submit_name',$data['create_name']);
             }
         })->offset($offset)->limit($pagesize)->orderByDesc("id")->get()->toArray();
 
