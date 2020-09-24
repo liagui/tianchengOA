@@ -180,9 +180,6 @@ class Admin extends Model implements AuthenticatableContract, AuthorizableContra
         $pagesize = isset($body['pagesize']) && $body['pagesize'] > 0 ? $body['pagesize'] : 15;
         $page     = isset($body['page']) && $body['page'] > 0 ? $body['page'] : 1;
         $offset   = ($page - 1) * $pagesize;
-        if(isset($body['school']) && !empty($body['school'])){
-            $query->whereIn('school_id',$body['school']);     
-        }
         $admin_count = self::where(function($query) use ($body){
                             if(isset($body['search']) && !empty($body['search'])){
                                 $query->where('username','like','%'.$body['search'].'%')
@@ -195,7 +192,8 @@ class Admin extends Model implements AuthenticatableContract, AuthorizableContra
                                 $query->where('is_forbid',$body['forbid']);     
                             }
                             if(isset($body['school']) && !empty($body['school'])){
-                                $query->whereRaw("find_in_set({$body['school']},school_id)");
+                                $query->whereRaw("find_in_set({$body['school']},school_id)"); //学校搜素 
+                               
                             }
                             $query->where('is_del',1); 
                         })->count();
