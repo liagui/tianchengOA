@@ -17,7 +17,7 @@ class Material extends Model {
     public static function getMaterialList($data,$school_id){
         //总校
         //未处理物料条数
-        $nocount = self::select('submit_time', 'create_name', 'school_id', 'status','id')->whereIn('material.school_id',$school_id['data'])->where('status',0)->count();
+        $nocount = self::select('submit_time', 'create_name', 'school_id', 'status','id',"material.submit_name")->whereIn('material.school_id',$school_id['data'])->where('status',0)->count();
         //分校
 
         //每页显示的条数
@@ -25,7 +25,7 @@ class Material extends Model {
         $page     = isset($data['page']) && $data['page'] > 0 ? $data['page'] : 1;
         $offset   = ($page - 1) * $pagesize;
         //计算总数
-        $count = self::select('material.submit_time', 'material.create_name', 'material.school_id', 'material.status', 'material.id')->where(function($query) use ($data,$school_id) {
+        $count = self::select('material.submit_time', 'material.create_name', 'material.school_id', 'material.status', 'material.id',"material.submit_name")->where(function($query) use ($data,$school_id) {
 
             if(isset($data['school_id']) && !empty($data['school_id'])){
                 $query->where('material.school_id',$data['school_id']);
@@ -36,7 +36,7 @@ class Material extends Model {
                 $query->where('material.status',$data['status']);
             }
             if(isset($data['create_name']) && !empty($data['create_name'])){
-                $query->where('material.submit_name',$data['create_name']);
+                $query->where('material.create_name',$data['create_name']);
             }
         })->count();
         //分页数据
@@ -50,7 +50,7 @@ class Material extends Model {
                 $query->where('material.status',$data['status']);
             }
             if(isset($data['create_name']) && !empty($data['create_name'])){
-                $query->where('material.submit_name',$data['create_name']);
+                $query->where('material.create_name',$data['create_name']);
             }
         })->offset($offset)->limit($pagesize)->orderByDesc("id")->get()->toArray();
 
