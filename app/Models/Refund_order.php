@@ -136,6 +136,9 @@ class Refund_order extends Model
             if(isset($data['confirm_order_type'])){
                 $query->where('confirm_order_type',$data['confirm_order_type']);
             }
+            if(isset($data['return_visit'])){
+                $query->where('return_visit',$data['return_visit']);
+            }
             if(isset($data['order_on']) && !empty($data['order_on'])){
                 $query->where('refund_no',$data['order_on'])
                     ->orwhere('student_name',$data['order_on'])
@@ -151,6 +154,9 @@ class Refund_order extends Model
         $order = self::where(function($query) use ($data,$schoolarr) {
             if(isset($data['classes'])){
                 $query->where('classes',$data['classes']);
+            }
+            if(isset($data['return_visit'])){
+                $query->where('return_visit',$data['return_visit']);
             }
             if(isset($data['confirm_order_type'])){
                 $query->where('confirm_order_type',$data['confirm_order_type']);
