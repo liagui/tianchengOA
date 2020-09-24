@@ -463,7 +463,6 @@ class OrderController extends Controller {
         }
     }
 
-
     //支付信息
     public function paylist(){
         $list = Channel::where(['is_use'=>0])->first();
@@ -503,7 +502,7 @@ class OrderController extends Controller {
         }
         return response()->json(['code' => 200 , 'msg' => '获取成功' , 'data' =>$status]);
     }
-    //支付   入库   并生成二维码
+    //汇聚支付   入库   并生成二维码
     public function oapay(){
         $data = self::$accept_data;
         if(!isset($data['name']) || empty($data['name'])){
@@ -583,7 +582,8 @@ class OrderController extends Controller {
                 $str = $paylist['hj_md_key'];
                 $token = $this->hjHmac($pay,$str);
                 $pay['hmac'] = $token;
-                $wxpay = $this->hjpost($pay);
+                $url="https://www.joinpay.com/trade/uniPayApi.action";
+                $wxpay = $this->hjpost($url,$pay);
                 $wxpayarr = json_decode($wxpay,true);
                 file_put_contents('wxhjpay.txt', '时间:'.date('Y-m-d H:i:s').print_r($wxpayarr,true),FILE_APPEND);
                 if($wxpayarr['ra_Code'] == 100){
@@ -610,7 +610,8 @@ class OrderController extends Controller {
                 $str = $paylist['hj_md_key'];
                 $token = $this->hjHmac($pay,$str);
                 $pay['hmac'] = $token;
-                $zfbpay = $this->hjpost($pay);
+                $url="https://www.joinpay.com/trade/uniPayApi.action";
+                $zfbpay = $this->hjpost($url,$pay);
                 $zfbpayarr = json_decode($zfbpay,true);
                 file_put_contents('zfbhjpay.txt', '时间:'.date('Y-m-d H:i:s').print_r($zfbpayarr,true),FILE_APPEND);
                 if($zfbpayarr['ra_Code'] == 100){
@@ -622,6 +623,11 @@ class OrderController extends Controller {
 
         }
     }
+//    //汇付支付
+//    public function hfpay(){
+//        $url="https://nspos.cloudpnr.com/qrcp/E1103";
+//        $checkValue = CFCASignature.signature("100001.pfx","888888", jsonData, "UTF-8").getSign();
+//    }
     //汇聚签名
     public function hjHmac($arr,$str){
         $newarr = '';
@@ -630,9 +636,9 @@ class OrderController extends Controller {
         }
         return md5($newarr.$str);
     }
-    public function hjpost($data){
+    public function hjpost($url,$data){
         //简单的curl
-        $ch = curl_init("https://www.joinpay.com/trade/uniPayApi.action");
+        $ch = curl_init($url);
         curl_setopt($ch, CURLOPT_RETURNTRANSFER, 1);
         curl_setopt($ch, CURLOPT_POST, 1);
         curl_setopt($ch, CURLOPT_POSTFIELDS, $data);

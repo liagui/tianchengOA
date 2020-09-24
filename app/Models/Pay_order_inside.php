@@ -730,10 +730,23 @@ class Pay_order_inside extends Model
             //保证金=返佣金额*后台分校管理中押金比例
             $school = School::where(['id'=>$data['school_id']])->first();
             $daokuan = $order['pay_price'];
-            $kousui = $daokuan * (100/$school['tax_point']);
+            if($school['tax_point'] == 0 && strlen($school['tax_point'])  > 0){
+                $kousui = 0;
+            }else{
+                $kousui = $daokuan * (100/$school['tax_point']);
+            }
             $suihou = $daokuan - $kousui; //税后金额
-            $fanyong = $daokuan * (100/$school['commission']); //返佣金额
-            $baozhengjin = $daokuan * (100/$school['deposit']); //保证金
+            if($school['commission'] == 0 && strlen($school['commission'])  > 0){
+                $fanyong = 0;
+            }else{
+                $fanyong = $daokuan * (100/$school['commission']); //返佣金额
+            }
+
+            if($school['deposit'] == 0 && strlen($school['deposit'])  > 0){
+                $baozhengjin = 0;
+            }else{
+                $baozhengjin = $daokuan * (100/$school['deposit']); //保证金
+            }
             //一级没有保证金  二级给一级代理保证金  三级给二级代理保证金
             if($school['level'] == 1){
                 $dailibaozhengjin = 0;
