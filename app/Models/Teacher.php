@@ -60,14 +60,20 @@ class Teacher extends Model {
         }
         foreach($data as $k=>$vv){
             $school = explode(",",$vv['school_id']);
+            $school_id = array_column(School::select("id")->where(["is_del"=>0,"is_open"=>0])->get()->toArray(),'id');
+            $diff_school = array_diff($school_id, $school);
+
             $category = explode(",",$vv['category_id']);
-            if($school[0] == 0){
+            $category_id = array_column(Category::select("id")->where(["is_del"=>0,"is_hide"=>0,"parent_id"=>0])->get()->toArray(),'id');
+            $diff_category = array_diff($category_id, $category);
+
+            if($school[0] == 0 && !(count($diff_school) > 0)){
                 $data[$k]['school'] = "全部";
             }else{
                 //查询分校名称
                 $data[$k]['school'] = implode(',',array_column($vv['school'] , 'school_name'));
             }
-            if($category[0] == 0){
+            if($category[0] == 0 && !(count($diff_category) > 0)){
                 $data[$k]['category'] = "全部";
             }else{
                 //查询项目名称
@@ -117,7 +123,7 @@ class Teacher extends Model {
         }
         $teacher['category_id'] = implode(',',json_decode($data['teacher_category']));
         if($teacher['category_id'][0] == 0){
-            $category = Category::select("id")->where(["is_hide"=>0,"is_del"=>0])->get()->toArray();
+            $category = Category::select("id")->where(["is_hide"=>0,"is_del"=>0,"parent_id"=>0])->get()->toArray();
             $category = array_column($category,'id');
             $teacher['category_id'] = "0,".implode(',',$category);
         }
@@ -160,9 +166,9 @@ class Teacher extends Model {
         $teacher['category_id'] = implode(',',json_decode($data['teacher_category']));
         $teacher['updated_at'] = date("Y-m-d H:i:s");
         if($teacher['category_id'][0] == 0){
-            $school = School::select("id")->where(["is_open"=>0,"is_del"=>0])->get()->toArray();
-            $school = array_column($school,'id');
-            $teacher['category_id'] = "0,".implode(',',$school);
+            $category = Category::select("id")->where(["is_hide"=>0,"is_del"=>0,"parent_id"=>0])->get()->toArray();
+            $category = array_column($category,'id');
+            $teacher['category_id'] = "0,".implode(',',$category);
         }
         $res = self::where("id",$data['teacher_id'])->update($teacher);
         if($res){
@@ -307,7 +313,14 @@ class Teacher extends Model {
         //退费金额
         $one['return_premium'] = DB::table("refund_order")->where(["teacher_id"=>$data['teacher_id'],"refund_plan"=>2,"confirm_status"=>1])->sum("refund_Price");
 
-        $res1 = Pay_order_inside::select()->where("seas_status",0)->where("have_user_id",$data['teacher_id'])->get()->toArray();
+        $res1 = Pay_order_inside::select()->where("seas_status",0)->where("have_user_id",$data['teacher_id'])
+        ->where(function($query) use ($data){
+            if(isset($data['start_time']) && !empty(isset($data['start_time']))  && isset($data['end_time']) && !empty(isset($data['end_time']))){
+                $query->whereBetween('comfirm_time',[date("Y-m-d H:i:s",strtotime($data['start_time'])),date("Y-m-d H:i:s",strtotime($data['end_time']))]);
+            }
+        })
+        ->get()->toArray();
+
         foreach($res1 as $k => &$v){
             //是否回访
             $a = Orderdocumentary::where("order_id",$v['id'])->first();
@@ -337,7 +350,12 @@ class Teacher extends Model {
 
 
         //已完成业绩
-        $one['completed_performance'] = Pay_order_inside::select("course_Price")->where(['have_user_id'=>$data['teacher_id']])->sum("course_Price");
+        $one['completed_performance'] = Pay_order_inside::select("course_Price")->where(['have_user_id'=>$data['teacher_id']])
+        ->where(function($query) use ($data){
+            if(isset($data['start_time']) && !empty(isset($data['start_time']))  && isset($data['end_time']) && !empty(isset($data['end_time']))){
+                $query->whereBetween('comfirm_time',[date("Y-m-d H:i:s",strtotime($data['start_time'])),date("Y-m-d H:i:s",strtotime($data['end_time']))]);
+            }
+        })->sum("course_Price");
 
         //查询详细数据
         $count = Pay_order_inside::where(['have_user_id'=>$data['teacher_id'],'seas_status'=>0])->where(function($query) use ($data){
@@ -350,6 +368,9 @@ class Teacher extends Model {
             if(isset($data['keyword']) && !empty(isset($data['keyword']))){
                 $query->where('name','like','%'.$data['keyword'].'%')->orWhere('mobile','like','%'.$data['keyword'].'%');
             }
+            if(isset($data['start_time']) && !empty(isset($data['start_time']))  && isset($data['end_time']) && !empty(isset($data['end_time']))){
+                $query->whereBetween('comfirm_time',[date("Y-m-d H:i:s",strtotime($data['start_time'])),date("Y-m-d H:i:s",strtotime($data['end_time']))]);
+            }
         })->count();
         $res = Pay_order_inside::where(['have_user_id'=>$data['teacher_id'],'seas_status'=>0])->where(function($query) use ($data){
             if(isset($data['school_id']) && !empty(isset($data['school_id']))){
@@ -360,6 +381,9 @@ class Teacher extends Model {
             }
             if(isset($data['keyword']) && !empty(isset($data['keyword']))){
                 $query->where('name','like','%'.$data['keyword'].'%')->orWhere('mobile','like','%'.$data['keyword'].'%');
+            }
+            if(isset($data['start_time']) && !empty(isset($data['start_time']))  && isset($data['end_time']) && !empty(isset($data['end_time']))){
+                $query->whereBetween('comfirm_time',[date("Y-m-d H:i:s",strtotime($data['start_time'])),date("Y-m-d H:i:s",strtotime($data['end_time']))]);
             }
         })->get()->toArray();
 
