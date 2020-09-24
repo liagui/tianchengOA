@@ -20,7 +20,9 @@ class ApiAuthToken {
               return response()->json(['code'=>403,'msg'=>'此用户已被禁用或删除，请联系管理员']);
         }
         $url = ltrim(parse_url($request->url(),PHP_URL_PATH),'/'); //获取路由连接
-        //print_r($url);die;
+        if(substr($url,0,9) == 'index.php'){
+            $url = ltrim(substr($url,10));
+        }
         $userlist = Admin::GetUserOne(['id'=>$user['id'],'is_forbid'=>1,'is_del'=>1]); //获取用户信息
 
         if($userlist['code'] != 200){
