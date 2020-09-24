@@ -129,7 +129,8 @@ class Refund_order extends Model
         $offset   = ($page - 1) * $pagesize;
 
         //計算總數
-        $count = self::where(function($query) use ($data,$schoolarr) {
+        $count = self::where($where)
+          ->where(function($query) use ($data,$schoolarr) {
             if(isset($data['classes'])){
                 $query->where('classes',$data['classes']);
             }
@@ -146,12 +147,11 @@ class Refund_order extends Model
             }
             $query->whereIn('school_id',$schoolarr);
         })
-        ->where($where)
         ->whereBetween('create_time', [$state_time, $end_time])
         ->count();
 
         //計算總數
-        $order = self::where(function($query) use ($data,$schoolarr) {
+        $order = self::where($where)->where(function($query) use ($data,$schoolarr) {
             if(isset($data['classes'])){
                 $query->where('classes',$data['classes']);
             }
@@ -168,7 +168,7 @@ class Refund_order extends Model
             }
             $query->whereIn('school_id',$schoolarr);
         })
-        ->where($where)
+
         ->whereBetween('create_time', [$state_time, $end_time])
         ->orderByDesc('id')
         ->offset($offset)->limit($pagesize)->get()->toArray();
