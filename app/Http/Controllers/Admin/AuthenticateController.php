@@ -173,7 +173,7 @@ class AuthenticateController extends Controller {
         $template_code = 'SMS_180053367';
         // $AdminUser = new AdminUser();
         //判断用户手机号是否注册过
-        $student_info = Admin::where(["mobile" =>$body['phone'],'is_del'=>1])->where('is_del','!=',3)->first();
+        $student_info = Admin::where(["mobile" =>$body['phone'],'is_del'=>1])->where('is_use','!=',3)->first();
         if($student_info && !empty($student_info)){
             return response()->json(['code' => 205 , 'msg' => '此手机号已被绑定']);
         }
