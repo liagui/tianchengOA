@@ -216,6 +216,14 @@ $router->group(['prefix' => 'admin' , 'namespace' => 'Admin','middleware'=> ['jw
 
     //创建班主任
     $router->post('createTeacher', 'TeacherController@createTeacher');
+
+    //获取班主任详情
+    $router->post('GetTeacherOne', 'TeacherController@GetTeacherOne');
+    //更新班主任绑定分校
+    $router->post('UpdateTeacherSchool', 'TeacherController@UpdateTeacherSchool');
+    //更新班主任绑定项目
+    $router->post('UpdateTeacherCategory', 'TeacherController@UpdateTeacherCategory');
+
     //获取班主任列表
     $router->post('getTeacherList', 'TeacherController@getTeacherList');
     //获取班主任列表
