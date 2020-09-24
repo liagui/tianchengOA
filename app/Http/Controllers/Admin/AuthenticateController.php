@@ -82,6 +82,10 @@ class AuthenticateController extends Controller {
             $user['auth'] = [];
             return $this->response($user);
         }
+        if($user['is_use']  == 3 && !empty($user['mobile'])){  //驳回
+            $user['auth'] = [];
+            return $this->response($user);
+        }
 
         $AdminUser = new AdminUser();
         $user['auth'] = [];     //5.14 该账户没有权限返回空  begin
@@ -170,7 +174,7 @@ class AuthenticateController extends Controller {
         $template_code = 'SMS_180053367';
         // $AdminUser = new AdminUser();
         //判断用户手机号是否注册过
-        $student_info = Admin::where(["mobile" =>$body['phone'],'is_del'=>1])->first();
+        $student_info = Admin::where(["mobile" =>$body['phone'],'is_del'=>1])->where('is_del','!=',3)->first();
         if($student_info && !empty($student_info)){
             return response()->json(['code' => 205 , 'msg' => '此手机号已被绑定']);
         }
@@ -252,7 +256,7 @@ class AuthenticateController extends Controller {
                 return response()->json(['code' => 205 , 'msg' => '此手机号已被绑定！']);
             } else {
                 //判断用户手机号是否注册过
-                $student_count = Admin::where(["mobile" =>$body['phone'],'is_del'=>1])->count();
+                $student_count = Admin::where(["mobile" =>$body['phone'],'is_del'=>1])->where('is_use','!=',3)->count();
                 if($student_count > 0){
                     //存储学员的手机号值并且保存60s
                     Redis::setex($key , 60 , $body['phone']);

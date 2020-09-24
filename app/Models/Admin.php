@@ -193,7 +193,6 @@ class Admin extends Model implements AuthenticatableContract, AuthorizableContra
                             }
                             if(isset($body['school']) && !empty($body['school'])){
                                 $query->whereRaw("find_in_set({$body['school']},school_id)"); //学校搜素 
-                               
                             }
                             $query->where('is_del',1); 
                         })->count();
