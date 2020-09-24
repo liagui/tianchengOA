@@ -60,14 +60,20 @@ class Teacher extends Model {
         }
         foreach($data as $k=>$vv){
             $school = explode(",",$vv['school_id']);
+            $school_id = array_column(School::select("id")->where(["is_del"=>0,"is_open"=>0])->get()->toArray(),'id');
+            $diff_school = array_diff($school_id, $school);
+
             $category = explode(",",$vv['category_id']);
-            if($school[0] == 0){
+            $category_id = array_column(Category::select("id")->where(["is_del"=>0,"is_hide"=>0])->get()->toArray(),'id');
+            $diff_category = array_diff($category_id, $category);
+
+            if($school[0] == 0 && !(count($diff_school) > 0)){
                 $data[$k]['school'] = "全部";
             }else{
                 //查询分校名称
                 $data[$k]['school'] = implode(',',array_column($vv['school'] , 'school_name'));
             }
-            if($category[0] == 0){
+            if($category[0] == 0 && !(count($diff_category) > 0)){
                 $data[$k]['category'] = "全部";
             }else{
                 //查询项目名称
