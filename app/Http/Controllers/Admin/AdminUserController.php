@@ -150,8 +150,8 @@ class AdminUserController extends Controller {
         }
         if( !isset($data['is_use']) || empty($data['is_use']) || is_int($data['is_use']) ){
             return response()->json(['code'=>201,'msg'=>'是否使用为空或缺少或类型不合法']);
-        }
-        $updatedArr['audit_course_desc'] =  !isset($data['audit_course_desc']) || empty($data['audit_course_desc'])?'':$data['audit_course_desc']; 
+        }   
+        $updateArr['audit_course_desc'] =  !isset($data['audit_course_desc']) || empty($data['audit_course_desc'])?'':$data['audit_course_desc']; 
         $role_id = isset(AdminLog::getAdminInfo()->admin_user->role_id) ? AdminLog::getAdminInfo()->admin_user->role_id : 0;
         $user_id = isset(AdminLog::getAdminInfo()->admin_user->id) ? AdminLog::getAdminInfo()->admin_user->id : 0;
         $updateArr['is_use'] = $data['is_use'];
