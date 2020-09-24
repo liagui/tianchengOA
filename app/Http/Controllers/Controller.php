@@ -320,67 +320,53 @@ class Controller extends BaseController {
         $look_school =  $oneChildSchoolIdsArr =  $twoChildSchoolIdsArr = $thereChildSchoolIdsArr  = $oneSchoolIds = $twoSchoolIds = $look_school_all_arr= $twoChildSchoolIdsArrs= [];
 
         $schoolIds = explode(',',$school_id);
-
-        if(in_array('0',$schoolIds)){
-            $YesLookSchoolIds = \App\Models\School::where(['is_del'=>0,'is_open'=>0])->select('id')->get()->toArray();
-            if(empty($YesLookSchoolIds)){
-                $YesLookSchoolIds = [];
-            }else{
-                $YesLookSchoolIds = array_column($YesLookSchoolIds,'id');
-            }
-            return ['code'=>200,'msg'=>'Success','data'=>$YesLookSchoolIds];
-
+        $schoolData = \App\Models\School::whereIn('id',$schoolIds)->where(['is_del'=>0])->select('id','look_all_flag','level')->get()->toArray();
+        if(empty($schoolData)){
+            return ['code'=>201,'msg'=>'暂无学校信息'];
         }else{
 
-            $schoolData = \App\Models\School::whereIn('id',$schoolIds)->where(['is_del'=>0])->select('id','look_all_flag','level')->get()->toArray();
-            if(empty($schoolData)){
-                return ['code'=>201,'msg'=>'暂无学校信息'];
-            }else{
-
-                foreach($schoolData as $k=>$v){
-                     array_push($look_school_all_arr, $v['id']); 
-                    if($v['look_all_flag'] == 1){ //1级看二、三级
-                       //能看下属的所属分校id组
-                        if($v['level'] == 1){
-                            array_push($oneSchoolIds,$v['id']);
-                            $childOneSchoolData  = \App\Models\School::whereIn('parent_id',$oneSchoolIds)->where(['is_del'=>0])->select('id')->get()->toArray();
-                            if(!empty($childOneSchoolData)){
-                                $oneChildSchoolIdsArr = array_column($childOneSchoolData,'id'); //所有二级分校的id
-                                $oneChildSchoolIdsArr = array_values($oneChildSchoolIdsArr);
-                                if(!empty($oneChildSchoolIdsArr)){
-                                    $childTwoSchoolData  = \App\Models\School::whereIn('parent_id',$oneChildSchoolIdsArr)->where(['is_del'=>0,'look_all_flag'=>1])->select('id')->get()->toArray(); //能看下属的二级分校id
-                                    if(!empty($childTwoSchoolData)){
-                                        $twoChildSchoolIdsArr = array_column($childTwoSchoolData,'id'); //能看下属的三级分校的二级分校id
-                                        $twoChildSchoolIdsArr = array_values($twoChildSchoolIdsArr);
-                                                                               if(!empty($twoChildSchoolIdsArr)){
-                                            $thereChildSchoolIdsArr  = \App\Models\School::whereIn('parent_id',$twoChildSchoolIdsArr)->where(['is_del'=>0])->select('id')->get()->toArray();
-                                            if(!empty($thereChildSchoolIdsArr)){
-                                                $thereChildSchoolIdsArr = array_column($thereChildSchoolIdsArr,'id'); //所有能看的三级分校id
-                                                $thereChildSchoolIdsArr = array_values($thereChildSchoolIdsArr);
-                                            }
+            foreach($schoolData as $k=>$v){
+                 array_push($look_school_all_arr, $v['id']); 
+                if($v['look_all_flag'] == 1){ //1级看二、三级
+                   //能看下属的所属分校id组
+                    if($v['level'] == 1){
+                        array_push($oneSchoolIds,$v['id']);
+                        $childOneSchoolData  = \App\Models\School::whereIn('parent_id',$oneSchoolIds)->where(['is_del'=>0])->select('id')->get()->toArray();
+                        if(!empty($childOneSchoolData)){
+                            $oneChildSchoolIdsArr = array_column($childOneSchoolData,'id'); //所有二级分校的id
+                            $oneChildSchoolIdsArr = array_values($oneChildSchoolIdsArr);
+                            if(!empty($oneChildSchoolIdsArr)){
+                                $childTwoSchoolData  = \App\Models\School::whereIn('parent_id',$oneChildSchoolIdsArr)->where(['is_del'=>0,'look_all_flag'=>1])->select('id')->get()->toArray(); //能看下属的二级分校id
+                                if(!empty($childTwoSchoolData)){
+                                    $twoChildSchoolIdsArr = array_column($childTwoSchoolData,'id'); //能看下属的三级分校的二级分校id
+                                    $twoChildSchoolIdsArr = array_values($twoChildSchoolIdsArr);
+                                                                           if(!empty($twoChildSchoolIdsArr)){
+                                        $thereChildSchoolIdsArr  = \App\Models\School::whereIn('parent_id',$twoChildSchoolIdsArr)->where(['is_del'=>0])->select('id')->get()->toArray();
+                                        if(!empty($thereChildSchoolIdsArr)){
+                                            $thereChildSchoolIdsArr = array_column($thereChildSchoolIdsArr,'id'); //所有能看的三级分校id
+                                            $thereChildSchoolIdsArr = array_values($thereChildSchoolIdsArr);
                                         }
                                     }
                                 }
                             }
-                        }else if($v['level'] == 2){
-                            //二级看三级
-                            array_push($twoSchoolIds,$v['id']);
-                            $childTwoSchoolDatas  = \App\Models\School::whereIn('parent_id',$twoSchoolIds)->where(['is_del'=>0])->select('id')->get()->toArray();
-                            if(!empty($childTwoSchoolDatas)){
-                                $twoChildSchoolIdsArrs = array_column($childTwoSchoolDatas,'id');
-                            }
+                        }
+                    }else if($v['level'] == 2){
+                        //二级看三级
+                        array_push($twoSchoolIds,$v['id']);
+                        $childTwoSchoolDatas  = \App\Models\School::whereIn('parent_id',$twoSchoolIds)->where(['is_del'=>0])->select('id')->get()->toArray();
+                        if(!empty($childTwoSchoolDatas)){
+                            $twoChildSchoolIdsArrs = array_column($childTwoSchoolDatas,'id');
                         }
                     }
                 }
-                $look_school = array_merge($oneChildSchoolIdsArr,$twoChildSchoolIdsArr,$thereChildSchoolIdsArr,$twoChildSchoolIdsArrs);
-
-                $look_school_all = array_intersect($oneChildSchoolIdsArr, $look_school);
-                $look_school  = array_values(array_unique(array_merge($look_school,$look_school_all,$look_school_all_arr)));
-
-                return ['code'=>200,'msg'=>'Success','data'=>$look_school];
             }
-        }
+            $look_school = array_merge($oneChildSchoolIdsArr,$twoChildSchoolIdsArr,$thereChildSchoolIdsArr,$twoChildSchoolIdsArrs);
 
+            $look_school_all = array_intersect($oneChildSchoolIdsArr, $look_school);
+            $look_school  = array_values(array_unique(array_merge($look_school,$look_school_all,$look_school_all_arr)));
+
+            return ['code'=>200,'msg'=>'Success','data'=>$look_school];
+        }
     }
 
 }
