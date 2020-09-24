@@ -23,10 +23,10 @@ class Teacher extends Model {
         $offset   = ($page - 1) * $pagesize;
         $count = self::where('admin.role_id',3)->where(function($query) use ($data){
             if(isset($data['school_id']) && !empty(isset($data['school_id']))){
-                $query->where('admin.school_id','like','%'.$data['school_id'].'%');
+                $query->whereRaw("find_in_set({$data['school_id']},admin.school_id)");
             }
             if(isset($data['category_id']) && !empty(isset($data['category_id']))){
-                $query->where('admin.category_id','like','%'.$data['category_id'].'%');
+                $query->whereRaw("find_in_set({$data['category_id']},admin.category_id)");
             }
             if(isset($data['status']) && $data['status'] != -1){
                 $query->where(['admin.status'=>$data['status']]);
@@ -37,10 +37,10 @@ class Teacher extends Model {
         })->count();
         $data = self::where('admin.role_id',3)->where(function($query) use ($data){
             if(isset($data['school_id']) && !empty(isset($data['school_id']))){
-                $query->where('admin.school_id','like','%'.$data['school_id'].'%');
+                $query->whereRaw("find_in_set({$data['school_id']},admin.school_id)");
             }
             if(isset($data['category_id']) && !empty(isset($data['category_id']))){
-                $query->where('admin.category_id','like','%'.$data['category_id'].'%');
+                $query->whereRaw("find_in_set({$data['category_id']},admin.category_id)");
             }
             if(isset($data['status']) && $data['status'] != -1){
                 $query->where(['admin.status'=>$data['status']]);
