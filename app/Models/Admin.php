@@ -219,27 +219,31 @@ class Admin extends Model implements AuthenticatableContract, AuthorizableContra
             $roleArr = Roleauth::where('is_del',0)->select('id','role_name')->get()->toArray();
             $roleArr = array_column($roleArr,'role_name','id');
             $schoolAll = School::where(['is_del'=>0,'is_open'=>0])->select('id')->get()->toArray(); //所有分校id
-            $schoolAll = empty($schoolAll) ?'' :array_column($schoolAll,'id');
+            $schoolAll = empty($schoolAll)?[] :array_column($schoolAll,'id');
             foreach($adminUserData as $key=>&$v){
                 $v['role_name'] = !isset($roleArr[$v['role_id']])?'':$roleArr[$v['role_id']];
                 $school =  empty($v['school_id'])?[]:explode(",",$v['school_id']);
                 if(empty($school)){
                    $v['schoolname'] = ''; 
                 }else{
-                    $school = sort($school);
-                    $diffSchool = array_diff($schoolAll,$school);
-                    if(empty($diffSchool)){
-                        $v['schoolname'] = '全部';
+                    asort($school);
+                    if(count($school)==1){
+                        $school = [$school];
                     }else{
-                        $schoolData = School::whereIn('id',$school)->select('school_name','id')->get()->toArray();
-                        $str = '';
-                        if(!empty($schoolData)){
-                            foreach ($schoolData as $k => &$school) {
-                                $str .= $school['school_name'].',';
-                            }
-                            $v['schoolname'] =  rtrim($str,',');      
+                        $diffSchool = array_diff($schoolAll,$school);
+                        if(empty($diffSchool)){
+                            $v['schoolname'] = '全部';
                         }else{
-                            $v['schoolname'] = '';
+                            $schoolData = School::whereIn('id',$school)->select('school_name','id')->get()->toArray();
+                            $str = '';
+                            if(!empty($schoolData)){
+                                foreach ($schoolData as $k => &$school) {
+                                    $str .= $school['school_name'].',';
+                                }
+                                $v['schoolname'] =  rtrim($str,',');      
+                            }else{
+                                $v['schoolname'] = '';
+                            }
                         }
                     }
                 } 
