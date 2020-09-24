@@ -98,24 +98,6 @@ class Refund_order extends Model
         if(isset($data['school_id'])){
             $where['school_id'] = $data['school_id'];
         }
-        //支付方式
-        if(!empty($data['pay_type'])){
-            $where['pay_type'] = $data['pay_type'];
-        }
-        //订单状态
-        if(isset($data['confirm_status'])){
-            $where['confirm_status'] = $data['confirm_status'];
-        }
-        //科目id&学科id
-        if(!empty($data['project_id'])){
-            $parent = json_decode($data['project_id'], true);
-            if(!empty($parent[0])){
-                $where['project_id'] = $parent[0];
-                if(!empty($parent[1])){
-                    $where['subject_id'] = $parent[1];
-                }
-            }
-        }
         //判断时间
         $begindata="2020-03-04";
         $enddate = date('Y-m-d');
@@ -129,16 +111,9 @@ class Refund_order extends Model
         $offset   = ($page - 1) * $pagesize;
 
         //計算總數
-        $count = self::where($where)
-          ->where(function($query) use ($data,$schoolarr) {
-            if(isset($data['classes'])){
-                $query->where('classes',$data['classes']);
-            }
+        $count = self::where($where)->where(function($query) use ($data,$schoolarr) {
             if(isset($data['confirm_order_type'])){
                 $query->where('confirm_order_type',$data['confirm_order_type']);
-            }
-            if(isset($data['return_visit'])){
-                $query->where('return_visit',$data['return_visit']);
             }
             if(isset($data['order_on']) && !empty($data['order_on'])){
                 $query->where('refund_no',$data['order_on'])
@@ -150,14 +125,8 @@ class Refund_order extends Model
         ->whereBetween('create_time', [$state_time, $end_time])
         ->count();
 
-        //計算總數
+        //列表
         $order = self::where($where)->where(function($query) use ($data,$schoolarr) {
-            if(isset($data['classes'])){
-                $query->where('classes',$data['classes']);
-            }
-            if(isset($data['return_visit'])){
-                $query->where('return_visit',$data['return_visit']);
-            }
             if(isset($data['confirm_order_type'])){
                 $query->where('confirm_order_type',$data['confirm_order_type']);
             }
