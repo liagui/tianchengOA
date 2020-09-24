@@ -347,7 +347,7 @@ class BranchSchoolExport implements FromCollection, WithHeadings {
                     $startTime  = $createTime." 00:00:00";
                     $endTime    = $createTime." 23:59:59";
                     $query->where('create_time', '>=' , $startTime)->where('create_time', '<=' , $endTime);
-                })->sum('sign_Price');
+                })->where('pay_status' , 1)->where('confirm_status' , 1)->sum('sign_Price');
 
                 //成本总费用 
                 $prime_cost     = Pay_order_inside::where(function($query) use ($body){
@@ -385,7 +385,7 @@ class BranchSchoolExport implements FromCollection, WithHeadings {
                     $startTime  = $createTime." 00:00:00";
                     $endTime    = $createTime." 23:59:59";
                     $query->where('create_time', '>=' , $startTime)->where('create_time', '<=' , $endTime);
-                })->sum('sum_Price');
+                })->where('pay_status' , 1)->where('confirm_status' , 1)->sum('sum_Price');
 
                 //实际佣金总费用
                 $actual_commission = Pay_order_inside::where(function($query) use ($body){
@@ -423,7 +423,7 @@ class BranchSchoolExport implements FromCollection, WithHeadings {
                     $startTime  = $createTime." 00:00:00";
                     $endTime    = $createTime." 23:59:59";
                     $query->where('create_time', '>=' , $startTime)->where('create_time', '<=' , $endTime);
-                })->sum('actual_commission');
+                })->where('pay_status' , 1)->where('confirm_status' , 1)->sum('actual_commission');
 
                 //数组赋值
                 $array[] = [
