@@ -166,9 +166,9 @@ class Teacher extends Model {
         $teacher['category_id'] = implode(',',json_decode($data['teacher_category']));
         $teacher['updated_at'] = date("Y-m-d H:i:s");
         if($teacher['category_id'][0] == 0){
-            $school = School::select("id")->where(["is_open"=>0,"is_del"=>0,"parent_id"=>0])->get()->toArray();
-            $school = array_column($school,'id');
-            $teacher['category_id'] = "0,".implode(',',$school);
+            $category = Category::select("id")->where(["is_hide"=>0,"is_del"=>0,"parent_id"=>0])->get()->toArray();
+            $category = array_column($category,'id');
+            $teacher['category_id'] = "0,".implode(',',$category);
         }
         $res = self::where("id",$data['teacher_id'])->update($teacher);
         if($res){
