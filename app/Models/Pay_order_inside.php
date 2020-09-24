@@ -1250,7 +1250,7 @@ class Pay_order_inside extends Model
 
         //計算總數
         $count = self::where(function($query) use ($data,$schoolarr) {
-            if(isset($data['order_no']) && !empty($data['order_no'])){
+            if(isset($data['order_on']) && !empty($data['order_on'])){
                 $query->where('order_no',$data['order_on'])
                     ->orwhere('name',$data['order_on'])
                     ->orwhere('mobile',$data['order_on']);
@@ -1263,7 +1263,7 @@ class Pay_order_inside extends Model
         ->count();
 
         $order = self::where(function($query) use ($data,$schoolarr) {
-            if(isset($data['order_no']) && !empty($data['order_no'])){
+            if(isset($data['order_on']) && !empty($data['order_on'])){
                 $query->where('order_no',$data['order_on'])
                     ->orwhere('name',$data['order_on'])
                     ->orwhere('mobile',$data['order_on']);
