@@ -229,7 +229,13 @@ class Teacher extends Model {
         foreach($teacher as $k =>&$v){
 
 
-            $res1 = Pay_order_inside::select()->where("seas_status",0)->where("have_user_id",$v['id'])->get()->toArray();
+            $res1 = Pay_order_inside::select()->where("seas_status",0)->where("have_user_id",$v['id'])
+            ->where(function($query) use ($data){
+                if(isset($data['start_time']) && !empty(isset($data['start_time']))  && isset($data['end_time']) && !empty(isset($data['end_time']))){
+                    $query->whereBetween('comfirm_time',[date("Y-m-d H:i:s",strtotime($data['start_time'])),date("Y-m-d H:i:s",strtotime($data['end_time']))]);
+                }
+            })
+            ->get()->toArray();
             foreach($res1 as $k => &$vv){
                 //是否回访
                 $a = Orderdocumentary::where("order_id",$v['id'])->first();
