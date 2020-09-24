@@ -86,7 +86,6 @@ class AuthenticateController extends Controller {
             $user['auth'] = [];
             return $this->response($user);
         }
-
         $AdminUser = new AdminUser();
         $user['auth'] = [];     //5.14 该账户没有权限返回空  begin
         if($user['role_id']>0){

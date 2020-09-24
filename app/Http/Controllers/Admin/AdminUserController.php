@@ -231,7 +231,9 @@ class AdminUserController extends Controller {
             return response()->json(['code'=>206,'msg'=>'登录密码不一致']);
         }
         if(!isset($data['school_id']) || empty($data['school_id'])){
-            $data['school_id'] = '0';
+            $schoolIds = School::where(['is_open'=>0,'is_del'=>0])->select('id')->get()->toArray();
+            $schoolIds = empty($schoolIds)  ?'':array_column($schoolIds, 'id');
+            $data['school_id'] = $schoolIds == ''?'':implode(',',$schoolIds);
         }else{
             $data['school_id'] = $data['school_id'];
         }  
@@ -354,7 +356,9 @@ class AdminUserController extends Controller {
            return response()->json(['code'=>201,'msg'=>'admin账户禁止编辑']);
         }
         if(!isset($data['school_id']) || empty($data['school_id'])){
-            $data['school_id'] = '0';
+            $schoolIds = School::where(['is_open'=>0,'is_del'=>0])->select('id')->get()->toArray();
+            $schoolIds = empty($schoolIds)  ?'':array_column($schoolIds, 'id');
+            $data['school_id'] = $schoolIds == ''?'':implode(',',$schoolIds);
         }else{
             $data['school_id'] = $data['school_id'];
         } 

@@ -218,20 +218,31 @@ class Admin extends Model implements AuthenticatableContract, AuthorizableContra
                 })->select('username','real_name','mobile','wx','role_id','school_id','is_use','is_forbid','create_time','license','hand_card','card_front','card_side','id')->offset($offset)->limit($pagesize)->get()->toArray();
             $roleArr = Roleauth::where('is_del',0)->select('id','role_name')->get()->toArray();
             $roleArr = array_column($roleArr,'role_name','id');
-  
+            $schoolAll = School::where(['is_del'=>0,'is_open'=>0])->select('id')->get()->toArray(); //所有分校id
+            $schoolAll = empty($schoolAll) ?'' :array_column($schoolAll,'id');
             foreach($adminUserData as $key=>&$v){
                 $v['role_name'] = !isset($roleArr[$v['role_id']])?'':$roleArr[$v['role_id']];
                 $school =  empty($v['school_id'])?[]:explode(",",$v['school_id']);
-                $schoolData = School::whereIn('id',$school)->select('school_name')->get()->toArray();
-                $str = '';
-                if(!empty($schoolData)){
-                    foreach ($schoolData as $k => &$school) {
-                        $str .= $school['school_name'].',';
-                    }
-                    $v['schoolname'] =  rtrim($str,',');
+                if(empty($school)){
+                   $v['schoolname'] = ''; 
                 }else{
-                    $v['schoolname'] =  '全部分校';
-                }
+                    $school = sort($school);
+                    $diffSchool = array_diff($schoolAll,$school);
+                    if(empty($diffSchool)){
+                        $v['schoolname'] = '全部';
+                    }else{
+                        $schoolData = School::whereIn('id',$school)->select('school_name','id')->get()->toArray();
+                        $str = '';
+                        if(!empty($schoolData)){
+                            foreach ($schoolData as $k => &$school) {
+                                $str .= $school['school_name'].',';
+                            }
+                            $v['schoolname'] =  rtrim($str,',');      
+                        }else{
+                            $v['schoolname'] = '';
+                        }
+                    }
+                } 
             }
         }
         $arr['code']= 200;
