@@ -84,8 +84,7 @@ class Refund_order extends Model
          * @param  ctime   2020/9/9 14:48
          * return  array
          */
-    public static function returnOrder($data){
-        $admin = isset(AdminLog::getAdminInfo()->admin_user) ? AdminLog::getAdminInfo()->admin_user: [];
+    public static function returnOrder($data,$schoolarr){
         //退费状态
         $where=[];
         if(isset($data['confirm_status'])){
@@ -94,6 +93,10 @@ class Refund_order extends Model
         //打款状态
         if(isset($data['refund_plan'])){
             $where['refund_plan'] = $data['refund_plan'];
+        }
+        //学校id
+        if(isset($data['school_id'])){
+            $where['school_id'] = $data['school_id'];
         }
         //判断时间
         $begindata="2020-03-04";
@@ -108,40 +111,33 @@ class Refund_order extends Model
         $offset   = ($page - 1) * $pagesize;
 
         //計算總數
-        $count = self::where(function($query) use ($data,$admin) {
+        $count = self::where($where)->where(function($query) use ($data,$schoolarr) {
+            if(isset($data['confirm_order_type'])){
+                $query->where('confirm_order_type',$data['confirm_order_type']);
+            }
             if(isset($data['order_on']) && !empty($data['order_on'])){
                 $query->where('refund_no',$data['order_on'])
                     ->orwhere('student_name',$data['order_on'])
                     ->orwhere('phone',$data['order_on']);
             }
-            if($admin['school_id'] == 0){
-                if(isset($data['school_id']) && $data['school_id'] != 0 && $data['school_id'] != '' ){
-                    $query->where('school_id',$data['school_id']);
-                }
-            }else{
-                $query->whereIn('school_id',explode(',',$admin['school_id']));
-            }
+            $query->whereIn('school_id',$schoolarr);
         })
-        ->where($where)
         ->whereBetween('create_time', [$state_time, $end_time])
         ->count();
 
-        //計算總數
-        $order = self::where(function($query) use ($data,$admin) {
+        //列表
+        $order = self::where($where)->where(function($query) use ($data,$schoolarr) {
+            if(isset($data['confirm_order_type'])){
+                $query->where('confirm_order_type',$data['confirm_order_type']);
+            }
             if(isset($data['order_on']) && !empty($data['order_on'])){
                 $query->where('refund_no',$data['order_on'])
                     ->orwhere('student_name',$data['order_on'])
                     ->orwhere('phone',$data['order_on']);
             }
-            if($admin['school_id'] == 0){
-                if(isset($data['school_id']) && $data['school_id'] != 0 && $data['school_id'] != '' ){
-                    $query->where('school_id',$data['school_id']);
-                }
-            }else{
-                $query->whereIn('school_id',explode(',',$admin['school_id']));
-            }
+            $query->whereIn('school_id',$schoolarr);
         })
-        ->where($where)
+
         ->whereBetween('create_time', [$state_time, $end_time])
         ->orderByDesc('id')
         ->offset($offset)->limit($pagesize)->get()->toArray();
@@ -188,8 +184,6 @@ class Refund_order extends Model
                 }
             }
         }
-        $where['state_time'] = $state_time;
-        $where['end_time'] = $end_time;
         $page=[
             'pagesize'=>$pagesize,
             'page' =>$page,
@@ -212,7 +206,7 @@ class Refund_order extends Model
             'yituicount' => $yituicount,
             'weisum' => $weisum,
         ];
-        return ['code' => 200 , 'msg' => '查询成功','data'=>$order,'where'=>$data,'page'=>$page,'count'=>$count];
+        return ['code' => 200 , 'msg' => '查询成功','data'=>$order,'page'=>$page,'count'=>$count];
     }
 
     /*

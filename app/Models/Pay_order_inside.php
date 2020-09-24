@@ -1,10 +1,10 @@
 <?php
 namespace App\Models;
 
+use App\Models\Admin;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Redis;
-use App\Models\Admin;
 use App\Models\School;
 use App\Models\Refund_order;
 
@@ -93,7 +93,7 @@ class Pay_order_inside extends Model
                 $query->whereIn('school_id',$schoolarr);
             })
             ->where($where)
-            ->where('pay_status','<',2)
+//            ->where('pay_status','<',2)
             ->whereBetween('create_time', [$state_time, $end_time])
             ->orderByDesc('id')
             ->get()->toArray();
@@ -166,7 +166,7 @@ class Pay_order_inside extends Model
                 }else if($v['pay_status'] == 2){
                     $v['pay_status_text'] = '支付失败';
                 }else if($v['pay_status'] == 3){
-                    $v['pay_status_text'] = '未审核';
+                    $v['pay_status_text'] = '待审核';
                 }
                 if(!isset($v['return_visit'])){
                     $v['return_visit_text'] = '';
@@ -497,38 +497,38 @@ class Pay_order_inside extends Model
 
         //計算總數
         $count = self::where(function($query) use ($data,$schoolarr) {
+            $query->whereIn('school_id',$schoolarr);
+            if(!empty($data['isBranchSchool']) && $data['isBranchSchool'] == true){
+                $query->where('pay_status','=',1);
+//                $query->where('confirm_status',0)
+//                    ->orwhere('confirm_status',1);
+            }else{
+                $query->where('confirm_status',0);
+                $query->where('pay_status',1);
+            }
             if(isset($data['order_no']) && !empty($data['order_no'])){
                 $query->where('order_no',$data['order_no'])
                     ->orwhere('name',$data['order_no'])
                     ->orwhere('mobile',$data['order_no']);
-            }
-            $query->whereIn('school_id',$schoolarr);
-            if(!empty($data['isBranchSchool']) && $data['isBranchSchool'] == true){
-                $query->where('confirm_status',0)
-                    ->orwhere('confirm_status',1);
-            }else{
-                $query->where('confirm_status',0);
-                $query->where('pay_status','<',2);
             }
         })
         ->where($where)
         ->count();
 
         $order = self::where(function($query) use ($data,$schoolarr) {
-
+            $query->whereIn('school_id',$schoolarr);
+            if(!empty($data['isBranchSchool']) &&$data['isBranchSchool'] == true){
+                $query->where('pay_status','=',1);
+//                $query->where('confirm_status',0)
+//                $query->where('confirm_status',1);
+            }else{
+                $query->where('confirm_status',0);
+                $query->where('pay_status',1);
+            }
             if(isset($data['order_no']) && !empty($data['order_no'])){
                 $query->where('order_no',$data['order_no'])
                     ->orwhere('name',$data['order_no'])
                     ->orwhere('mobile',$data['order_no']);
-            }
-
-            $query->whereIn('school_id',$schoolarr);
-            if(!empty($data['isBranchSchool']) &&$data['isBranchSchool'] == true){
-                $query->where('confirm_status',0)
-                    ->orwhere('confirm_status',1);
-            }else{
-                $query->where('confirm_status',0);
-                $query->where('pay_status','<',2);
             }
         })
         ->where($where)
@@ -564,7 +564,7 @@ class Pay_order_inside extends Model
                 }else if($v['pay_status'] == 2){
                     $v['pay_status_text'] = '支付失败';
                 }else if($v['pay_status'] == 3){
-                    $v['pay_status_text'] = '未审核';
+                    $v['pay_status_text'] = '待审核';
                 }
                 if($v['return_visit'] == 0){
                     $v['return_visit_text'] = '否';
@@ -675,14 +675,14 @@ class Pay_order_inside extends Model
         }
         if($data['confirm_status'] == 1){
             if($data['confirm_order_type'] == 2){
-                if($order['sign_Price'] > $order['pay_price']){
-                    return ['code' => 201 , 'msg' => '所填金额大于支付金额'];
+                if($data['sign_Price'] != $order['pay_price']){
+                    return ['code' => 201 , 'msg' => '所填金额不等于支付金额'];
                 }
             }
             if($data['confirm_order_type'] == 3){
                 $ppppp = $data['course_Price'] + $data['sign_Price'];
-                if($ppppp > $order['pay_price']){
-                    return ['code' => 201 , 'msg' => '所填金额大于支付金额'];
+                if($ppppp != $order['pay_price']){
+                    return ['code' => 201 , 'msg' => '所填金额不等于支付金额'];
                 }
             }
             $data['comfirm_time'] = date('Y-m-d H:i:s');
@@ -776,6 +776,9 @@ class Pay_order_inside extends Model
             $data['reject_time'] = date('Y-m-d H:i:s');
             $data['reject_admin_id'] = $admin['id'];
         }
+        if($data['confirm_status'] == 0){
+            return ['code' => 201 , 'msg' => '请选择状态'];
+        }
         $data['update_time'] = date('Y-m-d H:i:s');
         $up = self::where(['id'=>$data['id']])->update($data);
         if($up){
@@ -851,25 +854,27 @@ class Pay_order_inside extends Model
         //計算總數
         $count = self::where(function($query) use ($data,$schoolarr) {
             if(isset($data['order_no']) && !empty($data['order_no'])){
-                $query->where('order_no',$data['order_on'])
-                    ->orwhere('name',$data['order_on'])
-                    ->orwhere('mobile',$data['order_on']);
+                $query->where('order_no',$data['order_no'])
+                    ->orwhere('name',$data['order_no'])
+                    ->orwhere('mobile',$data['order_no']);
             }
             $query->whereIn('school_id',$schoolarr);
         })
             ->where('pay_status','<',2)
+            ->where('confirm_status','=',1)
             ->where($where)
             ->count();
 
         $order = self::where(function($query) use ($data,$schoolarr) {
             if(isset($data['order_no']) && !empty($data['order_no'])){
-                $query->where('order_no',$data['order_on'])
-                    ->orwhere('name',$data['order_on'])
-                    ->orwhere('mobile',$data['order_on']);
+                $query->where('order_no',$data['order_no'])
+                    ->orwhere('name',$data['order_no'])
+                    ->orwhere('mobile',$data['order_no']);
             }
             $query->whereIn('school_id',$schoolarr);
         })
             ->where('pay_status','<',2)
+            ->where('confirm_status','=',1)
             ->where($where)
             ->orderByDesc('id')
             ->offset($offset)->limit($pagesize)->get()->toArray();
@@ -884,13 +889,21 @@ class Pay_order_inside extends Model
                     $v['pay_type_text'] = '微信扫码';
                 }else if ($v['pay_type'] == 4){
                     $v['pay_type_text'] = '支付宝扫码';
+                }else if ($v['pay_type'] == 5){
+                    $v['pay_type_text'] = '银行卡支付';
+                }else if ($v['pay_type'] == 6){
+                    $v['pay_type_text'] = '对公转账';
+                }else if ($v['pay_type'] == 7){
+                    $v['pay_type_text'] = '支付宝账号对公';
                 }
-                else if($v['pay_status'] == 1){
+                if($v['pay_status'] == 0){
+                    $v['pay_status_text'] = '待支付';
+                }else if($v['pay_status'] == 1){
                     $v['pay_status_text'] = '已支付';
                 }else if($v['pay_status'] == 2){
                     $v['pay_status_text'] = '支付失败';
                 }else if($v['pay_status'] == 3){
-                    $v['pay_status_text'] = '未审核';
+                    $v['pay_status_text'] = '待审核';
                 }
                 if($v['return_visit'] == 0){
                     $v['return_visit_text'] = '否';
@@ -975,13 +988,21 @@ class Pay_order_inside extends Model
         if(!isset($data['order_no'])){
             return ['code' => 200 , 'msg' => '获取成功','data'=>$res];
         }
-        $res = Pay_order_external::where(function($query) use ($data) {
+        $resss = Pay_order_external::where(function($query) use ($data) {
             if(isset($data['order_no']) && !empty($data['order_no'])){
                 $query->where('order_no',$data['order_no'])
                     ->orwhere('name',$data['order_no'])
                     ->orwhere('mobile',$data['order_no']);
             }
         })->where(['status'=>0,'pay_status'=>1])->get()->toArray();
+        $ress = Pay_order_inside::where(function($query) use ($data) {
+            if(isset($data['order_no']) && !empty($data['order_no'])){
+                $query->where('order_no',$data['order_no'])
+                    ->orwhere('name',$data['order_no'])
+                    ->orwhere('mobile',$data['order_no']);
+            }
+        })->where(['pay_status'=>1,'del_flag'=>1])->get()->toArray();
+        $res = array_merge($ress,$resss);
         if(!empty($res)){
             foreach ($res as $k=>&$v){
                 if($v['pay_type'] == 1 || $v['pay_type'] == 3){
@@ -1005,6 +1026,10 @@ class Pay_order_inside extends Model
                     //查专业
                     $major = Major::where(['id'=>$v['major_id']])->first();
                     $v['major_name'] = $major['major_name'];
+                }
+                if(!empty($v['pay_voucher_user_id'])){
+                    $adminname = Admin::where(['id'=>$v['pay_voucher_user_id']])->first();
+                    $v['pay_voucher_name'] = $adminname['username'];
                 }
             }
             return ['code' => 200 , 'msg' => '获取成功','data'=>$res];
@@ -1227,7 +1252,7 @@ class Pay_order_inside extends Model
 
         //計算總數
         $count = self::where(function($query) use ($data,$schoolarr) {
-            if(isset($data['order_no']) && !empty($data['order_no'])){
+            if(isset($data['order_on']) && !empty($data['order_on'])){
                 $query->where('order_no',$data['order_on'])
                     ->orwhere('name',$data['order_on'])
                     ->orwhere('mobile',$data['order_on']);
@@ -1240,7 +1265,7 @@ class Pay_order_inside extends Model
         ->count();
 
         $order = self::where(function($query) use ($data,$schoolarr) {
-            if(isset($data['order_no']) && !empty($data['order_no'])){
+            if(isset($data['order_on']) && !empty($data['order_on'])){
                 $query->where('order_no',$data['order_on'])
                     ->orwhere('name',$data['order_on'])
                     ->orwhere('mobile',$data['order_on']);
@@ -1263,13 +1288,19 @@ class Pay_order_inside extends Model
                     $v['pay_type_text'] = '微信扫码';
                 }else if ($v['pay_type'] == 4){
                     $v['pay_type_text'] = '支付宝扫码';
+                }else if ($v['pay_type'] == 5){
+                    $v['pay_type_text'] = '银行卡支付';
+                }else if ($v['pay_type'] == 6){
+                    $v['pay_type_text'] = '对公转账';
+                }else if ($v['pay_type'] == 7){
+                    $v['pay_type_text'] = '支付宝账号对公';
                 }
                 else if($v['pay_status'] == 1){
                     $v['pay_status_text'] = '已支付';
                 }else if($v['pay_status'] == 2){
                     $v['pay_status_text'] = '支付失败';
                 }else if($v['pay_status'] == 3){
-                    $v['pay_status_text'] = '未审核';
+                    $v['pay_status_text'] = '待审核';
                 }
                 if($v['return_visit'] == 0){
                     $v['return_visit_text'] = '否';
@@ -1561,7 +1592,7 @@ class Pay_order_inside extends Model
                 }else if($v['pay_status'] == 2){
                     $v['pay_status_text'] = '支付失败';
                 }else if($v['pay_status'] == 3){
-                    $v['pay_status_text'] = '未审核';
+                    $v['pay_status_text'] = '待审核';
                 }
                 if(!isset($v['return_visit'])){
                     $v['return_visit_text'] = '';
@@ -1697,7 +1728,7 @@ class Pay_order_inside extends Model
         if(!isset($data['offline_id']) || empty($data['offline_id'])){
             return ['code' => 201 , 'msg' => '请选择收款账号'];
         }
-        if(!isset($data['pay_status']) || empty($data['pay_status'])){
+        if(!isset($data['pay_status'])){
             return ['code' => 201 , 'msg' => '请判断类型'];
         }
         unset($data['/admin/order/offlineing']);
@@ -1896,7 +1927,7 @@ class Pay_order_inside extends Model
         $order_count = self::where('name' , $name)->where('mobile' , $mobile)->where('school_id' , $school_id)->where('project_id' , $project_id)->where('subject_id' , $subject_id)->where('course_id' , $course_id)->where('del_flag' , 0)->count();
 
         //支付方式数组
-        $pay_type_array = [1=>'微信扫码',2=>'支付宝扫码',3=>'微信扫码',4=>'支付宝扫码'];
+        $pay_type_array = [1=>'微信扫码',2=>'支付宝扫码',3=>'微信扫码',4=>'支付宝扫码',5=>'银行卡支付',6=>'对公转账',7=>'支付宝账号对公'];
 
         //支付状态数组
         $pay_status_array = [0=>'未支付',1=>'已支付',2=>'支付失败',3=>'已退款'];
@@ -2772,7 +2803,7 @@ class Pay_order_inside extends Model
         })->count();
 
         //支付方式
-        $pay_type_array = [1=>'支付宝扫码',2=>'微信扫码',3=>'银联快捷支付',4=>'微信小程序',5=>'线下录入'];
+        $pay_type_array = [1=>'微信',2=>'支付宝',3=>'微信',4=>'支付宝',5=>'银行卡转账',6=>'对公转账',7=>'支付宝账号对公转账'];
 
         //回访状态
         $return_visit_array = [0=>'否',1=>'是'];

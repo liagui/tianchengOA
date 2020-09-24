@@ -110,7 +110,8 @@ class OrderController extends Controller {
     /*=============================================*/
     //退费订单list
     public function returnOrder(){
-        $list = Refund_order::returnOrder(self::$accept_data);
+        $schoolarr = $this->underlingLook(AdminLog::getAdminInfo()->admin_user->school_id);
+        $list = Refund_order::returnOrder(self::$accept_data,$schoolarr['data']);
         return response()->json($list);
     }
     //单条详情
