@@ -171,6 +171,7 @@ class Admin extends Model implements AuthenticatableContract, AuthorizableContra
      * @param ctime     2020-04-29
      */
     public static function getAdminUserList($body=[]){
+
         //判断传过来的数组数据是否为空
         if(!is_array($body)){
             return ['code' => 202 , 'msg' => '传递数据不合法'];
@@ -179,6 +180,9 @@ class Admin extends Model implements AuthenticatableContract, AuthorizableContra
         $pagesize = isset($body['pagesize']) && $body['pagesize'] > 0 ? $body['pagesize'] : 15;
         $page     = isset($body['page']) && $body['page'] > 0 ? $body['page'] : 1;
         $offset   = ($page - 1) * $pagesize;
+        if(isset($body['school']) && !empty($body['school'])){
+            $query->whereIn('school_id',$body['school']);     
+        }
         $admin_count = self::where(function($query) use ($body){
                             if(isset($body['search']) && !empty($body['search'])){
                                 $query->where('username','like','%'.$body['search'].'%')
@@ -191,7 +195,7 @@ class Admin extends Model implements AuthenticatableContract, AuthorizableContra
                                 $query->where('is_forbid',$body['forbid']);     
                             }
                             if(isset($body['school']) && !empty($body['school'])){
-                                $query->whereIn('school_id',$body['school']);     
+                                $query->whereRaw("find_in_set({$body['school']},school_id)");
                             }
                             $query->where('is_del',1); 
                         })->count();
@@ -211,7 +215,7 @@ class Admin extends Model implements AuthenticatableContract, AuthorizableContra
                                 $query->where('is_forbid',$body['forbid']);     
                             }
                             if(isset($body['school']) && !empty($body['school'])){
-                                $query->where('school_id',$body['school']);     
+                                $query->whereRaw("find_in_set({$body['school']},school_id)");
                             }
                             $query->where('is_del',1); 
                 })->select('username','real_name','mobile','wx','role_id','school_id','is_use','is_forbid','create_time','license','hand_card','card_front','card_side','id')->offset($offset)->limit($pagesize)->get()->toArray();

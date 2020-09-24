@@ -40,7 +40,7 @@ class SchoolController extends Controller {
                 $schoolArr = $this->underlingLook($school_id);
                 $body['school_id']   = $schoolArr['data'];
             }else{  
-                $body['school_id'] =explode(',',$body['school_id']);
+                $body['school_id'] = explode(',',$body['school_id']);
             }
             $data = School::getList($body);
             if($data['code'] == 200){
