@@ -6,6 +6,8 @@ use App\Models\MaterialListing;
 use App\Models\TeacherSchool;
 use App\Models\TeacherCategory;
 use App\Models\Pay_order_inside;
+use App\Models\Category;
+use App\Models\School;
 use Illuminate\Support\Facades\DB;
 
 class Teacher extends Model {
@@ -49,15 +51,28 @@ class Teacher extends Model {
         })->offset($offset)->limit($pagesize)->get();
         foreach($data as $k=>&$v){
             $school = explode(",",$v['school_id']);
+            $category = explode(",",$v['category_id']);
             //查询分校名称
             $v['school'] = DB::table("school")->select("school_name")->whereIn('id',$school)->get()->toArray();
             //查询项目名称
-            $category = explode(",",$v['category_id']);
             $v['category'] = DB::table("category")->select("name")->whereIn('id',$category)->get()->toArray();
+
         }
         foreach($data as $k=>$vv){
-            $data[$k]['school'] = implode(',',array_column($vv['school'] , 'school_name'));
-            $data[$k]['category'] = implode(',',array_column($vv['category'] , 'name'));
+            $school = explode(",",$vv['school_id']);
+            $category = explode(",",$vv['category_id']);
+            if($school[0] == 0){
+                $data[$k]['school'] = "全部";
+            }else{
+                //查询分校名称
+                $data[$k]['school'] = implode(',',array_column($vv['school'] , 'school_name'));
+            }
+            if($category[0] == 0){
+                $data[$k]['category'] = "全部";
+            }else{
+                //查询项目名称
+                $data[$k]['category'] = implode(',',array_column($vv['category'] , 'name'));
+            }
         }
         $page=[
             'pageSize'=>$pagesize,
@@ -95,7 +110,17 @@ class Teacher extends Model {
         $teacher['role_id'] = 3;
         $teacher['create_id'] = 1;
         $teacher['school_id'] = implode(',',json_decode($data['teacher_school']));
+        if($teacher['school_id'][0] == 0){
+            $school = School::select("id")->where(["is_open"=>0,"is_del"=>0])->get()->toArray();
+            $school = array_column($school,'id');
+            $teacher['school_id'] = "0,".implode(',',$school);
+        }
         $teacher['category_id'] = implode(',',json_decode($data['teacher_category']));
+        if($teacher['category_id'][0] == 0){
+            $category = Category::select("id")->where(["is_hide"=>0,"is_del"=>0])->get()->toArray();
+            $category = array_column($category,'id');
+            $teacher['category_id'] = "0,".implode(',',$category);
+        }
         $res = self::insert($teacher);
         if($res){
             return ['code' => 200 , 'msg' => '创建班主任成功'];
@@ -103,9 +128,53 @@ class Teacher extends Model {
             return ['code' => 202 , 'msg' => '创建班主任失败'];
         }
     }
+    //获取班主任详情
+    public static function GetTeacherOne($data){
+        $teacher = self::select("id","real_name","school_id","category_id")->where(['id'=>$data['teacher_id'],"role_id"=>3])->first();
+        if($teacher){
+            return ['code' => 200, 'msg' => '查询成功', 'data' => $teacher];
+        }else{
+            return ['code' => 200, 'msg' => '查询暂无数据', 'data' => []];
+        }
+    }
+    //更新班主任绑定分校
+    public static function UpdateTeacherSchool($data){
+        unset($data['/admin/UpdateTeacherSchool']);
+        $teacher['school_id'] = implode(',',json_decode($data['teacher_school']));
+        $teacher['updated_at'] = date("Y-m-d H:i:s");
+        if($teacher['school_id'][0] == 0){
+            $school = School::select("id")->where(["is_open"=>0,"is_del"=>0])->get()->toArray();
+            $school = array_column($school,'id');
+            $teacher['school_id'] = "0,".implode(',',$school);
+        }
+        $res = self::where("id",$data['teacher_id'])->update($teacher);
+        if($res){
+            return ['code' => 200 , 'msg' => '更新班主任绑定分校成功'];
+        }else{
+            return ['code' => 202 , 'msg' => '更新班主任绑定分校失败'];
+        }
+    }
+    //更新班主任绑定项目
+    public static function UpdateTeacherCategory($data){
+        unset($data['/admin/UpdateTeacherCategory']);
+        $teacher['category_id'] = implode(',',json_decode($data['teacher_category']));
+        $teacher['updated_at'] = date("Y-m-d H:i:s");
+        if($teacher['category_id'][0] == 0){
+            $school = School::select("id")->where(["is_open"=>0,"is_del"=>0])->get()->toArray();
+            $school = array_column($school,'id');
+            $teacher['category_id'] = "0,".implode(',',$school);
+        }
+        $res = self::where("id",$data['teacher_id'])->update($teacher);
+        if($res){
+            return ['code' => 200 , 'msg' => '更新班主任绑定项目成功'];
+        }else{
+            return ['code' => 202 , 'msg' => '更新班主任绑定项目失败'];
+        }
+    }
     public static function updateTeacherStatus($data){
         unset($data['/admin/updateTeacherStatus']);
         $teacher = self::where(['id'=>$data['teacher_id'],'role_id'=>3])->first();
+        $update['updated_at'] = date("Y-m-d H:i:s");
         if(empty($teacher)){
             return ['code' => 202 , 'msg' => '请检查账号是否存在'];
         }
@@ -134,6 +203,7 @@ class Teacher extends Model {
             $update['dimission'] = 1;
         }
         $update['is_forbid'] = 0;
+        $update['updated_at'] = date("Y-m-d H:i:s");
         $res = self::where('id',$data['teacher_id'])->update($update);
         if($res){
             //更新所有订单的状态为放入放入公海
