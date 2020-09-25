@@ -1821,8 +1821,8 @@ class Pay_order_inside extends Model
         }
         //财务进行驳回
         if($data['pay_status'] == 4){
-            if(!isset($data['offline_id']) || empty($data['offline_id'])){
-                return ['code' => 201 , 'msg' => '请选择收款账号'];
+            if(!isset($data['offlineing']) || empty($data['offlineing'])){
+                return ['code' => 201 , 'msg' => '请填写驳回原因'];
             }
             $admin = isset(AdminLog::getAdminInfo()->admin_user) ? AdminLog::getAdminInfo()->admin_user : [];
             $up=[
