@@ -1344,7 +1344,7 @@ class Pay_order_inside extends Model
         })
         ->whereBetween('create_time', [$state_time, $end_time])
         ->where($where)
-        ->where('pay_status','<',2)
+        ->where('pay_status','!=',2)
         ->count();
 
         $order = self::where(function($query) use ($data,$schoolarr) {
@@ -1356,7 +1356,7 @@ class Pay_order_inside extends Model
             $query->whereIn('school_id',$schoolarr);
         })
         ->where($where)
-        ->where('pay_status','<',2)
+        ->where('pay_status','!=',2)
         ->whereBetween('create_time', [$state_time, $end_time])
         ->orderByDesc('id')
         ->offset($offset)->limit($pagesize)->get()->toArray();
