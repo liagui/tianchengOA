@@ -12,6 +12,7 @@ use App\Models\Refund_order;
 use App\Tools\AlipayFactory;
 use App\Tools\QRcode;
 use App\Tools\WxpayFactory;
+use OSS\Tests\Common;
 
 class OrderController extends Controller {
     //总校&分校
@@ -624,10 +625,44 @@ class OrderController extends Controller {
         }
     }
 //    //汇付支付
-//    public function hfpay(){
-//        $url="https://nspos.cloudpnr.com/qrcp/E1103";
-//        $checkValue = CFCASignature.signature("100001.pfx","888888", jsonData, "UTF-8").getSign();
-//    }
+    public function hfpay(){
+        $url="https://nspos.cloudpnr.com/qrcp/E1103";
+//        //请求参数
+        $ontifyurl['merNoticeUrl'] = "http://www.tcoa.com/admin/hfnotify";
+        $merNoticeUrl = json_encode($ontifyurl);
+        $data=[
+            'termOrdId' => date('YmdHis', time()) . rand(1111, 9999),
+            'goodsDesc' => urlencode('龙德测试产品'),
+            'memberId' => '310000016002293818',
+            'ordAmt' => '0.01',
+            'apiVersion' => '1.0.0',
+            'payChannelType' => 'A1',
+            'merPriv' =>$merNoticeUrl
+        ];
+        $jsondata = json_encode($data);
+        $private_key_file = './key.pfx';
+        $pkcs12 = file_get_contents($private_key_file);
+        $certs = $signMsg =null;
+        openssl_pkcs12_read($pkcs12, $certs, "12345678");
+        $prikeyid = $certs['pkey']; //私钥
+        $jiamidata = $data['termOrdId'].$data['goodsDesc'].'3100000160022938180.011.0.0A1'.$ontifyurl['merNoticeUrl'];
+        echo $jiamidata;
+        openssl_sign($jiamidata, $signMsg, $prikeyid,SHA256);
+        $sign = base64_encode($signMsg);
+        $curldata=[
+            'jsonData'=>$jsondata,
+            'checkValue' =>$sign
+        ];
+        $ch = curl_init($url);
+        curl_setopt($ch, CURLOPT_RETURNTRANSFER, 1);
+        curl_setopt($ch, CURLOPT_POST, 1);
+        curl_setopt($ch, CURLOPT_POSTFIELDS, $curldata);
+        curl_setopt($ch, CURLOPT_SSL_VERIFYHOST, 0);
+        curl_setopt($ch, CURLOPT_SSL_VERIFYPEER, 0);
+        $result = curl_exec($ch);
+        curl_close($ch);
+        return $result;
+    }
     //汇聚签名
     public function hjHmac($arr,$str){
         $newarr = '';

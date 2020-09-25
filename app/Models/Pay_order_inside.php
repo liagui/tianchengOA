@@ -1696,6 +1696,7 @@ class Pay_order_inside extends Model
     public static function offlinepay($data){
         if($data['type'] <= 4){
             $channel = Channel::where(['is_use'=>0,'is_del'=>0,'is_forbid'=>0])->first();
+            print_r($channel);die;
             $paylist = PaySet::where(['channel_id'=>$channel['id']])->first();
             $list[0]['id'] = $paylist['id'];
             if($data['type'] == 1){ //微信
@@ -2740,8 +2741,8 @@ class Pay_order_inside extends Model
                 'project_name'  =>   $array[0]['project_name'] ,
                 'subject_name'  =>   $array[0]['subject_name'] ,
                 'course_name'   =>   $array[0]['course_name'] ,
-                'received_order'=>   array_sum(array_column($array , 'received_order')) , 
-                'refund_order'  =>   array_sum(array_column($array , 'refund_order')) , 
+                'received_order'=>   array_sum(array_column($array , 'received_order')) ,
+                'refund_order'  =>   array_sum(array_column($array , 'refund_order')) ,
                 'received_money'=>  sprintf("%.2f" , array_sum(array_column($array , 'received_money'))) ,  //到账金额
                 'refund_money'  =>  sprintf("%.2f" , array_sum(array_column($array , 'refund_money'))) ,      //退费金额
                 'enroll_price'  =>  sprintf("%.2f" , array_sum(array_column($array , 'enroll_price'))) ,      //报名费用
