@@ -1564,6 +1564,7 @@ class Pay_order_inside extends Model
             return ['code' => 201 , 'msg' => '未选择缴费类型'];
         }
         $data['confirm_status'] = 0;
+        $data['update_time'] = date('Y-m-d H:i:s');
         //获取操作员信息
         $up = Pay_order_inside::where(['id'=>$data['id']])->update($data);
         if($up){
@@ -1817,19 +1818,40 @@ class Pay_order_inside extends Model
         if(!isset($data['id']) || empty($data['id'])){
             return ['code' => 201 , 'msg' => '参数错误'];
         }
-        if(!isset($data['offline_id']) || empty($data['offline_id'])){
-            return ['code' => 201 , 'msg' => '请选择收款账号'];
-        }
-        if(!isset($data['pay_status'])){
-            return ['code' => 201 , 'msg' => '请判断类型'];
-        }
-        unset($data['/admin/order/offlineing']);
-        $data['update_time'] = date('Y-m-d H:i:s');
-        $up = Pay_order_inside::where(['id'=>$data['id']])->update($data);
-        if($up){
-            return ['code' => 200 , 'msg' => '成功'];
+        //财务进行驳回
+        if($data['pay_status'] == 4){
+            if(!isset($data['offline_id']) || empty($data['offline_id'])){
+                return ['code' => 201 , 'msg' => '请选择收款账号'];
+            }
+            $admin = isset(AdminLog::getAdminInfo()->admin_user) ? AdminLog::getAdminInfo()->admin_user : [];
+            $up=[
+                'confirm_status'=>2,
+                'reject_time'=>date('Y-m-d H:i:s'),
+                'reject_des'=>$data['reject_des'],
+                'reject_admin_id'=>$admin['id'],
+            ];
+            $up['update_time'] = date('Y-m-d H:i:s');
+            $up = Pay_order_inside::where(['id'=>$data['id']])->update($data);
+            if($up){
+                return ['code' => 200 , 'msg' => '成功'];
+            }else{
+                return ['code' => 201 , 'msg' => '失败'];
+            }
         }else{
-            return ['code' => 201 , 'msg' => '失败'];
+            if(!isset($data['offline_id']) || empty($data['offline_id'])){
+                return ['code' => 201 , 'msg' => '请选择收款账号'];
+            }
+            if(!isset($data['pay_status'])){
+                return ['code' => 201 , 'msg' => '请判断类型'];
+            }
+            unset($data['/admin/order/offlineing']);
+            $data['update_time'] = date('Y-m-d H:i:s');
+            $up = Pay_order_inside::where(['id'=>$data['id']])->update($data);
+            if($up){
+                return ['code' => 200 , 'msg' => '成功'];
+            }else{
+                return ['code' => 201 , 'msg' => '失败'];
+            }
         }
     }
 
