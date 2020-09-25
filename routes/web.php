@@ -88,7 +88,7 @@ $router->group(['prefix' => 'admin' , 'namespace' => 'Admin','middleware'=> ['jw
         //核对订单
         $router->post('auditOrder', 'OrderController@auditOrder');//核对款订单列表
         $router->post('offlinepay', 'OrderController@offlinepay');//核对款根据类型查账户
-        $router->post('offlineing', 'OrderController@offlineing');//修改核对ing
+        $router->post('offlineing', 'OrderController@c');//修改核对ing
 
 
     });

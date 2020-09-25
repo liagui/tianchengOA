@@ -1827,6 +1827,7 @@ class Pay_order_inside extends Model
             $admin = isset(AdminLog::getAdminInfo()->admin_user) ? AdminLog::getAdminInfo()->admin_user : [];
             $ups=[
                 'confirm_status'=>2,
+                'offline_id'=>isset($data['offline_id'])?$data['offline_id']:'',
                 'reject_time'=>date('Y-m-d H:i:s'),
                 'reject_des'=>$data['reject_des'],
                 'reject_admin_id'=>$admin['id'],
