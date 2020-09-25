@@ -207,14 +207,14 @@ class OrderController extends Controller {
             'label'=> 5
         ];
       }
-      $gong = offlinepay::where(['is_del'=>1,'type'=>1,'is_show'=>1])->count();
+      $gong = OfflinePay::where(['is_del'=>1,'type'=>1,'is_show'=>1])->count();
       if($gong > 0){
         $payarr[]=[
             'value'=>'对公打款',
             'label'=> 6
         ];
       }
-      $zfb = offlinepay::where(['is_del'=>1,'type'=>3,'is_show'=>1])->count();
+      $zfb = OfflinePay::where(['is_del'=>1,'type'=>3,'is_show'=>1])->count();
       if($zfb > 0){
         $payarr[]=[
             'value'=>'支付宝对公支付',
