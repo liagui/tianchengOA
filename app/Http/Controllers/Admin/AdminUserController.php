@@ -148,9 +148,13 @@ class AdminUserController extends Controller {
         if( !isset($data['id']) || empty($data['id']) || is_int($data['id']) ){
             return response()->json(['code'=>201,'msg'=>'账号id为空或缺少或类型不合法']);
         }
+        if( !isset($data['is_use']) || empty($data['is_use']) || is_int($data['is_use']) ){
+            return response()->json(['code'=>201,'msg'=>'是否使用为空或缺少或类型不合法']);
+        }   
+        $updateArr['audit_course_desc'] =  !isset($data['audit_course_desc']) || empty($data['audit_course_desc'])?'':$data['audit_course_desc']; 
         $role_id = isset(AdminLog::getAdminInfo()->admin_user->role_id) ? AdminLog::getAdminInfo()->admin_user->role_id : 0;
         $user_id = isset(AdminLog::getAdminInfo()->admin_user->id) ? AdminLog::getAdminInfo()->admin_user->id : 0;
-        $updateArr['is_use'] = 1;
+        $updateArr['is_use'] = $data['is_use'];
         $updateArr['updated_at'] = date('Y-m-d H:i:s');
         if(Adminuser::where(['id'=>$data['id']])->update($updateArr)){
             //添加日志操作
@@ -227,7 +231,9 @@ class AdminUserController extends Controller {
             return response()->json(['code'=>206,'msg'=>'登录密码不一致']);
         }
         if(!isset($data['school_id']) || empty($data['school_id'])){
-            $data['school_id'] = '0';
+            $schoolIds = School::where(['is_open'=>0,'is_del'=>0])->select('id')->get()->toArray();
+            $schoolIds = empty($schoolIds)  ?'':array_column($schoolIds, 'id');
+            $data['school_id'] = $schoolIds == ''?'':implode(',',$schoolIds);
         }else{
             $data['school_id'] = $data['school_id'];
         }  
@@ -350,7 +356,9 @@ class AdminUserController extends Controller {
            return response()->json(['code'=>201,'msg'=>'admin账户禁止编辑']);
         }
         if(!isset($data['school_id']) || empty($data['school_id'])){
-            $data['school_id'] = '0';
+            $schoolIds = School::where(['is_open'=>0,'is_del'=>0])->select('id')->get()->toArray();
+            $schoolIds = empty($schoolIds)  ?'':array_column($schoolIds, 'id');
+            $data['school_id'] = $schoolIds == ''?'':implode(',',$schoolIds);
         }else{
             $data['school_id'] = $data['school_id'];
         } 
