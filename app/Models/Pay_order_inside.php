@@ -1062,9 +1062,10 @@ class Pay_order_inside extends Model
             return ['code' => 201 , 'msg' => '参数有误'];
         }
         $res = Pay_order_external::where(['id'=>$data['id'],'del_flag'=>0])->first();
-        if(!$res){
+        if($res){
             $res['school_id'] = null;
             $res['first_pay'] = null;
+            $res['pay_type'] = (int)$res['pay_type'];
             //查询分类
             //course  课程
             $course = Course::select('course_name')->where(['id'=>$res['course_id']])->first();
