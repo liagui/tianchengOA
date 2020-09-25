@@ -43,6 +43,7 @@ $router->group(['prefix' => 'admin' , 'namespace' => 'Admin','middleware'=> 'cor
     $router->get('hjnotify', 'NotifyController@hjnotify');//汇聚 支付回调
     $router->post('zfbnotify', 'NotifyController@zfbnotify');//支付宝支付回调
     $router->post('wxnotify', 'NotifyController@wxnotify');//微信支付回调
+    $router->post('paylistarr', 'OrderController@paylistarr');//支付方式
 
     $router->get('doExportBranchSchoolExcel', 'OrderExcelController@doExportBranchSchoolExcel');           //导出分校收入详情
     $router->get('doExportBranchSchoolConfirmOrderExcel', 'OrderExcelController@doExportBranchSchoolConfirmOrderExcel');           //导出分校已确认订单

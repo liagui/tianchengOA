@@ -172,6 +172,61 @@ class OrderController extends Controller {
         return response()->json($list);
     }
 
+    //获取支付列表数组
+    public function  paylistarr(){
+      $channel = Channel::where(['is_use'=>0,'is_del'=>0,'is_forbid'=>0])->first();
+      $paylist = PaySet::where(['channel_id'=>$channel['id']])->first();
+      $payarr=[];
+      if($paylist['wx_pay_state'] == 1){
+        $payarr[]=[
+            'value'=>'微信扫码',
+            'label'=> 1
+        ];
+      }
+      if($paylist['zfb_pay_state'] == 1){
+        $payarr[]=[
+            'value'=>'支付宝扫码',
+            'label'=> 2
+        ];
+      }
+      if($paylist['hj_wx_pay_state'] == 1){
+        $payarr[]=[
+            'value'=>'汇聚微信扫码',
+            'label'=> 3
+        ];
+      }
+      if($paylist['hj_zfb_pay_state'] == 1){
+        $payarr[]=[
+            'value'=>'汇聚支付宝扫码',
+            'label'=> 4
+
+        ];
+      }
+      $bank = offlinepay::where(['is_del'=>1,'type'=>2,'is_show'=>1])->count();
+      if($bank > 0){
+        $payarr[]=[
+            'value'=>'银行卡支付',
+            'label'=> 5
+        ];
+      }
+      $gong = offlinepay::where(['is_del'=>1,'type'=>1,'is_show'=>1])->count();
+      if($gong > 0){
+        $payarr[]=[
+            'value'=>'对公打款',
+            'label'=> 6
+        ];
+      }
+      $zfb = offlinepay::where(['is_del'=>1,'type'=>3,'is_show'=>1])->count();
+      if($zfb > 0){
+        $payarr[]=[
+            'value'=>'支付宝对公支付',
+            'label'=> 7
+        ];
+      }
+
+
+
+    }
     /*
      * @param  description   开课管理列表接口
      * @param  参数说明       body包含以下参数[
