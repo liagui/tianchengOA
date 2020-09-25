@@ -1084,9 +1084,11 @@ class Pay_order_inside extends Model
                 $major = Major::where(['id'=>$res['major_id']])->first();
                 $res['major_name'] = $major['major_name'];
             }
-            return ['code' => 201 , 'msg' => '查无此订单'];
+            return ['code' => 200 , 'msg' => '查询成功','data'=>$res];
+        }else{
+            return ['code' => 201, 'msg' => '查询失败'];
         }
-        return ['code' => 200 , 'msg' => '查询成功','data'=>$res];
+
     }
     /*
          * @param  分校未提交订单进行提交
