@@ -1590,6 +1590,7 @@ class Pay_order_inside extends Model
          */
     public static function auditOrder($data){
         $where['del_flag']=0;
+        $where['confirm_status']=0;
         //判断时间
         $begindata="2020-03-04";
         $enddate = date('Y-m-d');
