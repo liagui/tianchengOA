@@ -1778,6 +1778,8 @@ class Pay_order_inside extends Model
                     $major = Major::where(['id'=>$v['major_id']])->first();
                     $v['major_name'] = $major['major_name'];
                 }
+                $pay_voucher_name = Admin::where(['id'=>$v['pay_voucher_user_id']])->first();
+                $v['pay_voucher_name'] = $pay_voucher_name;
         }
         $page=[
             'pagesize'=>$pagesize,
@@ -1847,8 +1849,8 @@ class Pay_order_inside extends Model
                 return ['code' => 201 , 'msg' => '请判断类型'];
             }
             unset($data['/admin/order/offlineing']);
-            unset($data['type']);
             $data['update_time'] = date('Y-m-d H:i:s');
+            $data['pay_type'] = $data['type'];
             $up = Pay_order_inside::where(['id'=>$data['id']])->update($data);
             if($up){
                 return ['code' => 200 , 'msg' => '成功'];
