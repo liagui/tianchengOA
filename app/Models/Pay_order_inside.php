@@ -1847,6 +1847,7 @@ class Pay_order_inside extends Model
                 return ['code' => 201 , 'msg' => '请判断类型'];
             }
             unset($data['/admin/order/offlineing']);
+            unset($data['type']);
             $data['update_time'] = date('Y-m-d H:i:s');
             $up = Pay_order_inside::where(['id'=>$data['id']])->update($data);
             if($up){
