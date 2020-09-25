@@ -10,7 +10,6 @@ use App\Models\PaySet;
 use App\Models\Refund_order;
 use App\Tools\AlipayFactory;
 use App\Tools\QRcode;
-use App\Models\offlinepay;
 
 class OrderController extends Controller {
     //总校&分校
@@ -538,11 +537,12 @@ class OrderController extends Controller {
         $insert['collecting_data'] = 0;
         $insert['del_flag'] = 0;
         $insert['status'] = 0;
+        $list = Channel::where(['is_use'=>0,'is_del'=>0,'is_forbid'=>0])->first();
+        $paylist = PaySet::where(['channel_id'=>$list['id']])->first();
+        $insert['offline_id'] = $list['id'];
         $add = Pay_order_external::insertGetId($insert);
         if($add){
             $course = Course::where(['id'=>$data['course_id']])->first();
-            $list = Channel::where(['is_use'=>0])->first();
-            $paylist = PaySet::where(['channel_id'=>$list['id']])->first();
             //微信
             if($data['pay_type'] == 1){
 //                $wxpay = new WxpayFactory();
