@@ -3569,48 +3569,48 @@ class Pay_order_inside extends Model
         $payarr=[];
         if($paylist['wx_pay_state'] == 1){
             $payarr[]=[
-                'value'=>'微信扫码',
-                'label'=> 1
+                'label'=>'微信扫码',
+                'value'=> 1
             ];
         }
         if($paylist['zfb_pay_state'] == 1){
             $payarr[]=[
-                'value'=>'支付宝扫码',
-                'label'=> 2
+                'label'=>'支付宝扫码',
+                'value'=> 2
             ];
         }
         if($paylist['hj_wx_pay_state'] == 1){
             $payarr[]=[
-                'value'=>'汇聚微信扫码',
-                'label'=> 3
+                'label'=>'汇聚微信扫码',
+                'value'=> 3
             ];
         }
         if($paylist['hj_zfb_pay_state'] == 1){
             $payarr[]=[
-                'value'=>'汇聚支付宝扫码',
-                'label'=> 4
+                'label'=>'汇聚支付宝扫码',
+                'value'=> 4
 
             ];
         }
         $bank = OfflinePay::where(['is_del'=>1,'type'=>2,'is_show'=>1])->count();
         if($bank > 0){
             $payarr[]=[
-                'value'=>'银行卡支付',
-                'label'=> 5
+                'label'=>'银行卡支付',
+                'value'=> 5
             ];
         }
         $gong = OfflinePay::where(['is_del'=>1,'type'=>1,'is_show'=>1])->count();
         if($gong > 0){
             $payarr[]=[
-                'value'=>'对公打款',
-                'label'=> 6
+                'label'=>'对公打款',
+                'value'=> 6
             ];
         }
         $zfb = OfflinePay::where(['is_del'=>1,'type'=>3,'is_show'=>1])->count();
         if($zfb > 0){
             $payarr[]=[
-                'value'=>'支付宝对公支付',
-                'label'=> 7
+                'label'=>'支付宝对公支付',
+                'value'=> 7
             ];
         }
         return ['code' => 200 , 'msg' => '获取列表成功' , 'data' => $payarr];
