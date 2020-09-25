@@ -1250,7 +1250,8 @@ class Pay_order_inside extends Model
             'course_Price' => isset($data['course_Price'])?$data['course_Price']:0,
             'sum_Price' => $external['pay_price'],
             'sign_Price' => isset($data['sign_Price'])?$data['sign_Price']:0,
-            'admin_id' => $admin['id']
+            'admin_id' => $admin['id'],
+            'offline_id' => $external['offline_id']
         ];
         $add = Pay_order_inside::insert($insert);
         if($add){
