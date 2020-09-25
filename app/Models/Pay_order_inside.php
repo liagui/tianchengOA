@@ -1696,7 +1696,6 @@ class Pay_order_inside extends Model
     public static function offlinepay($data){
         if($data['type'] <= 4){
             $channel = Channel::where(['is_use'=>0,'is_del'=>0,'is_forbid'=>0])->first();
-            print_r($channel);die;
             $paylist = PaySet::where(['channel_id'=>$channel['id']])->first();
             $list[0]['id'] = $paylist['id'];
             if($data['type'] == 1){ //微信
