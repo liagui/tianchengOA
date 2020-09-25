@@ -13,6 +13,7 @@ use App\Tools\AlipayFactory;
 use App\Tools\QRcode;
 use App\Tools\WxpayFactory;
 use OSS\Tests\Common;
+use App\Models\offlinepay;
 
 class OrderController extends Controller {
     //总校&分校
@@ -173,7 +174,7 @@ class OrderController extends Controller {
     }
 
     //获取支付列表数组
-    public function  paylistarr(){
+    public function paylistarr(){
       $channel = Channel::where(['is_use'=>0,'is_del'=>0,'is_forbid'=>0])->first();
       $paylist = PaySet::where(['channel_id'=>$channel['id']])->first();
       $payarr=[];
