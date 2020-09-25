@@ -223,9 +223,7 @@ class OrderController extends Controller {
             'label'=> 7
         ];
       }
-
-
-
+      return response()->json(['code'=>200,'msg'=>'成功','data'=>$payarr]);
     }
     /*
      * @param  description   开课管理列表接口
