@@ -1780,7 +1780,7 @@ class Pay_order_inside extends Model
                     $v['major_name'] = $major['major_name'];
                 }
                 $pay_voucher_name = Admin::where(['id'=>$v['pay_voucher_user_id']])->first();
-                $v['pay_voucher_name'] = $pay_voucher_name;
+                $v['pay_voucher_name'] = $pay_voucher_name['username'];
         }
         $page=[
             'pagesize'=>$pagesize,
