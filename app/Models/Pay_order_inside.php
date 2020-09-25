@@ -1851,6 +1851,7 @@ class Pay_order_inside extends Model
             unset($data['/admin/order/offlineing']);
             $data['update_time'] = date('Y-m-d H:i:s');
             $data['pay_type'] = $data['type'];
+            unset($data['type']);
             $up = Pay_order_inside::where(['id'=>$data['id']])->update($data);
             if($up){
                 return ['code' => 200 , 'msg' => '成功'];
