@@ -4,15 +4,12 @@ use App\Http\Controllers\Controller;
 use App\Models\AdminLog;
 use App\Models\Channel;
 use App\Models\Course;
-use App\Models\Order;
 use App\Models\Pay_order_external;
 use App\Models\Pay_order_inside;
 use App\Models\PaySet;
 use App\Models\Refund_order;
 use App\Tools\AlipayFactory;
 use App\Tools\QRcode;
-use App\Tools\WxpayFactory;
-use OSS\Tests\Common;
 use App\Models\offlinepay;
 
 class OrderController extends Controller {
@@ -203,7 +200,7 @@ class OrderController extends Controller {
 
         ];
       }
-      $bank = offlinepay::where(['is_del'=>1,'type'=>2,'is_show'=>1])->count();
+      $bank = OfflinePay::where(['is_del'=>1,'type'=>2,'is_show'=>1])->count();
       if($bank > 0){
         $payarr[]=[
             'value'=>'银行卡支付',
