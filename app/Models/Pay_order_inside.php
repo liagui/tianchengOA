@@ -339,30 +339,30 @@ class Pay_order_inside extends Model
         $data['pay_voucher_time'] = date('Y-m-d H:i:s');//上传凭证时间
         $data['admin_id'] = $admin['id'];
         $data['is_handorder'] = 1;   //手动报单
-        if($data['pay_type'] <= 4){
-            $exorder = Pay_order_external::where(['name'=>$data['name'],'mobile'=>$data['mobile'],'course_id'=>$data['course_id'],'project_id'=>$data['project_id'],'subject_id'=>$data['subject_id'],'pay_status'=>1,'status'=>0])->first();
-            if(!empty($exorder)){
-                $data['order_no'] = $exorder['order_no'];
-                $data['create_time'] =$exorder['create_time'];
-                $data['pay_time'] = $exorder['pay_time'];
-                $data['pay_status'] = 1;
-                $data['pay_price'] = $exorder['pay_price'];
-                $data['realy_pay_type'] = $exorder['pay_type'];
-                Pay_order_external::where(['id'=>$exorder['id']])->update(['status'=>1]);
-            }else{
-                $data['order_no'] = date('YmdHis', time()) . rand(1111, 9999); //订单号  随机生成
-                $data['create_time'] =date('Y-m-d H:i:s');
-                $data['pay_time'] =date('Y-m-d H:i:s');
-                $data['pay_status'] = 3;  //3是待审核
-                $data['pay_price'] = $data['course_Price'] + $data['sign_Price'];
-            }
-        }else{
+//        if($data['pay_type'] <= 4){
+//            $exorder = Pay_order_external::where(['name'=>$data['name'],'mobile'=>$data['mobile'],'course_id'=>$data['course_id'],'project_id'=>$data['project_id'],'subject_id'=>$data['subject_id'],'pay_status'=>1,'status'=>0])->first();
+//            if(!empty($exorder)){
+//                $data['order_no'] = $exorder['order_no'];
+//                $data['create_time'] =$exorder['create_time'];
+//                $data['pay_time'] = $exorder['pay_time'];
+//                $data['pay_status'] = 1;
+//                $data['pay_price'] = $exorder['pay_price'];
+//                $data['realy_pay_type'] = $exorder['pay_type'];
+//                Pay_order_external::where(['id'=>$exorder['id']])->update(['status'=>1]);
+//            }else{
+//                $data['order_no'] = date('YmdHis', time()) . rand(1111, 9999); //订单号  随机生成
+//                $data['create_time'] =date('Y-m-d H:i:s');
+//                $data['pay_time'] =date('Y-m-d H:i:s');
+//                $data['pay_status'] = 3;  //3是待审核
+//                $data['pay_price'] = $data['course_Price'] + $data['sign_Price'];
+//            }
+//        }else{
             $data['order_no'] = date('YmdHis', time()) . rand(1111, 9999); //订单号  随机生成
             $data['create_time'] =date('Y-m-d H:i:s');
             $data['pay_time'] =date('Y-m-d H:i:s');
             $data['pay_status'] = 3;  //3是待审核
             $data['pay_price'] = $data['course_Price'] + $data['sign_Price'];
-        }
+//        }
         $add = self::insert($data);
         if($add){
             return ['code' => 200 , 'msg' => '报单成功'];
