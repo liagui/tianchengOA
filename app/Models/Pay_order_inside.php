@@ -1796,13 +1796,13 @@ class Pay_order_inside extends Model
          * return  array
          */
     public static function offlinepay($data){
-        if($data['type'] == 5){ //银行卡支付
+        if($data['pay_type'] == 5){ //银行卡支付
             $type = 2;
         }
-        if($data['type'] == 6){ //对公转账
+        if($data['pay_type'] == 6){ //对公转账
             $type = 1;
         }
-        if($data['type'] == 7){ //支付宝账号对公
+        if($data['pay_type'] == 7){ //支付宝账号对公
             $type = 3;
         }
         $list = OfflinePay::where(['type'=>$type,'is_show'=>1,'is_del'=>1])->get()->toArray();
@@ -1850,8 +1850,6 @@ class Pay_order_inside extends Model
             }
             unset($data['/admin/order/offlineing']);
             $data['update_time'] = date('Y-m-d H:i:s');
-            $data['pay_type'] = $data['type'];
-            unset($data['type']);
             $up = Pay_order_inside::where(['id'=>$data['id']])->update($data);
             if($up){
                 return ['code' => 200 , 'msg' => '成功'];
