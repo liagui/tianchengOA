@@ -1327,6 +1327,9 @@ class Pay_order_inside extends Model
         if(isset($data['classes'])){
             $where['classes'] = $data['classes'];
         }
+        if(isset($data['school_id'])){
+            $where['school_id'] = $data['school_id'];
+        }
 
         //每页显示的条数
         $pagesize = (int)isset($data['pagesize']) && $data['pagesize'] > 0 ? $data['pagesize'] : 20;
