@@ -373,6 +373,7 @@ class Refund_order extends Model
          * return  array
          */
     public static function amendOrder($data){
+        $admin = isset(AdminLog::getAdminInfo()->admin_user) ? AdminLog::getAdminInfo()->admin_user : [];
         $order = self::select('confirm_status','refund_plan')->where(['id' => $data['id']])->first();
         if(!$order){
             return ['code' => 201 , 'msg' => '参数不对'];
@@ -415,6 +416,7 @@ class Refund_order extends Model
                 $up['school_id'] = $data['school_id'];
                 $up['refund_reason'] = $data['refund_reason'];
                 $up['refund_time'] = date('Y-m-d H:i:s');
+                $up['confirm_user_id'] = $admin['id'];
                 if($order['refund_plan'] == 0){
                     $up['refund_plan'] = 1;
                 }
@@ -431,6 +433,8 @@ class Refund_order extends Model
                 $up['confirm_status'] = 1;
                 $up['refund_plan'] = 3;
                 $up['refund_cause'] = $data['refund_cause'];
+                $up['refund_time'] = date('Y-m-d H:i:s');
+                $up['confirm_user_id'] = $admin['id'];
                 $date = self::where(['id'=>$data['id']])->update($up);
                 if($date){
                     return ['code' => 200, 'msg' => '操作成功'];
