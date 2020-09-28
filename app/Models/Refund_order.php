@@ -390,6 +390,8 @@ class Refund_order extends Model
                         $up['teacher_id'] = $orderdetail['have_user_id'];
                     }
                 }
+            }else{
+                $orderid = [];
             }
             if(!isset($data['pay_credentials']) || empty($data['pay_credentials'])) {
                 $credentialss = '';
