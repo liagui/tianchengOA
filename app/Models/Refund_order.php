@@ -568,7 +568,9 @@ class Refund_order extends Model
         if(empty($returnorder)){
             return ['code' => 201 , 'msg' => '数据错误'];
         }
-        $payvoucher=[];
+        $payvoucher=[
+            '0' => $returnorder['pay_credentials']
+        ];
         if(!empty($returnorder)){
             $orderid = explode(',',$returnorder['order_id']);
             foreach ($orderid as $k=>$v) {
