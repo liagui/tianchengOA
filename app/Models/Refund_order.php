@@ -395,9 +395,9 @@ class Refund_order extends Model
                 if(!isset($data['pay_credentials']) || empty($data['pay_credentials'])) {
                     return ['code' => 201, 'msg' => '请上传支付凭证'];
                 }else{
-//                    $credentials = json_decode($data['pay_credentials'],true);
-//                    $credentialss = implode(',',$credentials);
-                    $up['pay_credentials'] = $data['pay_credentials'];
+                    $credentials = json_decode($data['pay_credentials'],true);
+                    $credentialss = implode(',',$credentials);
+                    $up['pay_credentials'] = $credentialss;
                     $up['remit_time'] = date('Y-m-d H:i:s');
                 }
             }
