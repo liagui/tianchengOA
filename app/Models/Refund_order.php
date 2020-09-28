@@ -565,7 +565,7 @@ class Refund_order extends Model
     }
     //关联支付凭证 id  订单id
     public static function relevanceVoucher($data){
-        $returnorder = self::select('order_id','pay_credentials')->where(['id'=>$data['id']])->first();
+        $returnorder = self::select('order_id','pay_credentials','remit_time','refund_no')->where(['id'=>$data['id']])->first();
         if(empty($returnorder)){
             return ['code' => 201 , 'msg' => '数据错误'];
         }
