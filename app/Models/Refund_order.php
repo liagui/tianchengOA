@@ -596,6 +596,7 @@ class Refund_order extends Model
             return ['code' => 201 , 'msg' => '数据错误'];
         }
         $payvoucher=[];
+        $imglist =[];
         if(!empty($returnorder)){
             if(!empty($returnorder['pay_credentials'])){
             $newarr1 = explode(',',$returnorder['pay_credentials']);
@@ -606,6 +607,7 @@ class Refund_order extends Model
                     'pay_voucher' => $vss,
                 ];
                 array_push($payvoucher,$arr1);
+                array_push($imglist,$vss);
               }
             }
             if(!empty($returnorder['order_id'])){
@@ -618,9 +620,10 @@ class Refund_order extends Model
                         'pay_voucher' => $orderone['pay_voucher']
                     ];
                     array_push($payvoucher,$arr);
+                    array_push($imglist,$orderone['pay_voucher']);
                 }
             }
         }
-        return ['code' => 200 , 'msg' => '获取成功','data'=>$payvoucher];
+        return ['code' => 200 , 'msg' => '获取成功','data'=>$payvoucher,'imglist'=>$imglist];
     }
 }
