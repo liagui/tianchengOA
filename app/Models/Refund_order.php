@@ -570,7 +570,8 @@ class Refund_order extends Model
             return ['code' => 201 , 'msg' => '数据错误'];
         }
         $payvoucher=[];
-        if(!empty($returnorder['pay_credentials'])){
+        if(!empty($returnorder)){
+            if(!empty($returnorder['pay_credentials'])){
 
 //            $newarr1 = explode(',',$returnorder['pay_credentials']);
 //            foreach ($newarr1 as $kss=>$vss){
@@ -581,8 +582,7 @@ class Refund_order extends Model
                 ];
                 $payvoucher[]=$arr1;
 //            }
-        }
-        if(!empty($returnorder)){
+            }
             $orderid = explode(',',$returnorder['order_id']);
             foreach ($orderid as $k=>$v) {
                 $orderone = Pay_order_inside::where(['id' => $v])->first();
