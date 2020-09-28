@@ -392,12 +392,12 @@ class Refund_order extends Model
                 }
             }else{
                 $orderid = [];
-            }
-            if(!isset($data['pay_credentials']) || empty($data['pay_credentials'])) {
-                $credentialss = '';
-            }else{
-                $credentials = json_decode($data['pay_credentials'],true);
-                $credentialss = implode(',',$credentials);
+                if(!isset($data['pay_credentials']) || empty($data['pay_credentials'])) {
+                    $credentialss = '';
+                }else{
+                    $credentials = json_decode($data['pay_credentials'],true);
+                    $credentialss = implode(',',$credentials);
+                }
             }
             $up['course_id'] = $data['course_id'];
             $up['student_name'] = $data['student_name'];
