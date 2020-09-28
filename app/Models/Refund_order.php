@@ -568,9 +568,15 @@ class Refund_order extends Model
         if(empty($returnorder)){
             return ['code' => 201 , 'msg' => '数据错误'];
         }
-        $payvoucher=[
-            '0' => $returnorder['pay_credentials']
-        ];
+        $payvoucher=[];
+        if(!empty($returnorder['pay_credentials'])){
+            $arr1=[
+                'pay_voucher_time' => $returnorder['remit_time'],
+                'order_no' => $returnorder['refund_no'],
+                'pay_voucher' => $returnorder['pay_credentials'],
+            ];
+            array_push($payvoucher,$arr1);
+        }
         if(!empty($returnorder)){
             $orderid = explode(',',$returnorder['order_id']);
             foreach ($orderid as $k=>$v) {
@@ -580,7 +586,8 @@ class Refund_order extends Model
                     'order_no' => $orderone['order_no'],
                     'pay_voucher' => $orderone['pay_voucher']
                 ];
-                $payvoucher[] = $arr;
+                array_push($payvoucher,$arr);
+//                $payvoucher[] = $arr;
             }
         }
         return ['code' => 200 , 'msg' => '获取成功','data'=>$payvoucher];
