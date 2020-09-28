@@ -192,15 +192,15 @@ class Refund_order extends Model
             'total'=>$count
         ];
         //退费总金额
-        $tuicount = self::sum('refund_Price');
+        $tuicount = self::whereIn('school_id',$schoolarr)->sum('refund_Price');
         //未确认金额   confirm_status 0
-        $weicount = self::where(['confirm_status'=>0])->sum('refund_Price');
+        $weicount = self::whereIn('school_id',$schoolarr)->where(['confirm_status'=>0])->sum('refund_Price');
         //已确认金额   confirm_status 1
-        $surecount = self::where(['confirm_status'=>1])->sum('refund_Price');
+        $surecount = self::whereIn('school_id',$schoolarr)->where(['confirm_status'=>1])->sum('refund_Price');
         //已退金额   refund_plan = 2
-        $yituicount = self::where(['refund_plan'=>2])->sum('refund_Price');
+        $yituicount = self::whereIn('school_id',$schoolarr)->where(['refund_plan'=>2])->sum('refund_Price');
         //未处理条数
-        $weisum = self::where(['confirm_status'=>0])->count();
+        $weisum = self::whereIn('school_id',$schoolarr)->where(['confirm_status'=>0])->count();
         $count=[
             'tuicount' => $tuicount,
             'weicount' => $weicount,
