@@ -226,9 +226,9 @@ class Admin extends Model implements AuthenticatableContract, AuthorizableContra
                 if(empty($school)){
                    $v['schoolname'] = ''; 
                 }else{
-                    sort($school);
+                    
                     if(in_array($school[0],[0]) && !isset($school[1])){
-                        $school = '全部';
+                        $v['schoolname']  = '全部';
                     }else{
                         $schoolData = School::whereIn('id',$school)->select('school_name','id')->get()->toArray();
                         $str = '';
