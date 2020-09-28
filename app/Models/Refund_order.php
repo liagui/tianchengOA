@@ -393,10 +393,12 @@ class Refund_order extends Model
             }else{
                 $orderid = [];
                 if(!isset($data['pay_credentials']) || empty($data['pay_credentials'])) {
-                    $credentialss = '';
+                    return ['code' => 201, 'msg' => '请上传支付凭证'];
                 }else{
-                    $credentials = json_decode($data['pay_credentials'],true);
-                    $credentialss = implode(',',$credentials);
+//                    $credentials = json_decode($data['pay_credentials'],true);
+//                    $credentialss = implode(',',$credentials);
+                    $up['pay_credentials'] = $data['pay_credentials'];
+                    $up['remit_time'] = date('Y-m-d H:i:s');
                 }
             }
             $up['course_id'] = $data['course_id'];
@@ -407,7 +409,6 @@ class Refund_order extends Model
             $up['reality_price'] = $data['reality_price'];
             $up['school_id'] = $data['school_id'];
             $up['refund_reason'] = $data['refund_reason'];
-            $up['pay_credentials'] = $credentialss;
             $up['refund_time'] = date('Y-m-d H:i:s');
             if($order['refund_plan'] == 0){
                 $up['refund_plan'] = 1;
