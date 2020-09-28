@@ -573,14 +573,13 @@ class Refund_order extends Model
         if(!empty($returnorder)){
             if(!empty($returnorder['pay_credentials'])){
             $newarr1 = explode(',',$returnorder['pay_credentials']);
-            print_r($newarr1);die;
             foreach ($newarr1 as $kss=>$vss){
                 $arr1=[
                     'pay_voucher_time' => $returnorder['remit_time'],
                     'order_no' => $returnorder['refund_no'],
                     'pay_voucher' => $vss,
                 ];
-                $payvoucher[]=$arr1;
+                array_push($payvoucher,$arr1);
               }
             }
             if(!empty($returnorder['order_id'])){
@@ -592,7 +591,7 @@ class Refund_order extends Model
                         'order_no' => $orderone['order_no'],
                         'pay_voucher' => $orderone['pay_voucher']
                     ];
-                    $payvoucher[] = $arr;
+                    array_push($payvoucher,$arr);
                 }
             }
         }
