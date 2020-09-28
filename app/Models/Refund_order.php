@@ -76,7 +76,7 @@ class Refund_order extends Model
          * @param 列表
          * @param  school_id     学校
          * @param  confirm_status   退费状态0未确认 1确认
-         * @param  refund_plan   1未打款 2已打款
+         * @param  refund_plan   1未打款 2已打款 3 已驳回
          * @param  state_time   开始时间
          * @param  end_time   结束时间
          * @param  order_on   订单号/手机号/姓名
@@ -162,8 +162,10 @@ class Refund_order extends Model
                     $v['refund_plan_text'] = '未确认';
                 }else if($v['refund_plan'] == 1){
                     $v['refund_plan_text'] = '未打款';
-                }else{
+                }else if($v['refund_plan'] == 2){
                     $v['refund_plan_text'] = '已打款';
+                }else if($v['refund_plan'] == 3){
+                    $v['refund_plan_text'] = '被驳回';
                 }
                 //course  课程
                 $course = Course::select('course_name')->where(['id'=>$v['course_id']])->first();
@@ -365,6 +367,7 @@ class Refund_order extends Model
          * @param  school_id  学校id
          * @param  refund_reason  退费原因
          * @param  pay_credentials  arr 凭证
+         * @param  status  1通过2驳回
          * @param  author  苏振文
          * @param  ctime   2020/9/9 16:19
          * return  array
@@ -377,47 +380,62 @@ class Refund_order extends Model
         if($order['confirm_status'] == 1){
             return ['code' => 200, 'msg' => '修改成功'];
         }else{
-            $parent = json_decode($data['project_id'], true);
-            $up['project_id'] = $parent[0];
-            if(!empty($parent[1])){
-                $up['subject_id'] = $parent[1];
-            }
-            if(isset($data['order_id'])){
-                $orderid = json_decode($data['order_id'],true);
-                foreach ($orderid as $k=>$v){
-                    $orderdetail = Pay_order_inside::where(['id'=>$v['id']])->first();
-                    if($orderdetail['first_pay'] == 1 || $orderdetail['first_pay'] == 2){
-                        $up['teacher_id'] = $orderdetail['have_user_id'];
+            //判断是通过还是驳回
+            if($data['status'] == 1){
+                $parent = json_decode($data['project_id'], true);
+                $up['project_id'] = $parent[0];
+                if(!empty($parent[1])){
+                    $up['subject_id'] = $parent[1];
+                }
+                if(isset($data['order_id'])){
+                    $orderid = json_decode($data['order_id'],true);
+                    foreach ($orderid as $k=>$v){
+                        $orderdetail = Pay_order_inside::where(['id'=>$v['id']])->first();
+                        if($orderdetail['first_pay'] == 1 || $orderdetail['first_pay'] == 2){
+                            $up['teacher_id'] = $orderdetail['have_user_id'];
+                        }
+                    }
+                }else{
+                    $orderid = [];
+                    if(!isset($data['pay_credentials']) || empty($data['pay_credentials'])) {
+                        return ['code' => 201, 'msg' => '请上传支付凭证'];
+                    }else{
+                        $credentials = json_decode($data['pay_credentials'],true);
+                        $credentialss = implode(',',$credentials);
+                        $up['pay_credentials'] = $credentialss;
+                        $up['remit_time'] = date('Y-m-d H:i:s');
                     }
                 }
-            }else{
-                $orderid = [];
-                if(!isset($data['pay_credentials']) || empty($data['pay_credentials'])) {
-                    return ['code' => 201, 'msg' => '请上传支付凭证'];
-                }else{
-                    $credentials = json_decode($data['pay_credentials'],true);
-                    $credentialss = implode(',',$credentials);
-                    $up['pay_credentials'] = $credentialss;
-                    $up['remit_time'] = date('Y-m-d H:i:s');
+                $up['course_id'] = $data['course_id'];
+                $up['student_name'] = $data['student_name'];
+                $up['phone'] = $data['phone'];
+                $up['confirm_status'] = 1;
+                $up['order_id'] = implode(',',$orderid);
+                $up['reality_price'] = $data['reality_price'];
+                $up['school_id'] = $data['school_id'];
+                $up['refund_reason'] = $data['refund_reason'];
+                $up['refund_time'] = date('Y-m-d H:i:s');
+                if($order['refund_plan'] == 0){
+                    $up['refund_plan'] = 1;
                 }
-            }
-            $up['course_id'] = $data['course_id'];
-            $up['student_name'] = $data['student_name'];
-            $up['phone'] = $data['phone'];
-            $up['confirm_status'] = 1;
-            $up['order_id'] = implode(',',$orderid);
-            $up['reality_price'] = $data['reality_price'];
-            $up['school_id'] = $data['school_id'];
-            $up['refund_reason'] = $data['refund_reason'];
-            $up['refund_time'] = date('Y-m-d H:i:s');
-            if($order['refund_plan'] == 0){
-                $up['refund_plan'] = 1;
-            }
-            $date = self::where(['id'=>$data['id']])->update($up);
-            if($date){
-                return ['code' => 200, 'msg' => '修改成功'];
+                $date = self::where(['id'=>$data['id']])->update($up);
+                if($date){
+                    return ['code' => 200, 'msg' => '修改成功'];
+                }else{
+                    return ['code' => 201, 'msg' => '修改失败'];
+                }
             }else{
-                return ['code' => 201, 'msg' => '修改失败'];
+                if(!isset($data['refund_cause']) || empty($data['refund_cause'])){
+                    return ['code' => 201, 'msg' => '请填写驳回原因'];
+                }
+                $up['refund_plan'] = 3;
+                $up['refund_cause'] = $data['refund_cause'];
+                $date = self::where(['id'=>$data['id']])->update($up);
+                if($date){
+                    return ['code' => 200, 'msg' => '操作成功'];
+                }else{
+                    return ['code' => 201, 'msg' => '操作失败'];
+                }
             }
         }
     }

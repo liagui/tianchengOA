@@ -649,8 +649,7 @@ class OrderController extends Controller {
         openssl_pkcs12_read($pkcs12, $certs, "12345678");
         $prikeyid = $certs['pkey']; //私钥
         $jiamidata = $data['termOrdId'].$data['goodsDesc'].'3100000160022938180.011.0.0A1'.$ontifyurl['merNoticeUrl'];
-        echo $jiamidata;
-        openssl_sign($jiamidata, $signMsg, $prikeyid,SHA256);
+        openssl_sign($jiamidata, $signMsg, $prikeyid,OPENSSL_ALGO_SHA256);
         $sign = base64_encode($signMsg);
         $curldata=[
             'jsonData'=>$jsondata,
