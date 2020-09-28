@@ -222,28 +222,23 @@ class Admin extends Model implements AuthenticatableContract, AuthorizableContra
             $schoolAll = empty($schoolAll)?[] :array_column($schoolAll,'id');
             foreach($adminUserData as $key=>&$v){
                 $v['role_name'] = !isset($roleArr[$v['role_id']])?'':$roleArr[$v['role_id']];
-                $school =  empty($v['school_id'])?[]:explode(",",$v['school_id']);
+                $school =  empty($v['school_id'])&&strlen($v['school_id'])<=0?[]:explode(",",$v['school_id']);
                 if(empty($school)){
                    $v['schoolname'] = ''; 
                 }else{
-                    asort($school);
-                    if(count($school)==1){
-                        $school = [$school];
+                    sort($school);
+                    if(in_array($school[0],[0]) && !isset($school[1])){
+                        $school = '全部';
                     }else{
-                        $diffSchool = array_diff($schoolAll,$school);
-                        if(empty($diffSchool)){
-                            $v['schoolname'] = '全部';
-                        }else{
-                            $schoolData = School::whereIn('id',$school)->select('school_name','id')->get()->toArray();
-                            $str = '';
-                            if(!empty($schoolData)){
-                                foreach ($schoolData as $k => &$school) {
-                                    $str .= $school['school_name'].',';
-                                }
-                                $v['schoolname'] =  rtrim($str,',');      
-                            }else{
-                                $v['schoolname'] = '';
+                        $schoolData = School::whereIn('id',$school)->select('school_name','id')->get()->toArray();
+                        $str = '';
+                        if(!empty($schoolData)){
+                            foreach ($schoolData as $k => &$school) {
+                                $str .= $school['school_name'].',';
                             }
+                            $v['schoolname'] =  rtrim($str,',');      
+                        }else{
+                            $v['schoolname'] = '';
                         }
                     }
                 } 
@@ -298,71 +293,6 @@ class Admin extends Model implements AuthenticatableContract, AuthorizableContra
         return ['code'=>200,'msg'=>'Success','data'=>['role_auth_list' => [] , 'total' => 0 , 'pagesize' => $pagesize , 'page' => $page,'search'=>$body['search'],'sum_page'=>$sum_page]];
     }
 
-    /*
-     * @param  description   绑定手机号
-     * @param  参数说明       body包含以下参数[
-     *      mobile 手机号
-     *      user_id  用户id
-     *      verifycode 验证码
-     *      wx  微信 
-     *      license     营业执照 
-     *      hand_card   手持身份证照片 
-     *      card_front  身份证正面 
-     *      card_side   身份证反面 
-     * ]
-     * @param author    lys
-     * @param ctime     2020-04-29
-     */
-    public function bindMobile($body){
-        $body = self::$accept_data;
-            //判断传过来的数组数据是否为空
-            if(!$body || !is_array($body)){
-                return response()->json(['code' => 202 , 'msg' => '传递数据不合法']);
-            }
-            //判断手机号是否为空
-            if(!isset($body['mobile']) || empty($body['mobile'])){
-                return response()->json(['code' => 201 , 'msg' => '请输入手机号']);
-            } else if(!preg_match('#^13[\d]{9}$|^14[\d]{9}$|^15[\d]{9}$|^17[\d]{9}$|^18[\d]{9}|^16[\d]{9}|^19[\d]{9}$#', $body['mobile'])) {
-                return response()->json(['code' => 202 , 'msg' => '手机号不合法']);
-            }
-            //判断验证码是否为空
-            if(!isset($body['verifycode']) || empty($body['verifycode'])){
-                return response()->json(['code' => 201 , 'msg' => '请输入验证码']);
-            }
 
-             $key = 'oadminuser:bind:'.$body['phone'];
-            //验证码合法验证
-            $verify_code = Redis::get('oadminuser:bind:'.$body['phone']);
-            if(!$verify_code || empty($verify_code)){
-                return ['code' => 201 , 'msg' => '请先获取短信验证码'];
-            }
-
-            //判断验证码是否一致
-            if($verify_code != $body['verifycode']){
-                return ['code' => 202 , 'msg' => '短信验证码错误'];
-            }
-            //验证码合法验证
-            $verify_code = Redis::get('oauser:bind:'.$body['mobile']);
-            if(!$verify_code || empty($verify_code)){
-                return ['code' => 201 , 'msg' => '请先获取验证码'];
-            }
-            //判断验证码是否一致
-            if($verify_code != $body['verifycode']){
-                return ['code' => 202 , 'msg' => '验证码错误'];
-            }
-            $key = 'oauser:bind:'.$body['mobile'];
-            //判断此学员是否被请求过一次(防止重复请求,且数据信息存在)
-            if(Redis::get($key)){
-                return response()->json(['code' => 205 , 'msg' => '此手机号已被注册']);
-            } else {
-                //判断用户手机号是否注册过
-                $student_count = User::where("mobile" , $body['mobile'])->count();
-                if($student_count > 0){
-                    //存储学员的手机号值并且保存60s
-                    Redis::setex($key , 60 , $body['mobile']);
-                    return response()->json(['code' => 205 , 'msg' => '此手机号已被绑定']);
-                }
-            }
-    }
 
 }

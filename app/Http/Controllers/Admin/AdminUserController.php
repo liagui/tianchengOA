@@ -16,10 +16,7 @@ use Illuminate\Support\Facades\DB;
 
 class AdminUserController extends Controller {
 
-    public function bindMobile(){
-        $result = Adminuser::bindMobile(self::$accept_data);
-        return response()->json($result);
-    }
+    
 
 
      /*
@@ -230,13 +227,16 @@ class AdminUserController extends Controller {
         if($data['password'] != $data['pwd']){
             return response()->json(['code'=>206,'msg'=>'登录密码不一致']);
         }
+        // if(!isset($data['school_id']) || empty($data['school_id'])){ //屠屠的思维
+        //     $schoolIds = School::where(['is_open'=>0,'is_del'=>0])->select('id')->get()->toArray();
+        //     $schoolIds = empty($schoolIds)  ?'':array_column($schoolIds, 'id');
+        //     $data['school_id'] = $schoolIds == ''?'':implode(',',$schoolIds);
+        // }else{
+        //     $data['school_id'] = $data['school_id'];
+        // }  
         if(!isset($data['school_id']) || empty($data['school_id'])){
-            $schoolIds = School::where(['is_open'=>0,'is_del'=>0])->select('id')->get()->toArray();
-            $schoolIds = empty($schoolIds)  ?'':array_column($schoolIds, 'id');
-            $data['school_id'] = $schoolIds == ''?'':implode(',',$schoolIds);
-        }else{
-            $data['school_id'] = $data['school_id'];
-        }  
+            $data['school_id'] = 0;
+        }
         if(isset($data['pwd'])){
             unset($data['pwd']);
         }
@@ -355,13 +355,16 @@ class AdminUserController extends Controller {
         if(in_array($data['id'], [1])){
            return response()->json(['code'=>201,'msg'=>'admin账户禁止编辑']);
         }
+        // if(!isset($data['school_id']) || empty($data['school_id'])){ //屠屠的思维
+        //     $schoolIds = School::where(['is_open'=>0,'is_del'=>0])->select('id')->get()->toArray();
+        //     $schoolIds = empty($schoolIds)  ?'':array_column($schoolIds, 'id');
+        //     $data['school_id'] = $schoolIds == ''?'':implode(',',$schoolIds);
+        // }else{
+        //     $data['school_id'] = $data['school_id'];
+        // } 
         if(!isset($data['school_id']) || empty($data['school_id'])){
-            $schoolIds = School::where(['is_open'=>0,'is_del'=>0])->select('id')->get()->toArray();
-            $schoolIds = empty($schoolIds)  ?'':array_column($schoolIds, 'id');
-            $data['school_id'] = $schoolIds == ''?'':implode(',',$schoolIds);
-        }else{
-            $data['school_id'] = $data['school_id'];
-        } 
+             $data['school_id'] =0;
+        }   
          //7.11  end  
         if(isset($data['password']) && isset($data['pwd'])){
          
