@@ -382,12 +382,14 @@ class Refund_order extends Model
             if(!empty($parent[1])){
                 $up['subject_id'] = $parent[1];
             }
-            $orderid = json_decode($data['order_id'],true);
-            foreach ($orderid as $k=>$v){
-               $orderdetail = Pay_order_inside::where(['id'=>$v['id']])->first();
-               if($orderdetail['first_pay'] == 1 || $orderdetail['first_pay'] == 2){
-                   $up['teacher_id'] = $orderdetail['have_user_id'];
-               }
+            if(isset($data['order_id'])){
+                $orderid = json_decode($data['order_id'],true);
+                foreach ($orderid as $k=>$v){
+                    $orderdetail = Pay_order_inside::where(['id'=>$v['id']])->first();
+                    if($orderdetail['first_pay'] == 1 || $orderdetail['first_pay'] == 2){
+                        $up['teacher_id'] = $orderdetail['have_user_id'];
+                    }
+                }
             }
             if(!isset($data['pay_credentials']) || empty($data['pay_credentials'])) {
                 $credentialss = '';
