@@ -577,7 +577,7 @@ class Refund_order extends Model
                 $arr1=[
                     'pay_voucher_time' => $returnorder['remit_time'],
                     'order_no' => $returnorder['refund_no'],
-                    'pay_voucher' => $returnorder['pay_credentials'],
+                    'pay_voucher' => $vss,
                 ];
                 $payvoucher[]=$arr1;
               }
