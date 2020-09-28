@@ -381,6 +381,9 @@ class Refund_order extends Model
         if($order['confirm_status'] == 1){
             return ['code' => 200, 'msg' => '修改成功'];
         }else{
+            if($data['status'] == 0 || empty($data['status'])){
+                return ['code' => 201 , 'msg' => '请选择状态'];
+            }
             //判断是通过还是驳回
             if($data['status'] == 1){
                 $parent = json_decode($data['project_id'], true);
