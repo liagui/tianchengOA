@@ -428,6 +428,7 @@ class Refund_order extends Model
                 if(!isset($data['refund_cause']) || empty($data['refund_cause'])){
                     return ['code' => 201, 'msg' => '请填写驳回原因'];
                 }
+                $up['confirm_status'] = 1;
                 $up['refund_plan'] = 3;
                 $up['refund_cause'] = $data['refund_cause'];
                 $date = self::where(['id'=>$data['id']])->update($up);
