@@ -571,7 +571,7 @@ class Refund_order extends Model
         }
         $payvoucher=[];
         if(!empty($returnorder['pay_credentials'])){
-            $newarr1 = json_decode($returnorder['pay_credentials'],true);
+            $newarr1 = explode(',',$returnorder['pay_credentials']);
             foreach ($newarr1 as $kss=>$vss){
                 $arr1=[
                     'pay_voucher_time' => $returnorder['remit_time'],
