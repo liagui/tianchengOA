@@ -452,9 +452,9 @@ class Refund_order extends Model
     //关联订单列表 id  订单id
     public static function relevanceOrder($data){
         $returnorder = self::where(['id'=>$data['id']])->first();
+        $orderid = explode(',',$returnorder['order_id']);
         $order=[];
-        if(!empty($returnorder)){
-            $orderid = explode(',',$returnorder['order_id']);
+        if(!empty($orderid)){
             foreach ($orderid as $k=>$v){
                 $orderone = Pay_order_inside::where(['id'=>$v])->first();
                 //查学校
