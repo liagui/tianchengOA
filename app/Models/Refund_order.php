@@ -572,26 +572,27 @@ class Refund_order extends Model
         $payvoucher=[];
         if(!empty($returnorder)){
             if(!empty($returnorder['pay_credentials'])){
-
-//            $newarr1 = explode(',',$returnorder['pay_credentials']);
-//            foreach ($newarr1 as $kss=>$vss){
+            $newarr1 = explode(',',$returnorder['pay_credentials']);
+            foreach ($newarr1 as $kss=>$vss){
                 $arr1=[
                     'pay_voucher_time' => $returnorder['remit_time'],
                     'order_no' => $returnorder['refund_no'],
                     'pay_voucher' => $returnorder['pay_credentials'],
                 ];
                 $payvoucher[]=$arr1;
-//            }
+              }
             }
-            $orderid = explode(',',$returnorder['order_id']);
-            foreach ($orderid as $k=>$v) {
-                $orderone = Pay_order_inside::where(['id' => $v])->first();
-                $arr=[
-                    'pay_voucher_time' => $orderone['pay_voucher_time'],
-                    'order_no' => $orderone['order_no'],
-                    'pay_voucher' => $orderone['pay_voucher']
-                ];
-                $payvoucher[] = $arr;
+            if(!empty($returnorder['order_id'])){
+                $orderid = explode(',',$returnorder['order_id']);
+                foreach ($orderid as $k=>$v) {
+                    $orderone = Pay_order_inside::where(['id' => $v])->first();
+                    $arr=[
+                        'pay_voucher_time' => $orderone['pay_voucher_time'],
+                        'order_no' => $orderone['order_no'],
+                        'pay_voucher' => $orderone['pay_voucher']
+                    ];
+                    $payvoucher[] = $arr;
+                }
             }
         }
         return ['code' => 200 , 'msg' => '获取成功','data'=>$payvoucher];
