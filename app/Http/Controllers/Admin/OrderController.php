@@ -9,6 +9,9 @@ use App\Models\Pay_order_inside;
 use App\Models\PaySet;
 use App\Models\Refund_order;
 use App\Tools\AlipayFactory;
+use App\Tools\Hfcfcademo;
+use App\Tools\Hfpay;
+use App\Tools\HuifuCFCA;
 use App\Tools\QRcode;
 
 class OrderController extends Controller {
@@ -168,7 +171,6 @@ class OrderController extends Controller {
         $list = Pay_order_inside::offlineing(self::$accept_data);
         return response()->json($list);
     }
-
     //获取支付列表数组
     public function paylistarr(){
       $list = Pay_order_inside::paylistarr();
@@ -201,7 +203,6 @@ class OrderController extends Controller {
             return response()->json(['code' => 500 , 'msg' => $ex->getMessage()]);
         }
     }
-
     /*
      * @param  description   开课管理订单详情接口
      * @param  参数说明       body包含以下参数[
@@ -225,7 +226,6 @@ class OrderController extends Controller {
             return response()->json(['code' => 500 , 'msg' => $ex->getMessage()]);
         }
     }
-
     /*
      * @param  description   开课管理-确认开课方法
      * @param  参数说明       body包含以下参数[
@@ -253,7 +253,6 @@ class OrderController extends Controller {
             return response()->json(['code' => 500 , 'msg' => $ex->getMessage()]);
         }
     }
-
     /*
      * @param  description   确认开课详情接口
      * @param  参数说明       body包含以下参数[
@@ -276,7 +275,6 @@ class OrderController extends Controller {
             return response()->json(['code' => 500 , 'msg' => $ex->getMessage()]);
         }
     }
-
     /*
      * @param  description   财务管理-总校收入详情
      * @param  参数说明       body包含以下参数[
@@ -310,7 +308,6 @@ class OrderController extends Controller {
             return response()->json(['code' => 500 , 'msg' => $ex->getMessage()]);
         }
     }
-
     /*
      * @param  description   财务管理-分校收入详情
      * @param  参数说明       body包含以下参数[
@@ -344,7 +341,6 @@ class OrderController extends Controller {
             return response()->json(['code' => 500 , 'msg' => $ex->getMessage()]);
         }
     }
-
     /*
      * @param  description   财务管理-分校收入详情-已确认订单
      * @param  参数说明       body包含以下参数[
@@ -376,7 +372,6 @@ class OrderController extends Controller {
             return response()->json(['code' => 500 , 'msg' => $ex->getMessage()]);
         }
     }
-
     /*
      * @param  description   财务管理-分校收入详情-已退费订单
      * @param  参数说明       body包含以下参数[
@@ -408,7 +403,6 @@ class OrderController extends Controller {
             return response()->json(['code' => 500 , 'msg' => $ex->getMessage()]);
         }
     }
-
     /*
      * @param  description   财务管理-分校订单明细公共接口
      * @param  参数说明       body包含以下参数[
@@ -440,7 +434,6 @@ class OrderController extends Controller {
             return response()->json(['code' => 500 , 'msg' => $ex->getMessage()]);
         }
     }
-
     /*
      * @param  description   财务管理-分校业绩列表
      * @param  参数说明       body包含以下参数[
@@ -465,7 +458,6 @@ class OrderController extends Controller {
             return response()->json(['code' => 500 , 'msg' => $ex->getMessage()]);
         }
     }
-
     //支付信息
     public function paylist(){
         $list = Channel::where(['is_use'=>0])->first();
@@ -627,43 +619,11 @@ class OrderController extends Controller {
 
         }
     }
-//    //汇付支付
+    //汇付支付
     public function hfpay(){
-        $url="https://nspos.cloudpnr.com/qrcp/E1103";
-//        //请求参数
-        $ontifyurl['merNoticeUrl'] = "http://www.tcoa.com/admin/hfnotify";
-        $merNoticeUrl = json_encode($ontifyurl);
-        $data=[
-            'termOrdId' => date('YmdHis', time()) . rand(1111, 9999),
-            'goodsDesc' => urlencode('龙德测试产品'),
-            'memberId' => '310000016002293818',
-            'ordAmt' => '0.01',
-            'apiVersion' => '1.0.0',
-            'payChannelType' => 'A1',
-            'merPriv' =>$merNoticeUrl
-        ];
-        $jsondata = json_encode($data);
-        $private_key_file = './key.pfx';
-        $pkcs12 = file_get_contents($private_key_file);
-        $certs = $signMsg =null;
-        openssl_pkcs12_read($pkcs12, $certs, "12345678");
-        $prikeyid = $certs['pkey']; //私钥
-        $jiamidata = $data['termOrdId'].$data['goodsDesc'].'3100000160022938180.011.0.0A1'.$ontifyurl['merNoticeUrl'];
-        openssl_sign($jiamidata, $signMsg, $prikeyid,OPENSSL_ALGO_SHA256);
-        $sign = base64_encode($signMsg);
-        $curldata=[
-            'jsonData'=>$jsondata,
-            'checkValue' =>$sign
-        ];
-        $ch = curl_init($url);
-        curl_setopt($ch, CURLOPT_RETURNTRANSFER, 1);
-        curl_setopt($ch, CURLOPT_POST, 1);
-        curl_setopt($ch, CURLOPT_POSTFIELDS, $curldata);
-        curl_setopt($ch, CURLOPT_SSL_VERIFYHOST, 0);
-        curl_setopt($ch, CURLOPT_SSL_VERIFYPEER, 0);
-        $result = curl_exec($ch);
-        curl_close($ch);
-        return $result;
+        $hf = new Hfcfcademo();
+        $aaa = $hf->apiRequest();
+        return $aaa;
     }
     //汇聚签名
     public function hjHmac($arr,$str){
