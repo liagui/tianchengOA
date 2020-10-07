@@ -11,7 +11,7 @@ use App\Models\Refund_order;
 use App\Tools\AlipayFactory;
 use App\Tools\Hfcfcademo;
 use App\Tools\Hfpay;
-use App\Tools\HuifuCFCA;
+use App\Tools\Hf\HuifuCFCA;
 use App\Tools\QRcode;
 
 class OrderController extends Controller {
@@ -621,7 +621,7 @@ class OrderController extends Controller {
     }
     //汇付支付
     public function hfpay(){
-        $hf = new Hfcfcademo();
+        $hf = new HuifuCFCA();
         $aaa = $hf->apiRequest();
         return $aaa;
     }
