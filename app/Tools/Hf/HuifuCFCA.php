@@ -3,7 +3,7 @@ namespace App\Tools\Hf;
 
 class HuifuCFCA
 {
-    private $apiUrl                 = 'http://www.tcoa.com/admin/hfnotify';                       //app+ 商户交易接口,此处使用的是联调环境地址
+    private $apiUrl                 = 'http://testoapi.longde999.cn/admin/hfnotify';                       //app+ 商户交易接口,此处使用的是联调环境地址
     private $strSignAlg             = 'RSA';                     //RSA证书类型
     private $strPfxPassword         = '12345678';                 //导出时设置的密码
     private $strHashAlg             = 'SHA-256';                //加签算法
