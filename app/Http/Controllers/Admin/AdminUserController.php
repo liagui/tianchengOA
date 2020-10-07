@@ -248,6 +248,9 @@ class AdminUserController extends Controller {
         if(isset($data['/admin/adminuser/doInsertAdminUser'])){
             unset($data['/admin/adminuser/doInsertAdminUser']);
         }
+        if(isset($data['search'])){
+            unset($data['search']);
+        }
         $data['password'] = password_hash($data['password'], PASSWORD_DEFAULT);
         $data['create_id'] = !isset(CurrentAdmin::user()['id'])?0:CurrentAdmin::user()['id'];
         $data['create_time'] =  date('Y-m-d H:i:s');
@@ -387,6 +390,9 @@ class AdminUserController extends Controller {
         
         if(isset($data['/admin/adminuser/doAdminUserUpdate'])){
             unset($data['/admin/adminuser/doAdminUserUpdate']);
+        }
+        if(isset($data['search'])){
+            unset($data['search']);
         }
         $where['username']   = $data['username'];
         $count = Adminuser::where($where)->where('id','!=',$data['id'])->count();
