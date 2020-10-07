@@ -234,9 +234,4 @@ class HuifuCFCA
     }
 
 }
-//调用
-$demoObj = new HuifuCFCA();
-$data = $demoObj->apiRequest();
 
-print_r('<pre/>');
-print_r($data);
