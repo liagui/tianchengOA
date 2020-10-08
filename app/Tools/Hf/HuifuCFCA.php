@@ -7,7 +7,7 @@ class HuifuCFCA
     private $strSignAlg             = 'RSA';                     //RSA证书类型
     private $strPfxPassword         = '12345678';                 //导出时设置的密码
     private $strHashAlg             = 'SHA-256';                //加签算法
-    private $strPfxFilePath        = '../RSA/key.pfx';      //汇付下发的证书，此处换成商户自己的证书 .pfx 格式 加签使用
+    private $strPfxFilePath        = './RSA/key.pfx';      //汇付下发的证书，此处换成商户自己的证书 .pfx 格式 加签使用
     private $strTrustedCACertFilePath = './RSA/CFCA_ACS_TEST_OCA31.cer|./RSA/CFCA_ACS_TEST_CA.cer'; //汇付下发的.cer证书 ，需要一对证书 解签使用
     private $strLogCofigFilePath  = './cfcalog.conf';          //CFCA log 目录
 
@@ -34,6 +34,32 @@ class HuifuCFCA
      * @return string
      */
     public function apiRequest(){
+        $ontify['merNoticeUrl'] = "http://www.tcoa.com/admin/hfnotify";
+        $ontifyurl['termOrdId'] = date('YmdHis', time()) . rand(1111, 9999);
+        $ontifyurl['goodsDesc'] = urlencode('龙德测试产品');
+        $ontifyurl['memberId'] = '310000016002293818';
+        $ontifyurl['ordAmt'] = '0.01';
+        $ontifyurl['apiVersion'] = '1.0.0';
+        $ontifyurl['payChannelType'] = 'A1';
+        $ontifyurl['merPriv'] = json_encode($ontify);
+
+        //加签
+        $strSignSourceData = json_encode($ontifyurl);
+        $cfcaSign = $this->CFCASignature($strSignSourceData);
+
+//接口请求参数
+        $param = [
+            'requestData'  => [
+                'jsonData' => $strSignSourceData,
+                'check_value' => $cfcaSign,
+            ],
+            'headers' => ['Content-type' => 'application/x-www-form-urlencoded;charset=UTF-8']
+        ];
+        $requestData = $this->requestData($param);
+        print_r($requestData);die;
+        $checkValue = json_decode($requestData['body'],1)['check_value'];
+
+
         //请求参数，依据商户自己的参数为准
         $requestParam['version'] = '10';
         $requestParam['cmd_id'] = '202';
@@ -180,7 +206,7 @@ class HuifuCFCA
         try{
             // 请求接口所以参数初始化
             $data = [
-                'url'         => $this->apiUrl,          // 接口 url
+                'url'         => 'https://nspos.cloudpnr.com/qrcp/E1103',          // 接口 url
                 'requestData' => $param['requestData'], // 请求接口参数
                 'headers'     =>$param['headers']
             ];

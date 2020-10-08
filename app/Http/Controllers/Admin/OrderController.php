@@ -621,7 +621,7 @@ class OrderController extends Controller {
     }
     //汇付支付
     public function hfpay(){
-        $hf = new Hfcfcademo();
+        $hf = new \App\Tools\Hf\HuifuCFCA();
         $aaa = $hf->apiRequest();
         return $aaa;
     }
