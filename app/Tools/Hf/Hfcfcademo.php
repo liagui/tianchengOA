@@ -1,12 +1,12 @@
 <?php
-namespace App\Tools;
+namespace App\Tools\hf;
 
 class Hfcfcademo{
     private $strSignAlg             = 'RSA';                     //RSA证书类型
     private $strPfxPassword         = '12345678';                 //导出时设置的密码
     private $strHashAlg             = 'SHA-256';                //加签算法
-    private $strPfxFilePath        = '../RSA/key.pfx';       //汇付天下发的证书，此处换成商户自己的证书  此处换成商户自己的证书 .pfx 格式 加签使用
-    private $strTrustedCACertFilePath = '../RSA/CFCA_ACS_TEST_OCA31.cer|../RSA/CFCA_ACS_CA.cer'; //汇付下发的.cer证书 ，需要一对证书 验签使用
+    private $strPfxFilePath        = './RSA/key.pfx';       //汇付天下发的证书，此处换成商户自己的证书  此处换成商户自己的证书 .pfx 格式 加签使用
+    private $strTrustedCACertFilePath = './RSA/CFCA_ACS_TEST_OCA31.cer|./RSA/CFCA_ACS_CA.cer'; //汇付下发的.cer证书 ，需要一对证书 验签使用
     private $cryptoAgentServerObj = '';                         //CFCA obj
 
     public function __construct()
@@ -48,7 +48,7 @@ class Hfcfcademo{
         curl_setopt($ch, CURLOPT_POST, 1);
         curl_setopt($ch, CURLOPT_POSTFIELDS, http_build_query($responseData));
         curl_setopt($ch, CURLOPT_SSL_VERIFYHOST, 0);
-        curl_setopt($ch, CURLOPT_SSL_VERIFYPEER, 1);
+        curl_setopt($ch, CURLOPT_SSL_VERIFYPEER, 0);
         curl_setopt ($ch, CURLOPT_HTTPHEADER,$header['headers']);
         $result = curl_exec($ch);
         curl_close($ch);
@@ -82,18 +82,12 @@ class Hfcfcademo{
      * @return string
      */
     private function CFCASignature($strSignSourceData){
-        $strMsgPKCS7AttachedSignature = '';
-
         try{
-            $strMsgPKCS7AttachedSignature = $this->cryptoAgentServerObj->SignData_PKCS7Attached($this->strSignAlg, $strSignSourceData,
-                $this->strPfxFilePath, $this->strPfxPassword, $this->strHashAlg);
-
+            $strMsgPKCS7AttachedSignature = $this->cryptoAgentServerObj->SignData_PKCS7Attached($this->strSignAlg, $strSignSourceData,$this->strPfxFilePath, $this->strPfxPassword, $this->strHashAlg);
         }catch (Exception $e){
             $strErrorMsg = $this->cryptoAgentServerObj->GetLastErrorDesc();
-
             return  $strErrorMsg;
         }
-
         return base64_encode($strMsgPKCS7AttachedSignature);
     }
 
@@ -172,15 +166,15 @@ class Hfcfcademo{
     private function requestData($param)
     {
 //        try{
-            // 请求接口所以参数初始化
-            $data = [
-                'url'         => $this->apiUrl,          // 接口 url
-                'requestData' => $param['requestData'], // 请求接口参数
-                'headers'     =>$param['headers']
-            ];
+        // 请求接口所以参数初始化
+        $data = [
+            'url'         => $this->apiUrl,          // 接口 url
+            'requestData' => $param['requestData'], // 请求接口参数
+            'headers'     =>$param['headers']
+        ];
 
-            $res = $this->httpPostRequest($data['url'],$data['headers'],$data['requestData']);
-            return $res;
+        $res = $this->httpPostRequest($data['url'],$data['headers'],$data['requestData']);
+        return $res;
 //        } catch (\Exception $e) {
 //            //记录log
 //            throw new Exception("api requestData error :".$e);
