@@ -668,8 +668,10 @@ class OrderController extends Controller {
         file_put_contents('yinlianzhifu.txt', '时间:' . date('Y-m-d H:i:s') . print_r($xml, true), FILE_APPEND);
     }
     public function ylpost($url,$data){
+        $param['headers'] = ['Content-type' => 'application/x-www-form-urlencoded;charset=UTF-8'];
         //简单的curl
         $ch = curl_init($url);
+        curl_setopt ($ch, CURLOPT_HTTPHEADER, $param['headers']);
         curl_setopt($ch, CURLOPT_RETURNTRANSFER, 1);
         curl_setopt($ch, CURLOPT_POST, 1);
         curl_setopt($ch, CURLOPT_POSTFIELDS, $data);
