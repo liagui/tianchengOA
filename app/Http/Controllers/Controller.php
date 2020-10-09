@@ -320,10 +320,9 @@ class Controller extends BaseController {
         $look_school =  $oneChildSchoolIdsArr =  $twoChildSchoolIdsArr = $thereChildSchoolIdsArr  = $oneSchoolIds = $twoSchoolIds = $look_school_all_arr= $twoChildSchoolIdsArrs= [];
 
         $schoolIds = explode(',',$school_id);
-        
-        if(in_array($schoolIds[0],[0]) && $schoolIds<=0 && count($schoolIds)==1){
+        if(in_array($schoolIds[0],[0]) && count($schoolIds)==1){
             $schoolData = \App\Models\School::where(['is_del'=>0])->select('id','look_all_flag','level')->get()->toArray();
-            return ['code'=>200,'msg'=>'success','data'=>$schoolData];
+            return ['code'=>200,'msg'=>'成功','data'=>$schoolData];
         }else{
             $schoolData = \App\Models\School::whereIn('id',$schoolIds)->where(['is_del'=>0])->select('id','look_all_flag','level')->get()->toArray();
             if(empty($schoolData)){
