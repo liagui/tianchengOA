@@ -1662,6 +1662,7 @@ class Pay_order_inside extends Model
         ->where(['is_handorder'=>1])
         ->whereBetween('create_time', [$state_time, $end_time])
         ->orderByDesc('id')
+        ->offset($offset)->limit($pagesize)
         ->get()->toArray();
         foreach ($order as $k=>&$v){
                 //查学校
