@@ -135,7 +135,7 @@ class Refund_order extends Model
                     ->orwhere('student_name',$data['order_on'])
                     ->orwhere('phone',$data['order_on']);
             }
-            $query->whereIn('school_id',$schoolarr);
+//            $query->whereIn('school_id',$schoolarr);
         })
 
         ->whereBetween('create_time', [$state_time, $end_time])
