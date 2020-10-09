@@ -321,7 +321,8 @@ class Controller extends BaseController {
 
         $schoolIds = explode(',',$school_id);
         if(in_array($schoolIds[0],[0]) && count($schoolIds)==1){
-            $schoolData = \App\Models\School::where(['is_del'=>0])->select('id','look_all_flag','level')->get()->toArray();
+            $schoolData = \App\Models\School::where(['is_del'=>0])->select('id')->get()->toArray();
+            $schoolData = !empty($schoolData) ? array_column($schoolData,'id'):[];
             return ['code'=>200,'msg'=>'成功','data'=>$schoolData];
         }else{
             $schoolData = \App\Models\School::whereIn('id',$schoolIds)->where(['is_del'=>0])->select('id','look_all_flag','level')->get()->toArray();
