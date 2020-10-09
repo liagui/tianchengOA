@@ -40,6 +40,8 @@ $router->group(['prefix' => 'admin' , 'namespace' => 'Admin','middleware'=> 'cor
     $router->post('paylist', 'OrderController@paylist');//支付通道
     $router->post('oapay', 'OrderController@oapay');//支付
     $router->post('hfpay', 'OrderController@hfpay');//汇付支付
+    $router->post('ylpay', 'OrderController@ylpay');//银联支付
+    $router->post('ylnotify_url', 'OrderController@ylnotify_url');//银联支付
     $router->get('hjnotify', 'NotifyController@hjnotify');//汇聚 支付回调
     $router->post('zfbnotify', 'NotifyController@zfbnotify');//支付宝支付回调
     $router->post('wxnotify', 'NotifyController@wxnotify');//微信支付回调
