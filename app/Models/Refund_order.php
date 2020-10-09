@@ -127,20 +127,19 @@ class Refund_order extends Model
 
         //列表
         $order = self::where($where)->where(function($query) use ($data,$schoolarr) {
-//            if(isset($data['confirm_order_type'])){
-//                $query->where('confirm_order_type',$data['confirm_order_type']);
-//            }
-//            if(isset($data['order_on']) && !empty($data['order_on'])){
-//                $query->where('refund_no',$data['order_on'])
-//                    ->orwhere('student_name',$data['order_on'])
-//                    ->orwhere('phone',$data['order_on']);
-//            }
-//            $query->whereIn('school_id',$schoolarr);
+            if(isset($data['confirm_order_type'])){
+                $query->where('confirm_order_type',$data['confirm_order_type']);
+            }
+            if(isset($data['order_on']) && !empty($data['order_on'])){
+                $query->where('refund_no',$data['order_on'])
+                    ->orwhere('student_name',$data['order_on'])
+                    ->orwhere('phone',$data['order_on']);
+            }
+            $query->whereIn('school_id',$schoolarr);
         })
         ->whereBetween('create_time', [$state_time, $end_time])
         ->orderByDesc('id')
         ->offset($offset)->limit($pagesize)->get()->toArray();
-        print_r($order);die;
         //循环查询分类
         if(!empty($order)){
             foreach ($order as $k=>&$v){
