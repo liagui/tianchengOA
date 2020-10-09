@@ -140,6 +140,7 @@ class Refund_order extends Model
         ->whereBetween('create_time', [$state_time, $end_time])
         ->orderByDesc('id')
         ->offset($offset)->limit($pagesize)->get()->toArray();
+        print_r($order);die;
         //循环查询分类
         if(!empty($order)){
             foreach ($order as $k=>&$v){
