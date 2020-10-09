@@ -359,7 +359,7 @@ class Pay_order_inside extends Model
 //        }else{
             $data['order_no'] = date('YmdHis', time()) . rand(1111, 9999); //订单号  随机生成
             $data['create_time'] =date('Y-m-d H:i:s');
-            $data['pay_time'] =date('Y-m-d H:i:s');
+            $data['pay_time'] =isset($data['pay_time'])?$data['pay_time']:date('Y-m-d H:i:s');;
             $data['pay_status'] = 3;  //3是待审核
             $data['pay_price'] = $data['course_Price'] + $data['sign_Price'];
 //        }
