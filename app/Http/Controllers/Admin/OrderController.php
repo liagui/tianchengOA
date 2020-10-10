@@ -623,7 +623,7 @@ class OrderController extends Controller {
         $hf = new \App\Tools\Hf\HuifuCFCA();
         $noti['merNoticeUrl']= "http://".$_SERVER['HTTP_HOST']."/admin/hjnotify";
         $nptify = json_encode($noti);
-        $data['termOrdId'] = date('YmdHis', time()) . rand(1111, 9999);
+        $data['termOrdId'] = '20201010175408938';
         $data['goodsDesc'] = 'aaaa';
         $data['memberId'] = '310000016002336988';
         $data['ordAmt'] = '0.01';
@@ -631,6 +631,7 @@ class OrderController extends Controller {
         $data['payChannelType'] = 'A1';
         $data['merPriv'] = $nptify;
         $jsonData = json_encode($data);
+        print_r($jsonData);
         //签名
         $sign = $hf->getSign($jsonData,'./key.pfx');
         echo $sign;
