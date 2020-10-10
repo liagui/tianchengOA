@@ -623,7 +623,7 @@ class OrderController extends Controller {
         $hf = new \App\Tools\Hf\HuifuCFCA();
         $noti['merNoticeUrl']= "http://".$_SERVER['HTTP_HOST']."/admin/hjnotify";
         $nptify = json_encode($noti);
-        $data['termOrdId'] = date('YmdHis', time()) . rand(1111, 9999);
+        $data['termOrdId'] = 'HF'.date('YmdHis', time()) . rand(1111, 9999);
         $data['goodsDesc'] = urlencode('龙德产品');
         $data['memberId'] = '310000016002293818';
         $data['ordAmt'] = '1';
@@ -639,37 +639,5 @@ class OrderController extends Controller {
         ];
         $post = $hf->http_post('https://nspos.cloudpnr.com/qrcp/E1103',$parem);
         return $post;
-    }
-    //汇聚签名
-    public function hjHmac($arr,$str){
-        $newarr = '';
-        foreach ($arr as $k=>$v){
-            $newarr =$newarr.$v;
-        }
-        return md5($newarr.$str);
-    }
-    public function hjpost($url,$data){
-        //简单的curl
-        $ch = curl_init($url);
-        curl_setopt($ch, CURLOPT_RETURNTRANSFER, 1);
-        curl_setopt($ch, CURLOPT_POST, 1);
-        curl_setopt($ch, CURLOPT_POSTFIELDS, $data);
-        curl_setopt($ch, CURLOPT_SSL_VERIFYHOST, 0);
-        curl_setopt($ch, CURLOPT_SSL_VERIFYPEER, 0);
-        $result = curl_exec($ch);
-        curl_close($ch);
-        return $result;
-    }
-    //银联
-    public function ylpay(){
-     $ylpay = new \App\Tools\Yl\YinpayFactory();
-     //商品名  订单号  钱
-     $res = $ylpay->getPrePayOrder('龙德测试',date('YmdHis', time()) . rand(1111, 9999),100);
-     print_r($res);
-    }
-    public function ylnotify_url(){
-        $data = $_POST;
-        $xml = $this->xmlstr_to_array($data);
-        file_put_contents('yinlianzhifu.txt', '时间:' . date('Y-m-d H:i:s') . print_r($xml, true), FILE_APPEND);
     }
 }
