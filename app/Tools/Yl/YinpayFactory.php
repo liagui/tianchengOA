@@ -1,5 +1,5 @@
 <?php
-namespace App\Tools;
+namespace App\Tools\Yl;
 
 class YinpayFactory{
     //银联支付

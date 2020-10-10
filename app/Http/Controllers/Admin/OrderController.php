@@ -645,7 +645,7 @@ class OrderController extends Controller {
     }
     //银联
     public function ylpay(){
-     $ylpay = new YinpayFactory();
+     $ylpay = new \App\Tools\Yl\YinpayFactory();
      //商品名  订单号  钱
      $res = $ylpay->getPrePayOrder('龙德测试',date('YmdHis', time()) . rand(1111, 9999),0.01);
      print_r($res);
