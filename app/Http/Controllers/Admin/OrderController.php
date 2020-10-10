@@ -622,7 +622,6 @@ class OrderController extends Controller {
     public function hfpay(){
         $hf = new \App\Tools\Hf\HuifuCFCA();
         $noti['merNoticeUrl']= "http://".$_SERVER['HTTP_HOST']."/admin/hjnotify";
-        $nptify = json_encode($noti);
         $data['apiVersion'] = '3.0.0.2';
         $data['memberId'] = '310000016002336988';
         $data['termOrdId'] = '20201010175408938';
@@ -630,7 +629,7 @@ class OrderController extends Controller {
         $data['goodsDesc'] = 'aaaa';
         $data['remark'] = '';
         $data['payChannelType'] = 'A1';
-        $data['merPriv'] = $nptify;
+        $data['merPriv'] = '{"merNoticeUrl":"http://"'.$_SERVER['HTTP_HOST'].'"/admin/hjnotify"}';
         $jsonData = json_encode($data);
         print_r($jsonData);
         //签名
