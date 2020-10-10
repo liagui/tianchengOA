@@ -622,8 +622,8 @@ class OrderController extends Controller {
     public function hfpay(){
         date_default_timezone_set('PRC');
         error_reporting(E_ALL ^ E_NOTICE ^ E_WARNING);
-        require_once dirname(__FILE__) . "../../../Tools/config/config.php";
-        require_once dirname(__FILE__) . "../../../Tools/commons/function.php";
+        require_once ("../../../Tools/config/config.php");
+        require_once ("../../../Tools/commons/function.php");
         include "../../../Tools/commons/header.php";
         include "../../../Tools/commons/menu.php";
         $noti['merNoticeUrl']= "http://".$_SERVER['HTTP_HOST']."/admin/hjnotify";
