@@ -617,12 +617,6 @@ class OrderController extends Controller {
 
         }
     }
-    //汇付支付
-    public function hfpay(){
-        $hf = new \App\Tools\Hf\HuifuCFCA();
-        $aaa = $hf->apiRequest();
-        return $aaa;
-    }
     //汇聚签名
     public function hjHmac($arr,$str){
         $newarr = '';
@@ -643,24 +637,5 @@ class OrderController extends Controller {
         curl_close($ch);
         return $result;
     }
-    //银联
-    public function ylpay(){
-     $ylpay = new \App\Tools\Yl\YinpayFactory();
-     //商品名  订单号  钱
-     $res = $ylpay->getPrePayOrder('龙德测试',date('YmdHis', time()) . rand(1111, 9999),1);
-     return response()->json($res);
-    }
-    public function ylnotify_url(){
-        file_put_contents('yinlianzhifu123.txt', '时间:' . date('Y-m-d H:i:s') . print_r('123456', true), FILE_APPEND);
-        $xml = file_get_contents('php://input');
-        $xmla = $this->xmlstr_to_array($xml);
-        file_put_contents('yinlianzhifu.txt', '时间:' . date('Y-m-d H:i:s') . print_r($xmla, true), FILE_APPEND);
-    }
-    //xml转数组
-    function xmlstr_to_array($xml){
-        //禁止引用外部xml实体
-        libxml_disable_entity_loader(true);
-        $values = json_decode(json_encode(simplexml_load_string($xml, 'SimpleXMLElement', LIBXML_NOCDATA)), true);
-        return $values;
-    }
+
 }
