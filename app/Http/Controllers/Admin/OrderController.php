@@ -629,7 +629,7 @@ class OrderController extends Controller {
         $data['goodsDesc'] = 'aaaa';
         $data['remark'] = '';
         $data['payChannelType'] = 'A1';
-        $data['merPriv'] = '{"merNoticeUrl":"http://"'.$_SERVER['HTTP_HOST'].'"/admin/hjnotify"}';
+        $data['merPriv'] = '{"merNoticeUrl":"https://joinpay.xg360.cc/nspos/callback.php"}';
         $jsonData = json_encode($data);
         print_r($jsonData);
         //签名
