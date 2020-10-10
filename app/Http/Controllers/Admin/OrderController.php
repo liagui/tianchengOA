@@ -624,8 +624,6 @@ class OrderController extends Controller {
         error_reporting(E_ALL ^ E_NOTICE ^ E_WARNING);
         require_once ("../../../Tools/config/config.php");
         require_once ("../../../Tools/commons/function.php");
-        include "../../../Tools/commons/header.php";
-        include "../../../Tools/commons/menu.php";
         $noti['merNoticeUrl']= "http://".$_SERVER['HTTP_HOST']."/admin/hjnotify";
         $data['apiVersion'] = '3.0.0.2';
         $data['memberId'] = '310000016002293818';

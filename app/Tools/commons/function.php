@@ -62,7 +62,7 @@ function http_post($url, $params, $contentType = false)
  */
 function getSign($data, $filePath = '', $key = '12345678')
 {
-    empty($filePath) && $filePath = dirname(__FILE__) . '/../config/key.pfx';
+    empty($filePath) && $filePath = dirname(__FILE__) . '../config/key.pfx';
 
     if (!is_string($data)) {
         return "Error: 待签名不是字符串";
@@ -134,8 +134,8 @@ function verifySign($data, $signature)
 
     // Cert manipulate
     $nCertVerifyFlag          = 4;
-    $strTrustedCACertFilePath = dirname(__FILE__) . '/../config/CFCA_ACS_OCA31.cer|' . dirname(__FILE__) . '/../config/CFCA_ACS_CA.cer';
-    $strCRLFilePath           = dirname(__FILE__) . "/../config/crl1027.crl";
+    $strTrustedCACertFilePath = dirname(__FILE__) . '../config/CFCA_ACS_OCA31.cer|' . dirname(__FILE__) . '../config/CFCA_ACS_CA.cer';
+    $strCRLFilePath           = dirname(__FILE__) . "../config/crl1027.crl";
     #$strCRLFilePath = null;
     $nResult = cfca_verifyCertificate($strMsgP7AttachedSignCertContent, $nCertVerifyFlag, $strTrustedCACertFilePath, $strCRLFilePath);
     //$nResult = cfca_verifyCertificate($strMsgP7AttachedSignCertContent, $nCertVerifyFlag, $strTrustedCACertFilePath,"");
