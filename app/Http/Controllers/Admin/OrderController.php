@@ -13,6 +13,7 @@ use App\Tools\Hfcfcademo;
 use App\Tools\Hfpay;
 use App\Tools\HuifuCFCA;
 use App\Tools\QRcode;
+use App\Tools\Ylpay;
 
 class OrderController extends Controller {
     //总校&分校
@@ -649,81 +650,14 @@ class OrderController extends Controller {
 
     //银联
     public function ylpay(){
-        $data['service'] = 'unified.trade.native';
-        $data['sign_type'] = 'MD5';
-        $data['mch_id'] = 'QRA290493990FFL'; //测试的商户号
-        $data['out_trade_no'] = date('YmdHis', time()) . rand(1111, 9999);//订单号
-        $data['body'] = '龙德测试产品';//商品名
-        $data['total_fee'] = '0.01';//金额
-        $data['mch_create_ip'] = $this->get_client_ip(); //ip
-        $data['notify_url'] = "http://testoapi.longde999.cn/admin/order/ylnotify_url"; //回调
-        $data['nonce_str'] = $this->getRandChar(32); //字符串
-        $xml = $this->arrayToXml($data);
-        $ylpay = $this->ylpost('https://qra.95516.com/pay/gateway',$xml);
-        return $ylpay;
+     $ylpay = New Ylpay();
+     //商品名  订单号  钱
+     $res = $ylpay->getPrePayOrder('龙德测试',date('YmdHis', time()) . rand(1111, 9999),0.01);
+     print_r($res);
     }
     public function ylnotify_url(){
         $data = $_POST;
         $xml = $this->xmlstr_to_array($data);
         file_put_contents('yinlianzhifu.txt', '时间:' . date('Y-m-d H:i:s') . print_r($xml, true), FILE_APPEND);
-    }
-    public function ylpost($url,$data){
-        $param['headers'] = ['Content-type' => 'application/x-www-form-urlencoded;charset=UTF-8'];
-        //简单的curl
-        $ch = curl_init($url);
-        curl_setopt ($ch, CURLOPT_HTTPHEADER, $param['headers']);
-        curl_setopt($ch, CURLOPT_RETURNTRANSFER, 1);
-        curl_setopt($ch, CURLOPT_POST, 1);
-        curl_setopt($ch, CURLOPT_POSTFIELDS, $data);
-        curl_setopt($ch, CURLOPT_SSL_VERIFYHOST, 0);
-        curl_setopt($ch, CURLOPT_SSL_VERIFYPEER, 0);
-        $result = curl_exec($ch);
-        curl_close($ch);
-        return $result;
-    }
-    //获取指定长度的随机字符串
-    function getRandChar($length){
-        $str = null;
-        $strPol = "ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789abcdefghijklmnopqrstuvwxyz";
-        $max = strlen($strPol)-1;
-        for($i=0;$i<$length;$i++){
-            $str.=$strPol[rand(0,$max)];//rand($min,$max)生成介于min和max两个数之间的一个随机整数
-        }
-        return $str;
-    }
-    /*
-        获取当前服务器的IP
-    */
-    function get_client_ip(){
-        if ($_SERVER['REMOTE_ADDR']) {
-            $cip = $_SERVER['REMOTE_ADDR'];
-        } elseif (getenv("REMOTE_ADDR")) {
-            $cip = getenv("REMOTE_ADDR");
-        } elseif (getenv("HTTP_CLIENT_IP")) {
-            $cip = getenv("HTTP_CLIENT_IP");
-        } else {
-            $cip = "unknown";
-        }
-        return $cip;
-    }
-    //xml转数组
-    function xmlstr_to_array($xml){
-        //禁止引用外部xml实体
-        libxml_disable_entity_loader(true);
-        $values = json_decode(json_encode(simplexml_load_string($xml, 'SimpleXMLElement', LIBXML_NOCDATA)), true);
-        return $values;
-    }
-    //数组转xml
-    function arrayToXml($arr){
-        $xml = "<xml>";
-        foreach ($arr as $key=>$val) {
-            if (is_numeric($val)) {
-                $xml.="<".$key.">".$val."</".$key.">";
-            }
-            else
-                $xml.="<".$key."><![CDATA[".$val."]]></".$key.">";
-        }
-        $xml.="</xml>";
-        return $xml;
     }
 }
