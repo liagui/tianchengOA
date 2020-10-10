@@ -620,8 +620,8 @@ class OrderController extends Controller {
     }
     //汇付支付
     public function hfpay(){
-        date_default_timezone_set('PRC');
-        error_reporting(E_ALL ^ E_NOTICE ^ E_WARNING);
+//        date_default_timezone_set('PRC');
+//        error_reporting(E_ALL ^ E_NOTICE ^ E_WARNING);
         require_once ("app/Tools/config/config.php");
         require_once ("app/Tools/commons/function.php");
         $noti['merNoticeUrl']= "http://".$_SERVER['HTTP_HOST']."/admin/hjnotify";
