@@ -11,6 +11,7 @@ use App\Models\Refund_order;
 use App\Tools\AlipayFactory;
 use App\Tools\QRcode;
 use App\Tools\Ylpay;
+use App\Tools\YlpayFactory;
 
 class OrderController extends Controller {
     //总校&分校
@@ -645,7 +646,7 @@ class OrderController extends Controller {
     }
     //银联
     public function ylpay(){
-     $ylpay = new Ylpay();
+     $ylpay = new YlpayFactory();
      //商品名  订单号  钱
      $res = $ylpay->getPrePayOrder('龙德测试',date('YmdHis', time()) . rand(1111, 9999),0.01);
      print_r($res);
