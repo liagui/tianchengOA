@@ -635,7 +635,7 @@ class OrderController extends Controller {
         $jsonData = utf8_encode(json_encode($data));
         print_r($jsonData);
         //签名
-        $sign = getSign($jsonData,'./key.pfx');
+        $sign = getSign($jsonData);
         echo $sign;
         $parem=[
             'jsenData' => $jsonData,
