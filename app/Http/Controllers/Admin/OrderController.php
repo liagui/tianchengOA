@@ -623,15 +623,14 @@ class OrderController extends Controller {
         require_once dirname(__FILE__) . "/../../../Tools/config/config.php";
         require_once dirname(__FILE__) . "/../../../Tools/commons/function.php";
         $noti['merNoticeUrl']= "http://".$_SERVER['HTTP_HOST']."/admin/hjnotify";
-
         $data['apiVersion'] = '3.0.0.2';
         $data['memberId'] = '310000016002293818';
         $data['termOrdId'] = date('YmdHis', time()) . rand(111111, 999999);
-        $data['ordAmt'] = '0.01';
+        $data['ordAmt'] = '1';
         $data['goodsDesc'] = urlencode('aaaa');
         $data['remark'] = urlencode('');
         $data['payChannelType'] = 'A1';
-        $data['merPriv'] = json_encode($noti);
+        $data['merPriv'] = $noti;
         $jsonData = utf8_encode(json_encode($data));
         print_r($jsonData);
         //签名
