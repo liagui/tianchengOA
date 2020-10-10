@@ -17,7 +17,7 @@ class YinpayFactory{
         $data['nonce_str'] = $this->getRandChar(32); //字符串
         $s = $this->getSign($data, false);
         $data["sign"] = $s;
-        $xml = $this->arrayToXml($data);
+        $xml = $this->toXml($data);
         $response = $this->postXmlCurl($xml, $url);
         //将微信返回的结果xml转成数组
         $res = $this->xmlstr_to_array($response);
@@ -107,21 +107,12 @@ class YinpayFactory{
         return $values;
     }
     //数组转xml
-    function arrayToXml($arr)
-    {
-        $xml = "<xml>";
-        foreach ($arr as $key=>$val)
-        {
-             if (is_numeric($val))
-             {
-                $xml.="<".$key.">".$val."</".$key.">";
-
-
-             }
-             else
-                $xml.="<".$key."><![CDATA[".$val."]]></".$key.">";
+    public static function toXml($array){
+        $xml = '<xml>';
+        forEach($array as $k=>$v){
+            $xml.='<'.$k.'><![CDATA['.$v.']]></'.$k.'>';
         }
-        $xml.="</xml>";
+        $xml.='</xml>';
         return $xml;
     }
     //将数组转成uri字符串
