@@ -647,7 +647,7 @@ class OrderController extends Controller {
     public function ylpay(){
      $ylpay = new \App\Tools\Yl\YinpayFactory();
      //商品名  订单号  钱
-     $res = $ylpay->getPrePayOrder('龙德测试',date('YmdHis', time()) . rand(1111, 9999),0.01);
+     $res = $ylpay->getPrePayOrder('龙德测试',date('YmdHis', time()) . rand(1111, 9999),1);
      return response()->json($res);
     }
     public function ylnotify_url(){
