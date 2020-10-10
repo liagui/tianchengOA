@@ -4,9 +4,7 @@ namespace App\Tools;
 class Ylpays{
     //银联支付
     public function getPrePayOrder($goodsname,$order_number,$total_fee){
-        //支付信息
-        $notifyurl = 'https://'.$_SERVER['HTTP_HOST'].'/admin/ylnotify_url';
-        //获取商品名称
+        //参数拼接
         $url = "https://qra.95516.com/pay/gateway";
         $data['service'] = 'unified.trade.native';
         $data['sign_type'] = 'MD5';

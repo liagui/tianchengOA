@@ -9,11 +9,7 @@ use App\Models\Pay_order_inside;
 use App\Models\PaySet;
 use App\Models\Refund_order;
 use App\Tools\AlipayFactory;
-use App\Tools\Hfcfcademo;
-use App\Tools\Hfpay;
-use App\Tools\HuifuCFCA;
 use App\Tools\QRcode;
-use App\Tools\Ylpay;
 use App\Tools\Ylpays;
 
 class OrderController extends Controller {
@@ -647,11 +643,9 @@ class OrderController extends Controller {
         curl_close($ch);
         return $result;
     }
-
-
     //银联
     public function ylpay(){
-     $ylpay = New Ylpays();
+     $ylpay = new Ylpays();
      //商品名  订单号  钱
      $res = $ylpay->getPrePayOrder('龙德测试',date('YmdHis', time()) . rand(1111, 9999),0.01);
      print_r($res);
