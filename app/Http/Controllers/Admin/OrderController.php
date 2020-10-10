@@ -624,7 +624,7 @@ class OrderController extends Controller {
         $noti['merNoticeUrl']= "http://".$_SERVER['HTTP_HOST']."/admin/hjnotify";
         $data['apiVersion'] = '3.0.0.2';
         $data['memberId'] = '310000016002293818';
-        $data['termOrdId'] = date('YmdHis', time()) . rand(1111, 9999);
+        $data['termOrdId'] = date('YmdHis', time()) . rand(111111, 999999);
         $data['ordAmt'] = '0.01';
         $data['goodsDesc'] = 'aaaa';
         $data['remark'] = '';
