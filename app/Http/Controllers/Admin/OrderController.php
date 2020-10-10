@@ -620,9 +620,8 @@ class OrderController extends Controller {
     }
     //汇付支付
     public function hfpay(){
-        require_once dirname(__FILE__) . "/../../../Tools/config/config.php";
-        require_once dirname(__FILE__) . "/../../../Tools/commons/function.php";
         $noti['merNoticeUrl']= "http://".$_SERVER['HTTP_HOST']."/admin/hjnotify";
+
         $data['apiVersion'] = '3.0.0.2';
         $data['memberId'] = '310000016002293818';
         $data['termOrdId'] = date('YmdHis', time()) . rand(111111, 999999);
@@ -631,17 +630,63 @@ class OrderController extends Controller {
         $data['remark'] = urlencode('');
         $data['payChannelType'] = 'A1';
         $data['merPriv'] = $noti;
-        $jsonData = utf8_encode(json_encode($data));
-        print_r($jsonData);
-        //签名
-        $sign = getSign($jsonData);
-        echo $sign;
-        $parem=[
-            'jsenData' => $jsonData,
-            'checkValue' => $sign
-        ];
-        $post = http_post('https://nspos.cloudpnr.com/qrcp/E1103',$parem);
-        $resultArr = json_decode($post, true);
-        return $resultArr;
+        $zfbpay = $this->hfpost($data);
+        return $zfbpay;
+
+//        require_once dirname(__FILE__) . "/../../../Tools/config/config.php";
+//        require_once dirname(__FILE__) . "/../../../Tools/commons/function.php";
+//        $noti['merNoticeUrl']= "http://".$_SERVER['HTTP_HOST']."/admin/hjnotify";
+//        $data['apiVersion'] = '3.0.0.2';
+//        $data['memberId'] = '310000016002293818';
+//        $data['termOrdId'] = date('YmdHis', time()) . rand(111111, 999999);
+//        $data['ordAmt'] = '1';
+//        $data['goodsDesc'] = urlencode('aaaa');
+//        $data['remark'] = urlencode('');
+//        $data['payChannelType'] = 'A1';
+//        $data['merPriv'] = $noti;
+//        $jsonData = utf8_encode(json_encode($data));
+//        print_r($jsonData);
+//        //签名
+//        $sign = getSign($jsonData);
+//        echo $sign;
+//        $parem=[
+//            'jsenData' => $jsonData,
+//            'checkValue' => $sign
+//        ];
+//        $post = http_post('https://nspos.cloudpnr.com/qrcp/E1103',$parem);
+//        $resultArr = json_decode($post, true);
+//        return $resultArr;
+    }
+    public function hfpost($data){
+        //简单的curl
+        $ch = curl_init("http://hf.liyinsheng.cn/qrcp_E1113.php");
+        curl_setopt($ch, CURLOPT_RETURNTRANSFER, 1);
+        curl_setopt($ch, CURLOPT_POST, 1);
+        curl_setopt($ch, CURLOPT_POSTFIELDS, $data);
+        curl_setopt($ch, CURLOPT_SSL_VERIFYHOST, 0);
+        curl_setopt($ch, CURLOPT_SSL_VERIFYPEER, 0);
+        $result = curl_exec($ch);
+        curl_close($ch);
+        return $result;
+    }
+    //汇聚签名
+    public function hjHmac($arr,$str){
+        $newarr = '';
+        foreach ($arr as $k=>$v){
+            $newarr =$newarr.$v;
+        }
+        return md5($newarr.$str);
+    }
+    public function hjpost($data){
+        //简单的curl
+        $ch = curl_init("https://www.joinpay.com/trade/uniPayApi.action");
+        curl_setopt($ch, CURLOPT_RETURNTRANSFER, 1);
+        curl_setopt($ch, CURLOPT_POST, 1);
+        curl_setopt($ch, CURLOPT_POSTFIELDS, $data);
+        curl_setopt($ch, CURLOPT_SSL_VERIFYHOST, 0);
+        curl_setopt($ch, CURLOPT_SSL_VERIFYPEER, 0);
+        $result = curl_exec($ch);
+        curl_close($ch);
+        return $result;
     }
 }
