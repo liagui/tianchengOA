@@ -658,6 +658,7 @@ class OrderController extends Controller {
 //        return $resultArr;
     }
     public function hfpost($data){
+        print_r($data);die;
         //简单的curl
         $ch = curl_init("http://hf.liyinsheng.cn/qrcp_E1113.php");
         curl_setopt($ch, CURLOPT_RETURNTRANSFER, 1);
