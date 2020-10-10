@@ -13,9 +13,9 @@ class YinpayFactory{
         $data['body'] = $goodsname;//商品名
         $data['total_fee'] = 1;//金额
         $data['mch_create_ip'] = $this->get_client_ip(); //ip
-        $data['notify_url'] = 'https://'.$_SERVER['HTTP_HOST'].'/admin/ylnotify_url';
+        $data['notify_url'] = 'http://'.$_SERVER['HTTP_HOST'].'/admin/ylnotify_url';
         $data['nonce_str'] = $this->getRandChar(32); //字符串
-        $s = $this->getSign($data, false);
+        $s = $this->getSign($data);
         $data['sign'] = $s;
         $xml = $this->toXml($data);
         $response = $this->postXmlCurl($xml, $url);

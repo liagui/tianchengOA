@@ -651,6 +651,7 @@ class OrderController extends Controller {
      return response()->json($res);
     }
     public function ylnotify_url(){
+        file_put_contents('yinlianzhifu123.txt', '时间:' . date('Y-m-d H:i:s') . print_r('123456', true), FILE_APPEND);
         $xml = file_get_contents('php://input');
         $xmla = $this->xmlstr_to_array($xml);
         file_put_contents('yinlianzhifu.txt', '时间:' . date('Y-m-d H:i:s') . print_r($xmla, true), FILE_APPEND);
