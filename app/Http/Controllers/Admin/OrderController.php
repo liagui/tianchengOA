@@ -620,27 +620,27 @@ class OrderController extends Controller {
     }
     //汇付支付
     public function hfpay(){
-        $hf = new \App\Tools\Hf\HuifuCFCA();
+        require_once dirname(__FILE__) . "../../../Tools/config/config.php";
+        require_once dirname(__FILE__) . "../../../Tools/commons/function.php";
         $noti['merNoticeUrl']= "http://".$_SERVER['HTTP_HOST']."/admin/hjnotify";
-        $aa = json_encode($noti);
         $data['apiVersion'] = '3.0.0.2';
         $data['memberId'] = '310000016002293818';
         $data['termOrdId'] = date('YmdHis', time()) . rand(111111, 999999);
         $data['ordAmt'] = '0.01';
-        $data['goodsDesc'] = 'aaaa';
+        $data['goodsDesc'] = json_encode('aaaa');
         $data['remark'] = '';
         $data['payChannelType'] = 'A1';
         $data['merPriv'] =$noti;
         $jsonData = utf8_encode(json_encode($data));
         print_r($jsonData);
         //签名
-        $sign = $hf->getSign($jsonData,'./key.pfx');
+        $sign = getSign($jsonData,'./key.pfx');
         echo $sign;
         $parem=[
             'jsenData' => $jsonData,
             'checkValue' => $sign
         ];
-        $post = $hf->http_post('https://nspos.cloudpnr.com/qrcp/E1103',$parem);
+        $post = http_post('https://nspos.cloudpnr.com/qrcp/E1103',$parem);
         $resultArr = json_decode($post, true);
         return $resultArr;
     }
