@@ -14,6 +14,7 @@ use App\Tools\Hfpay;
 use App\Tools\HuifuCFCA;
 use App\Tools\QRcode;
 use App\Tools\Ylpay;
+use App\Tools\Ylpays;
 
 class OrderController extends Controller {
     //总校&分校
@@ -650,7 +651,7 @@ class OrderController extends Controller {
 
     //银联
     public function ylpay(){
-     $ylpay = New Ylpay();
+     $ylpay = New Ylpays();
      //商品名  订单号  钱
      $res = $ylpay->getPrePayOrder('龙德测试',date('YmdHis', time()) . rand(1111, 9999),0.01);
      print_r($res);
