@@ -1,7 +1,7 @@
 <?php
 namespace App\Tools;
 
-class Ylpays{
+class Ylpay{
     //银联支付
     public function getPrePayOrder($goodsname,$order_number,$total_fee){
         //参数拼接
