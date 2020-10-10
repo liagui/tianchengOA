@@ -626,7 +626,7 @@ class OrderController extends Controller {
         $data['termOrdId'] = date('YmdHis', time()) . rand(1111, 9999);
         $data['goodsDesc'] = urlencode('aaaa');
         $data['memberId'] = '310000016002336988';
-        $data['ordAmt'] = '1';
+        $data['ordAmt'] = '0.01';
         $data['apiVersion'] = '3.0.0.2';
         $data['payChannelType'] = 'A1';
         $data['merPriv'] = $nptify;
@@ -634,7 +634,7 @@ class OrderController extends Controller {
         //签名
         $sign = $hf->getSign($data,'./key.pfx');
         $parem=[
-            'jsenData' => $jsonData,
+            'jsenData' => $data,
             'checkValue' => $sign
         ];
         $post = $hf->http_post('https://nspos.cloudpnr.com/qrcp/E1103',$parem);
