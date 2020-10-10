@@ -622,6 +622,7 @@ class OrderController extends Controller {
     public function hfpay(){
         $hf = new \App\Tools\Hf\HuifuCFCA();
         $noti['merNoticeUrl']= "http://".$_SERVER['HTTP_HOST']."/admin/hjnotify";
+        $aa = json_encode($noti);
         $data['apiVersion'] = '3.0.0.2';
         $data['memberId'] = '310000016002293818';
         $data['termOrdId'] = date('YmdHis', time()) . rand(111111, 999999);
@@ -629,7 +630,7 @@ class OrderController extends Controller {
         $data['goodsDesc'] = 'aaaa';
         $data['remark'] = '';
         $data['payChannelType'] = 'A1';
-        $data['merPriv'] = '{"merNoticeUrl":"https://joinpay.xg360.cc/nspos/callback.php"}';
+        $data['merPriv'] =$aa;
         $jsonData = utf8_encode(json_encode($data));
         print_r($jsonData);
         //签名
