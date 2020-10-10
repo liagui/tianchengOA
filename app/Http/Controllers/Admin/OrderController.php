@@ -11,6 +11,7 @@ use App\Models\Refund_order;
 use App\Tools\AlipayFactory;
 use App\Tools\QRcode;
 use App\Tools\YinpayFactory;
+use App\Tools\Yl\HuifuCFCA;
 
 class OrderController extends Controller {
     //总校&分校
@@ -620,8 +621,24 @@ class OrderController extends Controller {
     //汇付支付
     public function hfpay(){
         $hf = new \App\Tools\Hf\HuifuCFCA();
-        $aaa = $hf->apiRequest();
-        return $aaa;
+        $noti['merNoticeUrl']= "http://".$_SERVER['HTTP_HOST']."/admin/hjnotify";
+        $nptify = json_encode($noti);
+        $data['termOrdId'] = date('YmdHis', time()) . rand(1111, 9999);
+        $data['goodsDesc'] = urlencode('龙德产品');
+        $data['memberId'] = '310000016002293818';
+        $data['ordAmt'] = '1';
+        $data['apiVersion'] = '1.0.0';
+        $data['payChannelType'] = 'A1';
+        $data['merPriv'] = $nptify;
+        $jsonData = json_encode($data);
+        //签名
+        $sign = $hf->getSign($data,'./key.pfx');
+        $parem=[
+            'jsenData' => $jsonData,
+            'checkValue' => $sign
+        ];
+        $post = $hf->http_post('https://nspos.cloudpnr.com/qrcp/E1103',$parem);
+        return $post;
     }
     //汇聚签名
     public function hjHmac($arr,$str){
