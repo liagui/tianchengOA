@@ -648,11 +648,17 @@ class OrderController extends Controller {
      $ylpay = new \App\Tools\Yl\YinpayFactory();
      //商品名  订单号  钱
      $res = $ylpay->getPrePayOrder('龙德测试',date('YmdHis', time()) . rand(1111, 9999),100);
-     print_r($res);
+     return response()->json($res);
     }
     public function ylnotify_url(){
-        $data = $_POST;
-        $xml = $this->xmlstr_to_array($data);
+        $xml = $this->xmlstr_to_array($_POST);
         file_put_contents('yinlianzhifu.txt', '时间:' . date('Y-m-d H:i:s') . print_r($xml, true), FILE_APPEND);
+    }
+    //xml转数组
+    function xmlstr_to_array($xml){
+        //禁止引用外部xml实体
+        libxml_disable_entity_loader(true);
+        $values = json_decode(json_encode(simplexml_load_string($xml, 'SimpleXMLElement', LIBXML_NOCDATA)), true);
+        return $values;
     }
 }

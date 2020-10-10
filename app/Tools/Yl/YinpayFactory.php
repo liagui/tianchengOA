@@ -21,19 +21,12 @@ class YinpayFactory{
         $response = $this->postXmlCurl($xml, $url);
         //将微信返回的结果xml转成数组
         $res = $this->xmlstr_to_array($response);
-        return $res;
-        file_put_contents('wxpay.txt', '时间:' . date('Y-m-d H:i:s') . print_r($res, true), FILE_APPEND);
-        if($res['return_code'] != 'Success'){
-            $arr = array('code'=>204,'msg'=>$res['return_msg']);
+        file_put_contents('yinlianpay.txt', '时间:' . date('Y-m-d H:i:s') . print_r($res, true), FILE_APPEND);
+        if($res['status'] == 0){
+            return ['code'=>200,'msg'=>'生成成功','data'=>$res['code_img_url']];
         }else{
-            $sign2 = $this->getOrder($res['prepay_id']);
-            if(!empty($sign2)){
-                $arr = array('code'=>200,'list'=>$sign2);
-            }else{
-              $arr = array('code'=>1001,'list'=>"请确保参数合法性！");
-            }
+            return ['code'=>201,'msg'=>'生成失败'];
         }
-        return $arr;
     }
 
     /*
