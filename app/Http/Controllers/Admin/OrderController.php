@@ -630,7 +630,7 @@ class OrderController extends Controller {
         $data['goodsDesc'] = 'aaaa';
         $data['remark'] = '';
         $data['payChannelType'] = 'A1';
-        $data['merPriv'] =$aa;
+        $data['merPriv'] =$noti;
         $jsonData = utf8_encode(json_encode($data));
         print_r($jsonData);
         //签名
