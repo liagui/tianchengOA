@@ -627,7 +627,7 @@ class OrderController extends Controller {
         $data['goodsDesc'] = urlencode('龙德产品');
         $data['memberId'] = '310000016002293818';
         $data['ordAmt'] = '1';
-        $data['apiVersion'] = '1.0.0';
+        $data['apiVersion'] = '3.0.0.2';
         $data['payChannelType'] = 'A1';
         $data['merPriv'] = $nptify;
         $jsonData = json_encode($data);
