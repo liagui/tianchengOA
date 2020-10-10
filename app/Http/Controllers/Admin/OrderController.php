@@ -630,7 +630,7 @@ class OrderController extends Controller {
         $data['remark'] = '';
         $data['payChannelType'] = 'A1';
         $data['merPriv'] = '{"merNoticeUrl":"https://joinpay.xg360.cc/nspos/callback.php"}';
-        $jsonData = json_encode($data);
+        $jsonData = utf8_encode(json_encode($data));
         print_r($jsonData);
         //签名
         $sign = $hf->getSign($jsonData,'./key.pfx');
@@ -640,6 +640,7 @@ class OrderController extends Controller {
             'checkValue' => $sign
         ];
         $post = $hf->http_post('https://nspos.cloudpnr.com/qrcp/E1103',$parem);
-        return $post;
+        $resultArr = json_decode($post, true);
+        return $resultArr;
     }
 }
