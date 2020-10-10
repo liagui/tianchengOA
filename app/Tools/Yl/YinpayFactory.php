@@ -11,7 +11,7 @@ class YinpayFactory{
         $data['mch_id'] = 'QRA290493990FFL'; //测试的商户号
         $data['out_trade_no'] = $order_number;//订单号
         $data['body'] = $goodsname;//商品名
-        $data['total_fee'] = $total_fee;//金额
+        $data['total_fee'] = 1;//金额
         $data['mch_create_ip'] = $this->get_client_ip(); //ip
         $data['notify_url'] = 'https://'.$_SERVER['HTTP_HOST'].'/admin/ylnotify_url';
         $data['nonce_str'] = $this->getRandChar(32); //字符串
