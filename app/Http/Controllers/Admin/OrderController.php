@@ -623,11 +623,12 @@ class OrderController extends Controller {
         $hf = new \App\Tools\Hf\HuifuCFCA();
         $noti['merNoticeUrl']= "http://".$_SERVER['HTTP_HOST']."/admin/hjnotify";
         $nptify = json_encode($noti);
-        $data['termOrdId'] = '20201010175408938';
-        $data['goodsDesc'] = 'aaaa';
-        $data['memberId'] = '310000016002336988';
-        $data['ordAmt'] = '0.01';
         $data['apiVersion'] = '3.0.0.2';
+        $data['memberId'] = '310000016002336988';
+        $data['termOrdId'] = '20201010175408938';
+        $data['ordAmt'] = '0.01';
+        $data['goodsDesc'] = 'aaaa';
+        $data['remark'] = '';
         $data['payChannelType'] = 'A1';
         $data['merPriv'] = $nptify;
         $jsonData = json_encode($data);
