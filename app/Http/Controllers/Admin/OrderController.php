@@ -633,7 +633,7 @@ class OrderController extends Controller {
         $jsonData = json_encode($data);
         print_r($jsonData);
         //签名
-        $sign = $hf->getSign($data,'./key.pfx');
+        $sign = $hf->getSign($jsonData,'./key.pfx');
         echo $sign;
         $parem=[
             'jsenData' => $jsonData,
