@@ -630,6 +630,7 @@ class OrderController extends Controller {
         $data['apiVersion'] = '3.0.0.2';
         $data['payChannelType'] = 'A1';
         $data['merPriv'] = $nptify;
+        print_r($data);die;
         $jsonData = json_encode($data);
         //签名
         $sign = $hf->getSign($data,'./key.pfx');
