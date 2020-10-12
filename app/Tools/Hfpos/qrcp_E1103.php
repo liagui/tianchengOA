@@ -2,6 +2,7 @@
 namespace App\Tools\Hfpos;
 class qrcp_E1103{
     public function Hfpos($data){
+        echo "123";
         include "commons/function.php";
         $apiurl = 'https://nspos.cloudpnr.com/qrcp/E1103';
         if ($_POST) {

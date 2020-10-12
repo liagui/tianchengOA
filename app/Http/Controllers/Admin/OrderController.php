@@ -623,14 +623,16 @@ class OrderController extends Controller {
     public function hfpay(){
         echo "123456";
         $noti['merNoticeUrl']= "http://".$_SERVER['HTTP_HOST']."/admin/hjnotify";
-        $data['apiVersion'] = '3.0.0.2';
-        $data['memberId'] = '310000016002293818';
-        $data['termOrdId'] = date('YmdHis', time()) . rand(111111, 999999);
-        $data['ordAmt'] = '1';
-        $data['goodsDesc'] = urlencode('aaaa');
-        $data['remark'] = urlencode('');
-        $data['payChannelType'] = 'A1';
-        $data['merPriv'] = $noti;
+        $data=[
+            'apiVersion' => '3.0.0.2',
+            'memberId' => '310000016002293818',
+            'termOrdId' => date('YmdHis', time()) . rand(111111, 999999),
+            'ordAmt' => '0.01',
+            'goodsDesc' => urlencode('aaaa'),
+            'remark' => urlencode(''),
+            'payChannelType' => 'A1',
+            'merPriv' => json_encode($noti),
+        ];
         $hfpos = new qrcp_E1103();
         $url = $hfpos->Hfpos($data);
         print_r($url);die;
