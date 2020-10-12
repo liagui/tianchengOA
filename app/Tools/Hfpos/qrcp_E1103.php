@@ -7,6 +7,7 @@ class qrcp_E1103{
     $apiurl = 'https://nspos.cloudpnr.com/qrcp/E1103';
         $jsonData   = utf8_encode(json_encode($data));
         $checkValue = getSign($jsonData);
+         echo $checkValue;
         $request = array(
             'jsonData'   => $jsonData,
             'checkValue' => $checkValue
