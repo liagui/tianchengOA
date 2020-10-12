@@ -620,6 +620,7 @@ class OrderController extends Controller {
     }
     //汇付支付
     public function hfpay(){
+        echo "123";
         $noti['merNoticeUrl']= "http://".$_SERVER['HTTP_HOST']."/admin/hjnotify";
 
         $data['apiVersion'] = '3.0.0.2';
