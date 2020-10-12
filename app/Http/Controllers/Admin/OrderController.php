@@ -9,8 +9,10 @@ use App\Models\Pay_order_inside;
 use App\Models\PaySet;
 use App\Models\Refund_order;
 use App\Tools\AlipayFactory;
+use App\Tools\Hfpos\qrcp_E1103;
 use App\Tools\QRcode;
 use App\Tools\YinpayFactory;
+use App\Tools\Yl\HuifuCFCA;
 
 class OrderController extends Controller {
     //总校&分校
@@ -617,17 +619,33 @@ class OrderController extends Controller {
 
         }
     }
-    //汇聚签名
-    public function hjHmac($arr,$str){
-        $newarr = '';
-        foreach ($arr as $k=>$v){
-            $newarr =$newarr.$v;
-        }
-        return md5($newarr.$str);
+
+    //汇付支付
+    public function hfpay(){
+        echo "123456";
+        $noti['merNoticeUrl']= "http://".$_SERVER['HTTP_HOST']."/admin/hjnotify";
+        $data=[
+            'apiVersion' => '3.0.0.2',
+            'memberId' => '310000016002293818',
+            'termOrdId' => date('YmdHis', time()) . rand(111111, 999999),
+            'ordAmt' => '0.01',
+            'goodsDesc' => urlencode('aaaa'),
+            'remark' => urlencode(''),
+            'payChannelType' => 'A1',
+            'merPriv' => json_encode($noti),
+        ];
+        $hfpos = new qrcp_E1103();
+        $url = $hfpos->Hfpos($data);
+        print_r($url);die;
+
+
+        $zfbpay = $this->hfpost($data);
+        return $zfbpay;
     }
-    public function hjpost($url,$data){
+    public function hfpost($data){
         //简单的curl
-        $ch = curl_init($url);
+        $ch = curl_init();
+        curl_setopt($ch, CURLOPT_URL, "http://hf.liyinsheng.cn/qrcp_E1103.php");
         curl_setopt($ch, CURLOPT_RETURNTRANSFER, 1);
         curl_setopt($ch, CURLOPT_POST, 1);
         curl_setopt($ch, CURLOPT_POSTFIELDS, $data);
@@ -637,5 +655,27 @@ class OrderController extends Controller {
         curl_close($ch);
         return $result;
     }
+
+    //汇聚签名
+    public function hjHmac($arr,$str){
+        $newarr = '';
+        foreach ($arr as $k=>$v){
+            $newarr =$newarr.$v;
+        }
+        return md5($newarr.$str);
+    }
+    public function hjpost($data){
+        //简单的curl
+        $ch = curl_init("https://www.joinpay.com/trade/uniPayApi.action");
+        curl_setopt($ch, CURLOPT_RETURNTRANSFER, 1);
+        curl_setopt($ch, CURLOPT_POST, 1);
+        curl_setopt($ch, CURLOPT_POSTFIELDS, $data);
+        curl_setopt($ch, CURLOPT_SSL_VERIFYHOST, 0);
+        curl_setopt($ch, CURLOPT_SSL_VERIFYPEER, 0);
+        $result = curl_exec($ch);
+        curl_close($ch);
+        return $result;
+    }
+
 
 }
