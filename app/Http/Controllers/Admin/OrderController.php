@@ -9,6 +9,7 @@ use App\Models\Pay_order_inside;
 use App\Models\PaySet;
 use App\Models\Refund_order;
 use App\Tools\AlipayFactory;
+use App\Tools\Hfpos\qrcp_E1103;
 use App\Tools\QRcode;
 use App\Tools\YinpayFactory;
 use App\Tools\Yl\HuifuCFCA;
@@ -620,9 +621,7 @@ class OrderController extends Controller {
     }
     //汇付支付
     public function hfpay(){
-        echo "123";
         $noti['merNoticeUrl']= "http://".$_SERVER['HTTP_HOST']."/admin/hjnotify";
-
         $data['apiVersion'] = '3.0.0.2';
         $data['memberId'] = '310000016002293818';
         $data['termOrdId'] = date('YmdHis', time()) . rand(111111, 999999);
@@ -631,44 +630,23 @@ class OrderController extends Controller {
         $data['remark'] = urlencode('');
         $data['payChannelType'] = 'A1';
         $data['merPriv'] = $noti;
+        $hfpos = new qrcp_E1103();
+        $url = $hfpos->Hfpos($data);
+        print_r($url);die;
+
+
         $zfbpay = $this->hfpost($data);
         return $zfbpay;
-
-//        require_once dirname(__FILE__) . "/../../../Tools/config/config.php";
-//        require_once dirname(__FILE__) . "/../../../Tools/commons/function.php";
-//        $noti['merNoticeUrl']= "http://".$_SERVER['HTTP_HOST']."/admin/hjnotify";
-//        $data['apiVersion'] = '3.0.0.2';
-//        $data['memberId'] = '310000016002293818';
-//        $data['termOrdId'] = date('YmdHis', time()) . rand(111111, 999999);
-//        $data['ordAmt'] = '1';
-//        $data['goodsDesc'] = urlencode('aaaa');
-//        $data['remark'] = urlencode('');
-//        $data['payChannelType'] = 'A1';
-//        $data['merPriv'] = $noti;
-//        $jsonData = utf8_encode(json_encode($data));
-//        print_r($jsonData);
-//        //签名
-//        $sign = getSign($jsonData);
-//        echo $sign;
-//        $parem=[
-//            'jsenData' => $jsonData,
-//            'checkValue' => $sign
-//        ];
-//        $post = http_post('https://nspos.cloudpnr.com/qrcp/E1103',$parem);
-//        $resultArr = json_decode($post, true);
-//        return $resultArr;
     }
     public function hfpost($data){
-        $res = json_encode($data);
         //简单的curl
         $ch = curl_init();
-        curl_setopt($ch, CURLOPT_URL, "http://hf.liyinsheng.cn/qrcp_E1113.php");
+        curl_setopt($ch, CURLOPT_URL, "http://hf.liyinsheng.cn/qrcp_E1103.php");
         curl_setopt($ch, CURLOPT_RETURNTRANSFER, 1);
         curl_setopt($ch, CURLOPT_POST, 1);
-        curl_setopt($ch, CURLOPT_POSTFIELDS, '');
+        curl_setopt($ch, CURLOPT_POSTFIELDS, $data);
         curl_setopt($ch, CURLOPT_SSL_VERIFYHOST, 0);
         curl_setopt($ch, CURLOPT_SSL_VERIFYPEER, 0);
-        curl_setopt($ch, CURLOPT_HEADER, 0);
         $result = curl_exec($ch);
         curl_close($ch);
         return $result;
