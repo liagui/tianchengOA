@@ -176,6 +176,20 @@ class OrderController extends Controller {
       $list = Pay_order_inside::paylistarr();
       return response()->json($list);
     }
+    //红点标记
+    public function redDot(){
+        $schoolarr = $this->underlingLook(AdminLog::getAdminInfo()->admin_user->school_id);
+        //待确认订单
+        $orderCount = Pay_order_inside::whereIn('school_id',$schoolarr)->where(['confirm_status'=>0])->count();
+        //退费待确认
+        $returnCount = Refund_order::whereIn('school_id',$schoolarr)->where(['confirm_status'=>0])->count();
+        $data=[
+            'zongcount' => $orderCount,
+            'daicount' => $orderCount,
+            'tuicount' => $returnCount,
+        ];
+        return response()->json(['code'=>200,'msg'=>'获取成功','data'=>$data]);
+    }
     /*
      * @param  description   开课管理列表接口
      * @param  参数说明       body包含以下参数[
