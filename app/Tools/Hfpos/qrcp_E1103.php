@@ -2,7 +2,7 @@
 namespace App\Tools\Hfpos;
 class qrcp_E1103{
     public function Hfpos($data){
-        include "./commons/function.php";
+        include "commons/function.php";
         $apiurl = 'https://nspos.cloudpnr.com/qrcp/E1103';
         if ($_POST) {
             $jsonData   = utf8_encode(json_encode($data));
