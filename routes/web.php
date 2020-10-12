@@ -43,6 +43,7 @@ $router->group(['prefix' => 'admin' , 'namespace' => 'Admin','middleware'=> 'cor
     $router->post('zfbnotify', 'NotifyController@zfbnotify');//支付宝支付回调
     $router->post('wxnotify', 'NotifyController@wxnotify');//微信支付回调
     $router->post('paylistarr', 'OrderController@paylistarr');//支付方式
+    $router->post('redDot', 'OrderController@redDot');//未处理订单标记红点
 
     $router->get('doExportBranchSchoolExcel', 'OrderExcelController@doExportBranchSchoolExcel');           //导出分校收入详情
     $router->get('doExportBranchSchoolConfirmOrderExcel', 'OrderExcelController@doExportBranchSchoolConfirmOrderExcel');           //导出分校已确认订单
@@ -62,6 +63,7 @@ $router->group(['prefix' => 'admin' , 'namespace' => 'Admin','middleware'=> ['jw
         $router->post('orderDetail', 'OrderController@orderDetail');//订单备注或驳回信息
         $router->post('rejectOrder', 'OrderController@rejectOrder');//分校&总校被驳回订单列表
         $router->post('anewOrder', 'OrderController@anewOrder');//被驳回订单  取消订单 操作
+
         //总校
         $router->post('sureOrderList', 'OrderController@sureOrderList');//总校确认订单列表
         $router->post('notarizeOrder', 'OrderController@notarizeOrder');//总校确认&取消订单
