@@ -15,7 +15,7 @@ class qrcp_E1103{
             $result  = http_post($apiurl, $request);
 
             $resultArr = json_decode($result, true);
-            return $resultArr;die;
+            print_r($resultArr);die;
             if ($resultArr['respCode'] == 000000) {
                 $verify = verifySign($resultArr['jsonData'], $resultArr['checkValue']);
             }
