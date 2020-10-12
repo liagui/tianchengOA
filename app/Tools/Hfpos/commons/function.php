@@ -60,7 +60,7 @@ function http_post($url, $params, $contentType = false)
  * @param string $key 密钥key
  * @return string
  */
-function getSign($data, $filePath = '', $key = '88888888')
+function getSign($data, $filePath = '', $key = '12345678')
 {
     empty($filePath) && $filePath = dirname(__FILE__) . '/../config/key.pfx';
 
