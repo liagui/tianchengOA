@@ -57,8 +57,8 @@ class SureOrderExceil implements FromCollection, WithHeadings {
             }
             $query->whereIn('school_id',$schoolarr);
         })
-        ->where('pay_status','=',1)
-        ->where('confirm_status','=',1)
+            ->where('pay_status','<',2)
+            ->where('confirm_status','=',1)
         ->where($where)
         ->orderByDesc('id')
         ->get()->toArray();
