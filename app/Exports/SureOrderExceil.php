@@ -189,7 +189,7 @@ class SureOrderExceil implements FromCollection, WithHeadings {
             ];
             $tuyadan[]=$newtuyadan;
         }
-        return $tuyadan;
+        return collect($tuyadan);
     }
 
     public function headings(): array{
