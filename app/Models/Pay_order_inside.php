@@ -1847,9 +1847,9 @@ class Pay_order_inside extends Model
                 return ['code' => 201 , 'msg' => '失败'];
             }
         }else{
-            if(!isset($data['offline_id']) || empty($data['offline_id'])){
-                return ['code' => 201 , 'msg' => '请选择收款账号'];
-            }
+//            if(!isset($data['offline_id']) || empty($data['offline_id'])){
+//                return ['code' => 201 , 'msg' => '请选择收款账号'];
+//            }
             if(!isset($data['pay_status'])){
                 return ['code' => 201 , 'msg' => '请判断类型'];
             }
