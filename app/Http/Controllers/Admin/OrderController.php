@@ -71,6 +71,11 @@ class OrderController extends Controller {
         $schoolarr = $this->underlingLook(AdminLog::getAdminInfo()->admin_user->school_id);
         return Excel::download(new \App\Exports\SureOrderExceil(self::$accept_data,$schoolarr['data']), '已确认订单.xlsx');
     }
+    //退费订单导出
+    public function refuntOrderExceil(){
+        $schoolarr = $this->underlingLook(AdminLog::getAdminInfo()->admin_user->school_id);
+        return Excel::download(new \App\Exports\RefuntOrderExceil(self::$accept_data,$schoolarr['data']), '退费订单.xlsx');
+    }
     //总校确认订单
     public function notarizeOrder(){
         $list = Pay_order_inside::notarizeOrder(self::$accept_data);
