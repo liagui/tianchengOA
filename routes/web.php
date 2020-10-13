@@ -39,6 +39,7 @@ $router->group(['prefix' => 'admin' , 'namespace' => 'Admin','middleware'=> 'cor
     });
     $router->post('paylist', 'OrderController@paylist');//支付通道
     $router->post('oapay', 'OrderController@oapay');//支付
+    $router->post('sureOrderExceil', 'OrderController@sureOrderExceil');//确认订单列表导出
     $router->get('hjnotify', 'NotifyController@hjnotify');//汇聚 支付回调
     $router->post('zfbnotify', 'NotifyController@zfbnotify');//支付宝支付回调
     $router->post('wxnotify', 'NotifyController@wxnotify');//微信支付回调
@@ -66,7 +67,7 @@ $router->group(['prefix' => 'admin' , 'namespace' => 'Admin','middleware'=> ['jw
 
         //总校
         $router->post('sureOrderList', 'OrderController@sureOrderList');//总校确认订单列表
-        $router->post('sureOrderExceil', 'OrderController@sureOrderExceil');//确认订单列表导出
+
         $router->post('notarizeOrder', 'OrderController@notarizeOrder');//总校确认&取消订单
         $router->post('sureOrder', 'OrderController@sureOrder');//总校确认订单详情
         $router->post('unpaidOrder', 'OrderController@unpaidOrder');//总校未支付订单
