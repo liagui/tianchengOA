@@ -13,6 +13,7 @@ use App\Tools\Hfpos\qrcp_E1103;
 use App\Tools\QRcode;
 use App\Tools\YinpayFactory;
 use App\Tools\Yl\HuifuCFCA;
+use Maatwebsite\Excel\Facades\Excel;
 
 class OrderController extends Controller {
     //总校&分校
@@ -64,6 +65,11 @@ class OrderController extends Controller {
         $schoolarr = $this->underlingLook(AdminLog::getAdminInfo()->admin_user->school_id);
         $list = Pay_order_inside::sureOrderList(self::$accept_data,$schoolarr['data']);
         return response()->json($list);
+    }
+    //确认订单导出
+    public function sureOrderExceil(){
+        $schoolarr = $this->underlingLook(AdminLog::getAdminInfo()->admin_user->school_id);
+        return Excel::download(new \App\Exports\SureOrderExceil(self::$accept_data,$schoolarr['data']), '已确认订单.xlsx');
     }
     //总校确认订单
     public function notarizeOrder(){
@@ -592,8 +598,7 @@ class OrderController extends Controller {
                 $str = $paylist['hj_md_key'];
                 $token = $this->hjHmac($pay,$str);
                 $pay['hmac'] = $token;
-                $url="https://www.joinpay.com/trade/uniPayApi.action";
-                $wxpay = $this->hjpost($url,$pay);
+                $wxpay = $this->hjpost($pay);
                 $wxpayarr = json_decode($wxpay,true);
                 file_put_contents('wxhjpay.txt', '时间:'.date('Y-m-d H:i:s').print_r($wxpayarr,true),FILE_APPEND);
                 if($wxpayarr['ra_Code'] == 100){
@@ -620,8 +625,7 @@ class OrderController extends Controller {
                 $str = $paylist['hj_md_key'];
                 $token = $this->hjHmac($pay,$str);
                 $pay['hmac'] = $token;
-                $url="https://www.joinpay.com/trade/uniPayApi.action";
-                $zfbpay = $this->hjpost($url,$pay);
+                $zfbpay = $this->hjpost($pay);
                 $zfbpayarr = json_decode($zfbpay,true);
                 file_put_contents('zfbhjpay.txt', '时间:'.date('Y-m-d H:i:s').print_r($zfbpayarr,true),FILE_APPEND);
                 if($zfbpayarr['ra_Code'] == 100){
