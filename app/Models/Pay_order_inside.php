@@ -1847,6 +1847,9 @@ class Pay_order_inside extends Model
                 return ['code' => 201 , 'msg' => '失败'];
             }
         }else{
+            if(!isset($data['pay_status'])){
+                return ['code' => 201 , 'msg' => '请判断类型'];
+            }
             if($data['pay_status'] == 1){
                 if(!isset($data['offline_id']) || empty($data['offline_id'])){
                     return ['code' => 201 , 'msg' => '请选择收款账号'];
@@ -1857,17 +1860,61 @@ class Pay_order_inside extends Model
                 if(!isset($data['pay_time']) || empty($data['pay_time'])){
                     return ['code' => 201 , 'msg' => '请选择支付时间'];
                 }
+                unset($data['/admin/order/offlineing']);
+                $data['update_time'] = date('Y-m-d H:i:s');
+                $up = Pay_order_inside::where(['id'=>$data['id']])->update($data);
+                if($up){
+                    return ['code' => 200 , 'msg' => '成功'];
+                }else{
+                    return ['code' => 201 , 'msg' => '失败'];
+                }
             }
-            if(!isset($data['pay_status'])){
-                return ['code' => 201 , 'msg' => '请判断类型'];
+            if($data['pay_status'] == 2){
+                unset($data['/admin/order/offlineing']);
+                $res['update_time'] = date('Y-m-d H:i:s');
+                $res['pay_status'] = 2;
+                $up = Pay_order_inside::where(['id'=>$data['id']])->update($res);
+                if($up){
+                    return ['code' => 200 , 'msg' => '成功'];
+                }else{
+                    return ['code' => 201 , 'msg' => '失败'];
+                }
             }
-            unset($data['/admin/order/offlineing']);
-            $data['update_time'] = date('Y-m-d H:i:s');
-            $up = Pay_order_inside::where(['id'=>$data['id']])->update($data);
-            if($up){
-                return ['code' => 200 , 'msg' => '成功'];
-            }else{
-                return ['code' => 201 , 'msg' => '失败'];
+            //支付失败
+            if($data['pay_status'] == 2){
+                unset($data['/admin/order/offlineing']);
+                $res['update_time'] = date('Y-m-d H:i:s');
+                $res['pay_status'] = 2;
+                $up = Pay_order_inside::where(['id'=>$data['id']])->update($res);
+                if($up){
+                    return ['code' => 200 , 'msg' => '成功'];
+                }else{
+                    return ['code' => 201 , 'msg' => '失败'];
+                }
+            }
+            //待支付
+            if($data['pay_status'] == 0){
+                unset($data['/admin/order/offlineing']);
+                $res['update_time'] = date('Y-m-d H:i:s');
+                $res['pay_status'] = 0;
+                $up = Pay_order_inside::where(['id'=>$data['id']])->update($res);
+                if($up){
+                    return ['code' => 200 , 'msg' => '成功'];
+                }else{
+                    return ['code' => 201 , 'msg' => '失败'];
+                }
+            }
+            //待审核
+            if($data['pay_status'] == 3){
+                unset($data['/admin/order/offlineing']);
+                $res['update_time'] = date('Y-m-d H:i:s');
+                $res['pay_status'] = 3;
+                $up = Pay_order_inside::where(['id'=>$data['id']])->update($res);
+                if($up){
+                    return ['code' => 200 , 'msg' => '成功'];
+                }else{
+                    return ['code' => 201 , 'msg' => '失败'];
+                }
             }
         }
     }
