@@ -168,7 +168,7 @@ class SureOrderExceil implements FromCollection, WithHeadings {
         $tuyadan = [];
         foreach ($order as $k=>$v){
             $newtuyadan = [
-                'order_number' => $v['order_no'],
+                'order_number' => ' '.$v['order_no'],
                 'create_time' => $v['create_time'],
                 'name' => $v['name'],
                 'mobile' => $v['mobile'],
