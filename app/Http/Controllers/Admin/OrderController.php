@@ -68,12 +68,12 @@ class OrderController extends Controller {
     }
     //确认订单导出
     public function sureOrderExceil(){
-        $schoolarr = $this->underlingLook(AdminLog::getAdminInfo()->admin_user->school_id);
+        $schoolarr = $this->underlingLook($_GET['adminschool_id']);
         return Excel::download(new \App\Exports\SureOrderExceil(self::$accept_data,$schoolarr['data']), '已确认订单.xlsx');
     }
     //退费订单导出
     public function refuntOrderExceil(){
-        $schoolarr = $this->underlingLook(AdminLog::getAdminInfo()->admin_user->school_id);
+        $schoolarr = $this->underlingLook($_GET['adminschool_id']);
         return Excel::download(new \App\Exports\RefuntOrderExceil(self::$accept_data,$schoolarr['data']), '退费订单.xlsx');
     }
     //总校确认订单
