@@ -9,6 +9,7 @@ use App\Models\Major;
 use App\Models\OfflinePay;
 use App\Models\Pay_order_inside;
 use App\Models\Project;
+use App\Models\Refund_order;
 use App\Models\School;
 use Maatwebsite\Excel\Concerns\FromCollection;
 use Maatwebsite\Excel\Concerns\WithHeadings;
@@ -44,7 +45,7 @@ class RefuntOrderExceil implements FromCollection, WithHeadings {
         $state_time = $statetime." 00:00:00";
         $end_time = $endtime." 23:59:59";
         //列表
-        $order = self::where($where)->where(function($query) use ($data,$schoolarr) {
+        $order = Refund_order::where($where)->where(function($query) use ($data,$schoolarr) {
         if(isset($data['confirm_order_type'])){
             $query->where('confirm_order_type',$data['confirm_order_type']);
         }
