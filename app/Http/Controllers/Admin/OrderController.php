@@ -182,7 +182,7 @@ class OrderController extends Controller {
         //待确认订单
         $orderCount = Pay_order_inside::whereIn('school_id',$schoolarr)->where(['confirm_status'=>0,'pay_status'=>1])->count();
         //退费待确认
-        $returnCount = Refund_order::whereIn('school_id',$schoolarr)->where(['confirm_status'=>0,'pay_status'=>1])->count();
+        $returnCount = Refund_order::whereIn('school_id',$schoolarr)->where(['confirm_status'=>0])->count();
         $data=[
             'zongcount' => $orderCount,
             'daicount' => $orderCount,
