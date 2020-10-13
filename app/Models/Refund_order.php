@@ -108,7 +108,7 @@ class Refund_order extends Model
         //判断时间
         $begindata="2020-03-04";
         $enddate = date('Y-m-d');
-        $statetime = !empty($data['state_time'])?$data['state_time']:$begindata;
+        $statetime = !empty($data['start_time'])?$data['start_time']:$begindata;
         $endtime = !empty($data['end_time'])?$data['end_time']:$enddate;
         $state_time = $statetime." 00:00:00";
         $end_time = $endtime." 23:59:59";
