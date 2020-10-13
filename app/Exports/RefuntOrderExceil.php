@@ -1,13 +1,9 @@
 <?php
 namespace App\Exports;
 
-use App\Models\Admin;
-use App\Models\Channel;
 use App\Models\Course;
 use App\Models\Education;
 use App\Models\Major;
-use App\Models\OfflinePay;
-use App\Models\Pay_order_inside;
 use App\Models\Project;
 use App\Models\Refund_order;
 use App\Models\School;

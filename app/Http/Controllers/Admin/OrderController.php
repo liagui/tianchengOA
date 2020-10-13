@@ -11,8 +11,6 @@ use App\Models\Refund_order;
 use App\Tools\AlipayFactory;
 use App\Tools\Hfpos\qrcp_E1103;
 use App\Tools\QRcode;
-use App\Tools\YinpayFactory;
-use App\Tools\Yl\HuifuCFCA;
 use Maatwebsite\Excel\Facades\Excel;
 
 class OrderController extends Controller {
