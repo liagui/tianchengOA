@@ -16,9 +16,9 @@ class SureOrderExceil implements FromCollection, WithHeadings {
 
     protected $where;
     protected $schools;
-    public function __construct($invoices){
+    public function __construct($invoices,$schoolarr){
         $this->where = $invoices;
-//        $this->schools = $schoolarr;
+        $this->schools = $schoolarr;
     }
     public function collection() {
         $data = $this->where;
@@ -55,7 +55,7 @@ class SureOrderExceil implements FromCollection, WithHeadings {
                     ->orwhere('name',$data['order_no'])
                     ->orwhere('mobile',$data['order_no']);
             }
-//            $query->whereIn('school_id',$schoolarr);
+            $query->whereIn('school_id',$schoolarr);
         })
         ->where('pay_status','=',1)
         ->where('confirm_status','=',1)
