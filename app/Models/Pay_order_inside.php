@@ -359,7 +359,7 @@ class Pay_order_inside extends Model
 //        }else{
             $data['order_no'] = date('YmdHis', time()) . rand(1111, 9999); //订单号  随机生成
             $data['create_time'] =date('Y-m-d H:i:s');
-            $data['pay_time'] =date('Y-m-d H:i:s');
+            $data['pay_time'] =isset($data['pay_time'])?$data['pay_time']:date('Y-m-d H:i:s');;
             $data['pay_status'] = 3;  //3是待审核
             $data['pay_price'] = $data['course_Price'] + $data['sign_Price'];
 //        }
@@ -1847,8 +1847,16 @@ class Pay_order_inside extends Model
                 return ['code' => 201 , 'msg' => '失败'];
             }
         }else{
-            if(!isset($data['offline_id']) || empty($data['offline_id'])){
-                return ['code' => 201 , 'msg' => '请选择收款账号'];
+            if($data['pay_status'] == 1){
+                if(!isset($data['offline_id']) || empty($data['offline_id'])){
+                    return ['code' => 201 , 'msg' => '请选择收款账号'];
+                }
+                if(!isset($data['pay_type']) || empty($data['pay_type'])){
+                    return ['code' => 201 , 'msg' => '请选择支付方式'];
+                }
+                if(!isset($data['pay_time']) || empty($data['pay_time'])){
+                    return ['code' => 201 , 'msg' => '请选择支付时间'];
+                }
             }
             if(!isset($data['pay_status'])){
                 return ['code' => 201 , 'msg' => '请判断类型'];

@@ -48,6 +48,12 @@ class Refund_order extends Model
         if(!isset($data['refund_price']) || empty($data['refund_price'])){
             return ['code' => 201 , 'msg' => '未填写退费金额'];
         }
+        if(isset($data['pay_credentials']) && !empty($data['pay_credentials'])){
+            $credentials = json_decode($data['pay_credentials'],true);
+            $credentialss = implode(',',$credentials);
+        }else{
+            $credentialss='';
+        }
         //根据学生名和手机号查询用户
         $student = Student::where(['user_name'=>$data['student_name'],'mobile'=>$data['phone']])->first();
         $res = [
@@ -64,6 +70,7 @@ class Refund_order extends Model
             'course_id' => $data['course_id'],
             'project_id' => $data['project_id'],
             'subject_id' => $data['subject_id'],
+            'pay_credentials' => $credentialss,
         ];
         $add = self::insert($res);
         if($add){
@@ -101,7 +108,7 @@ class Refund_order extends Model
         //判断时间
         $begindata="2020-03-04";
         $enddate = date('Y-m-d');
-        $statetime = !empty($data['state_time'])?$data['state_time']:$begindata;
+        $statetime = !empty($data['start_time'])?$data['start_time']:$begindata;
         $endtime = !empty($data['end_time'])?$data['end_time']:$enddate;
         $state_time = $statetime." 00:00:00";
         $end_time = $endtime." 23:59:59";
@@ -235,15 +242,15 @@ class Refund_order extends Model
             $major = Major::where(['id'=>$res['major_id']])->first();
             $res['major_name'] = $major['major_name'];
         }
-
+        if(!empty($res['pay_credentials'])){
+            $res['pay_credentials'] = explode(',',$res['pay_credentials']);
+        }
         //查学校
         $school = School::where(['id'=>$res['school_id']])->first();
         if($school){
             $res['school_name'] = $school['school_name'];
         }
-
         //根据用户名 手机号  项目 学科 课程 查询订单
-
         if(empty($res['order_id'])) {
             $orderid=[];
             $order = Pay_order_inside::where([
