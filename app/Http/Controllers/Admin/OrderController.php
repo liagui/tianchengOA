@@ -180,9 +180,9 @@ class OrderController extends Controller {
     public function redDot(){
         $schoolarr = $this->underlingLook(AdminLog::getAdminInfo()->admin_user->school_id);
         //待确认订单
-        $orderCount = Pay_order_inside::whereIn('school_id',$schoolarr)->where(['confirm_status'=>0])->count();
+        $orderCount = Pay_order_inside::whereIn('school_id',$schoolarr)->where(['confirm_status'=>0,'pay_status'=>1])->count();
         //退费待确认
-        $returnCount = Refund_order::whereIn('school_id',$schoolarr)->where(['confirm_status'=>0])->count();
+        $returnCount = Refund_order::whereIn('school_id',$schoolarr)->where(['confirm_status'=>0,'pay_status'=>1])->count();
         $data=[
             'zongcount' => $orderCount,
             'daicount' => $orderCount,
