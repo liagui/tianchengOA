@@ -23,7 +23,8 @@ class SureOrderExceil implements FromCollection, WithHeadings {
     public function collection() {
         $data = $this->where;
         $schoolarr = $this->schools;
-        $where=[];
+        $where['del_flag'] = 0;  //未删除
+        $where['confirm_status'] = 1;  //已确认
         //科目id&学科id
         if(!empty($data['project_id'])){
             $parent = json_decode($data['project_id'], true);
