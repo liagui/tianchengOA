@@ -902,7 +902,6 @@ class Pay_order_inside extends Model
             $query->whereIn('school_id',$schoolarr);
         })
             ->where('pay_status','<',2)
-            ->where('confirm_status','=',1)
             ->where($where)
             ->count();
 
