@@ -61,6 +61,7 @@ class OrderController extends Controller {
     //总校确认订单列表
     public function sureOrderList(){
         $schoolarr = $this->underlingLook(AdminLog::getAdminInfo()->admin_user->school_id);
+        print_r($schoolarr);die;
         $list = Pay_order_inside::sureOrderList(self::$accept_data,$schoolarr['data']);
         return response()->json($list);
     }
