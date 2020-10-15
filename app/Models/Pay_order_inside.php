@@ -893,7 +893,7 @@ class Pay_order_inside extends Model
         $offset   = ($page - 1) * $pagesize;
 
         //計算總數
-        $count = self::where($where)->where(function($query) use ($data,$schoolarr) {
+        $count = self::where(function($query) use ($data,$schoolarr) {
             if(isset($data['order_no']) && !empty($data['order_no'])){
                 $query->where('order_no',$data['order_no'])
                     ->orwhere('name',$data['order_no'])
@@ -901,8 +901,9 @@ class Pay_order_inside extends Model
             }
             $query->whereIn('school_id',$schoolarr);
         })
-        ->where('pay_status','=',1)
-        ->count();
+            ->where('pay_status','<',2)
+            ->where($where)
+            ->count();
 
         $order = self::where(function($query) use ($data,$schoolarr) {
             if(isset($data['order_no']) && !empty($data['order_no'])){
@@ -916,18 +917,6 @@ class Pay_order_inside extends Model
             ->where($where)
             ->orderByDesc('id')
             ->offset($offset)->limit($pagesize)->get()->toArray();
-
-//        $order = self::where($where)->where(function($query) use ($data,$schoolarr) {
-//            if(isset($data['order_no']) && !empty($data['order_no'])){
-//                $query->where('order_no',$data['order_no'])
-//                    ->orwhere('name',$data['order_no'])
-//                    ->orwhere('mobile',$data['order_no']);
-//            }
-//            $query->whereIn('school_id',$schoolarr);
-//        })
-//        ->where('pay_status','=',1)
-//        ->orderByDesc('id')
-//        ->offset($offset)->limit($pagesize)->get()->toArray();
         //循环查询分类
         if(!empty($order)){
             foreach ($order as $k=>&$v){
