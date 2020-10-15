@@ -67,6 +67,7 @@ class OrderController extends Controller {
     //确认订单导出
     public function sureOrderExceil(){
         $schoolarr = $this->underlingLook($_GET['adminschool_id']);
+        print_r($schoolarr);die;
         return Excel::download(new \App\Exports\SureOrderExceil(self::$accept_data,$schoolarr['data']), '已确认订单.xlsx');
     }
     //退费订单导出
