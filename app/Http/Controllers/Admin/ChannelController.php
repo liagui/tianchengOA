@@ -138,7 +138,7 @@ class ChannelController extends Controller {
             $count = Channel::where(['is_del'=>0,'is_forbid'=>0])->where('id','!=',$data['id'])->count();
             if($count>=1){
                 $noUseRes = Channel::where('id','!=',$data['id'])->where(['is_del'=>0,'is_forbid'=>0])->update(['is_use'=>1,'update_time'=>date('Y-m-d H:i:s')]);
-                if($noUseRes){
+                if(!$noUseRes){
                     DB::rollback();
                     return response()->json(['code'=>203,'msg'=>'选择失败']);
                 }
