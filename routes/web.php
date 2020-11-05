@@ -46,6 +46,10 @@ $router->group(['prefix' => 'admin' , 'namespace' => 'Admin','middleware'=> 'cor
     $router->post('wxnotify', 'NotifyController@wxnotify');//微信支付回调
     $router->post('paylistarr', 'OrderController@paylistarr');//支付方式
     $router->post('redDot', 'OrderController@redDot');//未处理订单标记红点
+    $router->post('hfnotify','NotifyController@hfnotify');//汇付 支付回调 （lys）
+    $router->post('hfpay','OrderController@hfpay');//汇付 测试支付  （lys）
+
+
 
     $router->get('doExportBranchSchoolExcel', 'OrderExcelController@doExportBranchSchoolExcel');           //导出分校收入详情
     $router->get('doExportBranchSchoolConfirmOrderExcel', 'OrderExcelController@doExportBranchSchoolConfirmOrderExcel');           //导出分校已确认订单
@@ -245,17 +249,21 @@ $router->group(['prefix' => 'admin' , 'namespace' => 'Admin','middleware'=> ['jw
         $router->post('doUpdateWxState', 'PaySetController@doUpdateWxState');                 //更改微信状态
         $router->post('doUpdateZfbState', 'PaySetController@doUpdateZfbState');               //更改支付宝状态
         $router->post('doUpdateHjState', 'PaySetController@doUpdateHjState');                 //更改汇聚状态
+        $router->post('doUpdateHfState', 'PaySetController@doUpdateHfState');                //更改汇付状态
         $router->post('getZfbById', 'PaySetController@getZfbConfig');                       //添加支付宝配置(获取)
         $router->post('getWxById', 'PaySetController@getWxConfig');                         //添加微信配置(获取)
         $router->post('getHjById', 'PaySetController@getHjConfig');                         //添加汇聚配置(获取)
+        $router->post('getHfById', 'PaySetController@getHfConfig');                         //添加汇付配置(获取)
         $router->post('doZfbUpdate', 'PaySetController@doZfbConfig');                       //添加/修改支付宝配置
         $router->post('doWxUpdate', 'PaySetController@doWxConfig');                         //添加/修改微信配置
         $router->post('doHjUpdate', 'PaySetController@doHjConfig');                         //添加/修改汇聚配置
+        $router->post('doHfUpdate', 'PaySetController@doHfConfig');                         //添加/修改汇付配置
     });
 
 
 
     $router->group(['prefix' => 'channel'], function () use ($router) {
+        $router->post('getPaywayList', 'ChannelController@getPaywayList');                            //获取支付方式列表
         $router->post('getList', 'ChannelController@getList');                                 //获取通道列表
         $router->post('doChannelInsert', 'ChannelController@doChannelInsert');                 //添加支付通道
         $router->post('getChannelPayById', 'ChannelController@getChannelPayById');             //编辑支付通道（获取）
@@ -315,4 +323,3 @@ $router->group(['prefix' => 'admin' , 'namespace' => 'Admin','middleware'=> ['jw
 });
 
 /*****************end**********************/
-

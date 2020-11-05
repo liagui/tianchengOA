@@ -60,12 +60,15 @@ function http_post($url, $params, $contentType = false)
  * @param string $key 密钥key
  * @return string
  */
-function getSign($data, $filePath = '', $key = '12345678')
+function getSign($data, $filePath = '', $key = '')
 {
-    empty($filePath) && $filePath = dirname(__FILE__) . '/../config/key.pfx';
+    empty($filePath) && $filePath = dirname(__FILE__) . "/../../../../public".$filePaths;
 
     if (!is_string($data)) {
         return "Error: 待签名不是字符串";
+    }
+    if(empty($key)){
+        return "Error：key错误";
     }
 
     $strLogCofigFilePath = dirname(__FILE__) . "/cfcalog.conf";
@@ -152,4 +155,3 @@ function getOrderId()
 {
     return date('YmdHis') . mt_rand(100, 999);
 }
-

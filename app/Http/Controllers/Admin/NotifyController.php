@@ -60,9 +60,32 @@ class NotifyController extends Controller{
     public function wxnotify(){
 
     }
-//汇付
-public function hfnotify(){
-    file_put_contents('hfnotify.txt', '时间:'.date('Y-m-d H:i:s').print_r($_REQUEST,true),FILE_APPEND);
-}
+//汇付回调
+    public function hfnotify(){
+        file_put_contents('hfnotify.txt', '时间:'.date('Y-m-d H:i:s').print_r($_REQUEST,true),FILE_APPEND);
+        $notifyData = $_REQUEST;
+        if(!is_array($notifyData)||empty($notifyData)){
+            return "fail";
+        }else{
+            if(!isset($notifyData['jsonData']) || empty($notifyData['jsonData'])){
+                return "fail";
+            }else{
+                $jsonData = json_decode($notifyData['jsonData'],1);
+                if($jsonData['transStat'] == "S" && $jsonData['respCode'] == "000000" ){ //支付成功
+                    $order = Pay_order_external::where(['order_number' => $jsonData['termOrdId']])->first()->toArray();
+                    if($order['status'] > 0){
+                        return "success";
+                    }
+                    if($jsonData['respCode'] == '000000'){
+                        //只修改订单号
+                        $up = Pay_order_external::where(['id'=>$order['id']])->update(['pay_status'=>1,'update_time'=>date('Y-m-d H:i:s'),'pay_time'=>date('Y-m-d H:i:s')]);
+                        if($up){
+                            return "RECV_ORD_ID_".$jsonData['ordId'];
+                        }
+                    }
+                }
+            }
+        }
+    }
 
 }

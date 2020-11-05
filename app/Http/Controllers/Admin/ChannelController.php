@@ -46,7 +46,7 @@ class ChannelController extends Controller {
      */
     public function doChannelInsert(){
         $data = self::$accept_data;
-        $validator = Validator::make($data, 
+        $validator = Validator::make($data,
                 [
                     'channel_name' => 'required',
                     'channel_type'=>'required',
@@ -66,14 +66,14 @@ class ChannelController extends Controller {
      * @param  description   编辑支付通道（获取）
      * @param  参数说明       body包含以下参数[
      *     id     通道id
-     *    
+     *
      * ]
      * @param author    lys
      * @param ctime     2020-09-02
      */
    public function getChannelPayById(){
         $data = self::$accept_data;
-        $validator = Validator::make($data, 
+        $validator = Validator::make($data,
                 [
                     'id' => 'required|integer',
                 ],
@@ -98,7 +98,7 @@ class ChannelController extends Controller {
      */
    public function doUpdateChannelPay(){
         $data = self::$accept_data;
-        $validator = Validator::make($data, 
+        $validator = Validator::make($data,
                 [
                     'id' => 'required|integer',
                     'channel_name' => 'required',
@@ -125,7 +125,7 @@ class ChannelController extends Controller {
      */
    public function doUseChannelPay(){
         $data = self::$accept_data;
-        $validator = Validator::make($data, 
+        $validator = Validator::make($data,
                 [
                    'id' => 'required|integer',
                 ],
@@ -155,4 +155,40 @@ class ChannelController extends Controller {
             return ['code' => 500 , 'msg' => $ex->getMessage()];
         }
     }
+
+
+	/*
+	 * @param  description   选中支付通道
+	 * @param  参数说明       body包含以下参数[
+	 *     id     通道id
+	 * ]
+	 * @param author    lys
+	 * @param ctime     2020-09-03
+	 */
+    public function getPaywayList(){
+        $arr = [
+                [
+                    'id'=>1,
+                    'logo_url' =>'',
+                    'payway' = >'支付宝支付',
+                ],
+                [
+                    'id'=>2,
+                    'logo_url' =>'',
+                    'payway' = >'微信支付',
+                ],
+                [
+                    'id'=>3,
+                    'logo_url' =>'',
+                    'payway' = >'汇聚支付',
+                ],
+                [
+                    'id'=>4,
+                    'logo_url' =>'',
+                    'payway' = >'汇付支付',
+                ]
+        ];
+        return response()->json(['code'=>200,'msg'=>'success','data'=>$arr]);
+    }
+
 }

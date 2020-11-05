@@ -518,6 +518,15 @@ class OrderController extends Controller {
             ];
             $status[] = $paystatus;
         }
+        if($paylist['hf_pay_state'] == 1){  //汇付支付，11-5号目前只支持支付宝扫码支付，说是汇付可以根据不同的账户权限，开通不同支付方式【微信、支付宝】
+            $paystatus=[
+                'paytype' => 6,
+                'payname' => '支付宝支付',
+                'payimg' => 'https://longdeapi.oss-cn-beijing.aliyuncs.com/zfb2xtb.png',
+            ];
+            $status[] = $paystatus;
+        }
+
         return response()->json(['code' => 200 , 'msg' => '获取成功' , 'data' =>$status]);
     }
     //汇聚支付   入库   并生成二维码
@@ -637,45 +646,64 @@ class OrderController extends Controller {
                     return response()->json(['code' => 202, 'msg' => '暂未开通']);
                 }
             }
+            //5 是银联 占坑
+            //汇付扫码支付
+            if($this->data['pay_status'] == 6) {
+                $paylist = PaySet::select('hf_merchant_number','hf_password','hf_pfx_url','hf_cfca_ca_url','hf_cfca_oca_url')->where(['school_id'=>$this->school['id']])->first();
+                if(empty($paylist) || empty($paylist['hf_merchant_number'])){
+                    return response()->json(['code' => 202, 'msg' => '商户号错误']);
+                }
+                if(empty($paylist) || empty($paylist['hf_password'])){ //打开 key.pfx密码
+                    return response()->json(['code' => 202, 'msg' => '密码错误']);
+                }
+                $noti['merNoticeUrl']= "http://".$_SERVER['HTTP_HOST']."/web/course/hfnotify";
+                $newPrice  = str_replace(' ', '', $arr['price']);
+                $count = substr_count($newPrice,'.');
+                if($count > 0){
+                    $newPrice = explode(".",$newPrice);
+                    if(strlen($newPrice[1])==0){
+                        $price = $newPrice[0].".00";
+                    }
+                    if(strlen($newPrice[1])==1){
+                        $price = $newPrice[0].'.'.$newPrice[1]."0";
+                    }
+                    if(strlen($newPrice[1])==2){
+                       $price = $newPrice[0].'.'.$newPrice[1];
+                    }
+                }else{
+                    $price = $newPrice.".00";
+                }
+                $data=[
+                    'apiVersion' => '3.0.0.2',
+                    'memberId' => $paylist['hf_merchant_number'],
+                    'termOrdId' => $arr['order_number'],
+                    'ordAmt' => $price,
+                    'goodsDesc' => urlencode($course['title']),
+                    'remark' => urlencode(''),
+                    'payChannelType' => 'A1',//zfb
+                    'merPriv' => json_encode($noti),
+                ];
+                $hfpos = new qrcp_E1103();
+                $url = $hfpos->Hfpos($data,$paylist['hf_pfx_url'],$paylist['hf_password']);
+                if($url['respCode'] == "000000"){
+                    require_once realpath(dirname(__FILE__).'/../../../Tools/phpqrcode/QRcode.php');
+                    $code = new QRcode();
+                    ob_start();//开启缓冲区
+                    $jsonData = json_decode($url['jsonData'],1);
+                    $returnData  = $code->pngString($jsonData['qrcodeUrl'], false, 'L', 10, 1);//生成二维码
+                    $imageString = base64_encode(ob_get_contents());
+                    ob_end_clean();
+                    $str = "data:image/png;base64," . $imageString;
+                    return response()->json(['code' => 200, 'msg' => '预支付订单生成成功', 'data' => $str]);
+                }else{
+                    return response()->json(['code' => 202, 'msg' => '生成二维码失败']);
+                }
+            }
 
         }
     }
 
-    //汇付支付
-    public function hfpay(){
-        echo "123456";
-        $noti['merNoticeUrl']= "http://".$_SERVER['HTTP_HOST']."/admin/hjnotify";
-        $data=[
-            'apiVersion' => '3.0.0.2',
-            'memberId' => '310000016002293818',
-            'termOrdId' => date('YmdHis', time()) . rand(111111, 999999),
-            'ordAmt' => '0.01',
-            'goodsDesc' => urlencode('aaaa'),
-            'remark' => urlencode(''),
-            'payChannelType' => 'A1',
-            'merPriv' => json_encode($noti),
-        ];
-        $hfpos = new qrcp_E1103();
-        $url = $hfpos->Hfpos($data);
-        print_r($url);die;
-
-
-        $zfbpay = $this->hfpost($data);
-        return $zfbpay;
-    }
-    public function hfpost($data){
-        //简单的curl
-        $ch = curl_init();
-        curl_setopt($ch, CURLOPT_URL, "http://hf.liyinsheng.cn/qrcp_E1103.php");
-        curl_setopt($ch, CURLOPT_RETURNTRANSFER, 1);
-        curl_setopt($ch, CURLOPT_POST, 1);
-        curl_setopt($ch, CURLOPT_POSTFIELDS, $data);
-        curl_setopt($ch, CURLOPT_SSL_VERIFYHOST, 0);
-        curl_setopt($ch, CURLOPT_SSL_VERIFYPEER, 0);
-        $result = curl_exec($ch);
-        curl_close($ch);
-        return $result;
-    }
+   
 
     //汇聚签名
     public function hjHmac($arr,$str){
