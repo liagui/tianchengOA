@@ -659,7 +659,7 @@ class OrderController extends Controller {
             //银联扫码支付
             if($data['pay_type'] == 5) {
                 $ylpay = new YinpayFactory();
-                $return = $ylpay->getPrePayOrder($paylist['yl_mch_id'],$paylist['yl_key'],$insert['order_no'],$course['title'],$data['pay_price']);
+                $return = $ylpay->getPrePayOrder($paylist['yl_mch_id'],$paylist['yl_key'],$insert['order_no'],$course['course_name'],$data['pay_price']);
                 require_once realpath(dirname(__FILE__).'/../../../Tools/phpqrcode/QRcode.php');
                 $code = new QRcode();
                 $returnData  = $code->pngString($return['data'], false, 'L', 10, 1);//生成二维码
