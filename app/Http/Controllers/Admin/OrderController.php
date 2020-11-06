@@ -518,7 +518,7 @@ class OrderController extends Controller {
             ];
             $status[] = $paystatus;
         }
-        if($paytype['yl_pay_state'] == 1){
+        if($paylist['yl_pay_state'] == 1){
             $paystatus=[
                 'paytype' => 5,
                 'payname' => '银联支付',
