@@ -656,7 +656,7 @@ class OrderController extends Controller {
             }
             //5 是银联 占坑
             //银联扫码支付
-            if($data['pay_status'] == 5) {
+            if($data['pay_type'] == 5) {
                 $payinfo = PaySet::select('yl_mch_id','yl_key')->where(['school_id'=>$this->school['id']])->first();
                 if(empty($payinfo) || empty($payinfo['yl_mch_id']) || empty($payinfo['yl_key'])){
                     return response()->json(['code' => 202, 'msg' => '商户号为空']);
@@ -673,7 +673,7 @@ class OrderController extends Controller {
                 return response()->json($return);
             }
             //汇付扫码支付
-            if($data['pay_status'] == 6) {
+            if($data['pay_type'] == 6) {
                 $paylist = PaySet::select('hf_merchant_number','hf_password','hf_pfx_url','hf_cfca_ca_url','hf_cfca_oca_url')->where(['school_id'=>$this->school['id']])->first();
                 if(empty($paylist) || empty($paylist['hf_merchant_number'])){
                     return response()->json(['code' => 202, 'msg' => '商户号错误']);
