@@ -657,12 +657,8 @@ class OrderController extends Controller {
             //5 是银联 占坑
             //银联扫码支付
             if($data['pay_type'] == 5) {
-                $payinfo = PaySet::select('yl_mch_id','yl_key')->where(['school_id'=>$this->school['id']])->first();
-                if(empty($payinfo) || empty($payinfo['yl_mch_id']) || empty($payinfo['yl_key'])){
-                    return response()->json(['code' => 202, 'msg' => '商户号为空']);
-                }
                 $ylpay = new YinpayFactory();
-                $return = $ylpay->getPrePayOrder($payinfo['yl_mch_id'],$payinfo['yl_key'],$arr['order_number'],$course['title'],$arr['price']);
+                $return = $ylpay->getPrePayOrder($paylist['yl_mch_id'],$paylist['yl_key'],$insert['order_no'],$course['title'],$data['pay_price']);
                 require_once realpath(dirname(__FILE__).'/../../../Tools/phpqrcode/QRcode.php');
                 $code = new QRcode();
                 $returnData  = $code->pngString($return['data'], false, 'L', 10, 1);//生成二维码
@@ -674,7 +670,6 @@ class OrderController extends Controller {
             }
             //汇付扫码支付
             if($data['pay_type'] == 6) {
-                $paylist = PaySet::select('hf_merchant_number','hf_password','hf_pfx_url','hf_cfca_ca_url','hf_cfca_oca_url')->where(['school_id'=>$this->school['id']])->first();
                 if(empty($paylist) || empty($paylist['hf_merchant_number'])){
                     return response()->json(['code' => 202, 'msg' => '商户号错误']);
                 }
@@ -682,7 +677,7 @@ class OrderController extends Controller {
                     return response()->json(['code' => 202, 'msg' => '密码错误']);
                 }
                 $noti['merNoticeUrl']= "http://".$_SERVER['HTTP_HOST']."/web/course/hfnotify";
-                $newPrice  = str_replace(' ', '', $arr['price']);
+                $newPrice  = str_replace(' ', '', $data['pay_price']);
                 $count = substr_count($newPrice,'.');
                 if($count > 0){
                     $newPrice = explode(".",$newPrice);
@@ -698,10 +693,10 @@ class OrderController extends Controller {
                 }else{
                     $price = $newPrice.".00";
                 }
-                $data=[
+                $hfpayData=[
                     'apiVersion' => '3.0.0.2',
                     'memberId' => $paylist['hf_merchant_number'],
-                    'termOrdId' => $arr['order_number'],
+                    'termOrdId' => $insert['order_no'],
                     'ordAmt' => $price,
                     'goodsDesc' => urlencode($course['title']),
                     'remark' => urlencode(''),
@@ -709,7 +704,7 @@ class OrderController extends Controller {
                     'merPriv' => json_encode($noti),
                 ];
                 $hfpos = new qrcp_E1103();
-                $url = $hfpos->Hfpos($data,$paylist['hf_pfx_url'],$paylist['hf_password']);
+                $url = $hfpos->Hfpos($hfpayData,$paylist['hf_pfx_url'],$paylist['hf_password']);
                 if($url['respCode'] == "000000"){
                     require_once realpath(dirname(__FILE__).'/../../../Tools/phpqrcode/QRcode.php');
                     $code = new QRcode();
