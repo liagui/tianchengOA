@@ -60,7 +60,24 @@ class NotifyController extends Controller{
     public function wxnotify(){
 
     }
-//汇付回调
+	//银联回调地址
+	public function ylnotify(){
+	    $xml = file_get_contents('php://input');
+	    $arr = $this->xmlstr_to_array($xml);
+	    file_put_contents('ylnotify.txt', '时间:' . date('Y-m-d H:i:s') . print_r($arr, true), FILE_APPEND);
+	    $order = Converge::where(['order_number' => $arr['out_trade_no']])->first()->toArray();
+	    if($order['status'] == 1){
+	        return 'success';
+	    }else {
+	        $up = Converge::where(['order_number' => $arr['out_trade_no']])->update(['status'=>1,'pay_time'=>date('Y-m-d H:i:s'),'update_time'=>date('Y-m-d H:i:s')]);
+	        if($up){
+	            return "success";
+	        }else{
+	            return "fail";
+	        }
+	    }
+	}
+    //汇付回调
     public function hfnotify(){
         file_put_contents('hfnotify.txt', '时间:'.date('Y-m-d H:i:s').print_r($_REQUEST,true),FILE_APPEND);
         $notifyData = $_REQUEST;

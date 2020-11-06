@@ -518,6 +518,14 @@ class OrderController extends Controller {
             ];
             $status[] = $paystatus;
         }
+        if($paytype['yl_pay_state'] == 1){
+            $paystatus=[
+                'paytype' => 5,
+                'payname' => '银联支付',
+                'payimg' => 'https://longdeapi.oss-cn-beijing.aliyuncs.com/upload/2020-10-10/160230173318475f812f2531b6e.png',
+            ];
+            $pay[] = $paystatus;
+        }
         if($paylist['hf_pay_state'] == 1){  //汇付支付，11-5号目前只支持支付宝扫码支付，说是汇付可以根据不同的账户权限，开通不同支付方式【微信、支付宝】
             $paystatus=[
                 'paytype' => 6,
@@ -647,6 +655,23 @@ class OrderController extends Controller {
                 }
             }
             //5 是银联 占坑
+            //银联扫码支付
+            if($this->data['pay_status'] == 5) {
+                $payinfo = PaySet::select('yl_mch_id','yl_key')->where(['school_id'=>$this->school['id']])->first();
+                if(empty($payinfo) || empty($payinfo['yl_mch_id']) || empty($payinfo['yl_key'])){
+                    return response()->json(['code' => 202, 'msg' => '商户号为空']);
+                }
+                $ylpay = new YinpayFactory();
+                $return = $ylpay->getPrePayOrder($payinfo['yl_mch_id'],$payinfo['yl_key'],$arr['order_number'],$course['title'],$arr['price']);
+                require_once realpath(dirname(__FILE__).'/../../../Tools/phpqrcode/QRcode.php');
+                $code = new QRcode();
+                $returnData  = $code->pngString($return['data'], false, 'L', 10, 1);//生成二维码
+                $imageString = base64_encode(ob_get_contents());
+                ob_end_clean();
+                $str = "data:image/png;base64," . $imageString;
+                $return['data'] = $str;
+                return response()->json($return);
+            }
             //汇付扫码支付
             if($this->data['pay_status'] == 6) {
                 $paylist = PaySet::select('hf_merchant_number','hf_password','hf_pfx_url','hf_cfca_ca_url','hf_cfca_oca_url')->where(['school_id'=>$this->school['id']])->first();
@@ -703,7 +728,7 @@ class OrderController extends Controller {
         }
     }
 
-   
+
 
     //汇聚签名
     public function hjHmac($arr,$str){

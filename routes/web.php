@@ -48,6 +48,8 @@ $router->group(['prefix' => 'admin' , 'namespace' => 'Admin','middleware'=> 'cor
     $router->post('redDot', 'OrderController@redDot');//未处理订单标记红点
     $router->post('hfnotify','NotifyController@hfnotify');//汇付 支付回调 （lys）
     $router->post('hfpay','OrderController@hfpay');//汇付 测试支付  （lys）
+    $router->post('ylnotify', 'NotifyController@ylnotify');//银联 支付回调 （lys）
+    $router->post('yltest', 'OrderController@yltest');//银联测试支付（lys）
 
 
 
@@ -165,7 +167,8 @@ $router->group(['prefix' => 'admin' , 'namespace' => 'Admin','middleware'=> ['jw
 
     //上传到OSS图片接口
     $router->post('doUploadOssImage', 'CommonController@doUploadOssImage');
-
+    //上传到本地hfcer接口
+    $router->post('doUploadHfile', 'CommonController@doUploadHfile');
 
 
 
@@ -246,17 +249,20 @@ $router->group(['prefix' => 'admin' , 'namespace' => 'Admin','middleware'=> ['jw
 
     /*** 班主任管理end ***/
      $router->group(['prefix' => 'payset'], function () use ($router) {
-        $router->post('doUpdateWxState', 'PaySetController@doUpdateWxState');                 //更改微信状态
-        $router->post('doUpdateZfbState', 'PaySetController@doUpdateZfbState');               //更改支付宝状态
-        $router->post('doUpdateHjState', 'PaySetController@doUpdateHjState');                 //更改汇聚状态
-        $router->post('doUpdateHfState', 'PaySetController@doUpdateHfState');                //更改汇付状态
+        $router->post('doUpdateWxState', 'PaySetController@doUpdateWxState');               //更改微信状态
+        $router->post('doUpdateZfbState', 'PaySetController@doUpdateZfbState');             //更改支付宝状态
+        $router->post('doUpdateHjState', 'PaySetController@doUpdateHjState');               //更改汇聚状态
+        $router->post('doUpdateYlState', 'PaySetController@doUpdateYlState');               //更改银联状态
+        $router->post('doUpdateHfState', 'PaySetController@doUpdateHfState');               //更改汇付状态
         $router->post('getZfbById', 'PaySetController@getZfbConfig');                       //添加支付宝配置(获取)
         $router->post('getWxById', 'PaySetController@getWxConfig');                         //添加微信配置(获取)
         $router->post('getHjById', 'PaySetController@getHjConfig');                         //添加汇聚配置(获取)
+        $router->post('getYlById', 'PaySetController@getYlConfig');                         //添加银联配置(获取)
         $router->post('getHfById', 'PaySetController@getHfConfig');                         //添加汇付配置(获取)
         $router->post('doZfbUpdate', 'PaySetController@doZfbConfig');                       //添加/修改支付宝配置
         $router->post('doWxUpdate', 'PaySetController@doWxConfig');                         //添加/修改微信配置
         $router->post('doHjUpdate', 'PaySetController@doHjConfig');                         //添加/修改汇聚配置
+        $router->post('doYlUpdate', 'PaySetController@doYlConfig');                         //添加/修改银联配置
         $router->post('doHfUpdate', 'PaySetController@doHfConfig');                         //添加/修改汇付配置
     });
 
