@@ -170,22 +170,27 @@ class ChannelController extends Controller {
                 [
                     'id'=>1,
                     'logo_url' =>'',
-                    'payway' = >'支付宝支付',
+                    'payway' =>'支付宝支付',
                 ],
                 [
                     'id'=>2,
                     'logo_url' =>'',
-                    'payway' = >'微信支付',
+                    'payway' =>'微信支付',
                 ],
                 [
                     'id'=>3,
                     'logo_url' =>'',
-                    'payway' = >'汇聚支付',
+                    'payway' =>'汇聚支付',
                 ],
                 [
                     'id'=>4,
                     'logo_url' =>'',
-                    'payway' = >'汇付支付',
+                    'payway' =>'银联支付',
+                ],
+                [
+                    'id'=>5,
+                    'logo_url' =>'',
+                    'payway' =>'汇付支付',
                 ]
         ];
         return response()->json(['code'=>200,'msg'=>'success','data'=>$arr]);
