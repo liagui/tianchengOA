@@ -522,12 +522,28 @@ class OrderController extends Controller {
         if($paylist['yl_pay_state'] == 1){
             $paystatus=[
                 'paytype' => 5,
-                'payname' => '银联支付',
+                'payname' => '云闪付',
                 'payimg' => 'https://longdeapi.oss-cn-beijing.aliyuncs.com/upload/2020-10-10/160230173318475f812f2531b6e.png',
             ];
             $pay[] = $paystatus;
         }
-        if($paylist['hf_pay_state'] == 1){  //汇付支付，11-5号目前只支持支付宝扫码支付，说是汇付可以根据不同的账户权限，开通不同支付方式【微信、支付宝】
+        if($paylist['yl_pay_state'] == 1){
+            $paystatus=[
+                'paytype' => 8,
+                'payname' => '支付宝支付',
+                'payimg' => 'https://longdeapi.oss-cn-beijing.aliyuncs.com/zfb2xtb.png',
+            ];
+            $pay[] = $paystatus;
+        }
+        if($paylist['yl_pay_state'] == 1){
+            $paystatus=[
+                'paytype' => 9,
+                'payname' => '微信支付',
+                'payimg' => 'https://longdeapi.oss-cn-beijing.aliyuncs.com/wx2xtb.png',
+            ];
+            $pay[] = $paystatus;
+        }
+        if($paylist['hf_pay_state'] == 1){  //汇付支付，11-5号目前只支持支付宝扫码支付，说是汇付可以根据不同的账户权限，开通不同支付方式【微信、支付宝】   7  给汇付微信占坑
             $paystatus=[
                 'paytype' => 6,
                 'payname' => '支付宝支付',
@@ -655,9 +671,9 @@ class OrderController extends Controller {
                     return response()->json(['code' => 202, 'msg' => '暂未开通']);
                 }
             }
-            //5 是银联 占坑
+            //7 是汇付支付
             //银联扫码支付
-            if($data['pay_type'] == 5) {
+            if(in_array($data['pay_type'],[5,8,9])) {
                 $ylpay = new YinpayFactory();
                 $return = $ylpay->getPrePayOrder($paylist['yl_mch_id'],$paylist['yl_key'],$insert['order_no'],$course['course_name'],$data['pay_price']);
                 require_once realpath(dirname(__FILE__).'/../../../Tools/phpqrcode/QRcode.php');
