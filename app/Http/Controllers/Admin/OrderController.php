@@ -671,7 +671,7 @@ class OrderController extends Controller {
                     return response()->json(['code' => 202, 'msg' => '暂未开通']);
                 }
             }
-            //7 是汇付支付
+            //7 是汇付微信支付
             //银联扫码支付
             if(in_array($data['pay_type'],[5,8,9])) {
                 $ylpay = new YinpayFactory();
@@ -693,7 +693,7 @@ class OrderController extends Controller {
                 if(empty($paylist) || empty($paylist['hf_password'])){ //打开 key.pfx密码
                     return response()->json(['code' => 202, 'msg' => '密码错误']);
                 }
-                $noti['merNoticeUrl']= "http://".$_SERVER['HTTP_HOST']."/web/course/hfnotify";
+                $noti['merNoticeUrl']= "http://".$_SERVER['HTTP_HOST']."/admin/hfnotify";
                 $newPrice  = str_replace(' ', '', $data['pay_price']);
                 $count = substr_count($newPrice,'.');
                 if($count > 0){
