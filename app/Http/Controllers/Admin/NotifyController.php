@@ -78,7 +78,8 @@ class NotifyController extends Controller{
                     case 'pay.weixin.jspay':       $update['pay_type']= 9; break;
                     case 'pay.unionpay.native':    $update['pay_type']= 5; break;
                 }
-                $up = Pay_order_external::where(['order_no' => $arr['out_trade_no']])->update($update);
+                 file_put_contents('ylnotify.txt', '时间:' . date('Y-m-d H:i:s') . print_r($update, true), FILE_APPEND);
+                $up = Pay_order_external::where(['id' => $order['id']])->update($update);
                 if($up){
                     return "success";
                 }else{
