@@ -550,7 +550,7 @@ class PaySetController extends Controller {
         }
         $result = PaySet::doUpdate(['id'=>$data['id']],['hf_merchant_number'=>$data['hf_merchant_number'],'hf_password'=>$data['hf_password'],'hf_pfx_url'=>$data['hf_pfx_url'],'hf_cfca_ca_url'=>$data['hf_cfca_ca_url'],'hf_cfca_oca_url'=>$data['hf_cfca_oca_url'],'update_at'=>date('Y-m-d H:i:s')]);
         if($result){
-s
+
             return response()->json(['code'=>200,'msg'=>"保存成功"]);
         }else{
             return response()->json(['code'=>203,'msg'=>'保存成功']);
