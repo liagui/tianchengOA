@@ -65,7 +65,7 @@ class NotifyController extends Controller{
 	    $xml = file_get_contents('php://input');
 	    $arr = $this->xmlstr_to_array($xml);
 	    file_put_contents('ylnotify.txt', '时间:' . date('Y-m-d H:i:s') . print_r($arr, true), FILE_APPEND);
-	    $order = Converge::where(['order_number' => $arr['out_trade_no']])->first()->toArray();
+	    $order = Pay_order_external::where(['order_number' => $arr['out_trade_no']])->first()->toArray();
 	    if($order['status'] == 1){
 	        return 'success';
 	    }else {
@@ -78,7 +78,7 @@ class NotifyController extends Controller{
                     case 'pay.weixin.jspay':       $update['pay_status']= 9; break;
                     case 'pay.unionpay.native':    $update['pay_status']= 5; break;
                 }
-                $up = Converge::where(['order_number' => $arr['out_trade_no']])->update($update);
+                $up = Pay_order_external::where(['order_number' => $arr['out_trade_no']])->update($update);
                 if($up){
                     return "success";
                 }else{
