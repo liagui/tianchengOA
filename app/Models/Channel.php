@@ -31,11 +31,11 @@ class  Channel extends Model {
 
     //获取支付通过列表 （lys）2020-09-03
     public static function getList($body){
-        
+
         $channelArr = [];
     	$school_id = isset(AdminLog::getAdminInfo()->admin_user->school_id) ? AdminLog::getAdminInfo()->admin_user->school_id : 0;
         $school_status = isset(AdminLog::getAdminInfo()->admin_user->school_status) ? AdminLog::getAdminInfo()->admin_user->school_status : 0;
-        $count =  self::where(['is_del'=>0,'is_forbid'=>0])->count(); 
+        $count =  self::where(['is_del'=>0,'is_forbid'=>0])->count();
         if($count>0){
             $use_channel = self::where(['is_del'=>0,'is_forbid'=>0,'is_use'=>0])->first()['id'];
 			$channelArr = self::leftJoin('pay_config','pay_config.channel_id','=','channel.id')
@@ -43,12 +43,12 @@ class  Channel extends Model {
                           $query->where('channel.is_forbid',0);
                           $query->where('channel.is_del',0);
                       })
-                  ->select('pay_config.id','pay_config.channel_id','pay_config.wx_pay_state','pay_config.zfb_pay_state','pay_config.hj_wx_pay_state','pay_config.hj_zfb_pay_state','channel.channel_type','channel_name','channel.is_use')
+                  ->select('pay_config.id','pay_config.channel_id','pay_config.wx_pay_state','pay_config.zfb_pay_state','pay_config.hj_wx_pay_state','pay_config.hj_zfb_pay_state','pay_config.yl_pay_state','channel.channel_type','channel_name','channel.is_use')
                   ->get();
         	foreach($channelArr as $key =>&$v){
         		$channel_type = explode(',',$v['channel_type']);
                 if(in_array(1, $channel_type)){
-                      $v['zfb_show'] = true; 
+                      $v['zfb_show'] = true;
                 }else{
                     $v['zfb_show'] = false;
                 }
@@ -62,15 +62,25 @@ class  Channel extends Model {
                 }else{
                     $v['hj_show'] = false;
                 }
+                if(in_array(4, $channel_type)){
+                      $v['yl_show'] = true;
+                }else{
+                    $v['yl_show'] = false;
+                }
+                if(in_array(5, $channel_type)){
+                      $v['hf_show'] = true;
+                }else{
+                    $v['hf_show'] = false;
+                }
               	if($v['hj_wx_pay_state'] <1 && $v['hj_zfb_pay_state']<1){
               	    $v['hj_state'] = 0;  //关闭
               	}else{
               	    $v['hj_state'] = 1;  //开启
-              	} 
+              	}
           	}
         }else{
             $use_channel = -1;
-        }   
+        }
 
         return ['code'=>200,'msg'=>'Success','data'=>$channelArr,'use_channel'=>$use_channel];
     }
@@ -97,7 +107,7 @@ class  Channel extends Model {
                     return ['code'=>200,'msg'=>'支付通过添加成功'];
                 }else{
                     DB::rollBack();
-                    return ['code'=>205,'msg'=>'支付通过添加未成功！！'];    
+                    return ['code'=>205,'msg'=>'支付通过添加未成功！！'];
                 }
             }
     	}else{
@@ -132,7 +142,7 @@ class  Channel extends Model {
         	return ['code'=>203,'msg'=>'通道更改失败'];
         }
     }
-   
+
 
 
 }
