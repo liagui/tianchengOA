@@ -187,11 +187,11 @@ class ChannelController extends Controller {
                     'logo_url' =>'http://longdeapi.oss-cn-beijing.aliyuncs.com/upload/2020-11-10/160497974528305faa0c21b3a74.jpg',
                     'payway' =>'银联支付',
                 ],
-                [
-                    'id'=>5,
-                    'logo_url' =>'http://longdeapi.oss-cn-beijing.aliyuncs.com/upload/2020-11-10/16049797766645faa0c4014cec.png',
-                    'payway' =>'汇付支付',
-                ]
+                // [
+                //     'id'=>5,
+                //     'logo_url' =>'http://longdeapi.oss-cn-beijing.aliyuncs.com/upload/2020-11-10/16049797766645faa0c4014cec.png',
+                //     'payway' =>'汇付支付',
+                // ]
         ];
         return response()->json(['code'=>200,'msg'=>'success','data'=>$arr]);
     }
