@@ -65,20 +65,20 @@ class NotifyController extends Controller{
 	    $xml = file_get_contents('php://input');
 	    $arr = $this->xmlstr_to_array($xml);
 	    file_put_contents('ylnotify.txt', '时间:' . date('Y-m-d H:i:s') . print_r($arr, true), FILE_APPEND);
-	    $order = Pay_order_external::where(['order_number' => $arr['out_trade_no']])->first()->toArray();
-	    if($order['status'] == 1){
+	    $order = Pay_order_external::where(['order_no' => $arr['out_trade_no']])->first()->toArray();
+	    if($order['pay_status'] == 1){
 	        return 'success';
 	    }else {
             if(!isset($arr['trade_type']) || empty($arr)){
                 return "fail";
             }else{
-                $update = ['status'=>1,'pay_time'=>date('Y-m-d H:i:s'),'update_time'=>date('Y-m-d H:i:s')];
+                $update = ['pay_status'=>1,'pay_time'=>date('Y-m-d H:i:s')];
                 switch($arr['trade_type']){
-                    case 'pay.alipay.jspay':       $update['pay_status']= 8; break;
-                    case 'pay.weixin.jspay':       $update['pay_status']= 9; break;
-                    case 'pay.unionpay.native':    $update['pay_status']= 5; break;
+                    case 'pay.alipay.jspay':       $update['pay_type']= 8; break;
+                    case 'pay.weixin.jspay':       $update['pay_type']= 9; break;
+                    case 'pay.unionpay.native':    $update['pay_type']= 5; break;
                 }
-                $up = Pay_order_external::where(['order_number' => $arr['out_trade_no']])->update($update);
+                $up = Pay_order_external::where(['order_no' => $arr['out_trade_no']])->update($update);
                 if($up){
                     return "success";
                 }else{
@@ -100,13 +100,13 @@ class NotifyController extends Controller{
             }else{
                 $jsonData = json_decode($notifyData['jsonData'],1);
                 if($jsonData['transStat'] == "S" && $jsonData['respCode'] == "000000" ){ //支付成功
-                    $order = Pay_order_external::where(['order_number' => $jsonData['termOrdId']])->first()->toArray();
-                    if($order['status'] > 0){
+                    $order = Pay_order_external::where(['order_no' => $jsonData['termOrdId']])->first()->toArray();
+                    if($order['pay_status'] > 0){
                         return "success";
                     }
                     if($jsonData['respCode'] == '000000'){
                         //只修改订单号
-                        $up = Pay_order_external::where(['id'=>$order['id']])->update(['pay_status'=>1,'update_time'=>date('Y-m-d H:i:s'),'pay_time'=>date('Y-m-d H:i:s')]);
+                        $up = Pay_order_external::where(['id'=>$order['id']])->update(['pay_status'=>1,'pay_time'=>date('Y-m-d H:i:s')]);
                         if($up){
                             return "RECV_ORD_ID_".$jsonData['ordId'];
                         }
