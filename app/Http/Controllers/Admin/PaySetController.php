@@ -509,7 +509,7 @@ class PaySetController extends Controller {
         if($validator->fails()) {
             return response()->json(json_decode($validator->errors()->first(),1));
         }
-        $payconfigArr  = PaySet::where(['id'=>$data['id']])->select('admin_id')->first();
+        $payconfigArr  = PaySet::where(['id'=>$data['id']])->first();
         if(!$payconfigArr){
             return response()->json(['code'=>204,'msg'=>"数据不存在"]);
         }
@@ -544,13 +544,13 @@ class PaySetController extends Controller {
         if($validator->fails()) {
             return response()->json(json_decode($validator->errors()->first(),1));
         }
-        $payconfigArr  = PaySet::where(['id'=>$data['id']])->select('admin_id')->first();
+        $payconfigArr  = PaySet::where(['id'=>$data['id']])->first();
         if(!$payconfigArr){
             return response()->json(['code'=>204,'msg'=>"数据不存在"]);
         }
         $result = PaySet::doUpdate(['id'=>$data['id']],['hf_merchant_number'=>$data['hf_merchant_number'],'hf_password'=>$data['hf_password'],'hf_pfx_url'=>$data['hf_pfx_url'],'hf_cfca_ca_url'=>$data['hf_cfca_ca_url'],'hf_cfca_oca_url'=>$data['hf_cfca_oca_url'],'update_at'=>date('Y-m-d H:i:s')]);
         if($result){
-         
+s
             return response()->json(['code'=>200,'msg'=>"保存成功"]);
         }else{
             return response()->json(['code'=>203,'msg'=>'保存成功']);
