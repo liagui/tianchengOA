@@ -520,14 +520,14 @@ class OrderController extends Controller {
             ];
             $status[] = $paystatus;
         }
-        if($paylist['yl_pay_state'] == 1){
-            $paystatus=[
-                'paytype' => 5,
-                'payname' => '云闪付',
-                'payimg' => 'https://longdeapi.oss-cn-beijing.aliyuncs.com/upload/2020-10-10/160230173318475f812f2531b6e.png',
-            ];
-            $status[] = $paystatus;
-        }
+        // if($paylist['yl_pay_state'] == 1){
+        //     $paystatus=[
+        //         'paytype' => 5,
+        //         'payname' => '云闪付',
+        //         'payimg' => 'https://longdeapi.oss-cn-beijing.aliyuncs.com/upload/2020-10-10/160230173318475f812f2531b6e.png',
+        //     ];
+        //     $status[] = $paystatus;
+        // }
         if($paylist['yl_pay_state'] == 1){
             $paystatus=[
                 'paytype' => 8,
