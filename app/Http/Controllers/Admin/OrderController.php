@@ -189,6 +189,7 @@ class OrderController extends Controller {
     //红点标记
     public function redDot(){
         $schoolarr = $this->underlingLook(AdminLog::getAdminInfo()->admin_user->school_id);
+        $schoolarr = (array)$schoolarr;
         //待确认订单
         $orderCount = Pay_order_inside::whereIn('school_id',$schoolarr['data'])->where(['confirm_status'=>0,'pay_status'=>1])->count();
         //退费待确认
