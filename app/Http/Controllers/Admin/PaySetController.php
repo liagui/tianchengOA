@@ -499,7 +499,7 @@ class PaySetController extends Controller {
      */
     public function doYlConfig(){
         $data = self::$accept_data;
-         $validator = Validator::make($data, 
+         $validator = Validator::make($data,
                 [
                     'id' => 'required|integer',
                     'yl_mch_id'=>'required',
@@ -512,18 +512,10 @@ class PaySetController extends Controller {
         $payconfigArr  = PaySet::where(['id'=>$data['id']])->select('admin_id')->first();
         if(!$payconfigArr){
             return response()->json(['code'=>204,'msg'=>"数据不存在"]);
-        } 
+        }
         $result = PaySet::doUpdate(['id'=>$data['id']],['yl_mch_id'=>$data['yl_mch_id'],'yl_key'=>$data['yl_key'],'update_at'=>date('Y-m-d H:i:s')]);
         if($result){
-             AdminLog::insertAdminLog([
-                    'admin_id'       =>   CurrentAdmin::user()['id'] ,
-                    'module_name'    =>  'Payset' ,
-                    'route_url'      =>  'admin/payset/doYlConfig' , 
-                    'operate_method' =>  'insert',
-                    'content'        =>  json_encode($data),
-                    'ip'             =>  $_SERVER["REMOTE_ADDR"] ,
-                    'create_at'      =>  date('Y-m-d H:i:s')
-                ]);
+
             return response()->json(['code'=>200,'msg'=>"保存成功"]);
         }else{
             return response()->json(['code'=>203,'msg'=>'保存成功']);
@@ -558,15 +550,7 @@ class PaySetController extends Controller {
         }
         $result = PaySet::doUpdate(['id'=>$data['id']],['hf_merchant_number'=>$data['hf_merchant_number'],'hf_password'=>$data['hf_password'],'hf_pfx_url'=>$data['hf_pfx_url'],'hf_cfca_ca_url'=>$data['hf_cfca_ca_url'],'hf_cfca_oca_url'=>$data['hf_cfca_oca_url'],'update_at'=>date('Y-m-d H:i:s')]);
         if($result){
-             AdminLog::insertAdminLog([
-                    'admin_id'       =>   CurrentAdmin::user()['id'] ,
-                    'module_name'    =>  'Payset' ,
-                    'route_url'      =>  'admin/payset/doHfConfig' ,
-                    'operate_method' =>  'insert',
-                    'content'        =>  json_encode($data),
-                    'ip'             =>  $_SERVER["REMOTE_ADDR"] ,
-                    'create_at'      =>  date('Y-m-d H:i:s')
-                ]);
+         
             return response()->json(['code'=>200,'msg'=>"保存成功"]);
         }else{
             return response()->json(['code'=>203,'msg'=>'保存成功']);
