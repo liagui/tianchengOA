@@ -20,8 +20,6 @@ class CorsMiddleware
         ];
 
         $this->allow_origin = [
-            'http://oapi.longde999.cn',
-            'http://tianchengoa.longde999.cn'
             'http://oa.choushang99.com'
 
         ];
