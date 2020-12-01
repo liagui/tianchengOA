@@ -1241,7 +1241,7 @@ class Pay_order_inside extends Model
             'first_pay' => $data['first_pay'],//支付类型 1全款 2定金 3部分尾款 4最后一笔尾款
             'classes' => isset($data['classes'])?$data['classes']:0,//开课状态
             'return_visit' => isset($data['return_visit'])?$data['return_visit']:0,//回访状态
-            'remark' => $data['remark'], //备注
+            'remark' => isset($data['remark'])?$data['remark']:'', //备注
             'pay_voucher_user_id' => $admin['id'], //上传凭证人
             'pay_voucher_time' => date('Y-m-d H:i:s'), //上传凭证时间
             'pay_voucher' => isset($data['pay_voucher'])?$data['pay_voucher']:'', //支付凭证
