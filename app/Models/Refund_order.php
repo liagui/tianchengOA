@@ -487,7 +487,7 @@ class Refund_order extends Model
         $returnorder = self::where(['id'=>$data['id']])->first();
         $orderid = explode(',',$returnorder['order_id']);
         $order=[];
-        if(!empty($orderid)){
+        if(!empty($returnorder['order_id'])){
             foreach ($orderid as $k=>$v){
                 $orderone = Pay_order_inside::where(['id'=>$v])->first();
                 //查学校
