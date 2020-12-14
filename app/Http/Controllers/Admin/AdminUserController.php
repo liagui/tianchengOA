@@ -306,7 +306,7 @@ class AdminUserController extends Controller {
         if($adminUserArr['code'] != 200){
             return response()->json(['code'=>204,'msg'=>'用户不存在']);
         }
-        $schoolData = School::where('school_name','like',"%".$where['search']."%")->where(['is_del'=>0,'is_open'=>0])->select('id','school_name')->get()->toArray();
+        $schoolData = School::where('school_name','like',"%".$where['search']."%")->where(['is_del'=>0,'is_open'=>0])->select('id','school_name','id as value','school_name as label')->get()->toArray();
         $roleAuthArr = Roleauth::getRoleAuthAlls(['is_del'=>0],['id','role_name']); //角色信息
         $arr = [
             'school'=> $schoolData,
