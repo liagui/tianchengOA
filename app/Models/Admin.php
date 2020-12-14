@@ -220,17 +220,17 @@ class Admin extends Model implements AuthenticatableContract, AuthorizableContra
             $roleArr = array_column($roleArr,'role_name','id');
             $schoolAll = School::where(['is_del'=>0,'is_open'=>0])->select('id')->get()->toArray(); //所有分校id
             $schoolAll = empty($schoolAll)?[] :array_column($schoolAll,'id');
+            $schoolIdsArr = School::where(['is_open'=>0,'is_del'=>0])->pluck('id')->toArray();
             foreach($adminUserData as $key=>&$v){
                 $v['role_name'] = !isset($roleArr[$v['role_id']])?'':$roleArr[$v['role_id']];
                 $school =  empty($v['school_id'])&&strlen($v['school_id'])<=0?[]:explode(",",$v['school_id']);
                 if(empty($school)){
                    $v['schoolname'] = '';
                 }else{
-                    $schoolIdsArr = School::where(['is_open'=>0,'is_del'=>0])->pluck('id')->toArray();
-                    if(empty(array_diff($schoolIdsArr,explode(',',$v['school_id'])))){
-                         $v['schoolname']  = '全部';
-                    }
+
                     if(in_array($school[0],[0]) && !isset($school[1])){
+                        $v['schoolname']  = '全部';
+                    }else if(empty(array_diff($schoolIdsArr,$school))){
                         $v['schoolname']  = '全部';
                     }else{
                         $schoolData = School::whereIn('id',$school)->select('school_name','id')->get()->toArray();
