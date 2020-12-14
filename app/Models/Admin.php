@@ -1,6 +1,6 @@
 <?php
 namespace App\Models;
- 
+
 use Illuminate\Auth\Authenticatable;
 use Laravel\Lumen\Auth\Authorizable;
 use Illuminate\Database\Eloquent\Model;
@@ -23,7 +23,7 @@ class Admin extends Model implements AuthenticatableContract, AuthorizableContra
     protected $fillable = [
         'username', 'password', 'email', 'mobile', 'realname', 'sex', 'admin_id','teacher_id','school_status','school_id','is_forbid','is_del','role_id'
     ];
-    
+
     /**
      * The attributes excluded from the model's JSON form.
      *
@@ -33,14 +33,14 @@ class Admin extends Model implements AuthenticatableContract, AuthorizableContra
         'password',
         'created_at',
         'updated_at'
-    ]; 
+    ];
 
 
     public function getJWTIdentifier()
     {
         return $this->getKey();
     }
- 
+
     public function getJWTCustomClaims()
     {
         return ['role' => 'admin'];
@@ -49,7 +49,7 @@ class Admin extends Model implements AuthenticatableContract, AuthorizableContra
 
     public static function message()
     {
-        return [ 
+        return [
             'id.required'  => json_encode(['code'=>'201','msg'=>'账号id不能为空']),
             'id.integer'   => json_encode(['code'=>'202','msg'=>'账号id不合法']),
             'school_id.required'  =>  json_encode(['code'=>'201','msg'=>'学校id不能为空']),
@@ -80,7 +80,7 @@ class Admin extends Model implements AuthenticatableContract, AuthorizableContra
     //     $return = self::where(['id'=>$id])->select($field)->first();
     //     return $return;
     // }
-    
+
 
     /*
          * @param  descriptsion 后台账号信息
@@ -112,7 +112,7 @@ class Admin extends Model implements AuthenticatableContract, AuthorizableContra
      * return  array
      */
     public static  function getUserAll($where=[],$title='',$page = 1,$limit= 10){
-    
+
         $data = self::leftjoin('ld_role_auth','ld_role_auth.id', '=', 'ld_admin_user.role_id')
             ->where($where)
             ->where(function($query) use ($title){
@@ -123,7 +123,7 @@ class Admin extends Model implements AuthenticatableContract, AuthorizableContra
                 }
             })
             ->get()->forPage($page,$limit)->toArray();
-        return $data;  
+        return $data;
     }
     /*
      * @param  descriptsion 更新状态方法
@@ -140,7 +140,7 @@ class Admin extends Model implements AuthenticatableContract, AuthorizableContra
      * return  int
      */
     public static function upUserStatus($where,$update){
-        
+
         $result = self::where($where)->update($update);
         return $result;
     }
@@ -157,7 +157,7 @@ class Admin extends Model implements AuthenticatableContract, AuthorizableContra
      */
     public static function insertAdminUser($insertArr){
         return  self::insertGetId($insertArr);
-        
+
     }
     /*
      * @param  description   获取用户列表
@@ -186,15 +186,15 @@ class Admin extends Model implements AuthenticatableContract, AuthorizableContra
                                       ->orWhere('mobile','like','%'.$body['search'].'%');
                             }
                             if(isset($body['use']) &&  strlen($body['use'])>0){
-                                $query->where('is_use',$body['use']);     
+                                $query->where('is_use',$body['use']);
                             }
                             if(isset($body['forbid']) && strlen($body['forbid'])>0){
-                                $query->where('is_forbid',$body['forbid']);     
+                                $query->where('is_forbid',$body['forbid']);
                             }
                             if(isset($body['school']) && !empty($body['school'])){
-                                $query->whereRaw("find_in_set({$body['school']},school_id)"); //学校搜素 
+                                $query->whereRaw("find_in_set({$body['school']},school_id)"); //学校搜素
                             }
-                            $query->where('is_del',1); 
+                            $query->where('is_del',1);
                         })->count();
 
         $sum_page = ceil($admin_count/$pagesize);
@@ -206,15 +206,15 @@ class Admin extends Model implements AuthenticatableContract, AuthorizableContra
                                       ->orWhere('mobile','like','%'.$body['search'].'%');
                             }
                             if(isset($body['use']) && strlen($body['use'])>0){
-                                $query->where('is_use',$body['use']);     
+                                $query->where('is_use',$body['use']);
                             }
                             if(isset($body['forbid']) && strlen($body['forbid'])>0){
-                                $query->where('is_forbid',$body['forbid']);     
+                                $query->where('is_forbid',$body['forbid']);
                             }
                             if(isset($body['school']) && !empty($body['school'])){
                                 $query->whereRaw("find_in_set({$body['school']},school_id)");
                             }
-                            $query->where('is_del',1); 
+                            $query->where('is_del',1);
                 })->select('username','real_name','mobile','wx','role_id','school_id','is_use','is_forbid','create_time','license','hand_card','card_front','card_side','id')->offset($offset)->limit($pagesize)->get()->toArray();
             $roleArr = Roleauth::where('is_del',0)->select('id','role_name')->get()->toArray();
             $roleArr = array_column($roleArr,'role_name','id');
@@ -224,9 +224,12 @@ class Admin extends Model implements AuthenticatableContract, AuthorizableContra
                 $v['role_name'] = !isset($roleArr[$v['role_id']])?'':$roleArr[$v['role_id']];
                 $school =  empty($v['school_id'])&&strlen($v['school_id'])<=0?[]:explode(",",$v['school_id']);
                 if(empty($school)){
-                   $v['schoolname'] = ''; 
+                   $v['schoolname'] = '';
                 }else{
-                    
+                    $schoolIdsArr = School::where(['is_open'=>0,'is_del'=>0])->pluck('id')->toArray();
+                    if(empty(array_diff($schoolIdsArr,explode(',',$v['school_id'])))){
+                         $v['schoolname']  = '全部';
+                    }
                     if(in_array($school[0],[0]) && !isset($school[1])){
                         $v['schoolname']  = '全部';
                     }else{
@@ -236,12 +239,12 @@ class Admin extends Model implements AuthenticatableContract, AuthorizableContra
                             foreach ($schoolData as $k => &$school) {
                                 $str .= $school['school_name'].',';
                             }
-                            $v['schoolname'] =  rtrim($str,',');      
+                            $v['schoolname'] =  rtrim($str,',');
                         }else{
                             $v['schoolname'] = '';
                         }
                     }
-                } 
+                }
             }
         }
         $arr['code']= 200;
@@ -257,7 +260,7 @@ class Admin extends Model implements AuthenticatableContract, AuthorizableContra
      *     search       搜索条件 （非必填项）
      *     page         当前页码 （不是必填项）
      *     limit        每页显示条件 （不是必填项）
-     *  
+     *
      * ]
      * @param author    lys
      * @param ctime     2020-04-29
@@ -270,7 +273,7 @@ class Admin extends Model implements AuthenticatableContract, AuthorizableContra
          $adminUserInfo  = CurrentAdmin::user();  //当前登录用户所有信息
         //判断搜索条件是否合法
         $body['search'] = !isset($body['search']) && empty($body['search']) ?'':$body['search'];
-        
+
         $pagesize = isset($body['pagesize']) && $body['pagesize'] > 0 ? $body['pagesize'] : 15;
         $page     = isset($body['page']) && $body['page'] > 0 ? $body['page'] : 1;
         $offset   = ($page - 1) * $pagesize;
