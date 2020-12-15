@@ -533,11 +533,11 @@ class Pay_order_inside extends Model
             $query->whereIn('school_id',$schoolarr);
             if(!empty($data['isBranchSchool']) &&$data['isBranchSchool'] == true){
                 $query->where('pay_status','=',1);
-                $query->where('confirm_status',0);
+                $query->where('confirm_status','=',0);
 //                $query->where('confirm_status',1);
             }else{
-                $query->where('confirm_status',0);
-                $query->where('pay_status',1);
+                $query->where('confirm_status','=',0);
+                $query->where('pay_status','=',1);
             }
             if(isset($data['order_no']) && !empty($data['order_no'])){
                 $query->where('order_no',$data['order_no'])
@@ -2106,7 +2106,7 @@ class Pay_order_inside extends Model
         $pay_type_array = [1=>'微信扫码',2=>'支付宝扫码',3=>'微信扫码',4=>'支付宝扫码',5=>'银行卡支付',6=>'对公转账',7=>'支付宝账号对公'];
 
         //支付状态数组
-        $pay_status_array = [0=>'未支付',1=>'已支付',2=>'支付失败',3=>'已退款'];
+        $pay_status_array = [0=>'未支付',1=>'已支付',2=>'支付失败',3=>'待审核'];
 
         //回访数组
         $return_visit_array = [0=>'否',1=>'是'];
@@ -2144,6 +2144,36 @@ class Pay_order_inside extends Model
 
                 //课程名称
                 $course_name  = Course::where('id' , $v['course_id'])->value('course_name');
+                if($v['pay_type'] <= 4){
+                    if(!empty($v['offline_id'])){
+                        $chnnel = Channel::where(['id'=>$v['offline_id']])->first();
+                        if($v['pay_type'] == 1){
+                            $pay_type_text = $chnnel['channel_name'].'-微信';
+                        }else if ($v['pay_type'] == 2){
+                            $pay_type_text = $chnnel['channel_name'].'-支付宝';
+                        }else if ($v['pay_type'] == 3){
+                            $pay_type_text = $chnnel['channel_name'].'-汇聚-微信';
+                        }else if ($v['pay_type'] == 4){
+                            $pay_type_text =$chnnel['channel_name'].'-汇聚-支付宝';
+                        }
+                    }else{
+                        $pay_type_text='';
+                    }
+                }else{
+                    if(!empty($v['offline_id'])){
+                        $offline = OfflinePay::where(['id'=>$v['offline_id']])->first();
+                        if ($v['pay_type'] == 5){
+                            $pay_type_text = '银行卡支付-'.$offline['account_name'];
+                        }else if ($v['pay_type'] == 6){
+                            $pay_type_text = '对公转账-'.$offline['account_name'];
+                        }else if ($v['pay_type'] == 7){
+                            $pay_type_text = '支付宝账号对公-'.$offline['account_name'];
+                        }
+                    }else{
+                        $pay_type_text='';
+                    }
+                }
+
 
                 //新数组信息赋值
                 $order_array[] = [
@@ -2155,7 +2185,7 @@ class Pay_order_inside extends Model
                     'project_name'       =>  $project_name && !empty($project_name) ? $project_name : '-' ,
                     'subject_name'       =>  $subject_name && !empty($subject_name) ? $subject_name : '-' ,
                     'course_name'        =>  $course_name  && !empty($course_name)  ? $course_name  : '-' ,
-                    'pay_type'           =>  $v['pay_type'] > 0 && isset($pay_type_array[$v['pay_type']]) ? $pay_type_array[$v['pay_type']] : '-' ,
+                    'pay_type'           =>  $pay_type_text ,
                     'course_price'       =>  !empty($v['course_Price']) && $v['course_Price'] > 0 ? $v['course_Price'] : '-' ,
                     'sign_price'         =>  !empty($v['sign_Price']) && $v['sign_Price'] > 0 ? $v['sign_Price'] : '-' ,
                     'sum_price'          =>  !empty($v['sum_Price']) && $v['sum_Price'] > 0 ? $v['sum_Price'] : '-' ,
