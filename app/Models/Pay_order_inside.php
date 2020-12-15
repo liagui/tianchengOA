@@ -533,7 +533,7 @@ class Pay_order_inside extends Model
             $query->whereIn('school_id',$schoolarr);
             if(!empty($data['isBranchSchool']) &&$data['isBranchSchool'] == true){
                 $query->where('pay_status','=',1);
-//                $query->where('confirm_status',0)
+                $query->where('confirm_status',0);
 //                $query->where('confirm_status',1);
             }else{
                 $query->where('confirm_status',0);
@@ -1567,6 +1567,7 @@ class Pay_order_inside extends Model
         }
         $data['confirm_status'] = 0;
         $data['update_time'] = date('Y-m-d H:i:s');
+        $data['resubmit_time'] = date('Y-m-d H:i:s');
         //获取操作员信息
         $up = Pay_order_inside::where(['id'=>$data['id']])->update($data);
         if($up){
