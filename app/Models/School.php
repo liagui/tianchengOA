@@ -36,9 +36,9 @@ class School extends Model {
             }else{
                 if(isset($body['school_id']) && !empty($body['school_id'])){
                     $query->whereIn('id',$body['school_id']);
-                }        
+                }
             }
-            
+
         })->select('id','school_name','id as value','school_name as label')->get();
         return ['code'=>200,'msg'=>'Success','data'=>$schoolData];
     }
@@ -123,7 +123,7 @@ class School extends Model {
                         return ['code'=>201,'msg'=>'请输入二级级抽离比例'];
                     }
                 }
-            } 
+            }
         }
         //获取后端的操作员id
         $admin_id = isset(AdminLog::getAdminInfo()->admin_user->id) ? AdminLog::getAdminInfo()->admin_user->id : 0;
@@ -143,10 +143,27 @@ class School extends Model {
             'two_extraction_ratio' => isset($body['two_extraction_ratio'])?$body['two_extraction_ratio']:'',
 
         ];
+        $schoolIdsArr = School::where(['is_del'=>0])->pluck('id')->toArray();
+        $adminArr = Amdin::where(['is_del'=>1])->select('id','school_id')->get()->toArray();
+
         //开启事务
         DB::beginTransaction();
         //将数据插入到表中
-        if(self::insertGetId($school_array) >0){
+        $schoolId = self::insertGetId($school_array);
+        if($schoolId >0){
+            foreach($adminArr as $key =>&$v){
+                 $school =  empty($v['school_id'])&&strlen($v['school_id'])<=0?[]:explode(",",$v['school_id']);
+                 if(!empty($school)){
+                    if(empty(array_diff($schoolIdsArr,$school)) | (in_array($school[0],[0]) && isset($school[1])) ){
+                        array_push($school,$schoolId);
+                        $res = Admin::where('id',$v['id'])->update(['school_id'=>implode(',',$school),'update_time'=>date('Y-m-d H:i:s')]);
+                        if(!$res){
+                            DB::rollBack();
+                            return ['code' => 203 , 'msg' => '添加失败!'];
+                        }
+                    }
+                }
+            }
             //事务提交
             DB::commit();
             return ['code' => 200 , 'msg' => '添加成功'];
@@ -209,7 +226,7 @@ class School extends Model {
             return ['code' => 202 , 'msg' => '查看方式不合法'];
         }
 
-        //判断分校级别是否合法    
+        //判断分校级别是否合法
         if(!isset($body['level']) || !in_array($body['level'] , [1,2,3])){
             return ['code' => 202 , 'msg' => '分校级别不合法'];
         }
@@ -245,7 +262,7 @@ class School extends Model {
                         return ['code'=>201,'msg'=>'请输入二级级抽离比例'];
                     }
                 }
-            } 
+            }
         }
 
         //判断分校级别下面的分校名称是否存在
@@ -472,5 +489,3 @@ class School extends Model {
         return ['code' => 200 , 'msg' => '获取分校列表成功' , 'data' => ['school_list' => [] , 'total' => 0 , 'pagesize' => $pagesize , 'page' => $page]];
     }
 }
-
-
