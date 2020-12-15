@@ -478,6 +478,8 @@ class Pay_order_inside extends Model
          */
     public static function awaitOrder($data,$schoolarr){
         $where['del_flag'] = 0;  //未删除
+        $where['pay_status'] = 1;  //支付状态
+        $where['confirm_status'] = 0;  //审核状态
         //科目id&学科id
         if(!empty($data['project_id'])){
             $parent = json_decode($data['project_id'], true);
@@ -512,14 +514,14 @@ class Pay_order_inside extends Model
         //計算總數
         $count = self::where(function($query) use ($data,$schoolarr) {
             $query->whereIn('school_id',$schoolarr);
-            if(!empty($data['isBranchSchool']) && $data['isBranchSchool'] == true){
-                $query->where('pay_status','=',1);
-                $query->where('confirm_status',0);
-//                    ->orwhere('confirm_status',1);
-            }else{
-                $query->where('confirm_status',0);
-                $query->where('pay_status',1);
-            }
+//            if(!empty($data['isBranchSchool']) && $data['isBranchSchool'] == true){
+//                $query->where('pay_status','=',1);
+//                $query->where('confirm_status',0);
+////                    ->orwhere('confirm_status',1);
+//            }else{
+//                $query->where('confirm_status',0);
+//                $query->where('pay_status',1);
+//            }
             if(isset($data['order_no']) && !empty($data['order_no'])){
                 $query->where('order_no',$data['order_no'])
                     ->orwhere('name',$data['order_no'])
