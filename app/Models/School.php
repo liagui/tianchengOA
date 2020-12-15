@@ -5,6 +5,7 @@ use Illuminate\Database\Eloquent\Model;
 use Illuminate\Support\Facades\Redis;
 use Illuminate\Support\Facades\DB;
 use App\Models\AdminLog;
+use App\Models\Admin;
 #use App\Tools\CurrentAdmin;
 class School extends Model {
     //指定别的表名
@@ -144,26 +145,31 @@ class School extends Model {
 
         ];
         $schoolIdsArr = School::where(['is_del'=>0])->pluck('id')->toArray();
-        $adminArr = Amdin::where(['is_del'=>1])->select('id','school_id')->get()->toArray();
+        $adminArr = Admin::where(['is_del'=>1])->select('id','school_id')->get()->toArray();
 
         //开启事务
         DB::beginTransaction();
         //将数据插入到表中
         $schoolId = self::insertGetId($school_array);
         if($schoolId >0){
-            foreach($adminArr as $key =>&$v){
+            foreach($adminArr as $key =>$v){
                  $school =  empty($v['school_id'])&&strlen($v['school_id'])<=0?[]:explode(",",$v['school_id']);
+
                  if(!empty($school)){
                     if(empty(array_diff($schoolIdsArr,$school)) | (in_array($school[0],[0]) && isset($school[1])) ){
-                        array_push($school,$schoolId);
-                        $res = Admin::where('id',$v['id'])->update(['school_id'=>implode(',',$school),'update_time'=>date('Y-m-d H:i:s')]);
+
+                        $school = array_merge($school,[$schoolId]);
+                        $school = implode(',',$school);
+                        $res = Admin::where('id',$v['id'])->update(['school_id'=>$school,'update_time'=>date('Y-m-d H:i:s'),'updated_at'=>date('Y-m-d H:i:s')]);
                         if(!$res){
                             DB::rollBack();
                             return ['code' => 203 , 'msg' => '添加失败!'];
                         }
+                         DB::commit();
                     }
                 }
             }
+
             //事务提交
             DB::commit();
             return ['code' => 200 , 'msg' => '添加成功'];

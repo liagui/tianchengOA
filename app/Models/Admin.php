@@ -230,9 +230,23 @@ class Admin extends Model implements AuthenticatableContract, AuthorizableContra
 
                     if(in_array($school[0],[0]) && !isset($school[1])){
                         $v['schoolname']  = '全部';
+                    }else if(in_array($school[0],[0]) && isset($school[1])){
+                        unset($school[0]);
+                        if(empty(array_diff($schoolIdsArr,$school)) {
+                            $v['schoolname']  = '全部';
+                        }else{
+                            $schoolData = School::whereIn('id',$school)->select('school_name','id')->get()->toArray();
+                            $str = '';
+                            if(!empty($schoolData)){
+                                foreach ($schoolData as $k => &$school) {
+                                    $str .= $school['school_name'].',';
+                                }
+                                $v['schoolname'] =  rtrim($str,',');
+                            }else{
+                                $v['schoolname'] = '';
+                            }
+                        }
                     }else if(empty(array_diff($schoolIdsArr,$school))){
-                        $v['schoolname']  = '全部';
-                    }else if(in_array($school[0],[0])){
                         $v['schoolname']  = '全部';
                     }else{
                         $schoolData = School::whereIn('id',$school)->select('school_name','id')->get()->toArray();
