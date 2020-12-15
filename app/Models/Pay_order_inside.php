@@ -2104,8 +2104,6 @@ class Pay_order_inside extends Model
         //获取订单的总数量
         $order_count = self::where('name' , $name)->where('mobile' , $mobile)->where('school_id' , $school_id)->where('project_id' , $project_id)->where('subject_id' , $subject_id)->where('course_id' , $course_id)->where('del_flag' , 0)->count();
 
-        //支付方式数组
-        $pay_type_array = [1=>'微信扫码',2=>'支付宝扫码',3=>'微信扫码',4=>'支付宝扫码',5=>'银行卡支付',6=>'对公转账',7=>'支付宝账号对公'];
 
         //支付状态数组
         $pay_status_array = [0=>'未支付',1=>'已支付',2=>'支付失败',3=>'待审核'];
@@ -2131,7 +2129,7 @@ class Pay_order_inside extends Model
             $order_array = [];
 
             //获取订单列表
-            $order_list = self::select('order_no' , 'create_time' , 'mobile' , 'name' , 'course_id' , 'project_id' , 'subject_id' , 'school_id' , 'pay_type' , 'course_Price' , 'sign_Price' , 'sum_Price' , 'pay_status' , 'classes' , 'return_visit' , 'pay_time' , 'confirm_order_type' , 'first_pay' , 'confirm_status' , 'pay_voucher')->where('name' , $name)->where('mobile' , $mobile)->where('school_id' , $school_id)->where('project_id' , $project_id)->where('subject_id' , $subject_id)->where('course_id' , $course_id)->where('del_flag' , 0)->orderByDesc('create_time')->offset($offset)->limit($pagesize)->get()->toArray();
+            $order_list = self::select('order_no' , 'create_time' , 'mobile' , 'name' , 'course_id' , 'project_id' , 'subject_id' , 'school_id' , 'pay_type' , 'course_Price' , 'sign_Price' , 'sum_Price' , 'pay_status' , 'classes' , 'return_visit' , 'pay_time' , 'confirm_order_type' , 'first_pay' , 'confirm_status' , 'pay_voucher','offline_id')->where('name' , $name)->where('mobile' , $mobile)->where('school_id' , $school_id)->where('project_id' , $project_id)->where('subject_id' , $subject_id)->where('course_id' , $course_id)->where('del_flag' , 0)->orderByDesc('create_time')->offset($offset)->limit($pagesize)->get()->toArray();
 
             //循环获取相关信息
             foreach($order_list as $k=>$v){
