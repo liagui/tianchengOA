@@ -160,7 +160,7 @@ class School extends Model {
 
                         $school = array_merge($school,[$schoolId]);
                         $school = implode(',',$school);
-                        $res = Admin::where('id',$v['id'])->update(['school_id'=>$school,'update_time'=>date('Y-m-d H:i:s'),'updated_at'=>date('Y-m-d H:i:s')]);
+                        $res = Admin::where('id',$v['id'])->update(['school_id'=>trim($school,','),'updated_at'=>date('Y-m-d H:i:s')]);
                         if(!$res){
 //                            DB::rollBack();
                             return ['code' => 203 , 'msg' => '添加失败!'];
