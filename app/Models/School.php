@@ -162,10 +162,10 @@ class School extends Model {
                         $school = implode(',',$school);
                         $res = Admin::where('id',$v['id'])->update(['school_id'=>$school,'update_time'=>date('Y-m-d H:i:s'),'updated_at'=>date('Y-m-d H:i:s')]);
                         if(!$res){
-                            DB::rollBack();
+//                            DB::rollBack();
                             return ['code' => 203 , 'msg' => '添加失败!'];
                         }
-                         DB::commit();
+//                         DB::commit();
                     }
                 }
             }
