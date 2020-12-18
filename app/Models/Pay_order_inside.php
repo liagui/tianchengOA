@@ -518,8 +518,7 @@ class Pay_order_inside extends Model
                     ->orwhere('name',$data['order_no'])
                     ->orwhere('mobile',$data['order_no']);
             }
-        })
-        ->count();
+        })->count();
         $order = self::where($where)->whereIn('school_id',$schoolarr)->where(function($query) use ($data) {
             if(!empty($data['isBranchSchool']) &&$data['isBranchSchool'] == true){
                 $query->where('pay_status','=',1);
