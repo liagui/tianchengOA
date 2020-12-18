@@ -1567,8 +1567,11 @@ class Pay_order_inside extends Model
         $data['update_time'] = date('Y-m-d H:i:s');
         $data['resubmit_time'] = date('Y-m-d H:i:s');
         //清空信息
-        Pay_order_inside::where(['id'=>$data['id']])->update(['sign_Price'=>0]);
+        Pay_order_inside::where(['id'=>$data['id']])->update(['sign_Price'=>0,'pay_price'=>0]);
         //修改信息
+        $course_price = isset($data['course_Price'])?$data['course_Price']:0;
+        $sign_price = isset($data['sign_Price'])?$data['sign_Price']:0;
+        $data['pay_price'] = $course_price + $sign_price;
         $up = Pay_order_inside::where(['id'=>$data['id']])->update($data);
         if($up){
             return ['code' => 200 , 'msg' => '提交成功'];
