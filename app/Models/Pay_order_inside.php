@@ -703,13 +703,13 @@ class Pay_order_inside extends Model
             }
             $data['comfirm_time'] = date('Y-m-d H:i:s');
             //确认订单  排课  订单是定金 随便排，订单是尾款查询这个课程的订单的定金分配的班主任
-//            if($order['first_pay'] == 2 || $order['first_pay']==3){
-//                $orderone = self::where(['name'=>$order['name'],'mobile'=>$order['mobile'],'course_id'=>$order['course_id'],'project_id'=>$order['project_id'],'subject_id'=>$order['subject_id'],'education_id'=>$order['education_id'],'major_id'=>$order['major_id'],'first_pay'=>1,'confirm_status'=>2,'fee_id'=>$order['fee_id']])->first();
-//                if(!empty($orderone)){
-//                    $data['have_user_id'] = $orderone['id'];
-//                    $data['have_user_name'] = $orderone['username'];
-//                }
-//            }else {
+            if($order['first_pay'] == 2 || $order['first_pay']==3){
+                $orderone = self::where(['name'=>$order['name'],'mobile'=>$order['mobile'],'course_id'=>$order['course_id'],'project_id'=>$order['project_id'],'subject_id'=>$order['subject_id'],'education_id'=>$order['education_id'],'major_id'=>$order['major_id'],'first_pay'=>1,'confirm_status'=>2,'fee_id'=>$order['fee_id']])->first();
+                if(!empty($orderone)){
+                    $data['have_user_id'] = $orderone['id'];
+                    $data['have_user_name'] = $orderone['username'];
+                }
+            }else {
                 //值班班主任 排课
                 $classlead = Admin::where(['is_del' => 1, 'is_forbid' => 1, 'status' => 1, 'is_use' => 1])->get()->toArray();
                 if (!empty($classlead)) {
@@ -741,7 +741,7 @@ class Pay_order_inside extends Model
                 } else {
                     $data['have_user_id'] = 0;
                 }
-//            }
+            }
             //计算成本
             //到款业绩=到款金额
             //扣税=到账金额*扣税比例
