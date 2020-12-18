@@ -1569,9 +1569,15 @@ class Pay_order_inside extends Model
         //清空信息
         Pay_order_inside::where(['id'=>$data['id']])->update(['sign_Price'=>0,'pay_price'=>0,'course_Price'=>0]);
         //修改信息
-        $course_price = isset($data['course_Price'])?$data['course_Price']:0;
-        $sign_price = isset($data['sign_Price'])?$data['sign_Price']:0;
-        $data['pay_price'] = $course_price + $sign_price;
+        if($data['confirm_order_type'] == 1){
+            $data['sign_Price'] = 0;
+            $data['pay_price'] = $data['course_Price'];
+        }else if($data['confirm_order_type'] == 2){
+            $data['course_Price'] = 0;
+            $data['pay_price'] = $data['sign_Price'];
+        }else if($data['confirm_order_type'] == 3){
+            $data['pay_price'] = $data['course_Price'] + $data['sign_Price'];
+        }
         $up = Pay_order_inside::where(['id'=>$data['id']])->update($data);
         if($up){
             return ['code' => 200 , 'msg' => '提交成功'];
