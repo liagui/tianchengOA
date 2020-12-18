@@ -149,28 +149,28 @@ class School extends Model {
 
         //开启事务
         DB::beginTransaction();
-        //将数据插入到表中
+//        //将数据插入到表中
         $schoolId = self::insertGetId($school_array);
         if($schoolId >0){
-            foreach($adminArr as $key =>$v){
-                 $school =  empty($v['school_id'])&&strlen($v['school_id'])<=0?[]:explode(",",$v['school_id']);
-
-                 if(!empty($school)){
-                    if(empty(array_diff($schoolIdsArr,$school)) | (in_array($school[0],[0]) && isset($school[1])) ){
-
-                        $school = array_merge($school,[$schoolId]);
-                        $school = implode(',',$school);
-                        $res = Admin::where('id',$v['id'])->update(['school_id'=>$school,'update_time'=>date('Y-m-d H:i:s'),'updated_at'=>date('Y-m-d H:i:s')]);
-                        if(!$res){
-                            DB::rollBack();
-                            return ['code' => 203 , 'msg' => '添加失败!'];
-                        }
-                         DB::commit();
-                    }
-                }
-            }
-
-            //事务提交
+//            foreach($adminArr as $key =>$v){
+//                 $school =  empty($v['school_id'])&&strlen($v['school_id'])<=0?[]:explode(",",$v['school_id']);
+//
+//                 if(!empty($school)){
+//                    if(empty(array_diff($schoolIdsArr,$school)) | (in_array($school[0],[0]) && isset($school[1])) ){
+//
+//                        $school = array_merge($school,[$schoolId]);
+//                        $school = trim(implode(',',$school),',');
+//                        $res = Admin::where('id',$v['id'])->update(['school_id'=>$school,'update_time'=>date('Y-m-d H:i:s')]);
+//                        if(!$res){
+////                            DB::rollBack();
+//                            return ['code' => 203 , 'msg' => '添加失败!'];
+//                        }
+////                         DB::commit();
+//                    }
+//                }
+//            }
+//
+//            //事务提交
             DB::commit();
             return ['code' => 200 , 'msg' => '添加成功'];
         } else {
