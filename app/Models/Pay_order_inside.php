@@ -1573,7 +1573,9 @@ class Pay_order_inside extends Model
         $data['confirm_status'] = 0;
         $data['update_time'] = date('Y-m-d H:i:s');
         $data['resubmit_time'] = date('Y-m-d H:i:s');
-        //获取操作员信息
+        //清空信息
+        Pay_order_inside::where(['id'=>$data['id']])->update(['sign_Price'=>0]);
+        //修改信息
         $up = Pay_order_inside::where(['id'=>$data['id']])->update($data);
         if($up){
             return ['code' => 200 , 'msg' => '提交成功'];
