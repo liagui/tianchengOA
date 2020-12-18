@@ -20,7 +20,8 @@ class CorsMiddleware
         ];
 
         $this->allow_origin = [
-            'http://oa.choushang99.com'
+            'http://oa.bjzbw.net',
+            'https://oa.bjzbw.net'
 
         ];
         $origin = isset($_SERVER['HTTP_ORIGIN']) ? $_SERVER['HTTP_ORIGIN'] : '';
