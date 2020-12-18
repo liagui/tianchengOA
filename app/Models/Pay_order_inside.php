@@ -512,26 +512,15 @@ class Pay_order_inside extends Model
         $offset   = ($page - 1) * $pagesize;
 
         //計算總數
-        $count = self::where(function($query) use ($data,$schoolarr) {
-//            if(!empty($data['isBranchSchool']) && $data['isBranchSchool'] == true){
-//                $query->where('pay_status','=',1);
-//                $query->where('confirm_status',0);
-////                    ->orwhere('confirm_status',1);
-//            }else{
-//                $query->where('confirm_status',0);
-//                $query->where('pay_status',1);
-//            }
+        $count = self::where($where)->whereIn('school_id',$schoolarr)->where(function($query) use ($data) {
             if(isset($data['order_no']) && !empty($data['order_no'])){
                 $query->where('order_no',$data['order_no'])
                     ->orwhere('name',$data['order_no'])
                     ->orwhere('mobile',$data['order_no']);
             }
-            $query->whereIn('school_id',$schoolarr);
         })
-        ->where($where)
         ->count();
-
-        $order = self::where(function($query) use ($data,$schoolarr) {
+        $order = self::where($where)->whereIn('school_id',$schoolarr)->where(function($query) use ($data) {
             if(!empty($data['isBranchSchool']) &&$data['isBranchSchool'] == true){
                 $query->where('pay_status','=',1);
                 $query->where('confirm_status',0);
@@ -545,9 +534,7 @@ class Pay_order_inside extends Model
                     ->orwhere('name',$data['order_no'])
                     ->orwhere('mobile',$data['order_no']);
             }
-            $query->whereIn('school_id',$schoolarr);
         })
-        ->where($where)
         ->orderByDesc('id')
         ->offset($offset)->limit($pagesize)->get()->toArray();
          //循环查询分类
