@@ -479,7 +479,6 @@ class Pay_order_inside extends Model
     public static function awaitOrder($data,$schoolarr){
         $where['del_flag'] = 0;  //未删除
         $where['pay_status'] = 1;  //支付状态
-        $where['confirm_status'] = 0;  //审核状态
         //科目id&学科id
         if(!empty($data['project_id'])){
             $parent = json_decode($data['project_id'], true);
@@ -512,27 +511,14 @@ class Pay_order_inside extends Model
         $offset   = ($page - 1) * $pagesize;
 
         //計算總數
-        $count = self::where(function($query) use ($data,$schoolarr) {
-            $query->whereIn('school_id',$schoolarr);
-//            if(!empty($data['isBranchSchool']) && $data['isBranchSchool'] == true){
-//                $query->where('pay_status','=',1);
-//                $query->where('confirm_status',0);
-////                    ->orwhere('confirm_status',1);
-//            }else{
-//                $query->where('confirm_status',0);
-//                $query->where('pay_status',1);
-//            }
+        $count = self::where($where)->whereIn('school_id',$schoolarr)->where(function($query) use ($data) {
             if(isset($data['order_no']) && !empty($data['order_no'])){
                 $query->where('order_no',$data['order_no'])
                     ->orwhere('name',$data['order_no'])
                     ->orwhere('mobile',$data['order_no']);
             }
-        })
-        ->where($where)
-        ->count();
-
-        $order = self::where(function($query) use ($data,$schoolarr) {
-            $query->whereIn('school_id',$schoolarr);
+        })->count();
+        $order = self::where($where)->whereIn('school_id',$schoolarr)->where(function($query) use ($data) {
             if(!empty($data['isBranchSchool']) &&$data['isBranchSchool'] == true){
                 $query->where('pay_status','=',1);
                 $query->where('confirm_status',0);
@@ -547,7 +533,6 @@ class Pay_order_inside extends Model
                     ->orwhere('mobile',$data['order_no']);
             }
         })
-        ->where($where)
         ->orderByDesc('id')
         ->offset($offset)->limit($pagesize)->get()->toArray();
          //循环查询分类
@@ -716,37 +701,45 @@ class Pay_order_inside extends Model
                 }
             }
             $data['comfirm_time'] = date('Y-m-d H:i:s');
-            //确认订单  排课
-            //值班班主任 排课
-            $classlead = Admin::where(['is_del'=>1,'is_forbid'=>1,'status'=>1,'is_use'=>1])->get()->toArray();
-            if(!empty($classlead)){
-                //上次值班的班主任id
-                $leadid = Redis::get('classlead');
-                if(empty($leadid)){
-                    //如果没有 就从第一个开始
-                    $data['have_user_id'] = $classlead[0]['id'];
-                    $data['have_user_name'] = $classlead[0]['username'];
-                    Redis::set('classlead' , $classlead[0]['id']);
-                }else{
-                    //如果有 判断班主任id是否等于或大于最后一个数，从第一个开始排 否者数组取下一个
-                    $len = count($classlead);
-                    if($classlead[$len-1]['id'] <= $leadid){
+            //确认订单  排课  订单是定金 随便排，订单是尾款查询这个课程的订单的定金分配的班主任
+            if($order['first_pay'] == 2 || $order['first_pay']==3){
+                $orderone = self::where(['name'=>$order['name'],'mobile'=>$order['mobile'],'course_id'=>$order['course_id'],'project_id'=>$order['project_id'],'subject_id'=>$order['subject_id'],'education_id'=>$order['education_id'],'major_id'=>$order['major_id'],'first_pay'=>1,'confirm_status'=>2,'fee_id'=>$order['fee_id']])->first();
+                if(!empty($orderone)){
+                    $data['have_user_id'] = $orderone['id'];
+                    $data['have_user_name'] = $orderone['username'];
+                }
+            }else {
+                //值班班主任 排课
+                $classlead = Admin::where(['is_del' => 1, 'is_forbid' => 1, 'status' => 1, 'is_use' => 1])->get()->toArray();
+                if (!empty($classlead)) {
+                    //上次值班的班主任id
+                    $leadid = Redis::get('classlead');
+                    if (empty($leadid)) {
+                        //如果没有 就从第一个开始
                         $data['have_user_id'] = $classlead[0]['id'];
                         $data['have_user_name'] = $classlead[0]['username'];
-                        Redis::set('classlead' , $classlead[0]['id']);
-                    }else{
-                        foreach ($classlead as $k => $v){
-                            if($v['id'] > $leadid){
-                                $data['have_user_id'] = $v['id'];
-                                $data['have_user_name'] = $v['username'];
-                                Redis::set('classlead' , $v['id']);
-                                break;
+                        Redis::set('classlead', $classlead[0]['id']);
+                    } else {
+                        //如果有 判断班主任id是否等于或大于最后一个数，从第一个开始排 否者数组取下一个
+                        $len = count($classlead);
+                        if ($classlead[$len - 1]['id'] <= $leadid) {
+                            $data['have_user_id'] = $classlead[0]['id'];
+                            $data['have_user_name'] = $classlead[0]['username'];
+                            Redis::set('classlead', $classlead[0]['id']);
+                        } else {
+                            foreach ($classlead as $k => $v) {
+                                if ($v['id'] > $leadid) {
+                                    $data['have_user_id'] = $v['id'];
+                                    $data['have_user_name'] = $v['username'];
+                                    Redis::set('classlead', $v['id']);
+                                    break;
+                                }
                             }
                         }
                     }
+                } else {
+                    $data['have_user_id'] = 0;
                 }
-            }else{
-                $data['have_user_id'] = 0;
             }
             //计算成本
             //到款业绩=到款金额
@@ -1573,7 +1566,18 @@ class Pay_order_inside extends Model
         $data['confirm_status'] = 0;
         $data['update_time'] = date('Y-m-d H:i:s');
         $data['resubmit_time'] = date('Y-m-d H:i:s');
-        //获取操作员信息
+        //清空信息
+        Pay_order_inside::where(['id'=>$data['id']])->update(['sign_Price'=>0,'pay_price'=>0,'course_Price'=>0]);
+        //修改信息
+        if($data['confirm_order_type'] == 1){
+            $data['sign_Price'] = 0;
+            $data['pay_price'] = $data['course_Price'];
+        }else if($data['confirm_order_type'] == 2){
+            $data['course_Price'] = 0;
+            $data['pay_price'] = $data['sign_Price'];
+        }else if($data['confirm_order_type'] == 3){
+            $data['pay_price'] = $data['course_Price'] + $data['sign_Price'];
+        }
         $up = Pay_order_inside::where(['id'=>$data['id']])->update($data);
         if($up){
             return ['code' => 200 , 'msg' => '提交成功'];
