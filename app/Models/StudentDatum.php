@@ -14,7 +14,7 @@ class StudentDatum extends Model {
     	$StudentDatumArr =  [];
         $oneSubject  = $twoSubject ='';
     	 //每页显示的条数
-        $pagesize = (int)isset($body['pageSize']) && $body['pageSize'] > 0 ? $body['pageSize'] : 20;
+        $pagesize = (int)isset($body['pagesize']) && $body['pagesize'] > 0 ? $body['pagesize'] : 20;
         $page     = isset($body['page']) && $body['page'] > 0 ? $body['page'] : 1;
         $offset   = ($page - 1) * $pagesize;
         if(isset($body['project_id'])){
@@ -28,9 +28,6 @@ class StudentDatum extends Model {
                 unset($body['project_id']);
             }
     	}  
-
-
-
         $count = self::leftJoin('pay_order_inside','student_information.order_id','=','pay_order_inside.id')
         	->leftJoin('student','student.id','=','student_information.student_id')
 
@@ -59,8 +56,6 @@ class StudentDatum extends Model {
                     } 
                 }
                      
-                	
-            	
         	})->count();
           
     	if($count >0){
