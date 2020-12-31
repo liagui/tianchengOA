@@ -1642,13 +1642,13 @@ class Pay_order_inside extends Model
         $offset   = ($page - 1) * $pagesize;
 
         $count = self::where(function($query) use ($data) {
+            if(isset($data['pay_status'])){
+                $query->where('pay_status',$data['pay_status']);
+            }
             if(isset($data['order_no']) && !empty($data['order_no'])){
                 $query->where('order_no',$data['order_no'])
                     ->orwhere('name',$data['order_no'])
                     ->orwhere('mobile',$data['order_no']);
-            }
-            if(isset($data['pay_status'])){
-              $query->where('pay_status',$data['pay_status']);
             }
         })
         ->where($where)
@@ -1657,13 +1657,13 @@ class Pay_order_inside extends Model
         ->count();
         //数据   流转订单
         $order = self::where(function($query) use ($data) {
+            if(isset($data['pay_status'])){
+                $query->where('pay_status',$data['pay_status']);
+            }
             if(isset($data['order_no']) && !empty($data['order_no'])){
                 $query->where('order_no',$data['order_no'])
                     ->orwhere('name',$data['order_no'])
                     ->orwhere('mobile',$data['order_no']);
-            }
-            if(isset($data['pay_status'])){
-                $query->where('pay_status',$data['pay_status']);
             }
         })
         ->where($where)
