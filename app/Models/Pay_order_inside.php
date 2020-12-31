@@ -1647,8 +1647,12 @@ class Pay_order_inside extends Model
             }
             if(isset($data['order_no']) && !empty($data['order_no'])){
                 $query->where('order_no',$data['order_no']);
-                $query->orwhere('name',$data['order_no']);
-                $query->orwhere('mobile',$data['order_no']);
+            }
+            if(isset($data['order_no']) && !empty($data['order_no'])){
+                $query->where('name',$data['order_no']);
+            }
+            if(isset($data['order_no']) && !empty($data['order_no'])){
+                $query->where('mobile',$data['order_no']);
             }
         })
         ->where($where)
@@ -1662,8 +1666,12 @@ class Pay_order_inside extends Model
             }
             if(isset($data['order_no']) && !empty($data['order_no'])){
                 $query->where('order_no',$data['order_no']);
-                $query->orwhere('name',$data['order_no']);
-                $query->orwhere('mobile',$data['order_no']);
+            }
+            if(isset($data['order_no']) && !empty($data['order_no'])){
+                $query->where('name',$data['order_no']);
+            }
+            if(isset($data['order_no']) && !empty($data['order_no'])){
+                $query->where('mobile',$data['order_no']);
             }
         })
         ->where($where)
