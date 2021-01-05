@@ -8,6 +8,7 @@ use App\Models\Pay_order_external;
 use App\Models\Pay_order_inside;
 use App\Models\PaySet;
 use App\Models\Refund_order;
+use App\Models\School;
 use App\Tools\AlipayFactory;
 use App\Tools\Hfpos\qrcp_E1103;
 use App\Tools\Yl\YinpayFactory;
@@ -17,8 +18,15 @@ use Maatwebsite\Excel\Facades\Excel;
 class OrderController extends Controller {
     //总校&分校
     public function orderList(){
-        $schoolarr = $this->underlingLook(AdminLog::getAdminInfo()->admin_user->school_id);
-        $list = Pay_order_inside::orderList(self::$accept_data,$schoolarr['data']);
+        //1.5修改  学校id变成学校名称
+        $data = self::$accept_data;
+        if(isset($data['school_name']) && !empty($data['school_name'])){
+            $school = School::where(['school_name'=>$data['school_name']])->first();
+            $schoolarr['data'] = $school['id'];
+        }else{
+            $schoolarr = $this->underlingLook(AdminLog::getAdminInfo()->admin_user->school_id);
+        }
+        $list = Pay_order_inside::orderList($data,$schoolarr['data']);
         return response()->json($list);
     }
     //手动报单
@@ -38,8 +46,15 @@ class OrderController extends Controller {
     }
     //被驳回订单
     public function rejectOrder(){
-        $schoolarr = $this->underlingLook(AdminLog::getAdminInfo()->admin_user->school_id);
-        $list = Pay_order_inside::rejectOrder(self::$accept_data,$schoolarr['data']);
+        //1.5修改  学校id变成学校名称
+        $data = self::$accept_data;
+        if(isset($data['school_name']) && !empty($data['school_name'])){
+            $school = School::where(['school_name'=>$data['school_name']])->first();
+            $schoolarr['data'] = $school['id'];
+        }else{
+            $schoolarr = $this->underlingLook(AdminLog::getAdminInfo()->admin_user->school_id);
+        }
+        $list = Pay_order_inside::rejectOrder($data,$schoolarr['data']);
         return response()->json($list);
     }
     //驳回订单进行操作
@@ -50,8 +65,15 @@ class OrderController extends Controller {
 
     //总校待确认订单*******************************************************
     public function awaitOrder(){
-        $schoolarr = $this->underlingLook(AdminLog::getAdminInfo()->admin_user->school_id);
-        $list = Pay_order_inside::awaitOrder(self::$accept_data,$schoolarr['data']);
+        //1.5修改  学校id变成学校名称
+        $data = self::$accept_data;
+        if(isset($data['school_name']) && !empty($data['school_name'])){
+            $school = School::where(['school_name'=>$data['school_name']])->first();
+            $schoolarr['data'] = $school['id'];
+        }else{
+            $schoolarr = $this->underlingLook(AdminLog::getAdminInfo()->admin_user->school_id);
+        }
+        $list = Pay_order_inside::awaitOrder($data,$schoolarr['data']);
         return response()->json($list);
     }
     //订单详情
@@ -61,8 +83,15 @@ class OrderController extends Controller {
     }
     //总校确认订单列表
     public function sureOrderList(){
-        $schoolarr = $this->underlingLook(AdminLog::getAdminInfo()->admin_user->school_id);
-        $list = Pay_order_inside::sureOrderList(self::$accept_data,$schoolarr['data']);
+        //1.5修改  学校id变成学校名称
+        $data = self::$accept_data;
+        if(isset($data['school_name']) && !empty($data['school_name'])){
+            $school = School::where(['school_name'=>$data['school_name']])->first();
+            $schoolarr['data'] = $school['id'];
+        }else{
+            $schoolarr = $this->underlingLook(AdminLog::getAdminInfo()->admin_user->school_id);
+        }
+        $list = Pay_order_inside::sureOrderList($data,$schoolarr['data']);
         return response()->json($list);
     }
     //确认订单导出
@@ -121,8 +150,15 @@ class OrderController extends Controller {
     /*=============================================*/
     //退费订单list
     public function returnOrder(){
-        $schoolarr = $this->underlingLook(AdminLog::getAdminInfo()->admin_user->school_id);
-        $list = Refund_order::returnOrder(self::$accept_data,$schoolarr['data']);
+        //1.5修改  学校id变成学校名称
+        $data = self::$accept_data;
+        if(isset($data['school_name']) && !empty($data['school_name'])){
+            $school = School::where(['school_name'=>$data['school_name']])->first();
+            $schoolarr['data'] = $school['id'];
+        }else{
+            $schoolarr = $this->underlingLook(AdminLog::getAdminInfo()->admin_user->school_id);
+        }
+        $list = Refund_order::returnOrder($data,$schoolarr['data']);
         return response()->json($list);
     }
     //单条详情
@@ -190,14 +226,16 @@ class OrderController extends Controller {
     public function redDot(){
         $schoolarr = $this->underlingLook(AdminLog::getAdminInfo()->admin_user->school_id);
         $schoolarr = (array)$schoolarr;
-        //待确认订单
+        //学员总览
         $orderCount = Pay_order_inside::whereIn('school_id',$schoolarr['data'])->where(['confirm_status'=>0,'pay_status'=>1])->count();
-        //退费待确认
+        //退费收集
+        $returnCount = Refund_order::whereIn('school_id',$schoolarr['data'])->where(['confirm_status'=>0])->count();
+        //核对订单
         $returnCount = Refund_order::whereIn('school_id',$schoolarr['data'])->where(['confirm_status'=>0])->count();
         $data=[
-            'zongcount' => $orderCount,
-            'daicount' => $orderCount,
-            'tuicount' => $returnCount,
+            'studentcount' => 10,
+            'daicount' => 10,
+            'tuicount' => 10,
         ];
         return response()->json(['code'=>200,'msg'=>'获取成功','data'=>$data]);
     }
@@ -369,7 +407,7 @@ class OrderController extends Controller {
     /*
      * @param  description   财务管理-分校收入详情-已确认订单
      * @param  参数说明       body包含以下参数[
-     *     school_id         分校id
+     *     school_id         分校名称
      *     order_time        订单时间
      * ]
      * @param author    dzj
