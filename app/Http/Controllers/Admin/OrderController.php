@@ -227,11 +227,11 @@ class OrderController extends Controller {
         $schoolarr = $this->underlingLook(AdminLog::getAdminInfo()->admin_user->school_id);
         $schoolarr = (array)$schoolarr;
         //学员总览
-        $orderCount = Pay_order_inside::whereIn('school_id',$schoolarr['data'])->where(['confirm_status'=>0,'pay_status'=>1])->count();
+//        $orderCount = Pay_order_inside::whereIn('school_id',$schoolarr['data'])->where(['confirm_status'=>0,'pay_status'=>1])->count();
         //退费收集
-        $returnCount = Refund_order::whereIn('school_id',$schoolarr['data'])->where(['confirm_status'=>0])->count();
+//        $returnCount = Refund_order::whereIn('school_id',$schoolarr['data'])->where(['confirm_status'=>0])->count();
         //核对订单
-        $returnCount = Refund_order::whereIn('school_id',$schoolarr['data'])->where(['confirm_status'=>0])->count();
+//        $returnCount = Refund_order::whereIn('school_id',$schoolarr['data'])->where(['confirm_status'=>0])->count();
         $data=[
             'studentcount' => 10,
             'daicount' => 10,
