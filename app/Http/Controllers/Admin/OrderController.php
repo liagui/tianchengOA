@@ -226,16 +226,16 @@ class OrderController extends Controller {
     public function redDot(){
         $schoolarr = $this->underlingLook(AdminLog::getAdminInfo()->admin_user->school_id);
         $schoolarr = (array)$schoolarr;
-        //学员总览
-//        $orderCount = Pay_order_inside::whereIn('school_id',$schoolarr['data'])->where(['confirm_status'=>0,'pay_status'=>1])->count();
-        //退费收集
-//        $returnCount = Refund_order::whereIn('school_id',$schoolarr['data'])->where(['confirm_status'=>0])->count();
-        //核对订单
-//        $returnCount = Refund_order::whereIn('school_id',$schoolarr['data'])->where(['confirm_status'=>0])->count();
+        //学员未回访数量
+        $studentCount = Pay_order_inside::whereIn('school_id',$schoolarr['data'])->where(['seas_status'=>0,'pay_status'=>1,'confirm_status'=>3,'return_visit'=>0])->count();
+        //财务待审核数量
+        $financeCount = Pay_order_inside::whereIn('school_id',$schoolarr['data'])->where(['confirm_status'=>0,'pay_status'=>1])->count();
+        //退费未处理数量
+        $returnCount = Refund_order::whereIn('school_id',$schoolarr['data'])->where(['confirm_status'=>0])->count();
         $data=[
-            'studentcount' => 10,
-            'daicount' => 10,
-            'tuicount' => 10,
+            'studentcount' => $studentCount,
+            'daicount' => $financeCount,
+            'tuicount' => $returnCount,
         ];
         return response()->json(['code'=>200,'msg'=>'获取成功','data'=>$data]);
     }
