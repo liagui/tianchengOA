@@ -232,10 +232,13 @@ class OrderController extends Controller {
         $financeCount = Pay_order_inside::whereIn('school_id',$schoolarr['data'])->where(['confirm_status'=>0,'pay_status'=>1])->count();
         //退费未处理数量
         $returnCount = Refund_order::whereIn('school_id',$schoolarr['data'])->where(['confirm_status'=>0])->count();
+        //待确认订单数量
+        $orderCount = Pay_order_inside::whereIn('school_id',$schoolarr)->where(['confirm_status'=>0])->count();
         $data=[
             'studentcount' => $studentCount,
-            'daicount' => $financeCount,
-            'tuicount' => $returnCount,
+            'financecount' => $financeCount,
+            'returncount' => $returnCount,
+            'daicount' => $orderCount,
         ];
         return response()->json(['code'=>200,'msg'=>'获取成功','data'=>$data]);
     }
