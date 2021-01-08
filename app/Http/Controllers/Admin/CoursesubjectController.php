@@ -17,8 +17,8 @@ class CoursesubjectController extends Controller {
     public function SubjectToCourse(){
         $data = self::$accept_data;
         $where=[];
-        if(isset($data['project_id'])){
-            $subject = json_decode($data['project_id'],1);
+        if(isset($data['project'])){
+            $subject = json_decode($data['project'],1);
             if(!empty($subject)){
                 $where['category_one_id'] = $subject[0];
                 if(!empty($subject[1])){
