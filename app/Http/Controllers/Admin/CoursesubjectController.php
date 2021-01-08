@@ -2,9 +2,7 @@
 namespace App\Http\Controllers\Admin;
 
 use App\Http\Controllers\Controller;
-use App\Models\AdminLog;
 use App\Models\Course;
-use App\Models\Pay_order_inside;
 
 class CoursesubjectController extends Controller {
     /*
@@ -26,7 +24,7 @@ class CoursesubjectController extends Controller {
                 }
             }
         }
-        $return = Course::select('id','course_name')->where($where)->where(['is_del'=>0,'is_hide'=>0])->get();
+        $return = Course::select('id','course_name as name')->where($where)->where(['is_del'=>0,'is_hide'=>0])->get();
         return response()->json(['code'=>200,'msg'=>'获取成功','data'=>$return]);
     }
 }
