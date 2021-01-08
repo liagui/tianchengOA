@@ -22,6 +22,10 @@ class OrderController extends Controller {
         $list = Pay_order_inside::orderList(self::$accept_data,$schoolarr['data']);
         return response()->json($list);
     }
+    //订单导出
+    public function orderListExceil(){
+        return response()->json(['code'=>200,'msg'=>'你导出个狗屁']);
+    }
     //手动报单
     public function handOrder(){
         $list = Pay_order_inside::handOrder(self::$accept_data);

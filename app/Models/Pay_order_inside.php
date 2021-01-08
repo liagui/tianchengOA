@@ -113,10 +113,20 @@ class Pay_order_inside extends Model
         ->get()->toArray();
         //分校只显示流转
         if(!empty($data['isBranchSchool']) && $data['isBranchSchool'] == true){
-            $orderprice = self::whereIn('school_id',$schoolarr)->sum('pay_price');
-            $externalprice = 0;
             $all = $order;
             $count = count($order);
+            //金额计算
+            //已支付金额  流转表中pay_status=1
+            $partyprice =
+                //已确认金额  流转表中 pay_status=1，confirm_status=2
+                //待确认金额  流转表中 pay_status=1，confirm_status=0
+                //已退费金额  退费表中 confirm_status=1，refund_plan=2
+            $paycount=[
+                'paycount' =>'123456',
+                'surecount' =>'123456',
+                'wsurecount' =>'123456',
+                'refuntcount' =>'123456',
+            ];
         }else{
             //两数组合并
             if (!empty($order) && !empty($external)) {
@@ -124,10 +134,21 @@ class Pay_order_inside extends Model
             } else {
                 $all = !empty($order) ? $order : $external;
             }
-            $orderprice = self::whereIn('school_id',$schoolarr)->sum('pay_price');
-            $externalprice = Pay_order_external::where(['pay_status'=>1])->sum('pay_price');
             //循环查询分类
             $count = count($order) + count($external);
+            //金额计算
+            //已支付金额  流转表中pay_status=1  第三方表 pay_status=1，status=0
+            $wanderprice =
+//            $partyprice =
+                //已确认金额  流转表中 pay_status=1，confirm_status=2
+                //待确认金额  流转表中 pay_status=1，confirm_status=0
+                //已退费金额  退费表中 confirm_status=1，refund_plan=2
+            $paycount=[
+                'paycount' =>'123456',
+                'surecount' =>'123456',
+                'wsurecount' =>'123456',
+                'refuntcount' =>'123456',
+            ];
         }
         $date = array_column($all, 'create_time');
         array_multisort($date, SORT_DESC, $all);
@@ -135,7 +156,6 @@ class Pay_order_inside extends Model
         if(empty($res)){
             $res = array_slice($all, 1, $pagesize);
         }
-
         if(!empty($res)){
             foreach ($res as $k=>&$v){
                 //查学校
@@ -290,19 +310,7 @@ class Pay_order_inside extends Model
             'page' =>$page,
             'total'=>$count
         ];
-        //金额计算
-        //已支付金额  流转表中pay_status=1  第三方表 pay_status=1，status=0
-//        $wanderprice =
-//        $partyprice =
-        //已确认金额  流转表中 pay_status=1，confirm_status=2
-        //待确认金额  流转表中 pay_status=1，confirm_status=0
-        //已退费金额  退费表中 confirm_status=1，refund_plan=2
-        $paycount=[
-            'paycount' =>'123456',
-            'surecount' =>'123456',
-            'wsurecount' =>'123456',
-            'refuntcount' =>'123456',
-        ];
+
         return ['code' => 200 , 'msg' => '查询成功','data'=>$res,'countprice'=>$paycount,'where'=>$data,'page'=>$page];
     }
     /*

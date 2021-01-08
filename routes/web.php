@@ -66,6 +66,7 @@ $router->group(['prefix' => 'admin' , 'namespace' => 'Admin','middleware'=> ['jw
     $router->group(['prefix' => 'order'], function () use ($router) {
         //总校&分校
         $router->post('orderlist', 'OrderController@orderList');//订单总览
+        $router->post('orderListExceil', 'OrderController@orderListExceil');//订单总览导出
         $router->post('awaitOrder', 'OrderController@awaitOrder');//总校待确认订单&&分校已提交
         $router->post('handOrder', 'OrderController@handOrder');//手动报单
         $router->post('orderVoucher', 'OrderController@orderVoucher');//订单查看支付凭证
