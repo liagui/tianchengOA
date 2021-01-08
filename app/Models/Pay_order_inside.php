@@ -826,6 +826,7 @@ class Pay_order_inside extends Model
             $data['second_out_of_amount'] = $erjichoulijine;    //2级抽离金额
             $data['sum_Price'] = $chengben;    //成本价
             $data['confirm_status'] = 2;
+            $data['sure_time'] = date('Y-m-d H:i:s');
         }
         if($data['confirm_status'] == 2){
             if(!isset($data['reject_des'])){
@@ -834,6 +835,7 @@ class Pay_order_inside extends Model
             $data['reject_time'] = date('Y-m-d H:i:s');
             $data['reject_admin_id'] = $admin['id'];
             $data['confirm_status'] = 4;
+            $data['sure_time'] = date('Y-m-d H:i:s');
         }
         if($data['confirm_status'] == 0){
             return ['code' => 201 , 'msg' => '请选择状态'];
@@ -1913,6 +1915,7 @@ class Pay_order_inside extends Model
                 'reject_admin_id'=>$admin['id'],
             ];
             $ups['update_time'] = date('Y-m-d H:i:s');
+            $ups['sure_time'] = date('Y-m-d H:i:s');
             $up = Pay_order_inside::where(['id'=>$data['id']])->update($ups);
             if($up){
                 return ['code' => 200 , 'msg' => '成功'];
@@ -1936,6 +1939,7 @@ class Pay_order_inside extends Model
                 unset($data['/admin/order/offlineing']);
                 $data['update_time'] = date('Y-m-d H:i:s');
                 $data['confirm_status'] = 1;  //总校财务确认
+                $data['sure_time'] = date('Y-m-d H:i:s');
                 $up = Pay_order_inside::where(['id'=>$data['id']])->update($data);
                 if($up){
                     return ['code' => 200 , 'msg' => '成功'];
@@ -1949,6 +1953,7 @@ class Pay_order_inside extends Model
                 $res['update_time'] = date('Y-m-d H:i:s');
                 $res['pay_status'] = 2;
                 $res['confirm_status'] = 3;//财务驳回
+                $res['sure_time'] = date('Y-m-d H:i:s');
                 $up = Pay_order_inside::where(['id'=>$data['id']])->update($res);
                 if($up){
                     return ['code' => 200 , 'msg' => '成功'];
@@ -1961,6 +1966,7 @@ class Pay_order_inside extends Model
                 unset($data['/admin/order/offlineing']);
                 $res['update_time'] = date('Y-m-d H:i:s');
                 $res['pay_status'] = 0;
+                $res['sure_time'] = date('Y-m-d H:i:s');
                 $up = Pay_order_inside::where(['id'=>$data['id']])->update($res);
                 if($up){
                     return ['code' => 200 , 'msg' => '成功'];
@@ -1973,6 +1979,7 @@ class Pay_order_inside extends Model
                 unset($data['/admin/order/offlineing']);
                 $res['update_time'] = date('Y-m-d H:i:s');
                 $res['pay_status'] = 3;
+                $res['sure_time'] = date('Y-m-d H:i:s');
                 $up = Pay_order_inside::where(['id'=>$data['id']])->update($res);
                 if($up){
                     return ['code' => 200 , 'msg' => '成功'];
