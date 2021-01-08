@@ -236,7 +236,9 @@ class Pay_order_inside extends Model
                         $v['confirm_status_text'] = '未确认';
                     }
                 }else{
-                    if($v['confirm_status'] == 0){
+                    if(!empty($v['status']) && $v['status'] == 0){
+                        $v['confirm_status_text'] = '待提交';
+                    }else if($v['confirm_status'] == 0){
                         $v['confirm_status_text'] = '待总校财务确认';
                     }else if($v['confirm_status'] == 1){
                         $v['confirm_status_text'] = '待总校确认';
