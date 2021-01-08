@@ -24,7 +24,7 @@ class CoursesubjectController extends Controller {
                 }
             }
         }
-        $return = Course::select('id','course_name as name')->where($where)->where(['is_del'=>0,'is_hide'=>0])->get();
+        $return = Course::select('id as value','course_name as label')->where($where)->where(['is_del'=>0,'is_hide'=>0])->get();
         return response()->json(['code'=>200,'msg'=>'获取成功','data'=>$return]);
     }
 }
