@@ -230,11 +230,7 @@ class Pay_order_inside extends Model
                     }
                 }
                 if(empty($v['confirm_status'])){
-                    if($v['status'] == 0){
-                        $v['confirm_status_text'] = '待提交';
-                    }else{
-                        $v['confirm_status_text'] = '未确认';
-                    }
+                    $v['confirm_status_text'] = '';
                 }else{
                     if(!empty($v['status']) && $v['status'] == 0){
                         $v['confirm_status_text'] = '待提交';
@@ -619,13 +615,11 @@ class Pay_order_inside extends Model
                     $v['first_pay_text'] = '最后一笔尾款';
                 }
                 if(empty($v['confirm_status'])){
-                    if($v['status'] == 0){
-                        $v['confirm_status_text'] = '待提交';
-                    }else{
-                        $v['confirm_status_text'] = '待总校财务确认';
-                    }
+                    $v['confirm_status_text'] = '';
                 }else{
-                    if($v['confirm_status'] == 0){
+                    if(!empty($v['status']) && $v['status'] == 0){
+                        $v['confirm_status_text'] = '待提交';
+                    }else if($v['confirm_status'] == 0){
                         $v['confirm_status_text'] = '待总校财务确认';
                     }else if($v['confirm_status'] == 1){
                         $v['confirm_status_text'] = '待总校确认';
@@ -1011,13 +1005,11 @@ class Pay_order_inside extends Model
                     $v['first_pay_text'] = '最后一笔尾款';
                 }
                 if(empty($v['confirm_status'])){
-                    if($v['status'] == 0){
-                        $v['confirm_status_text'] = '待提交';
-                    }else{
-                        $v['confirm_status_text'] = '待总校财务确认';
-                    }
+                    $v['confirm_status_text'] = '';
                 }else{
-                    if($v['confirm_status'] == 0){
+                    if(!empty($v['status']) && $v['status'] == 0){
+                        $v['confirm_status_text'] = '待提交';
+                    }else if($v['confirm_status'] == 0){
                         $v['confirm_status_text'] = '待总校财务确认';
                     }else if($v['confirm_status'] == 1){
                         $v['confirm_status_text'] = '待总校确认';
@@ -1472,13 +1464,11 @@ class Pay_order_inside extends Model
                     $v['first_pay_text'] = '最后一笔尾款';
                 }
                 if(empty($v['confirm_status'])){
-                    if($v['status'] == 0){
-                        $v['confirm_status_text'] = '待提交';
-                    }else{
-                        $v['confirm_status_text'] = '待总校财务确认';
-                    }
+                    $v['confirm_status_text'] = '';
                 }else{
-                    if($v['confirm_status'] == 0){
+                    if(!empty($v['status']) && $v['status'] == 0){
+                        $v['confirm_status_text'] = '待提交';
+                    }else if($v['confirm_status'] == 0){
                         $v['confirm_status_text'] = '待总校财务确认';
                     }else if($v['confirm_status'] == 1){
                         $v['confirm_status_text'] = '待总校确认';
@@ -1826,13 +1816,11 @@ class Pay_order_inside extends Model
                     }
                 }
             if(empty($v['confirm_status'])){
-                if($v['status'] == 0){
-                    $v['confirm_status_text'] = '待提交';
-                }else{
-                    $v['confirm_status_text'] = '待总校财务确认';
-                }
+                $v['confirm_status_text'] = '';
             }else{
-                if($v['confirm_status'] == 0){
+                if(!empty($v['status']) && $v['status'] == 0){
+                    $v['confirm_status_text'] = '待提交';
+                }else if($v['confirm_status'] == 0){
                     $v['confirm_status_text'] = '待总校财务确认';
                 }else if($v['confirm_status'] == 1){
                     $v['confirm_status_text'] = '待总校确认';
