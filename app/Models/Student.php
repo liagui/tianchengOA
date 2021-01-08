@@ -21,11 +21,22 @@ class Student extends Model {
         $pagesize = (int)isset($data['pagesize']) && $data['pagesize'] > 0 ? $data['pagesize'] : 20;
         $page     = isset($data['page']) && $data['page'] > 0 ? $data['page'] : 1;
         $offset   = ($page - 1) * $pagesize;
-        //计算总数
-        $count = Pay_order_inside::select()->where("seas_status",0)->where(function($query) use ($data) {
-            if(isset($data['project_id']) && !empty($data['project_id'])){
-                $query->where('project_id',$data['project_id']);
+        $where=[];
+        //科目id&学科id
+        if(!empty($data['project_id'])){
+            $parent = json_decode($data['project_id'], true);
+            if(!empty($parent[0])){
+                $where['project_id'] = $parent[0];
+                if(!empty($parent[1])){
+                    $where['subject_id'] = $parent[1];
+                }
             }
+        }
+        if(isset($data['course_id'])){
+            $where['course_id'] = $data['course_id'];
+        }
+        //计算总数
+        $count = Pay_order_inside::select()->where($where)->where("seas_status",0)->where(function($query) use ($data) {
             if(isset($data['school_id']) && !empty($data['school_id'])){
                 $query->where('school_id',$data['school_id']);
             }
@@ -40,10 +51,7 @@ class Student extends Model {
             }
         })->count();
         //分页数据
-        $res = Pay_order_inside::select()->where("seas_status",0)->where(function($query) use ($data) {
-            if(isset($data['project_id']) && !empty($data['project_id'])){
-                $query->where('project_id',$data['project_id']);
-            }
+        $res = Pay_order_inside::select()->where($where)->where("seas_status",0)->where(function($query) use ($data) {
             if(isset($data['school_id']) && !empty($data['school_id'])){
                 $query->where('school_id',$data['school_id']);
             }
@@ -223,6 +231,11 @@ class Student extends Model {
             }else{
                 $data['project_id'] = 0;
             }
+            if(!empty($s_id[1])){
+                $data['subject_id'] = $s_id[1];
+            }else{
+                $data['subject_id'] = 0;
+            }
         }
         //获取班主任
         $teacher = Teacher::select("id","username")->where("id",$user_id)->first();
@@ -281,6 +294,12 @@ class Student extends Model {
             if(isset($data['project_id']) && !empty($data['project_id'])){
                 $query->where('project_id',$data['project_id']);
             }
+            if(isset($data['subject_id']) && !empty($data['subject_id'])){
+                $query->where('subject_id',$data['subject_id']);
+            }
+            if(isset($data['course_id']) && !empty($data['course_id'])){
+                $query->where('course_id',$data['course_id']);
+            }
             if(isset($data['school_id']) && !empty($data['school_id'])){
                 $query->where('school_id',$data['school_id']);
             }
@@ -298,6 +317,12 @@ class Student extends Model {
         $res = Pay_order_inside::select()->where("seas_status",0)->where("have_user_id",$user_id)->where(function($query) use ($data) {
             if(isset($data['project_id']) && !empty($data['project_id'])){
                 $query->where('project_id',$data['project_id']);
+            }
+            if(isset($data['subject_id']) && !empty($data['subject_id'])){
+                $query->where('subject_id',$data['subject_id']);
+            }
+            if(isset($data['course_id']) && !empty($data['course_id'])){
+                $query->where('course_id',$data['course_id']);
             }
             if(isset($data['school_id']) && !empty($data['school_id'])){
                 $query->where('school_id',$data['school_id']);
@@ -425,6 +450,9 @@ class Student extends Model {
                 if(isset($data['subject_id']) && !empty($data['subject_id'])){
                     $query->where('subject_id',$data['subject_id']);
                 }
+                if(isset($data['course_id']) && !empty($data['course_id'])){
+                    $query->where('course_id',$data['course_id']);
+                }
                 if(isset($data['school_id']) && !empty($data['school_id'])){
                     $query->where('school_id',$data['school_id']);
                 }
@@ -445,6 +473,9 @@ class Student extends Model {
                 }
                 if(isset($data['subject_id']) && !empty($data['subject_id'])){
                     $query->where('subject_id',$data['subject_id']);
+                }
+                if(isset($data['course_id']) && !empty($data['course_id'])){
+                    $query->where('course_id',$data['course_id']);
                 }
                 if(isset($data['school_id']) && !empty($data['school_id'])){
                     $query->where('school_id',$data['school_id']);
@@ -468,6 +499,9 @@ class Student extends Model {
                 if(isset($data['subject_id']) && !empty($data['subject_id'])){
                     $query->where('subject_id',$data['subject_id']);
                 }
+                if(isset($data['course_id']) && !empty($data['course_id'])){
+                    $query->where('course_id',$data['course_id']);
+                }
                 if(isset($data['school_id']) && !empty($data['school_id'])){
                     $query->where('school_id',$data['school_id']);
                 }
@@ -488,6 +522,9 @@ class Student extends Model {
                 }
                 if(isset($data['subject_id']) && !empty($data['subject_id'])){
                     $query->where('subject_id',$data['subject_id']);
+                }
+                if(isset($data['course_id']) && !empty($data['course_id'])){
+                    $query->where('course_id',$data['course_id']);
                 }
                 if(isset($data['school_id']) && !empty($data['school_id'])){
                     $query->where('school_id',$data['school_id']);
@@ -588,6 +625,12 @@ class Student extends Model {
             if(isset($data['project_id']) && !empty($data['project_id'])){
                 $query->where('project_id',$data['project_id']);
             }
+            if(isset($data['subject_id']) && !empty($data['subject_id'])){
+                $query->where('subject_id',$data['subject_id']);
+            }
+            if(isset($data['course_id']) && !empty($data['course_id'])){
+                $query->where('course_id',$data['course_id']);
+            }
             if(isset($data['school_id']) && !empty($data['school_id'])){
                 $query->where('school_id',$data['school_id']);
             }
@@ -605,6 +648,12 @@ class Student extends Model {
         $res = Pay_order_inside::select()->where("seas_status",1)->where(function($query) use ($data) {
             if(isset($data['project_id']) && !empty($data['project_id'])){
                 $query->where('project_id',$data['project_id']);
+            }
+            if(isset($data['subject_id']) && !empty($data['subject_id'])){
+                $query->where('subject_id',$data['subject_id']);
+            }
+            if(isset($data['course_id']) && !empty($data['course_id'])){
+                $query->where('course_id',$data['course_id']);
             }
             if(isset($data['school_id']) && !empty($data['school_id'])){
                 $query->where('school_id',$data['school_id']);

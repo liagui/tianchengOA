@@ -27,7 +27,7 @@ class StudentDatum extends Model {
             }else{
                 unset($body['project_id']);
             }
-    	}  
+    	}
         $count = self::leftJoin('pay_order_inside','student_information.order_id','=','pay_order_inside.id')
         	->leftJoin('student','student.id','=','student_information.student_id')
 
@@ -43,6 +43,9 @@ class StudentDatum extends Model {
             	if(isset($body['gather_state']) && strlen($body['gather_state'])>0){
                 	$query->where('pay_order_inside.consignee_status',$body['gather_state']);
             	}
+                if(isset($body['course_id']) && strlen($body['course_id'])>0){
+                    $query->where('pay_order_inside.course_id',$body['course_id']);
+                }
             	if(isset($body['search']) && !empty($body['search'])){
                 	$query->where('student.user_name','like','%'.$body['search'].'%')
                 		->orWhere('student.mobile','like','%'.$body['search'].'%');
@@ -53,11 +56,11 @@ class StudentDatum extends Model {
                     }
                     if(!empty($twoSubject)){
                        $query->where('student_information.subject_id',$twoSubject);
-                    } 
+                    }
                 }
-                     
+
         	})->count();
-          
+
     	if($count >0){
     		$adminArr = Admin::where(['is_del'=>1,'is_forbid'=>1])->select('id','real_name')->get()->toArray();
     		if(!empty($adminArr)){
@@ -93,14 +96,17 @@ class StudentDatum extends Model {
 	                	$query->where('student.user_name','like','%'.$body['search'].'%')
 	                		->orWhere('student.mobile','like','%'.$body['search'].'%');
 	            	}
+                    if(isset($body['course_id']) && strlen($body['course_id'])>0){
+                        $query->where('pay_order_inside.course_id',$body['course_id']);
+                    }
 	            	if(isset($body['project_id']) && !empty($body['project_id'])){
     	                if(!empty($oneSubject)){
                             $query->where('student_information.project_id',$oneSubject);
                         }
                         if(!empty($twoSubject)){
                            $query->where('student_information.subject_id',$twoSubject);
-                        } 
-	            	}   
+                        }
+	            	}
 	        	})->select('student_information.student_id','student_information.project_id','student_information.subject_id','student_information.audit_id','student_information.gather_id','student_information.initiator_id','student_information.datum_create_time','student.mobile','student.user_name as student_name','pay_order_inside.consignee_status','student_information.audit_status','student_information.id','student_information.course_id','student_information.school_id','student_information.information_id')->orderBy('datum_create_time','desc')->offset($offset)->limit($pagesize)->get();
 	        foreach($StudentDatumArr as $k=>&$v){
 	        	$v['school_name'] = isset($schoolArr[$v['school_id']]) ? $schoolArr[$v['school_id']] :'';
@@ -112,7 +118,7 @@ class StudentDatum extends Model {
                 $v['course_name'] = isset($courseArr[$v['course_id']]) ? $courseArr[$v['course_id']] :'';
                 $v['audit'] =  $v['audit_status'] <=0 ?'待审核':($v['audit_status']==1?'审核通过':'驳回');
                 $v['consignee'] =  $v['consignee_status'] <=0 ?'待收集':($v['consignee_status']==1?'收集中':($v['consignee_status']==2?'已收集':"重新收集"));
-	        } 
+	        }
     	}
     	return ['code'=>200,'msg'=>'success','data'=>$StudentDatumArr,'total'=>$count];
     }
@@ -126,7 +132,7 @@ class StudentDatum extends Model {
         if(!isset($body['id']) || empty($body['id']) || $body['id'] <= 0 ){
             return ['code' => 201 , 'msg' => 'id不合法'];
         }
-        //判断学员资料关系表的id是否为空  
+        //判断学员资料关系表的id是否为空
         if(!isset($body['branch_school']) || empty($body['branch_school']) || $body['branch_school'] <= 0 ){
             return ['code' => 201 , 'msg' => '学校标识不合法'];
         }
@@ -183,7 +189,7 @@ class StudentDatum extends Model {
         $body['sign_region_city_id'] = $sign_region_address[1];
         unset($body['sign_region']);
         //判断备考地区是否为空
-        if(!isset($body['reference_region']) || empty($body['reference_region'])){  //备考地区数组  
+        if(!isset($body['reference_region']) || empty($body['reference_region'])){  //备考地区数组
             return ['code' => 201 , 'msg' => '请选择备考地区'];
         }
         $reference_region_address = json_decode($body['reference_region'],1);
@@ -197,7 +203,7 @@ class StudentDatum extends Model {
         $body['reference_region_province_id'] = $reference_region_address[0];
         $body['reference_region_city_id'] = $reference_region_address[1];
         unset($body['reference_region']);
-        
+
         // if($body['sign_region_id'] != $body['reference_region_id']){
         //     return ['code' => 201 , 'msg' => '报考地区与备考地区不一致！'];
         // }
@@ -254,7 +260,7 @@ class StudentDatum extends Model {
         if(isset($body['/admin/datum/doDatumInsert'])){
             unset($body['/admin/datum/doDatumInsert']);
         }
-          
+
 
         $body['create_time']=date('Y-m-d H:i:s');
         DB::beginTransaction();
@@ -273,7 +279,7 @@ class StudentDatum extends Model {
                 $OrderUpdate = ['consignee_name'=>$admin_name,'update_time'=>date('Y-m-d H:i:s')]; //修改订单状态
             }else{
                 $OrderUpdate = ['consignee_name'=>$admin_name,'consignee_status'=>2,'update_time'=>date('Y-m-d H:i:s')]; //consignee_status 2是已收集 0 待收集  1 收集中  3 重新收集
-            }   
+            }
              //走第一遍流程
             $datumId = Datum::insertGetId($body);  //添加资料
             if($datumId<=0){
@@ -291,9 +297,9 @@ class StudentDatum extends Model {
                 DB::rollBack();
                 return ['code'=>203,'msg'=>'资料提交失败,请重试！'];
             }
-       
+
             $orderRes = Pay_order_inside::where('id',$StudentDatumArr['order_id'])->update($OrderUpdate); //修改订单表 资料收集状态
-           
+
             if($orderRes){
                 DB::commit();
                 return ['code'=>200,'msg'=>'资料提交成功'];
@@ -301,7 +307,7 @@ class StudentDatum extends Model {
                 DB::rollBack();
                 return ['code'=>203,'msg'=>'资料提交失败,请重试！！'];
             }
-        }   
+        }
     }
 
     public static function getDatumById($body){
@@ -347,7 +353,7 @@ class StudentDatum extends Model {
             AdminLog::insertAdminLog([
                 'admin_id'       =>   $admin_id ,
                 'module_name'    =>  'datum' ,
-                'route_url'      =>  'admin/datum/doUpdateAudit' , 
+                'route_url'      =>  'admin/datum/doUpdateAudit' ,
                 'operate_method' =>  'update' ,
                 'content'        =>  json_encode($body),
                 'ip'             =>  $_SERVER["REMOTE_ADDR"] ,
@@ -357,7 +363,7 @@ class StudentDatum extends Model {
             return ['code'=>200,'msg'=>'审核成功'];
         }else{
             DB::rollBack();
-            return ['code'=>203,'msg'=>'审核失败,请重试!'];    
+            return ['code'=>203,'msg'=>'审核失败,请重试!'];
         }
 
     }
@@ -381,7 +387,7 @@ class StudentDatum extends Model {
         }
         $count = self::where(function($query) use ($school_id,$subject) {
                     if(!empty($school_id)){
-                         $query->where('school_id',$school_id); //所属分校      
+                         $query->where('school_id',$school_id); //所属分校
                     }
                     if(!empty($subject)){ //所属审核状态
                         $query->where('project_id',$subject[0]);
@@ -391,7 +397,7 @@ class StudentDatum extends Model {
                     }
                     $query->where('audit_status',1);
                 })->select('id')->count();
-        return ['code'=>200,'msg'=>'success','total'=>$count];  
+        return ['code'=>200,'msg'=>'success','total'=>$count];
     }
 
 

@@ -72,6 +72,10 @@ class Pay_order_inside extends Model
                 }
             }
         }
+        //课程id
+        if(isset($data['course_id'])){
+            $where['course_id'] = $data['course_id'];
+        }
         //每页显示的条数
         $pagesize = (int)isset($data['pagesize']) && $data['pagesize'] > 0 ? $data['pagesize'] : 20;
         $page     = isset($data['page']) && $data['page'] > 0 ? $data['page'] : 1;
@@ -492,6 +496,10 @@ class Pay_order_inside extends Model
        if(isset($data['school_id'])){
            $where['school_id'] = $data['school_id'];
        }
+        //课程id
+        if(isset($data['course_id'])){
+            $where['course_id'] = $data['course_id'];
+        }
         if(isset($data['pay_type'])){
             $where['pay_type'] = $data['pay_type'];
         }
@@ -880,6 +888,10 @@ class Pay_order_inside extends Model
         }
         if(isset($data['classes']) ){
             $where['classes'] = $data['classes'];
+        }
+        //课程id
+        if(isset($data['course_id'])){
+            $where['course_id'] = $data['course_id'];
         }
 
         //每页显示的条数
@@ -1327,6 +1339,9 @@ class Pay_order_inside extends Model
         if(isset($data['school_id'])){
             $where['school_id'] = $data['school_id'];
         }
+        if(isset($data['course_id'])){
+            $where['course_id'] = $data['course_id'];
+        }
 
         //每页显示的条数
         $pagesize = (int)isset($data['pagesize']) && $data['pagesize'] > 0 ? $data['pagesize'] : 20;
@@ -1635,6 +1650,10 @@ class Pay_order_inside extends Model
                     $where['subject_id'] = $parent[1];
                 }
             }
+        }
+        //课程
+        if(isset($data['course_id'])){
+            $where['course_id'] = $data['course_id'];
         }
         //每页显示的条数
         $pagesize = (int)isset($data['pagesize']) && $data['pagesize'] > 0 ? $data['pagesize'] : 20;
@@ -2534,13 +2553,11 @@ class Pay_order_inside extends Model
                 if($subject_id && $subject_id > 0){
                     $query->where('subject_id' , $subject_id);
                 }
+                //判断课程id是否为空和合法
+                if(isset($body['course_id']) && !empty($body['course_id']) && $body['course_id'] > 0){
+                    $query->where('course_id' , $body['course_id']);
+                }
             }
-
-            //判断课程id是否为空和合法
-            if(isset($body['course_id']) && !empty($body['course_id']) && $body['course_id'] > 0){
-                $query->where('course_id' , $body['course_id']);
-            }
-
             //获取日期
             if(isset($body['create_time']) && !empty($body['create_time'])){
                 $create_time = json_decode($body['create_time'] , true);

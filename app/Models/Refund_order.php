@@ -108,7 +108,7 @@ class Refund_order extends Model
         //判断时间
         $begindata="2020-03-04";
         $enddate = date('Y-m-d');
-        $statetime = !empty($data['start_time'])?$data['start_time']:$begindata;
+        $statetime = !empty($data['state_time'])?$data['state_time']:$begindata;
         $endtime = !empty($data['end_time'])?$data['end_time']:$enddate;
         $state_time = $statetime." 00:00:00";
         $end_time = $endtime." 23:59:59";
@@ -117,6 +117,19 @@ class Refund_order extends Model
         $page     = isset($data['page']) && $data['page'] > 0 ? $data['page'] : 1;
         $offset   = ($page - 1) * $pagesize;
 
+        //科目id&学科id
+        if(!empty($data['project_id'])){
+            $parent = json_decode($data['project_id'], true);
+            if(!empty($parent[0])){
+                $where['project_id'] = $parent[0];
+                if(!empty($parent[1])){
+                    $where['subject_id'] = $parent[1];
+                }
+            }
+        }
+        if(isset($data['course_id'])){
+            $where['course_id'] = $data['course_id'];
+        }
         //計算總數
         $count = self::where($where)->where(function($query) use ($data,$schoolarr) {
             if(isset($data['confirm_order_type'])){
@@ -198,15 +211,15 @@ class Refund_order extends Model
             'total'=>$count
         ];
         //退费总金额
-        $tuicount = self::whereIn('school_id',$schoolarr)->sum('refund_Price');
+        $tuicount = self::whereIn('school_id',$schoolarr)->whereBetween('create_time', [$state_time, $end_time])->sum('refund_Price');
         //未确认金额   confirm_status 0
-        $weicount = self::whereIn('school_id',$schoolarr)->where(['confirm_status'=>0])->sum('refund_Price');
+        $weicount = self::whereIn('school_id',$schoolarr)->where(['confirm_status'=>0])->whereBetween('create_time', [$state_time, $end_time])->sum('refund_Price');
         //已确认金额   confirm_status 1
-        $surecount = self::whereIn('school_id',$schoolarr)->where(['confirm_status'=>1])->sum('refund_Price');
+        $surecount = self::whereIn('school_id',$schoolarr)->where(['confirm_status'=>1])->whereBetween('create_time', [$state_time, $end_time])->sum('refund_Price');
         //已退金额   refund_plan = 2
-        $yituicount = self::whereIn('school_id',$schoolarr)->where(['refund_plan'=>2])->sum('refund_Price');
+        $yituicount = self::whereIn('school_id',$schoolarr)->where(['refund_plan'=>2])->whereBetween('create_time', [$state_time, $end_time])->sum('refund_Price');
         //未处理条数
-        $weisum = self::whereIn('school_id',$schoolarr)->where(['confirm_status'=>0])->count();
+        $weisum = self::whereIn('school_id',$schoolarr)->where(['confirm_status'=>0])->whereBetween('create_time', [$state_time, $end_time])->count();
         $count=[
             'tuicount' => $tuicount,
             'weicount' => $weicount,

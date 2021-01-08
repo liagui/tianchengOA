@@ -31,6 +31,7 @@ $router->group(['prefix' => 'admin' , 'namespace' => 'Admin','middleware'=> 'cor
 
     });
     $router->post('getRegionList', 'StudentDatumController@getRegionLists');//获取所有地区
+    $router->post('SubjectToCourse', 'CoursesubjectController@SubjectToCourse');//根据学科查询课程
 
     //项目管理部分(dzj)
     $router->group(['prefix' => 'project'], function () use ($router) {
