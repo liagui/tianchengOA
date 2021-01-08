@@ -97,7 +97,6 @@ class Pay_order_inside extends Model
                 $query->whereIn('school_id',$schoolarr);
             })
             ->where($where)
-//            ->where('pay_status','<',2)
             ->whereBetween('create_time', [$state_time, $end_time])
             ->orderByDesc('id')
             ->get()->toArray();
@@ -291,10 +290,20 @@ class Pay_order_inside extends Model
             'page' =>$page,
             'total'=>$count
         ];
-        //计算总数
-        $countprice = $orderprice + $externalprice;
-        //总金额
-        return ['code' => 200 , 'msg' => '查询成功','data'=>$res,'countprice'=>number_format($countprice,2),'where'=>$data,'page'=>$page];
+        //金额计算
+        //已支付金额  流转表中pay_status=1  第三方表 pay_status=1，status=0
+//        $wanderprice =
+//        $partyprice =
+        //已确认金额  流转表中 pay_status=1，confirm_status=2
+        //待确认金额  流转表中 pay_status=1，confirm_status=0
+        //已退费金额  退费表中 confirm_status=1，refund_plan=2
+        $paycount=[
+            'paycount' =>'123456',
+            'surecount' =>'123456',
+            'wsurecount' =>'123456',
+            'refuntcount' =>'123456',
+        ];
+        return ['code' => 200 , 'msg' => '查询成功','data'=>$res,'countprice'=>$paycount,'where'=>$data,'page'=>$page];
     }
     /*
          * @param  手动报单
