@@ -241,7 +241,13 @@ class Student extends Model {
         $teacher = Teacher::select("id","username")->where("id",$user_id)->first();
         //获取数据
         $one = array();
-        $res1 = Pay_order_inside::select()->where("seas_status",0)->where("have_user_id",$user_id)->get()->toArray();
+        $res1 = Pay_order_inside::select()->where("seas_status",0)->where("have_user_id",$user_id)
+            ->where(function($query) use ($data){
+                if(isset($data['start_time']) && !empty(isset($data['start_time']))  && isset($data['end_time']) && !empty(isset($data['end_time']))){
+                    $query->whereBetween('comfirm_time',[date("Y-m-d H:i:s",strtotime($data['start_time'])),date("Y-m-d H:i:s",strtotime($data['end_time']))]);
+                }
+            })
+            ->get()->toArray();
         foreach($res1 as $k => &$v){
             //是否回访
             $a = Orderdocumentary::where("order_id",$v['id'])->first();
@@ -268,9 +274,6 @@ class Student extends Model {
         $one['not_singular'] = count($not_singular);
         //总回放单数
         $one['sum_singular'] = $one['yet_singular'] + $one['not_singular'];
-
-
-
         //已完成业绩
         $one['completed_performance'] = Pay_order_inside::select("course_Price")->where(['have_user_id'=>$user_id,"seas_status"=>0])
         ->where(function($query) use ($data){
