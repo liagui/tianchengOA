@@ -1,12 +1,9 @@
 <?php
 namespace App\Models;
 
-use App\Models\Admin;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Redis;
-use App\Models\School;
-use App\Models\Refund_order;
 
 class Pay_order_inside extends Model
 {
@@ -117,7 +114,7 @@ class Pay_order_inside extends Model
             $count = count($order);
             //金额计算
             //已支付金额  流转表中pay_status=1
-            $partyprice =
+//            $partyprice = self::whereIn('school_id',$schoolarr)->whereBetween('create_time', [$state_time, $end_time])->where()
                 //已确认金额  流转表中 pay_status=1，confirm_status=2
                 //待确认金额  流转表中 pay_status=1，confirm_status=0
                 //已退费金额  退费表中 confirm_status=1，refund_plan=2

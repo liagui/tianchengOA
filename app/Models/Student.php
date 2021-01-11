@@ -409,6 +409,11 @@ class Student extends Model {
         if($list){
             return ['code' => 200, 'msg' => '查询成功', 'data' => $list,'page'=>$page,'one'=>$one];
         }else{
+            $one['yet_singular'] = 0;
+            $one['not_singular'] = 0;
+            $one['sum_singular'] = 0;
+            $one['completed_performance'] = 0;
+            $one['return_premium'] = 0;
             return ['code' => 200, 'msg' => '查询暂无数据','data' => [],'page'=>$page,'one'=>[]];
         }
 

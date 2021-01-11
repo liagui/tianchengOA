@@ -8,7 +8,6 @@ use App\Models\Pay_order_external;
 use App\Models\Pay_order_inside;
 use App\Models\PaySet;
 use App\Models\Refund_order;
-use App\Models\School;
 use App\Tools\AlipayFactory;
 use App\Tools\Hfpos\qrcp_E1103;
 use App\Tools\Yl\YinpayFactory;
@@ -24,7 +23,8 @@ class OrderController extends Controller {
     }
     //订单导出
     public function orderListExceil(){
-        return response()->json(['code'=>200,'msg'=>'你导出个狗屁']);
+        $schoolarr = $this->underlingLook(1);
+        return Excel::download(new \App\Exports\OrderExport(self::$accept_data,$schoolarr), '订单总览.xlsx');
     }
     //手动报单
     public function handOrder(){
