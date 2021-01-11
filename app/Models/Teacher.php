@@ -231,10 +231,7 @@ class Teacher extends Model {
         //对比订单  comfirm_time 是否在这个时间区间内
         $count = self::where('role_id',3)->count();
         $teacher = self::select("real_name","mobile","wx","id")->where('role_id',3)->offset($offset)->limit($pagesize)->get()->toArray();
-
         foreach($teacher as $k =>&$v){
-
-
             $res1 = Pay_order_inside::select()->where("seas_status",0)->where("have_user_id",$v['id'])
             ->where(function($query) use ($data){
                 if(isset($data['start_time']) && !empty(isset($data['start_time']))  && isset($data['end_time']) && !empty(isset($data['end_time']))){
