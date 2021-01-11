@@ -32,10 +32,6 @@ $router->group(['prefix' => 'admin' , 'namespace' => 'Admin','middleware'=> 'cor
     });
     $router->post('getRegionList', 'StudentDatumController@getRegionLists');//获取所有地区
     $router->post('SubjectToCourse', 'CoursesubjectController@SubjectToCourse');//根据学科查询课程
-
-    $router->group(['prefix' => 'order'], function () use ($router) {
-        $router->get('orderListExceil', 'OrderController@orderListExceil');//订单总览导出
-    });
     //项目管理部分(dzj)
     $router->group(['prefix' => 'project'], function () use ($router) {
         $router->post('getProjectSubjectList', 'ProjectController@getProjectSubjectList');       //项目筛选学科列表接口
@@ -44,6 +40,7 @@ $router->group(['prefix' => 'admin' , 'namespace' => 'Admin','middleware'=> 'cor
     $router->post('paylist', 'OrderController@paylist');//支付通道
     $router->post('oapay', 'OrderController@oapay');//支付
     $router->get('sureOrderExceil', 'OrderController@sureOrderExceil');//确认订单列表导出
+    $router->get('orderListExceil', 'OrderController@orderListExceil');//订单总览导出
     $router->get('refuntOrderExceil', 'OrderController@refuntOrderExceil');//退费订单列表导出
     $router->get('hjnotify', 'NotifyController@hjnotify');//汇聚 支付回调
     $router->post('zfbnotify', 'NotifyController@zfbnotify');//支付宝支付回调
@@ -69,7 +66,6 @@ $router->group(['prefix' => 'admin' , 'namespace' => 'Admin','middleware'=> ['jw
     $router->group(['prefix' => 'order'], function () use ($router) {
         //总校&分校
         $router->post('orderlist', 'OrderController@orderList');//订单总览
-
         $router->post('awaitOrder', 'OrderController@awaitOrder');//总校待确认订单&&分校已提交
         $router->post('handOrder', 'OrderController@handOrder');//手动报单
         $router->post('orderVoucher', 'OrderController@orderVoucher');//订单查看支付凭证

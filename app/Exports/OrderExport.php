@@ -80,7 +80,7 @@ class OrderExport implements FromCollection, WithHeadings {
             if(isset($data['confirm_order_type'])){
                 $query->where('confirm_order_type',$data['confirm_order_type']);
             }
-            $query->whereIn('school_id',$this->data());
+            $query->whereIn('school_id',$schoolarr);
         })
             ->where($where)
             ->whereBetween('create_time', [$state_time, $end_time])
@@ -91,8 +91,9 @@ class OrderExport implements FromCollection, WithHeadings {
                 $query->where('order_no', $data['order_no'])
                     ->orwhere('name', $data['order_no'])
                     ->orwhere('mobile', $data['order_no']);
-            }
-        })->where($where)
+              }
+            $query->whereIn('school_id',$schoolarr);
+           })->where($where)
             ->where(['pay_status'=>1,'status'=>0])
             ->whereBetween('create_time', [$state_time, $end_time])
             ->orderByDesc('id')
@@ -238,7 +239,31 @@ class OrderExport implements FromCollection, WithHeadings {
                 }
             }
         }
-        return $res;
+        $tuyadan = [];
+        foreach ($order as $k=>$v){
+            $newtuyadan = [
+                'order_number' => ' '.$v['order_no'],
+                'create_time' => $v['create_time'],
+                'name' => $v['name'],
+                'mobile' => $v['mobile'],
+                'school_name' => $v['school_name'],
+                'project_name' => $v['project_name'],
+                'subject_name' => $v['subject_name'],
+                'course_name' => $v['course_name'],
+                'pay_type_text' => $v['pay_type_text'],
+                'course_Price' => $v['course_Price'],
+                'sign_Price' => $v['sign_Price'],
+                'pay_price' => $v['pay_price'],
+                'return_visit_text' => $v['return_visit_text'],
+                'classes_text' => $v['classes_text'],
+                'pay_time' => $v['pay_time'],
+                'confirm_order_type_text' => $v['confirm_order_type_text'],
+                'first_pay_text' => $v['first_pay_text'],
+                'pay_voucher' => $v['pay_voucher'],
+            ];
+            $tuyadan[]=$newtuyadan;
+        }
+        return collect($tuyadan);
     }
 
     public function headings(): array
