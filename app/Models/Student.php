@@ -414,7 +414,7 @@ class Student extends Model {
             $one['sum_singular'] = 0;
             $one['completed_performance'] = 0;
             $one['return_premium'] = 0;
-            return ['code' => 200, 'msg' => '查询暂无数据','data' => [],'page'=>$page,'one'=>[]];
+            return ['code' => 200, 'msg' => '查询暂无数据','data' => [],'page'=>$page,'one'=>$one];
         }
 
     }
