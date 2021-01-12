@@ -2999,35 +2999,18 @@ class Pay_order_inside extends Model
                         'actual_commission' => $actual_commission > 0 ? floatval($actual_commission) : 0 ,  //实际佣金
                     ];
                 }
-                //总和数组
-                $the_sum = [
-                    'create_time'   =>   '总和' ,
-                    'school_name'   =>   $array[0]['school_name'] ,
-                    'project_name'  =>   $array[0]['project_name'] ,
-                    'subject_name'  =>   $array[0]['subject_name'] ,
-                    'course_name'   =>   $array[0]['course_name'] ,
-                    'received_order'=>   array_sum(array_column($array , 'received_order')) ,
-                    'refund_order'  =>   array_sum(array_column($array , 'refund_order')) ,
-                    'received_money'=>  sprintf("%.2f" , array_sum(array_column($array , 'received_money'))) ,  //到账金额
-                    'refund_money'  =>  sprintf("%.2f" , array_sum(array_column($array , 'refund_money'))) ,      //退费金额
-                    'enroll_price'  =>  sprintf("%.2f" , array_sum(array_column($array , 'enroll_price'))) ,      //报名费用
-                    'prime_cost'    =>  sprintf("%.2f" , array_sum(array_column($array , 'prime_cost'))) ,          //成本
-                    'campus_expenditure'=> sprintf("%.2f" , array_sum(array_column($array , 'campus_expenditure'))) , //分校支出
-                    'real_income'       => sprintf("%.2f" , array_sum(array_column($array , 'real_income'))) ,  //实际收入
-                    'actual_commission' => sprintf("%.2f" , array_sum(array_column($array , 'actual_commission'))) ,  //实际佣金
-                ];
                 //收入总和
                 $counts=[
-                    'accountCount'=>0,//总到账订单数
-                    'returnCount'=>0,//总退费订单数
-                    'intoaccount'=>0,//总到账金额
-                    'intoreturn'=>0,//总退费金额
-                    'expend'=>0,//总支出
-                    'countPrice'=>0,//总费用
-                    'countCost'=> 0,//总成本
-                    'practicalEnter'=> 0,//总实际收入
+                    'accountCount'=>array_sum(array_column($array , 'received_order')),//总到账订单数
+                    'returnCount'=>array_sum(array_column($array , 'refund_order')),//总退费订单数
+                    'intoaccount'=>sprintf("%.2f" , array_sum(array_column($array , 'received_money'))) ,  //到账金额
+                    'intoreturn'=>sprintf("%.2f" , array_sum(array_column($array , 'refund_money'))) ,      //退费金额
+                    'expend'=>sprintf("%.2f" , array_sum(array_column($array , 'campus_expenditure'))),//总支出
+                    'countPrice'=>sprintf("%.2f" , array_sum(array_column($array , 'enroll_price'))),//总费用
+                    'countCost'=>  sprintf("%.2f" , array_sum(array_column($array , 'prime_cost'))),//总成本
+                    'practicalEnter'=> sprintf("%.2f" , array_sum(array_column($array , 'real_income'))),//总实际收入
                 ];
-                return ['code' => 200 , 'msg' => '获取列表成功' , 'data' => ['list' => $array , 'the_sum' => $the_sum , 'total' => $count , 'pagesize' => $pagesize , 'page' => $page,'count'=>$counts]];
+                return ['code' => 200 , 'msg' => '获取列表成功' , 'data' => ['list' => $array , 'total' => $count , 'pagesize' => $pagesize , 'page' => $page,'count'=>$counts]];
             }
         }
         //收入总和
