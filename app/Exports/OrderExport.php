@@ -10,6 +10,7 @@ use App\Models\Major;
 use App\Models\OfflinePay;
 use App\Models\Order;
 use App\Models\Pay_order_external;
+use App\Models\Pay_order_inside;
 use App\Models\Project;
 use App\Models\School;
 use Maatwebsite\Excel\Concerns\FromCollection;
@@ -68,7 +69,7 @@ class OrderExport implements FromCollection, WithHeadings {
             $where['course_id'] = $data['course_id'];
         }
         //数据   流转订单 + 第三方支付订单
-        $order = self::where(function($query) use ($data,$schoolarr) {
+        $order = Pay_order_inside::where(function($query) use ($data,$schoolarr) {
             if(isset($data['order_no']) && !empty($data['order_no'])){
                 $query->where('order_no',$data['order_no'])
                     ->orwhere('name',$data['order_no'])
@@ -111,8 +112,8 @@ class OrderExport implements FromCollection, WithHeadings {
         }
         $date = array_column($all, 'create_time');
         array_multisort($date, SORT_DESC, $all);
-        if(!empty($res)){
-            foreach ($res as $k=>&$v){
+        if(!empty($all)){
+            foreach ($all as $k=>&$v){
                 //查学校
                 if(empty($v['school_id']) || $v['school_id'] == 0){
                     $v['school_name'] = '';
@@ -203,7 +204,7 @@ class OrderExport implements FromCollection, WithHeadings {
                         $v['first_pay_text'] = '最后一笔尾款';
                     }
                 }
-                if(empty($v['confirm_status'])){
+                if(empty($v['confirm_status']) && $v['confirm_status'] != 0 ){
                     $v['confirm_status_text'] = '';
                 }else{
                     if(!empty($v['status']) && $v['status'] == 0){
@@ -240,7 +241,7 @@ class OrderExport implements FromCollection, WithHeadings {
             }
         }
         $tuyadan = [];
-        foreach ($order as $k=>$v){
+        foreach ($all as $k=>$v){
             $newtuyadan = [
                 'order_number' => ' '.$v['order_no'],
                 'create_time' => $v['create_time'],
@@ -250,16 +251,17 @@ class OrderExport implements FromCollection, WithHeadings {
                 'project_name' => $v['project_name'],
                 'subject_name' => $v['subject_name'],
                 'course_name' => $v['course_name'],
-                'pay_type_text' => $v['pay_type_text'],
+                'pay_type_text' => isset($v['pay_type_text'])?$v['pay_type_text']:'',
                 'course_Price' => $v['course_Price'],
                 'sign_Price' => $v['sign_Price'],
                 'pay_price' => $v['pay_price'],
+                'pay_status_text' => $v['pay_status_text'],
                 'return_visit_text' => $v['return_visit_text'],
                 'classes_text' => $v['classes_text'],
                 'pay_time' => $v['pay_time'],
                 'confirm_order_type_text' => $v['confirm_order_type_text'],
                 'first_pay_text' => $v['first_pay_text'],
-                'pay_voucher' => $v['pay_voucher'],
+                'confirm_status_text' => $v['confirm_status_text'],
             ];
             $tuyadan[]=$newtuyadan;
         }

@@ -68,13 +68,13 @@ class Teacher extends Model {
             $diff_category = array_diff($category_id, $category);
 
             if($school[0] == 0 && !(count($diff_school) > 0)){
-                $data[$k]['school'] = "全部";
+                $data[$k]['school'] = "全部分校";
             }else{
                 //查询分校名称
                 $data[$k]['school'] = implode(',',array_column($vv['school'] , 'school_name'));
             }
             if($category[0] == 0 && !(count($diff_category) > 0)){
-                $data[$k]['category'] = "全部";
+                $data[$k]['category'] = "全部分校";
             }else{
                 //查询项目名称
                 $data[$k]['category'] = implode(',',array_column($vv['category'] , 'name'));
