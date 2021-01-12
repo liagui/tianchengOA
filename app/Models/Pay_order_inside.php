@@ -3017,7 +3017,7 @@ class Pay_order_inside extends Model
                     'actual_commission' => sprintf("%.2f" , array_sum(array_column($array , 'actual_commission'))) ,  //实际佣金
                 ];
                 //收入总和
-                $count=[
+                $counts=[
                     'accountCount'=>0,//总到账订单数
                     'returnCount'=>0,//总退费订单数
                     'intoaccount'=>0,//总到账金额
@@ -3027,11 +3027,11 @@ class Pay_order_inside extends Model
                     'countCost'=> 0,//总成本
                     'practicalEnter'=> 0,//总实际收入
                 ];
-                return ['code' => 200 , 'msg' => '获取列表成功' , 'data' => ['list' => $array , 'the_sum' => $the_sum , 'total' => $count , 'pagesize' => $pagesize , 'page' => $page,'count'=>$count]];
+                return ['code' => 200 , 'msg' => '获取列表成功' , 'data' => ['list' => $array , 'the_sum' => $the_sum , 'total' => $count , 'pagesize' => $pagesize , 'page' => $page,'count'=>$counts]];
             }
         }
         //收入总和
-        $count=[
+        $counts=[
             'accountCount'=>0,//总到账订单数
             'returnCount'=>0,//总退费订单数
             'intoaccount'=>0,//总到账金额
@@ -3041,7 +3041,7 @@ class Pay_order_inside extends Model
             'countCost'=> 0,//总成本
             'practicalEnter'=> 0,//总实际收入
         ];
-        return ['code' => 200 , 'msg' => '获取列表成功' , 'data' => ['list' => [] , 'the_sum' => [] , 'total' => 0 , 'pagesize' => $pagesize , 'page' => $page,'count'=>$count]];
+        return ['code' => 200 , 'msg' => '获取列表成功' , 'data' => ['list' => [] , 'the_sum' => [] , 'total' => 0 , 'pagesize' => $pagesize , 'page' => $page,'count'=>$counts]];
     }
 
     /*
