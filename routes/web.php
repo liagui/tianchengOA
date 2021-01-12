@@ -42,6 +42,7 @@ $router->group(['prefix' => 'admin' , 'namespace' => 'Admin','middleware'=> 'cor
     $router->get('sureOrderExceil', 'OrderController@sureOrderExceil');//确认订单列表导出
     $router->get('orderListExceil', 'OrderController@orderListExceil');//订单总览导出
     $router->get('refuntOrderExceil', 'OrderController@refuntOrderExceil');//退费订单列表导出
+    $router->get('getAchievementSchoolListExceil', 'OrderController@getAchievementSchoolListExceil');//分校业绩导出
     $router->get('hjnotify', 'NotifyController@hjnotify');//汇聚 支付回调
     $router->post('zfbnotify', 'NotifyController@zfbnotify');//支付宝支付回调
     $router->post('wxnotify', 'NotifyController@wxnotify');//微信支付回调

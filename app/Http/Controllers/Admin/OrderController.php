@@ -493,6 +493,9 @@ class OrderController extends Controller {
             return response()->json(['code' => 500 , 'msg' => $ex->getMessage()]);
         }
     }
+    public function getAchievementSchoolListExceil(){
+        return response()->json(['code' => 200 , 'msg' => '导出']);
+    }
     //支付信息
     public function paylist(){
         $list = Channel::where(['is_use'=>0])->first();
