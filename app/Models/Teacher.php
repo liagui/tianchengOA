@@ -34,7 +34,7 @@ class Teacher extends Model {
             if(isset($data['keyword']) && !empty(isset($data['keyword']))){
                 $query->where('admin.real_name','like','%'.$data['keyword'].'%')->orWhere('admin.mobile','like','%'.$data['keyword'].'%')->orWhere('admin.wx','like','%'.$data['keyword'].'%');
             }
-        })->count();
+        })->where('is_del',1)->count();
         $data = self::where('admin.role_id',3)->where(function($query) use ($data){
             if(isset($data['school_id']) && !empty(isset($data['school_id']))){
                 $query->whereRaw("find_in_set({$data['school_id']},admin.school_id)");
@@ -48,7 +48,7 @@ class Teacher extends Model {
             if(isset($data['keyword']) && !empty(isset($data['keyword']))){
                 $query->where('admin.real_name','like','%'.$data['keyword'].'%')->orWhere('admin.mobile','like','%'.$data['keyword'].'%')->orWhere('admin.wx','like','%'.$data['keyword'].'%');
             }
-        })->offset($offset)->limit($pagesize)->get();
+        })->where('is_del',1)->offset($offset)->limit($pagesize)->get();
         foreach($data as $k=>&$v){
             $school = explode(",",$v['school_id']);
             $category = explode(",",$v['category_id']);
