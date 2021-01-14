@@ -231,14 +231,16 @@ class Teacher extends Model {
         //搜索条件  时间区间   开始时间和结束时间
         //对比订单  comfirm_time 是否在这个时间区间内
         $where['is_del'] = 1;
-        if(isset($data['status']) && !empty($data['status'])&& $data['status'] == 1) {
-            $where['dimission'] = 0;
-            $where['status'] = 1;
-        }elseif(!isset($data['status']) && !empty($data['status'])&& $data['status'] == 2){
-            $where['dimission'] = 0;
-            $where['status'] = 0;
-        }elseif (!isset($data['status']) && !empty($data['status'])&& $data['status'] == 3){
-            $where['dimission'] = 1;
+        if(isset($data['status']) && !empty($data['status'])){
+            if($data['status'] == 1){
+                $where['dimission'] = 0;
+                $where['status'] = 1;
+            }elseif ($data['status'] == 2){
+                $where['dimission'] = 0;
+                $where['status'] = 0;
+            }elseif ($data['status'] == 3){
+                $where['dimission'] = 1;
+            }
         }
         $count = self::where('role_id',3)->count();
         $teacher = self::select("real_name","mobile","wx","id","dimission","status as teacherstatus")->where($where)->where('role_id',3)->offset($offset)->limit($pagesize)->get()->toArray();
