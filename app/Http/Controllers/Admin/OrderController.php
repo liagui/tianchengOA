@@ -493,8 +493,18 @@ class OrderController extends Controller {
             return response()->json(['code' => 500 , 'msg' => $ex->getMessage()]);
         }
     }
+    /*
+         * @param  分校业绩导出
+         * @param  $user_id     参数
+         * @param  author  苏振文
+         * @param  ctime   2021/1/14 9:42
+         * return  array
+         */
     public function getAchievementSchoolListExceil(){
-        return response()->json(['code' => 200 , 'msg' => '导出']);
+        if(!isset(self::$accept_data['school_id']) || empty(self::$accept_data['school_id'])){
+            return response()->json(['code' => 201 , 'msg' => '请选择分校']);
+        }
+        return Excel::download(new \App\Exports\BranchExceil(self::$accept_data), '分校业绩.xlsx');
     }
     //支付信息
     public function paylist(){
