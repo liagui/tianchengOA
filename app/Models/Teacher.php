@@ -221,6 +221,7 @@ class Teacher extends Model {
     }
 
 
+    //status  1值班中2休息中3已离职
     public static function getTeacherPerformance($data){
         //每页显示的条数
         $pagesize = (int)isset($data['pagesize']) && $data['pagesize'] > 0 ? $data['pagesize'] : 20;
@@ -229,9 +230,28 @@ class Teacher extends Model {
         //查询所有班主任
         //搜索条件  时间区间   开始时间和结束时间
         //对比订单  comfirm_time 是否在这个时间区间内
+        $where['is_del'] = 1;
+        if(!isset($data['status']) && $data['status'] == 1) {
+            $where['dimission'] = 0;
+            $where['status'] = 1;
+        }elseif(!isset($data['status']) && $data['status'] == 2){
+            $where['dimission'] = 0;
+            $where['status'] = 0;
+        }elseif (!isset($data['status']) && $data['status'] == 3){
+            $where['dimission'] = 1;
+        }
         $count = self::where('role_id',3)->count();
-        $teacher = self::select("real_name","mobile","wx","id")->where('role_id',3)->offset($offset)->limit($pagesize)->get()->toArray();
+        $teacher = self::select("real_name","mobile","wx","id","dimission","status as teacherstatus")->where($where)->where('role_id',3)->offset($offset)->limit($pagesize)->get()->toArray();
         foreach($teacher as $k =>&$v){
+            if($v['dimission'] == 0){
+                if($v['teacherstatus'] == 1){
+                    $v['status'] = 1; //值班中
+                }else{
+                    $v['status'] = 2; //休息中
+                }
+            }else{
+                $v['status'] = 3;  //已离职
+            }
             $res1 = Pay_order_inside::select()->where("seas_status",0)->where("have_user_id",$v['id'])
             ->where(function($query) use ($data){
                 if(isset($data['start_time']) && !empty(isset($data['start_time']))  && isset($data['end_time']) && !empty(isset($data['end_time']))){
@@ -239,7 +259,7 @@ class Teacher extends Model {
                 }
             })
             ->get()->toArray();
-            foreach($res1 as $k => &$vv){
+            foreach($res1 as $kk => &$vv){
                 //是否回访
                 $a = Orderdocumentary::where("order_id",$v['id'])->first();
                 if(empty($a)){
