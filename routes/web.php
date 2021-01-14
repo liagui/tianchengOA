@@ -102,7 +102,8 @@ $router->group(['prefix' => 'admin' , 'namespace' => 'Admin','middleware'=> ['jw
         $router->post('offlinepay', 'OrderController@offlinepay');//核对款根据类型查账户
         $router->post('offlineing', 'OrderController@offlineing');//修改核对ing
 
-
+        //报名订单
+        $router->post('applyList', 'OrderController@applyList');//报名订单
     });
     //项目管理部分(dzj)
     $router->group(['prefix' => 'project'], function () use ($router) {

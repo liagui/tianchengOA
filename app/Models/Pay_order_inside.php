@@ -876,6 +876,26 @@ class Pay_order_inside extends Model
                 ];
                 StudentCourse::insert($student_course);
             }
+            //判断是报名订单，生成报名订单
+            if($order['confirm_order_type'] > 1){
+                $applyarr = [
+                    'order_id' => $order['id'],
+                    'order_no' => 'BM'.date('YmdHis', time()) . rand(1111, 9999),
+                    'name' => $order['name'],
+                    'mobile' => $order['mobile'],
+                    'school_id' => $order['school_id'],
+                    'project_id' => $order['project_id'],
+                    'subject_id' => $order['subject_id'],
+                    'course_id' => $order['course_id'],
+                    'major_id' => $order['major_id'],
+                    'education_id' => $order['education_id'],
+                    'pay_type' => $order['pay_type'],
+                    'offline_id' => $order['offline_id'],
+                    'price' => $order['sign_Price'],
+                    'create_time' => date('Y-m-d H:i:s'),
+                ];
+                Pay_order_apply::insert($applyarr);
+            }
             return ['code' => 200 , 'msg' => '操作成功'];
         }else{
             return ['code' => 201 , 'msg' => '操作失败'];

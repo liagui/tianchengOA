@@ -4,6 +4,7 @@ use App\Http\Controllers\Controller;
 use App\Models\AdminLog;
 use App\Models\Channel;
 use App\Models\Course;
+use App\Models\Pay_order_apply;
 use App\Models\Pay_order_external;
 use App\Models\Pay_order_inside;
 use App\Models\PaySet;
@@ -210,6 +211,13 @@ class OrderController extends Controller {
             'daicount' => $orderCount,
         ];
         return response()->json(['code'=>200,'msg'=>'获取成功','data'=>$data]);
+    }
+
+    //报名订单
+    public function applyList(){
+        $schoolarr = $this->underlingLook(AdminLog::getAdminInfo()->admin_user->school_id);
+        $list = Pay_order_apply::applyList(self::$accept_data,$schoolarr['data']);
+        return response()->json($list);
     }
     /*
      * @param  description   开课管理列表接口
