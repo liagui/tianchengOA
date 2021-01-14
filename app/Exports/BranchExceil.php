@@ -16,6 +16,7 @@ class UsersExport implements FromCollection
 
 namespace App\Exports;
 use App\Models\Major;
+use App\Models\Pay_order_inside;
 use App\Models\Refund_order;
 use App\Models\School;
 use Illuminate\Support\Facades\DB;
@@ -78,7 +79,7 @@ class BranchExceil implements FromCollection, WithHeadings{
 
                 $body['school_id'] = $v['school_id'];
                 //单数=报名订单数量+含有学历成本的订单数量
-                $enroll_number = self::where(function ($query) use ($body) {
+                $enroll_number = Pay_order_inside::where(function ($query) use ($body) {
                     //分校查询
                     $query->where('school_id', '=', $body['school_id'])->whereIn('confirm_order_type', [2, 3]);
 
@@ -90,7 +91,7 @@ class BranchExceil implements FromCollection, WithHeadings{
                         $query->whereBetween('pay_order_inside.comfirm_time', [$state_time, $end_time]);
                     }
                 })->count();
-                $chengben_number = self::where(function ($query) use ($body) {
+                $chengben_number = Pay_order_inside::where(function ($query) use ($body) {
                     //分校查询
                     $query->where('school_id', '=', $body['school_id'])->where('education_id', '>', 0)->where('major_id', '>', 0);
 
@@ -105,7 +106,7 @@ class BranchExceil implements FromCollection, WithHeadings{
                 $order_number = $enroll_number + $chengben_number;
 
                 //成本=学历成本+报名费用
-                $education_major_ids = self::select('major_id')->where(function ($query) use ($body) {
+                $education_major_ids = Pay_order_inside::select('major_id')->where(function ($query) use ($body) {
                     //分校查询
                     $query->where('school_id', '=', $body['school_id']);
 
@@ -155,10 +156,10 @@ class BranchExceil implements FromCollection, WithHeadings{
 
                     //一级分校的实际返佣=返佣金额-一级分校的保证金+（二级分校的一级抽离金额+三级分校的一级抽离金额）*（1-押金比例）-（一级分校退费*返佣比例+二级分校退费*二级分校1级抽离比例+三级分校退费*二级分校1级抽离比例）
                     //二级分校的一级抽离金额
-                    $first_out_of_amount1 = self::whereIn('school_id', $seond_school_ids)->sum('first_out_of_amount');
+                    $first_out_of_amount1 = Pay_order_inside::whereIn('school_id', $seond_school_ids)->sum('first_out_of_amount');
 
                     //三级分校的一级抽离金额
-                    $first_out_of_amount2 = self::whereIn('school_id', $three_school_ids)->sum('first_out_of_amount');
+                    $first_out_of_amount2 = Pay_order_inside::whereIn('school_id', $three_school_ids)->sum('first_out_of_amount');
 
                     //一级分校退费金额
                     $first_refund_Price = Refund_order::where('school_id', $v['school_id'])->where('confirm_status', 1)->sum('refund_Price');
@@ -187,7 +188,7 @@ class BranchExceil implements FromCollection, WithHeadings{
                     $three_school_ids = array_column($three_school_id, 'id');
 
                     //三级分校的二级抽离金额
-                    $second_out_of_amount2 = self::whereIn('school_id', $three_school_ids)->sum('second_out_of_amount');
+                    $second_out_of_amount2 = Pay_order_inside::whereIn('school_id', $three_school_ids)->sum('second_out_of_amount');
 
                     //二级分校退费金额
                     $send_refund_Price = Refund_order::where('school_id', $v['school_id'])->where('confirm_status', 1)->sum('refund_Price');
