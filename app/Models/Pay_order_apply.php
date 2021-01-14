@@ -56,8 +56,10 @@ class Pay_order_apply extends Model
         ->offset($offset)->limit($pagesize)
         ->orderByDesc('id')
         ->get()->toArray();
+        $count = 0;
         if(!empty($order)){
             foreach ($order as $k=>&$v){
+                $count++;
                 //查学校
                 $school = School::where(['id'=>$v['school_id']])->first();
                 if($school){
@@ -112,7 +114,12 @@ class Pay_order_apply extends Model
                 }
             }
         }
-        return ['code' => 200 , 'msg' => '操作成功','data'=>$order];
+        $page=[
+            'pagesize'=>$pagesize,
+            'page' =>$page,
+            'total'=>$count
+        ];
+        return ['code' => 200 , 'msg' => '操作成功','data'=>$order,'page'=>$page];
     }
 
 }
