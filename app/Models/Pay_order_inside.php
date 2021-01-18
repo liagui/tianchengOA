@@ -3047,6 +3047,138 @@ class Pay_order_inside extends Model
         return ['code' => 200 , 'msg' => '获取列表成功' , 'data' => ['list' => [] , 'the_sum' => [] , 'total' => 0 , 'pagesize' => $pagesize , 'page' => $page,'count'=>$counts]];
     }
 
+
+    public static function getBranchSchoolIncomeeLists($body=[]){
+        //分校  项目三级 时间
+        //无条件下  查所有订单  根据日期分组
+        //查询到账数
+        //退费数
+        //到账金额（订单总览中的总金额）
+        //报名费用（报名费+成本）
+        // 成本 就是成本
+        //  实际返佣金额（财务管理模块下分校业绩中的实际返佣金额）
+        //  退费金额（退费成功金额）
+        //  保证金（财务管理模块下分校业绩中的保证金）
+        //  收入（到账金额-分校返佣金额）
+        //每页显示的条数
+
+        //优化点 时间取出来，数组分页
+        $pagesize = isset($body['pagesize']) && $body['pagesize'] > 0 ? $body['pagesize'] : 20;
+        $page     = isset($body['page']) && $body['page'] > 0 ? $body['page'] : 1;
+        $offset   = ($page - 1) * $pagesize;
+        //学校id
+        if(isset($data['school_id'])){
+            $where['school_id'] = $body['school_id'];
+        }
+        $where['pay_status'] = 1;
+        $where['del_flag'] = 0;
+        //科目id&学科id
+        if(!empty($data['category_id'])){
+            $parent = json_decode($body['category_id'], true);
+            if(!empty($parent[0])){
+                $where['project_id'] = $parent[0];
+                if(!empty($parent[1])){
+                    $where['subject_id'] = $parent[1];
+                }
+            }
+        }
+        //课程id
+        if(isset($data['course_id'])){
+            $where['course_id'] = $data['course_id'];
+        }
+        $begindata="2020-03-04";
+        $enddate = date('Y-m-d');
+        $statetime = !empty($data['state_time'])?$data['state_time']:$begindata;
+        $endtime = !empty($data['end_time'])?$data['end_time']:$enddate;
+        $state_time = $statetime." 00:00:00";
+        $end_time = $endtime." 23:59:59";
+        $lists = [
+            'accountCount'=>0,//总到账订单数
+            'returnCount'=>0,//总退费订单数
+            'intoaccount'=>0,//总到账金额
+            'intoreturn'=>0,//总退费金额
+            'expend'=>0,//总支出
+            'countPrice'=>0,//总报名费
+            'countCost'=> 0,//总成本
+            'practicalEnter'=> 0,//总实际收入
+        ];
+
+        //所有时间
+        $list = self::selectRaw("any_value(create_time) as create_time,any_value(school_id) as school_id")->where($where)->whereBetween('create_time', [$state_time, $end_time])->orderBy('create_time','desc')->groupBy(DB::raw("date_format(create_time , '%Y%m%d')"))->offset($offset)->limit($pagesize)->get()->toArray();
+        foreach ($list as $listk => &$listv){
+           //查询分校名
+            if(!empty($listv['school_id'])){
+                $schoolname = School::where(['id'=>$listv['school_id']])->first();
+                $listv['school_name'] = $schoolname['school_name'];
+            }else{
+                $listv['school_name'] = '';
+            }
+            //项目
+            if(!empty($where['project_id'])){
+                $projectname = Category::where(['id'=>$where['project_id']])->first();
+                $listv['project_name'] = $projectname['name'];
+            }else{
+                $listv['project_name'] = '全部项目';
+            }
+            //学科
+            if(!empty($where['subject_id'])){
+                $projectname = Category::where(['id'=>$where['subject_id']])->first();
+                $listv['subject_name'] = $projectname['name'];
+            }else{
+                $listv['project_name'] = '全部学科';
+            }
+            //课程
+            if(!empty($where['course_id'])){
+                $coursename = Course::where(['id'=>$where['course_id']])->first();
+                $listv['course_name'] = $coursename['course_name'];
+            }else{
+                $listv['course_id'] = '全部学科';
+            }
+
+            //开始时间 结束时间  一天的量
+            $time = substr($listv,0,10);
+            $school_start_time = $time.' 00:00:00';
+            $school_end_time = $time.' 23:59:59';
+            //到账数量
+            $orderCount = Pay_order_inside::where($where)->whereBetween('create_time', [$school_start_time, $school_end_time])->count('id');
+            $listv['orderCount'] = $orderCount;
+            $lists['accountCount'] = $lists['accountCount'] + $orderCount;
+            //到账金额
+            $ordersumPrice = Pay_order_inside::where($where)->whereBetween('create_time', [$school_start_time, $school_end_time])->sum('pay_price');
+            $listv['ordersumPrice'] = $ordersumPrice;
+            $lists['intoaccount'] = $lists['intoaccount'] + $ordersumPrice;
+            //退费数量
+            $refundorderCount = Refund_order::where($where)->whereBetween('remit_time', [$school_start_time, $school_end_time])->count('id');
+            $listv['refundorderCount'] = $refundorderCount;
+            $lists['returnCount'] = $lists['returnCount'] + $refundorderCount;
+            //退费金额
+            $refundorderPrice = Refund_order::where($where)->whereBetween('remit_time', [$school_start_time, $school_end_time])->sum('reality_price');
+            $listv['refundorderPrice'] = $refundorderPrice;
+            $lists['intoreturn'] = $lists['intoreturn'] + $refundorderPrice;
+            //成本
+            $chengben = Pay_order_inside::where($where)->whereBetween('create_time', [$school_start_time, $school_end_time])->sum('sum_Price');
+            $listv['countCost'] = $chengben;
+            $lists['countCost'] = $lists['countCost'] + $chengben;
+            //报名费用
+            $baoming = Pay_order_inside::where($where)->whereBetween('create_time', [$school_start_time, $school_end_time])->sum('sign_Price');
+            $baomingzong = $chengben + $baoming;
+            $listv['baomingzong'] = $baomingzong;
+            $lists['countPrice'] = $lists['countPrice'] + $baomingzong;
+            //分校实际佣金
+            $yongjin = Pay_order_inside::where($where)->whereBetween('create_time', [$school_start_time, $school_end_time])->sum('actual_commission');
+            $listv['yongjin'] = $yongjin;
+            //保证金
+            $baozhengjin = Pay_order_inside::where($where)->whereBetween('create_time', [$school_start_time, $school_end_time])->sum('earnest_money');
+            $listv['baozhengjin'] = $baozhengjin;
+            //收入
+            $shouru = $ordersumPrice -$baozhengjin;
+            $listv['shouru'] = $shouru;
+            $lists['practicalEnter'] = $lists['practicalEnter'] + $shouru;
+            //总支出
+            $lists['expend'] =$chengben + $refundorderPrice + $baoming;
+        }
+    }
+
     /*
      * @param  description   财务管理-分校收入详情-已确认订单
      * @param  参数说明       body包含以下参数[
