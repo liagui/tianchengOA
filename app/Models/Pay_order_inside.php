@@ -3109,32 +3109,32 @@ class Pay_order_inside extends Model
         foreach ($list as $listk => &$listv){
             $count++;
            //查询分校名
-            if(!empty($listv['school_id'])){
-                $schoolname = School::where(['id'=>$listv['school_id']])->first();
-                $listv['school_name'] = $schoolname['school_name'];
-            }else{
-                $listv['school_name'] = '';
-            }
+             if(!empty($body['school_id'])){
+                 $schoolname = School::where(['id'=>$body['school_id']])->first();
+                 $listv['school_name'] = $schoolname['school_name'];
+             }else{
+                 $listv['school_name'] = '所有分校';
+             }
             //项目
-            if(!empty($where['project_id'])){
-                $projectname = Category::where(['id'=>$where['project_id']])->first();
+            if(!empty($data['category_id']) && !empty($parent[0])){
+                $projectname = Category::where(['id'=>$parent[0]])->first();
                 $listv['project_name'] = $projectname['name'];
             }else{
                 $listv['project_name'] = '全部项目';
             }
             //学科
-            if(!empty($where['subject_id'])){
-                $projectname = Category::where(['id'=>$where['subject_id']])->first();
-                $listv['subject_name'] = $projectname['name'];
+            if(!empty($data['category_id']) && !empty($parent[1])){
+                $subjectname = Category::where(['id'=>$parent[1]])->first();
+                $listv['subject_name'] = $subjectname['name'];
             }else{
-                $listv['project_name'] = '全部学科';
+                $listv['subject_name'] = '全部学科';
             }
             //课程
-            if(!empty($where['course_id'])){
-                $coursename = Course::where(['id'=>$where['course_id']])->first();
+            if(!empty($data['course_id'])){
+                $coursename = Course::where(['id'=>$data['course_id']])->first();
                 $listv['course_name'] = $coursename['course_name'];
             }else{
-                $listv['course_id'] = '全部学科';
+                $listv['course_name'] = '全部课程';
             }
             //开始时间 结束时间  一天的量
             $time = substr($listv['create_time'],0,10);
@@ -3149,11 +3149,11 @@ class Pay_order_inside extends Model
             $listv['ordersumPrice'] = $ordersumPrice;
             $lists['intoaccount'] = $lists['intoaccount'] + $ordersumPrice;
             //退费数量
-            $refundorderCount = Refund_order::where($where)->whereBetween('remit_time', [$school_start_time, $school_end_time])->count();
+            $refundorderCount = Refund_order::where(['refund_plan'=>2,'school_id'=>$listv['school_id']])->whereBetween('remit_time', [$school_start_time, $school_end_time])->count();
             $listv['refundorderCount'] = $refundorderCount;
             $lists['returnCount'] = $lists['returnCount'] + $refundorderCount;
             //退费金额
-            $refundorderPrice = Refund_order::where($where)->whereBetween('remit_time', [$school_start_time, $school_end_time])->sum('reality_price');
+            $refundorderPrice = Refund_order::where(['refund_plan'=>2,'school_id'=>$listv['school_id']])->whereBetween('remit_time', [$school_start_time, $school_end_time])->sum('reality_price');
             $listv['refundorderPrice'] = $refundorderPrice;
             $lists['intoreturn'] = $lists['intoreturn'] + $refundorderPrice;
             //成本
