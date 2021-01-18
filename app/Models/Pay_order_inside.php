@@ -3102,10 +3102,12 @@ class Pay_order_inside extends Model
             'countCost'=> 0,//总成本
             'practicalEnter'=> 0,//总实际收入
         ];
+        $count = 0;
 
         //所有时间
         $list = self::selectRaw("any_value(create_time) as create_time,any_value(school_id) as school_id")->where($where)->whereBetween('create_time', [$state_time, $end_time])->orderBy('create_time','desc')->groupBy(DB::raw("date_format(create_time , '%Y%m%d')"))->offset($offset)->limit($pagesize)->get()->toArray();
         foreach ($list as $listk => &$listv){
+            $count++;
            //查询分校名
             if(!empty($listv['school_id'])){
                 $schoolname = School::where(['id'=>$listv['school_id']])->first();
@@ -3134,21 +3136,20 @@ class Pay_order_inside extends Model
             }else{
                 $listv['course_id'] = '全部学科';
             }
-
             //开始时间 结束时间  一天的量
-            $time = substr($listv,0,10);
+            $time = substr($listv['create_time'],0,10);
             $school_start_time = $time.' 00:00:00';
             $school_end_time = $time.' 23:59:59';
             //到账数量
-            $orderCount = Pay_order_inside::where($where)->whereBetween('create_time', [$school_start_time, $school_end_time])->count('id');
+            $orderCount = self::where($where)->whereBetween('create_time', [$school_start_time, $school_end_time])->count();
             $listv['orderCount'] = $orderCount;
             $lists['accountCount'] = $lists['accountCount'] + $orderCount;
             //到账金额
-            $ordersumPrice = Pay_order_inside::where($where)->whereBetween('create_time', [$school_start_time, $school_end_time])->sum('pay_price');
+            $ordersumPrice = self::where($where)->whereBetween('create_time', [$school_start_time, $school_end_time])->sum('pay_price');
             $listv['ordersumPrice'] = $ordersumPrice;
             $lists['intoaccount'] = $lists['intoaccount'] + $ordersumPrice;
             //退费数量
-            $refundorderCount = Refund_order::where($where)->whereBetween('remit_time', [$school_start_time, $school_end_time])->count('id');
+            $refundorderCount = Refund_order::where($where)->whereBetween('remit_time', [$school_start_time, $school_end_time])->count();
             $listv['refundorderCount'] = $refundorderCount;
             $lists['returnCount'] = $lists['returnCount'] + $refundorderCount;
             //退费金额
@@ -3156,19 +3157,19 @@ class Pay_order_inside extends Model
             $listv['refundorderPrice'] = $refundorderPrice;
             $lists['intoreturn'] = $lists['intoreturn'] + $refundorderPrice;
             //成本
-            $chengben = Pay_order_inside::where($where)->whereBetween('create_time', [$school_start_time, $school_end_time])->sum('sum_Price');
+            $chengben = self::where($where)->whereBetween('create_time', [$school_start_time, $school_end_time])->sum('sum_Price');
             $listv['countCost'] = $chengben;
             $lists['countCost'] = $lists['countCost'] + $chengben;
             //报名费用
-            $baoming = Pay_order_inside::where($where)->whereBetween('create_time', [$school_start_time, $school_end_time])->sum('sign_Price');
+            $baoming = self::where($where)->whereBetween('create_time', [$school_start_time, $school_end_time])->sum('sign_Price');
             $baomingzong = $chengben + $baoming;
             $listv['baomingzong'] = $baomingzong;
             $lists['countPrice'] = $lists['countPrice'] + $baomingzong;
             //分校实际佣金
-            $yongjin = Pay_order_inside::where($where)->whereBetween('create_time', [$school_start_time, $school_end_time])->sum('actual_commission');
+            $yongjin = self::where($where)->whereBetween('create_time', [$school_start_time, $school_end_time])->sum('actual_commission');
             $listv['yongjin'] = $yongjin;
             //保证金
-            $baozhengjin = Pay_order_inside::where($where)->whereBetween('create_time', [$school_start_time, $school_end_time])->sum('earnest_money');
+            $baozhengjin = self::where($where)->whereBetween('create_time', [$school_start_time, $school_end_time])->sum('earnest_money');
             $listv['baozhengjin'] = $baozhengjin;
             //收入
             $shouru = $ordersumPrice -$baozhengjin;
@@ -3177,6 +3178,7 @@ class Pay_order_inside extends Model
             //总支出
             $lists['expend'] =$chengben + $refundorderPrice + $baoming;
         }
+        return ['code' => 200 , 'msg' => '获取列表成功' , 'data' => ['list' =>$list , 'total' => $count, 'pagesize' => $pagesize , 'page' => $page,'count'=>$lists]];
     }
 
     /*
