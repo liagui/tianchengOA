@@ -102,8 +102,9 @@ class Refund_order extends Model
             $where['refund_plan'] = $data['refund_plan'];
         }
         //学校id
-        if(isset($data['school_id'])){
-            $where['school_id'] = $data['school_id'];
+        $school_id=[];
+        if(isset($data['school_name'])){
+            $school_id = School::select('id')->where('school_name','like','%'.$data['school_name'].'%')->where('is_del',0)->get();
         }
         //判断时间
         $begindata="2020-03-04";
@@ -131,7 +132,7 @@ class Refund_order extends Model
             $where['course_id'] = $data['course_id'];
         }
         //計算總數
-        $count = self::where($where)->where(function($query) use ($data,$schoolarr) {
+        $count = self::where($where)->where(function($query) use ($data,$schoolarr,$school_id) {
             if(isset($data['confirm_order_type'])){
                 $query->where('confirm_order_type',$data['confirm_order_type']);
             }
@@ -139,6 +140,9 @@ class Refund_order extends Model
                 $query->where('refund_no',$data['order_on'])
                     ->orwhere('student_name',$data['order_on'])
                     ->orwhere('phone',$data['order_on']);
+            }
+            if(!empty($school_id)){
+                $query->whereIn('school_id',$school_id);
             }
             $query->whereIn('school_id',$schoolarr);
         })
@@ -146,7 +150,7 @@ class Refund_order extends Model
         ->count();
 
         //列表
-        $order = self::where($where)->where(function($query) use ($data,$schoolarr) {
+        $order = self::where($where)->where(function($query) use ($data,$schoolarr,$school_id) {
             if(isset($data['confirm_order_type'])){
                 $query->where('confirm_order_type',$data['confirm_order_type']);
             }
@@ -154,6 +158,9 @@ class Refund_order extends Model
                 $query->where('refund_no',$data['order_on'])
                     ->orwhere('student_name',$data['order_on'])
                     ->orwhere('phone',$data['order_on']);
+            }
+            if(!empty($school_id)){
+                $query->whereIn('school_id',$school_id);
             }
             $query->whereIn('school_id',$schoolarr);
         })

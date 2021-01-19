@@ -28,13 +28,18 @@ class StudentDatum extends Model {
                 unset($body['project_id']);
             }
     	}
+        //学校id
+        $school_id=[];
+        if(isset($data['school_name'])){
+            $school_id = School::select('id')->where('school_name','like','%'.$data['school_name'].'%')->where('is_del',0)->get();
+        }
         $count = self::leftJoin('pay_order_inside','student_information.order_id','=','pay_order_inside.id')
         	->leftJoin('student','student.id','=','student_information.student_id')
 
-        	->where(function($query) use ($body,$oneSubject,$twoSubject) {
-        		if(isset($body['school_id']) && !empty($body['school_id'])){ //所属学校
-                	$query->where('student_information.school_id',$body['school_id']);
-            	}else{
+        	->where(function($query) use ($body,$oneSubject,$twoSubject,$school_id) {
+                if(!empty($school_id)){
+                    $query->whereIn('student_information.school_id',$school_id);
+                }else{
                     $query->whereIn('student_information.school_id',$body['school_ids']['data']);
                 }
             	if(isset($body['audit_state']) && strlen($body['audit_state'])>0){ //所属审核状态
@@ -80,10 +85,10 @@ class StudentDatum extends Model {
             }
     		$StudentDatumArr  = self::leftJoin('pay_order_inside','student_information.order_id','=','pay_order_inside.id')
 	        	->leftJoin('student','student.id','=','student_information.student_id')
-	        	->where(function($query) use ($body,$oneSubject,$twoSubject) {
-	        		if(isset($body['school_id']) && !empty($body['school_id'])){ //所属学校
-	                	$query->where('student_information.school_id',$body['school_id']);
-	            	}else{
+	        	->where(function($query) use ($body,$oneSubject,$twoSubject,$school_id) {
+                    if(!empty($school_id)){
+                        $query->whereIn('student_information.school_id',$school_id);
+                    }else{
                         $query->whereIn('student_information.school_id',$body['school_ids']['data']);
                     }
 	            	if(isset($body['audit_state']) && strlen($body['audit_state'])>0){ //所属审核状态
@@ -381,13 +386,16 @@ class StudentDatum extends Model {
     //获取资料数量
     public static function getDatumCount($body){
         $subject = [];
-        $school_id = isset($body['school_id'])&& $body['school_id'] >0?$body['school_id']:'';
+        $school_id=[];
+        if(isset($data['school_name'])){
+            $school_id = School::select('id')->where('school_name','like','%'.$body['school_name'].'%')->where('is_del',0)->get();
+        }
         if(isset($body['subject']) && !empty($body['subject'])){
             $subject = json_decode($body['subject'],1);
         }
         $count = self::where(function($query) use ($school_id,$subject) {
                     if(!empty($school_id)){
-                         $query->where('school_id',$school_id); //所属分校
+                        $query->whereIn('school_id',$school_id);
                     }
                     if(!empty($subject)){ //所属审核状态
                         $query->where('project_id',$subject[0]);

@@ -24,11 +24,16 @@ class Material extends Model {
         $pagesize = (int)isset($data['pagesize']) && $data['pagesize'] > 0 ? $data['pagesize'] : 20;
         $page     = isset($data['page']) && $data['page'] > 0 ? $data['page'] : 1;
         $offset   = ($page - 1) * $pagesize;
+        //学校id
+        $school_arr=[];
+        if(isset($data['school_name'])){
+            $school_arr = School::select('id')->where('school_name','like','%'.$data['school_name'].'%')->where('is_del',0)->get();
+        }
         //计算总数
-        $count = self::select('material.submit_time', 'material.create_name', 'material.school_id', 'material.status', 'material.id',"material.submit_name")->where(function($query) use ($data,$school_id) {
+        $count = self::select('material.submit_time', 'material.create_name', 'material.school_id', 'material.status', 'material.id',"material.submit_name")->where(function($query) use ($data,$school_id,$school_arr) {
 
-            if(isset($data['school_id']) && !empty($data['school_id'])){
-                $query->where('material.school_id',$data['school_id']);
+            if(isset($school_arr) && !empty($school_arr)){
+                $query->where('material.school_id',$school_arr);
             }else{
                 $query->whereIn('material.school_id',$school_id['data']);
             }
@@ -40,9 +45,9 @@ class Material extends Model {
             }
         })->count();
         //分页数据
-        $data = self::select('material.submit_time', 'material.create_name','create_name','create_id','material.school_id', 'material.status', 'material.id','material.courier_company','material.courier_number','material.courier_note','material.delivery_time')->where(function($query) use ($data,$school_id) {
-            if(isset($data['school_id']) && !empty($data['school_id'])){
-                $query->where('material.school_id',$data['school_id']);
+        $data = self::select('material.submit_time', 'material.create_name','create_name','create_id','material.school_id', 'material.status', 'material.id','material.courier_company','material.courier_number','material.courier_note','material.delivery_time')->where(function($query) use ($data,$school_id,$school_arr) {
+            if(isset($school_arr) && !empty($school_arr)){
+                $query->where('material.school_id',$school_arr);
             }else{
                 $query->whereIn('material.school_id',$school_id['data']);
             }
@@ -54,7 +59,6 @@ class Material extends Model {
             }
         })->offset($offset)->limit($pagesize)->orderByDesc("id")->get()->toArray();
 
-        $school_name = "";
         foreach($data as $key =>&$material){
             $desc = "";
             if($material['status'] == 1){

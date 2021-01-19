@@ -1,14 +1,7 @@
 <?php
 namespace App\Models;
 use Illuminate\Database\Eloquent\Model;
-use App\Models\Pay_order_inside;
-use App\Models\Orderdocumentary;
-use App\Models\Teacher;
 use Illuminate\Support\Facades\DB;
-use App\Models\School;
-use App\Models\Category;
-use App\Models\Course;
-use App\Models\StudentCourse;
 class Student extends Model {
     //指定别的表名
     public $table = 'student';
@@ -35,10 +28,15 @@ class Student extends Model {
         if(isset($data['course_id'])){
             $where['course_id'] = $data['course_id'];
         }
+        //学校id
+        $school_id=[];
+        if(isset($data['school_name'])){
+            $school_id = School::select('id')->where('school_name','like','%'.$data['school_name'].'%')->where('is_del',0)->get();
+        }
         //计算总数
-        $count = Pay_order_inside::select()->where($where)->where("seas_status",0)->where(function($query) use ($data) {
-            if(isset($data['school_id']) && !empty($data['school_id'])){
-                $query->where('school_id',$data['school_id']);
+        $count = Pay_order_inside::select()->where($where)->where("seas_status",0)->where(function($query) use ($data,$school_id) {
+            if(!empty($school_id)){
+                $query->whereIn('school_id',$school_id);
             }
             if(isset($data['pay_type']) && $data['pay_type'] != -1){
                 $query->where('pay_type',$data['pay_type']);
@@ -51,9 +49,9 @@ class Student extends Model {
             }
         })->count();
         //分页数据
-        $res = Pay_order_inside::select()->where($where)->where("seas_status",0)->where(function($query) use ($data) {
-            if(isset($data['school_id']) && !empty($data['school_id'])){
-                $query->where('school_id',$data['school_id']);
+        $res = Pay_order_inside::select()->where($where)->where("seas_status",0)->where(function($query) use ($data,$school_id) {
+            if(!empty($school_id)){
+                $query->whereIn('school_id',$school_id);
             }
             if(isset($data['pay_type']) && $data['pay_type'] != -1){
                 $query->where('pay_type',$data['pay_type']);
@@ -237,14 +235,22 @@ class Student extends Model {
                 $data['subject_id'] = 0;
             }
         }
+        //学校id
+        $school_id=[];
+        if(isset($data['school_name'])){
+            $school_id = School::select('id')->where('school_name','like','%'.$data['school_name'].'%')->where('is_del',0)->get();
+        }
         //获取班主任
         $teacher = Teacher::select("id","username")->where("id",$user_id)->first();
         //获取数据
         $one = array();
         $res1 = Pay_order_inside::select()->where("seas_status",0)->where("have_user_id",$user_id)
-            ->where(function($query) use ($data){
+            ->where(function($query) use ($data,$school_id){
                 if(isset($data['start_time']) && !empty(isset($data['start_time']))  && isset($data['end_time']) && !empty(isset($data['end_time']))){
                     $query->whereBetween('comfirm_time',[date("Y-m-d H:i:s",strtotime($data['start_time'])),date("Y-m-d H:i:s",strtotime($data['end_time']))]);
+                }
+                if(!empty($school_id)){
+                    $query->whereIn('school_id',$school_id);
                 }
             })
             ->get()->toArray();
@@ -292,8 +298,9 @@ class Student extends Model {
         $pagesize = (int)isset($data['pagesize']) && $data['pagesize'] > 0 ? $data['pagesize'] : 20;
         $page     = isset($data['page']) && $data['page'] > 0 ? $data['page'] : 1;
         $offset   = ($page - 1) * $pagesize;
+
         //计算总数
-        $count = Pay_order_inside::select()->where("seas_status",0)->where("seas_status",0)->where("have_user_id",$user_id)->where(function($query) use ($data) {
+        $count = Pay_order_inside::select()->where("seas_status",0)->where("seas_status",0)->where("have_user_id",$user_id)->where(function($query) use ($data,$school_id) {
             if(isset($data['project_id']) && !empty($data['project_id'])){
                 $query->where('project_id',$data['project_id']);
             }
@@ -303,8 +310,8 @@ class Student extends Model {
             if(isset($data['course_id']) && !empty($data['course_id'])){
                 $query->where('course_id',$data['course_id']);
             }
-            if(isset($data['school_id']) && !empty($data['school_id'])){
-                $query->where('school_id',$data['school_id']);
+            if(!empty($school_id)){
+                $query->whereIn('school_id',$school_id);
             }
             if(isset($data['confirm_status']) && $data['confirm_status'] != -1){
                 $query->where('confirm_status',$data['confirm_status']);
@@ -317,7 +324,7 @@ class Student extends Model {
             }
         })->count();
         //分页数据
-        $res = Pay_order_inside::select()->where("seas_status",0)->where("have_user_id",$user_id)->where(function($query) use ($data) {
+        $res = Pay_order_inside::select()->where("seas_status",0)->where("have_user_id",$user_id)->where(function($query) use ($data,$school_id) {
             if(isset($data['project_id']) && !empty($data['project_id'])){
                 $query->where('project_id',$data['project_id']);
             }
@@ -327,8 +334,8 @@ class Student extends Model {
             if(isset($data['course_id']) && !empty($data['course_id'])){
                 $query->where('course_id',$data['course_id']);
             }
-            if(isset($data['school_id']) && !empty($data['school_id'])){
-                $query->where('school_id',$data['school_id']);
+            if(!empty($school_id)){
+                $query->whereIn('school_id',$school_id);
             }
             if(isset($data['confirm_status']) && $data['confirm_status'] != -1){
                 $query->where('confirm_status',$data['confirm_status']);
@@ -434,6 +441,11 @@ class Student extends Model {
         $page     = isset($data['page']) && $data['page'] > 0 ? $data['page'] : 1;
         $offset   = ($page - 1) * $pagesize;
 
+        //学校id
+        $school_id=[];
+        if(isset($data['school_name'])){
+            $school_id = School::select('id')->where('school_name','like','%'.$data['school_name'].'%')->where('is_del',0)->get();
+        }
         //项目和学科
         if(!empty($data['project_id'])){
             $s_id = json_decode($data['project_id']);
@@ -451,7 +463,7 @@ class Student extends Model {
         //总管理
         if($user_id == 1){
             //计算总数
-            $count = Pay_order_inside::where("seas_status",0)->where(function($query) use ($data) {
+            $count = Pay_order_inside::where("seas_status",0)->where(function($query) use ($data,$school_id) {
                 if(isset($data['project_id']) && !empty($data['project_id'])){
                     $query->where('project_id',$data['project_id']);
                 }
@@ -461,8 +473,8 @@ class Student extends Model {
                 if(isset($data['course_id']) && !empty($data['course_id'])){
                     $query->where('course_id',$data['course_id']);
                 }
-                if(isset($data['school_id']) && !empty($data['school_id'])){
-                    $query->where('school_id',$data['school_id']);
+                if(!empty($school_id)){
+                    $query->whereIn('school_id',$school_id);
                 }
                 if(isset($data['pay_type']) && $data['pay_type'] != -1){
                     $query->where('pay_type',$data['pay_type']);
@@ -475,7 +487,7 @@ class Student extends Model {
                 }
             })->count();
             //分页数据
-            $res = Pay_order_inside::where("seas_status",0)->where(function($query) use ($data) {
+            $res = Pay_order_inside::where("seas_status",0)->where(function($query) use ($data,$school_id) {
                 if(isset($data['project_id']) && !empty($data['project_id'])){
                     $query->where('project_id',$data['project_id']);
                 }
@@ -485,8 +497,8 @@ class Student extends Model {
                 if(isset($data['course_id']) && !empty($data['course_id'])){
                     $query->where('course_id',$data['course_id']);
                 }
-                if(isset($data['school_id']) && !empty($data['school_id'])){
-                    $query->where('school_id',$data['school_id']);
+                if(!empty($school_id)){
+                    $query->whereIn('school_id',$school_id);
                 }
                 if(isset($data['pay_type']) && $data['pay_type'] != -1){
                     $query->where('pay_type',$data['pay_type']);
@@ -500,7 +512,7 @@ class Student extends Model {
             })->orderByDesc("id")->get()->toArray();
         }else{
             //计算总数
-            $count = Pay_order_inside::select()->where("seas_status",0)->where("have_user_id",$user_id)->where(function($query) use ($data) {
+            $count = Pay_order_inside::select()->where("seas_status",0)->where("have_user_id",$user_id)->where(function($query) use ($data,$school_id) {
                 if(isset($data['project_id']) && !empty($data['project_id'])){
                     $query->where('project_id',$data['project_id']);
                 }
@@ -510,8 +522,8 @@ class Student extends Model {
                 if(isset($data['course_id']) && !empty($data['course_id'])){
                     $query->where('course_id',$data['course_id']);
                 }
-                if(isset($data['school_id']) && !empty($data['school_id'])){
-                    $query->where('school_id',$data['school_id']);
+                if(!empty($school_id)){
+                    $query->whereIn('school_id',$school_id);
                 }
                 if(isset($data['pay_type']) && $data['pay_type'] != -1){
                     $query->where('pay_type',$data['pay_type']);
@@ -524,7 +536,7 @@ class Student extends Model {
                 }
             })->count();
             //分页数据
-            $res = Pay_order_inside::select()->where("seas_status",0)->where("have_user_id",$user_id)->where(function($query) use ($data) {
+            $res = Pay_order_inside::select()->where("seas_status",0)->where("have_user_id",$user_id)->where(function($query) use ($data,$school_id) {
                 if(isset($data['project_id']) && !empty($data['project_id'])){
                     $query->where('project_id',$data['project_id']);
                 }
@@ -534,8 +546,8 @@ class Student extends Model {
                 if(isset($data['course_id']) && !empty($data['course_id'])){
                     $query->where('course_id',$data['course_id']);
                 }
-                if(isset($data['school_id']) && !empty($data['school_id'])){
-                    $query->where('school_id',$data['school_id']);
+                if(!empty($school_id)){
+                    $query->whereIn('school_id',$school_id);
                 }
                 if(isset($data['pay_type']) && $data['pay_type'] != -1){
                     $query->where('pay_type',$data['pay_type']);
@@ -629,7 +641,12 @@ class Student extends Model {
         $page     = isset($data['page']) && $data['page'] > 0 ? $data['page'] : 1;
         $offset   = ($page - 1) * $pagesize;
         //计算总数
-        $count = Pay_order_inside::select()->where("seas_status",1)->where(function($query) use ($data) {
+        //学校id
+        $school_id=[];
+        if(isset($data['school_name'])){
+            $school_id = School::select('id')->where('school_name','like','%'.$data['school_name'].'%')->where('is_del',0)->get();
+        }
+        $count = Pay_order_inside::select()->where("seas_status",1)->where(function($query) use ($data,$school_id) {
             if(isset($data['project_id']) && !empty($data['project_id'])){
                 $query->where('project_id',$data['project_id']);
             }
@@ -639,8 +656,8 @@ class Student extends Model {
             if(isset($data['course_id']) && !empty($data['course_id'])){
                 $query->where('course_id',$data['course_id']);
             }
-            if(isset($data['school_id']) && !empty($data['school_id'])){
-                $query->where('school_id',$data['school_id']);
+            if(!empty($school_id)){
+                $query->whereIn('school_id',$school_id);
             }
             if(isset($data['pay_type']) && $data['pay_type'] != -1){
                 $query->where('pay_type',$data['pay_type']);
@@ -653,7 +670,7 @@ class Student extends Model {
             }
         })->count();
         //分页数据
-        $res = Pay_order_inside::select()->where("seas_status",1)->where(function($query) use ($data) {
+        $res = Pay_order_inside::select()->where("seas_status",1)->where(function($query) use ($data,$school_id) {
             if(isset($data['project_id']) && !empty($data['project_id'])){
                 $query->where('project_id',$data['project_id']);
             }
@@ -663,8 +680,8 @@ class Student extends Model {
             if(isset($data['course_id']) && !empty($data['course_id'])){
                 $query->where('course_id',$data['course_id']);
             }
-            if(isset($data['school_id']) && !empty($data['school_id'])){
-                $query->where('school_id',$data['school_id']);
+            if(!empty($school_id)){
+                $query->whereIn('school_id',$school_id);
             }
             if(isset($data['pay_type']) && $data['pay_type'] != -1){
                 $query->where('pay_type',$data['pay_type']);

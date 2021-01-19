@@ -56,8 +56,9 @@ class Pay_order_inside extends Model
             $where['confirm_status'] = $data['confirm_status'];
         }
         //学校id
-        if(isset($data['school_id'])){
-            $where['school_id'] = $data['school_id'];
+        $school_id=[];
+        if(isset($data['school_name'])){
+            $school_id = School::select('id')->where('school_name','like','%'.$data['school_name'].'%')->where('is_del',0)->get();
         }
         //科目id&学科id
         if(!empty($data['project_id'])){
@@ -79,7 +80,7 @@ class Pay_order_inside extends Model
         $offset   = ($page - 1) * $pagesize;
 
         //数据   流转订单 + 第三方支付订单
-        $order = self::where(function($query) use ($data,$schoolarr) {
+        $order = self::where(function($query) use ($data,$schoolarr,$school_id) {
                 if(isset($data['order_no']) && !empty($data['order_no'])){
                     $query->where('order_no',$data['order_no'])
                         ->orwhere('name',$data['order_no'])
@@ -90,6 +91,9 @@ class Pay_order_inside extends Model
                 }
                 if(isset($data['confirm_order_type'])){
                     $query->where('confirm_order_type',$data['confirm_order_type']);
+                }
+                if(!empty($school_id)){
+                    $query->whereIn('school_id',$school_id);
                 }
                 $query->whereIn('school_id',$schoolarr);
             })
@@ -514,9 +518,11 @@ class Pay_order_inside extends Model
                 }
             }
         }
-       if(isset($data['school_id'])){
-           $where['school_id'] = $data['school_id'];
-       }
+        //学校id
+        $school_id=[];
+        if(isset($data['school_name'])){
+            $school_id = School::select('id')->where('school_name','like','%'.$data['school_name'].'%')->where('is_del',0)->get();
+        }
         //课程id
         if(isset($data['course_id'])){
             $where['course_id'] = $data['course_id'];
@@ -540,18 +546,24 @@ class Pay_order_inside extends Model
         $offset   = ($page - 1) * $pagesize;
 
         //計算總數
-        $count = self::where($where)->whereIn('school_id',$schoolarr)->where(function($query) use ($data) {
+        $count = self::where($where)->whereIn('school_id',$schoolarr)->where(function($query) use ($data,$school_id) {
             if(isset($data['order_no']) && !empty($data['order_no'])){
                 $query->where('order_no',$data['order_no'])
                     ->orwhere('name',$data['order_no'])
                     ->orwhere('mobile',$data['order_no']);
             }
+            if(!empty($school_id)){
+                $query->whereIn('school_id',$school_id);
+            }
         })->count();
-        $order = self::where($where)->whereIn('school_id',$schoolarr)->where(function($query) use ($data) {
+        $order = self::where($where)->whereIn('school_id',$schoolarr)->where(function($query) use ($data,$school_id) {
             if(isset($data['order_no']) && !empty($data['order_no'])){
                 $query->where('order_no',$data['order_no'])
                     ->orwhere('name',$data['order_no'])
                     ->orwhere('mobile',$data['order_no']);
+            }
+            if(!empty($school_id)){
+                $query->whereIn('school_id',$school_id);
             }
         })
         ->orderByDesc('id')
@@ -921,8 +933,10 @@ class Pay_order_inside extends Model
                 }
             }
         }
-        if(isset($data['school_id'])){
-            $where['school_id'] = $data['school_id'];
+        //学校id
+        $school_id=[];
+        if(isset($data['school_name'])){
+            $school_id = School::select('id')->where('school_name','like','%'.$data['school_name'].'%')->where('is_del',0)->get();
         }
         if(isset($data['pay_type'])){
             $where['pay_type'] = $data['pay_type'];
@@ -947,11 +961,14 @@ class Pay_order_inside extends Model
         $offset   = ($page - 1) * $pagesize;
 
         //計算總數
-        $count = self::where(function($query) use ($data,$schoolarr) {
+        $count = self::where(function($query) use ($data,$schoolarr,$school_id) {
             if(isset($data['order_no']) && !empty($data['order_no'])){
                 $query->where('order_no',$data['order_no'])
                     ->orwhere('name',$data['order_no'])
                     ->orwhere('mobile',$data['order_no']);
+            }
+            if(!empty($school_id)){
+                $query->whereIn('school_id',$school_id);
             }
             $query->whereIn('school_id',$schoolarr);
         })
@@ -959,11 +976,14 @@ class Pay_order_inside extends Model
             ->where($where)
             ->count();
 
-        $order = self::where(function($query) use ($data,$schoolarr) {
+        $order = self::where(function($query) use ($data,$schoolarr,$school_id) {
             if(isset($data['order_no']) && !empty($data['order_no'])){
                 $query->where('order_no',$data['order_no'])
                     ->orwhere('name',$data['order_no'])
                     ->orwhere('mobile',$data['order_no']);
+            }
+            if(!empty($school_id)){
+                $query->whereIn('school_id',$school_id);
             }
             $query->whereIn('school_id',$schoolarr);
         })
@@ -1393,8 +1413,10 @@ class Pay_order_inside extends Model
         if(isset($data['classes'])){
             $where['classes'] = $data['classes'];
         }
-        if(isset($data['school_id'])){
-            $where['school_id'] = $data['school_id'];
+        //学校id
+        $school_id=[];
+        if(isset($data['school_name'])){
+            $school_id = School::select('id')->where('school_name','like','%'.$data['school_name'].'%')->where('is_del',0)->get();
         }
         if(isset($data['course_id'])){
             $where['course_id'] = $data['course_id'];
@@ -1406,11 +1428,14 @@ class Pay_order_inside extends Model
         $offset   = ($page - 1) * $pagesize;
 
         //計算總數
-        $count = self::where(function($query) use ($data,$schoolarr) {
+        $count = self::where(function($query) use ($data,$schoolarr,$school_id) {
             if(isset($data['order_on']) && !empty($data['order_on'])){
                 $query->where('order_no',$data['order_on'])
                     ->orwhere('name',$data['order_on'])
                     ->orwhere('mobile',$data['order_on']);
+            }
+            if(!empty($school_id)){
+                $query->whereIn('school_id',$school_id);
             }
             $query->whereIn('school_id',$schoolarr);
         })
@@ -1419,11 +1444,14 @@ class Pay_order_inside extends Model
         ->where('pay_status','!=',2)
         ->count();
 
-        $order = self::where(function($query) use ($data,$schoolarr) {
+        $order = self::where(function($query) use ($data,$schoolarr,$school_id) {
             if(isset($data['order_on']) && !empty($data['order_on'])){
                 $query->where('order_no',$data['order_on'])
                     ->orwhere('name',$data['order_on'])
                     ->orwhere('mobile',$data['order_on']);
+            }
+            if(!empty($school_id)){
+                $query->whereIn('school_id',$school_id);
             }
             $query->whereIn('school_id',$schoolarr);
         })
@@ -2597,12 +2625,18 @@ class Pay_order_inside extends Model
         $pagesize = isset($body['pagesize']) && $body['pagesize'] > 0 ? $body['pagesize'] : 20;
         $page     = isset($body['page']) && $body['page'] > 0 ? $body['page'] : 1;
         $offset   = ($page - 1) * $pagesize;
-        if(!empty($body['school_id']) || !empty($body['create_time']) ||!empty($body['course_id'])||!empty($body['category_id'])||!empty($body['category_id'])){
+        //学校id
+        $school_id=[];
+        if(isset($data['school_name'])){
+            $school_id = School::select('id')->where('school_name','like','%'.$data['school_name'].'%')->where('is_del',0)->get();
+        }
+
+        if(!empty($body['create_time']) ||!empty($body['course_id'])||!empty($body['category_id'])||!empty($body['category_id'])){
             //获取收入详情的总数量
-            $count = self::selectRaw("count(date_format(create_time , '%Y%m%d')) as t_count")->where(function($query) use ($body){
+            $count = self::selectRaw("count(date_format(create_time , '%Y%m%d')) as t_count")->where(function($query) use ($body,$school_id){
                 //判断分校id是否为空和合法
-                if(isset($body['school_id']) && !empty($body['school_id']) && $body['school_id'] > 0){
-                    $query->where('school_id' , $body['school_id']);
+                if(!empty($school_id)){
+                    $query->whereIn('school_id',$school_id);
                 } else {
                     $query->whereIn('school_id' , $body['schoolId']);
                 }
@@ -2642,10 +2676,10 @@ class Pay_order_inside extends Model
                 $array = [];
 
                 //获取收入详情列表
-                $list = self::selectRaw("any_value(project_id) as project_id , any_value(subject_id) as subject_id , any_value(course_id) as course_id , any_value(school_id) as school_id , any_value(create_time) as create_time")->where(function($query) use ($body){
+                $list = self::selectRaw("any_value(project_id) as project_id , any_value(subject_id) as subject_id , any_value(course_id) as course_id , any_value(school_id) as school_id , any_value(create_time) as create_time")->where(function($query) use ($body,$school_id){
                     //判断分校id是否为空和合法
-                    if(isset($body['school_id']) && !empty($body['school_id']) && $body['school_id'] > 0){
-                        $query->where('school_id' , $body['school_id']);
+                    if(!empty($school_id)){
+                        $query->whereIn('school_id',$school_id);
                     } else {
                         $query->whereIn('school_id' , $body['schoolId']);
                     }
@@ -3746,16 +3780,21 @@ class Pay_order_inside extends Model
         $pagesize = isset($body['pagesize']) && $body['pagesize'] > 0 ? $body['pagesize'] : 20;
         $page     = isset($body['page']) && $body['page'] > 0 ? $body['page'] : 1;
         $offset   = ($page - 1) * $pagesize;
-       if(!empty($body['school_id']) || !empty($body['search_time'])) {
+
+        //学校id
+        $school_id=[];
+        if(isset($data['school_name'])){
+            $school_id = School::select('id')->where('school_name','like','%'.$body['school_name'].'%')->where('is_del',0)->get();
+        }
+       if(!empty($body['search_time'])) {
            //获取数量
            $count = DB::table('school')->selectRaw("count(school.id) as t_count")->leftjoin("pay_order_inside", function ($join) {
                $join->on('school.id', '=', 'pay_order_inside.school_id');
-           })->where('school.is_del', 0)->where(function ($query) use ($body) {
+           })->where('school.is_del', 0)->where(function ($query) use ($body,$school_id) {
                //判断分校id是否为空和合法
-               if (isset($body['school_id']) && !empty($body['school_id']) && $body['school_id'] > 0) {
-                   $query->where('school.id', '=', $body['school_id']);
+               if ( !empty($school_id)) {
+                   $query->whereIn('id',$school_id);
                }
-
                //获取日期
                if (isset($body['search_time']) && !empty($body['search_time'])) {
                    $create_time = json_decode($body['search_time'], true);
@@ -3773,10 +3812,10 @@ class Pay_order_inside extends Model
                //获取分校业绩列表
                $list = DB::table('school')->selectRaw('any_value(school.id) as school_id , any_value(count(school.id)) as t_count , any_value(school.one_extraction_ratio) as one_extraction_ratio , any_value(school.two_extraction_ratio) as two_extraction_ratio , any_value(school.school_name) as school_name , any_value(school.level) as level , any_value(school.tax_point) as tax_point , any_value(school.commission) as commission , any_value(school.deposit) as deposit , any_value(sum(pay_order_inside.after_tax_amount)) as after_tax_amount,any_value(pay_order_inside.sum_Price) as sum_Price,any_value(sum(if(pay_order_inside.confirm_status = 1 , pay_order_inside.pay_price , 0))) as pay_price,any_value(sum(pay_order_inside.agent_margin)) as agent_margin,any_value(pay_order_inside.first_out_of_amount) as first_out_of_amount,any_value(pay_order_inside.second_out_of_amount) as second_out_of_amount,any_value(pay_order_inside.education_id) as education_id,any_value(pay_order_inside.major_id) as major_id,any_value(sum(pay_order_inside.sign_Price)) as sign_Price')->leftjoin("pay_order_inside", function ($join) {
                    $join->on('school.id', '=', 'pay_order_inside.school_id');
-               })->where('school.is_del', 0)->where(function ($query) use ($body) {
+               })->where('school.is_del', 0)->where(function ($query) use ($body,$school_id) {
                    //判断分校id是否为空和合法
-                   if (isset($body['school_id']) && !empty($body['school_id']) && $body['school_id'] > 0) {
-                       $query->where('school.id', '=', $body['school_id']);
+                   if ( !empty($school_id)) {
+                       $query->whereIn('id',$school_id);
                    }
 
                    //获取日期
