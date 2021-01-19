@@ -3067,13 +3067,13 @@ class Pay_order_inside extends Model
         $page     = isset($body['page']) && $body['page'] > 0 ? $body['page'] : 1;
         $offset   = ($page - 1) * $pagesize;
         //学校id
-        if(isset($data['school_id'])){
+        if(isset($body['school_id'])){
             $where['school_id'] = $body['school_id'];
         }
         $where['pay_status'] = 1;
         $where['del_flag'] = 0;
         //科目id&学科id
-        if(!empty($data['category_id'])){
+        if(!empty($body['category_id'])){
             $parent = json_decode($body['category_id'], true);
             if(!empty($parent[0])){
                 $where['project_id'] = $parent[0];
@@ -3083,8 +3083,8 @@ class Pay_order_inside extends Model
             }
         }
         //课程id
-        if(isset($data['course_id'])){
-            $where['course_id'] = $data['course_id'];
+        if(isset($body['course_id'])){
+            $where['course_id'] = $body['course_id'];
         }
         $begindata="2020-03-04";
         $enddate = date('Y-m-d');
@@ -3116,22 +3116,22 @@ class Pay_order_inside extends Model
                  $listv['school_name'] = '所有分校';
              }
             //项目
-            if(!empty($data['category_id']) && !empty($parent[0])){
+            if(isset($body['category_id']) && !empty($parent[0])){
                 $projectname = Category::where(['id'=>$parent[0]])->first();
                 $listv['project_name'] = $projectname['name'];
             }else{
                 $listv['project_name'] = '全部项目';
             }
             //学科
-            if(!empty($data['category_id']) && !empty($parent[1])){
+            if(isset($body['category_id']) && !empty($parent[1])){
                 $subjectname = Category::where(['id'=>$parent[1]])->first();
                 $listv['subject_name'] = $subjectname['name'];
             }else{
                 $listv['subject_name'] = '全部学科';
             }
             //课程
-            if(!empty($data['course_id'])){
-                $coursename = Course::where(['id'=>$data['course_id']])->first();
+            if(!empty($body['course_id'])){
+                $coursename = Course::where(['id'=>$body['course_id']])->first();
                 $listv['course_name'] = $coursename['course_name'];
             }else{
                 $listv['course_name'] = '全部课程';
