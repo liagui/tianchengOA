@@ -133,6 +133,13 @@ $router->group(['prefix' => 'admin' , 'namespace' => 'Admin','middleware'=> ['jw
         $router->post('getMajorList', 'ProjectController@getMajorList');                         //专业列表接口
         $router->post('doUpdateCategoryRegion', 'ProjectController@doUpdateCategoryRegion');     //修改地区关联的项目
         $router->post('doUpdateCategoryEducation', 'ProjectController@doUpdateCategoryEducation');     //修改学历成本关联的项目
+
+        //新增学院报名费用（szw）
+        $router->post('enteyList', 'ProjectController@enteyList');                         //学院报名列表
+        $router->post('enteyListOne', 'ProjectController@enteyListOne');                         //学院报名单个详情
+        $router->post('enteyUp', 'ProjectController@enteyUp');                         //学院报名修改
+        $router->post('enteyDel', 'ProjectController@enteyDel');                         //学院报名删除
+        $router->post('enteyAdd', 'ProjectController@enteyAdd');                         //学院报名增加
     });
 
     //开课管理部分(dzj)

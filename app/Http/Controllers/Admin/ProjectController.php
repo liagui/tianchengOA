@@ -2,6 +2,7 @@
 namespace App\Http\Controllers\Admin;
 
 use App\Http\Controllers\Controller;
+use App\Models\Entey_fee;
 use App\Models\Project;
 use App\Models\Course;
 use App\Models\RegionFee;
@@ -35,7 +36,7 @@ class ProjectController extends Controller {
             return response()->json(['code' => 500 , 'msg' => $ex->getMessage()]);
         }
     }
-    
+
     /*
      * @param  description   项目管理-修改项目/学科方法
      * @param  参数说明       body包含以下参数[
@@ -61,7 +62,7 @@ class ProjectController extends Controller {
             return response()->json(['code' => 500 , 'msg' => $ex->getMessage()]);
         }
     }
-    
+
     /*
      * @param  description   项目管理-项目/学科详情方法
      * @param  参数说明       body包含以下参数[
@@ -85,7 +86,7 @@ class ProjectController extends Controller {
             return response()->json(['code' => 500 , 'msg' => $ex->getMessage()]);
         }
     }
-    
+
     /*
      * @param  description   项目管理-添加课程方法
      * @param  参数说明       body包含以下参数[
@@ -112,8 +113,8 @@ class ProjectController extends Controller {
             return response()->json(['code' => 500 , 'msg' => $ex->getMessage()]);
         }
     }
-    
-    
+
+
     /*
      * @param  description   项目管理-修改课程方法
      * @param  参数说明       body包含以下参数[
@@ -140,7 +141,7 @@ class ProjectController extends Controller {
             return response()->json(['code' => 500 , 'msg' => $ex->getMessage()]);
         }
     }
-    
+
     /*
      * @param  description   项目管理-课程详情方法
      * @param  参数说明       body包含以下参数[
@@ -164,7 +165,7 @@ class ProjectController extends Controller {
             return response()->json(['code' => 500 , 'msg' => $ex->getMessage()]);
         }
     }
-    
+
     /*
      * @param  description   项目管理-项目筛选学科列表接口
      * @param author    dzj
@@ -185,7 +186,7 @@ class ProjectController extends Controller {
             return response()->json(['code' => 500 , 'msg' => $ex->getMessage()]);
         }
     }
-    
+
     /*
      * @param  description   项目管理-根据项目id获取学科列表
      * @param  参数说明       body包含以下参数[
@@ -209,7 +210,7 @@ class ProjectController extends Controller {
             return response()->json(['code' => 500 , 'msg' => $ex->getMessage()]);
         }
     }
-    
+
     /*
      * @param  description   项目管理-课程列表接口
      * @param  参数说明       body包含以下参数[
@@ -234,7 +235,7 @@ class ProjectController extends Controller {
             return response()->json(['code' => 500 , 'msg' => $ex->getMessage()]);
         }
     }
-    
+
     /*
      * @param  description   项目管理-课程列表接口
      * @param author    dzj
@@ -255,7 +256,7 @@ class ProjectController extends Controller {
             return response()->json(['code' => 500 , 'msg' => $ex->getMessage()]);
         }
     }
-    
+
     /*
      * @param  description   项目管理-添加地区方法
      * @param  参数说明       body包含以下参数[
@@ -281,7 +282,7 @@ class ProjectController extends Controller {
             return response()->json(['code' => 500 , 'msg' => $ex->getMessage()]);
         }
     }
-    
+
     /*
      * @param  description   项目管理-修改地区方法
      * @param  参数说明       body包含以下参数[
@@ -308,7 +309,7 @@ class ProjectController extends Controller {
             return response()->json(['code' => 500 , 'msg' => $ex->getMessage()]);
         }
     }
-    
+
     /*
      * @param  description   项目管理-地区报名费详情方法
      * @param  参数说明       body包含以下参数[
@@ -332,7 +333,7 @@ class ProjectController extends Controller {
             return response()->json(['code' => 500 , 'msg' => $ex->getMessage()]);
         }
     }
-    
+
     /*
      * @param  description   项目管理-地区列表接口
      * @param  参数说明       body包含以下参数[
@@ -356,7 +357,7 @@ class ProjectController extends Controller {
             return response()->json(['code' => 500 , 'msg' => $ex->getMessage()]);
         }
     }
-    
+
     /*
      * @param  description   项目管理-地区关联项目添加方法
      * @param  参数说明       body包含以下参数[
@@ -379,7 +380,7 @@ class ProjectController extends Controller {
             return response()->json(['code' => 500 , 'msg' => $ex->getMessage()]);
         }
     }
-    
+
     /*
      * @param  description   项目管理-地区所有项目列表接口
      * @param  参数说明       body包含以下参数[
@@ -403,7 +404,7 @@ class ProjectController extends Controller {
             return response()->json(['code' => 500 , 'msg' => $ex->getMessage()]);
         }
     }
-    
+
     /*
      * @param  description   项目管理-学历成本关联项目添加方法
      * @param  参数说明       body包含以下参数[
@@ -426,7 +427,7 @@ class ProjectController extends Controller {
             return response()->json(['code' => 500 , 'msg' => $ex->getMessage()]);
         }
     }
-    
+
     /*
      * @param  description   项目管理-学历成本所有项目列表接口
      * @param author    dzj
@@ -447,7 +448,7 @@ class ProjectController extends Controller {
             return response()->json(['code' => 500 , 'msg' => $ex->getMessage()]);
         }
     }
-    
+
     /*
      * @param  description   项目管理-添加院校方法
      * @param  参数说明       body包含以下参数[
@@ -473,7 +474,7 @@ class ProjectController extends Controller {
             return response()->json(['code' => 500 , 'msg' => $ex->getMessage()]);
         }
     }
-    
+
     /*
      * @param  description   项目管理-修改院校方法
      * @param  参数说明       body包含以下参数[
@@ -500,7 +501,7 @@ class ProjectController extends Controller {
             return response()->json(['code' => 500 , 'msg' => $ex->getMessage()]);
         }
     }
-    
+
     /*
      * @param  description   项目管理-院校详情方法
      * @param  参数说明       body包含以下参数[
@@ -524,8 +525,8 @@ class ProjectController extends Controller {
             return response()->json(['code' => 500 , 'msg' => $ex->getMessage()]);
         }
     }
-    
-    
+
+
     /*
      * @param  description   项目管理-院校列表接口
      * @param  参数说明       body包含以下参数[
@@ -549,7 +550,7 @@ class ProjectController extends Controller {
             return response()->json(['code' => 500 , 'msg' => $ex->getMessage()]);
         }
     }
-    
+
     /*
      * @param  description   项目管理-添加专业方法
      * @param  参数说明       body包含以下参数[
@@ -575,7 +576,7 @@ class ProjectController extends Controller {
             return response()->json(['code' => 500 , 'msg' => $ex->getMessage()]);
         }
     }
-    
+
     /*
      * @param  description   项目管理-添加专业方法
      * @param  参数说明       body包含以下参数[
@@ -602,7 +603,7 @@ class ProjectController extends Controller {
             return response()->json(['code' => 500 , 'msg' => $ex->getMessage()]);
         }
     }
-    
+
     /*
      * @param  description   项目管理-专业详情方法
      * @param  参数说明       body包含以下参数[
@@ -626,7 +627,7 @@ class ProjectController extends Controller {
             return response()->json(['code' => 500 , 'msg' => $ex->getMessage()]);
         }
     }
-    
+
     /*
      * @param  description   项目管理-专业列表接口
      * @param  参数说明       body包含以下参数[
@@ -650,7 +651,7 @@ class ProjectController extends Controller {
             return response()->json(['code' => 500 , 'msg' => $ex->getMessage()]);
         }
     }
-    
+
     /*
      * @param  description   项目管理-修改地区关联的项目
      * @param  参数说明       body包含以下参数[
@@ -673,7 +674,7 @@ class ProjectController extends Controller {
             return response()->json(['code' => 500 , 'msg' => $ex->getMessage()]);
         }
     }
-    
+
     /*
      * @param  description   项目管理-修改学历成本关联的项目
      * @param  参数说明       body包含以下参数[
@@ -696,4 +697,95 @@ class ProjectController extends Controller {
             return response()->json(['code' => 500 , 'msg' => $ex->getMessage()]);
         }
     }
+
+
+    /*
+         * @param  院校报名列表
+         * @param  author  苏振文
+         * @param  ctime   2021/1/20 14:38
+         * return  array
+         */
+    public function enteyList(){
+        $data = self::$accept_data;
+        $list = Entey_fee::where(['education_id'=>$data['education_id'],'is_show'=>0,'is_del'=>0])->get()->toArray();
+        if($list){
+            return response()->json(['code' => 200 , 'msg' => '查询成功','data'=>$list]);
+        }else{
+            return response()->json(['code' => 202 , 'msg' => '暂无信息']);
+        }
+    }
+    /*
+         * @param  单条详情
+         * @param  $id     参数
+         * @param  author  苏振文
+         * @param  ctime   2021/1/20 15:00
+         * return  array
+         */
+    public function enteyListOne(){
+        $data = self::$accept_data;
+        $one = Entey_fee::where(['id'=>$data['id'],'is_show'=>0,'is_del'=>0])->first();
+        if($one){
+            return response()->json(['code' => 200 , 'msg' => '查询成功','data'=>$one]);
+        }else{
+            return response()->json(['code' => 202 , 'msg' => '暂无信息']);
+        }
+    }
+    /*
+         * @param  修改
+         * @param  id     参数
+         * @param  education_id
+         * @param  entry_name
+         * @param  cost
+         * @param  is_show
+         * @param  author  苏振文
+         * @param  ctime   2021/1/20 15:03
+         * return  array
+         */
+    public function enteyUp(){
+        $data = self::$accept_data;
+        unset($data['/admin/project/enteyUp']);
+        $data['update_time'] = date('Y-m-d H:i:s');
+        $one = Entey_fee::where(['id'=>$data['id']])->update($data);
+        if($one){
+            return response()->json(['code' => 200 , 'msg' => '修改成功','data'=>$one]);
+        }else{
+            return response()->json(['code' => 202 , 'msg' => '修改失败']);
+        }
+    }
+    /*
+         * @param  删除
+         * @param  id     参数
+         * @param  author  苏振文
+         * @param  ctime   2021/1/20 15:25
+         * return  array
+         */
+    public function enteyDel(){
+        $data = self::$accept_data;
+        $data['update_time'] = date('Y-m-d H:i:s');
+        $data['is_del'] = 1;
+        $one = Entey_fee::where(['id'=>$data['id']])->update($data);
+        if($one){
+            return response()->json(['code' => 200 , 'msg' => '修改成功','data'=>$one]);
+        }else{
+            return response()->json(['code' => 202 , 'msg' => '修改失败']);
+        }
+    }
+    /*
+         * @param  添加
+         * @param  author  苏振文
+         * @param  ctime   2021/1/20 15:25
+         * return  array
+         */
+    public function enteyAdd(){
+        $data = self::$accept_data;
+        unset($data['/admin/project/enteyAdd']);
+        $data['create_time'] = date('Y-m-d H:i:s');
+        $one = Entey_fee::insert($data);
+        if($one){
+            return response()->json(['code' => 200 , 'msg' => '修改成功','data'=>$one]);
+        }else{
+            return response()->json(['code' => 202 , 'msg' => '修改失败']);
+        }
+    }
+
 }
