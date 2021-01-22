@@ -13,6 +13,7 @@ use App\Tools\AlipayFactory;
 use App\Tools\Hfpos\qrcp_E1103;
 use App\Tools\Yl\YinpayFactory;
 use App\Tools\QRcode;
+use Illuminate\Support\Facades\DB;
 use Maatwebsite\Excel\Facades\Excel;
 
 class OrderController extends Controller {
@@ -197,7 +198,7 @@ class OrderController extends Controller {
         $schoolarr = $this->underlingLook(AdminLog::getAdminInfo()->admin_user->school_id);
         $schoolarr = (array)$schoolarr;
         //学员未回访数量
-        $studentCount = Pay_order_inside::whereIn('school_id',$schoolarr['data'])->where(['seas_status'=>0,'pay_status'=>1,'confirm_status'=>3,'return_visit'=>0])->count();
+        $studentCount = Pay_order_inside::whereIn('school_id',$schoolarr['data'])->where(['return_visit'=>0])->count();
         //财务待审核数量
         $financeCount = Pay_order_inside::whereIn('school_id',$schoolarr['data'])->where(['confirm_status'=>0,'pay_status'=>1])->count();
         //退费未处理数量
