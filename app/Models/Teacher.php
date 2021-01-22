@@ -480,7 +480,7 @@ class Teacher extends Model {
         if($list){
             return ['code' => 200, 'msg' => '查询成功', 'data' => $list,'one'=>$one,'page'=>$page];
         }else{
-            return ['code' => 200, 'msg' => '查询暂无数据', 'data' => [],'one'=>[],'page'=>$page];
+            return ['code' => 200, 'msg' => '查询暂无数据', 'data' => [],'one'=>0,'page'=>$page];
         }
 
     }
