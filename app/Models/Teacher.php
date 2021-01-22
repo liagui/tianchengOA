@@ -328,7 +328,17 @@ class Teacher extends Model {
         $page     = isset($data['page']) && $data['page'] > 0 ? $data['page'] : 1;
         $offset   = ($page - 1) * $pagesize;
         //班主任姓名
-        $one = self::select("real_name")->where("id",$data['teacher_id'])->first()->toArray();
+        $one = self::select("real_name")->where("id",$data['teacher_id'])->first();
+        if($one == null){
+            $one =[
+                'real_name' => "",
+                'completed_performance'=> 0,
+                'return_premium'=> 0,
+                'sum_singular'=> 0,
+                'yet_singular'=> 0,
+                'not_singular'=> 0,
+            ];
+        }
         //退费金额
         $one['return_premium'] = DB::table("refund_order")->where(["teacher_id"=>$data['teacher_id'],"refund_plan"=>2,"confirm_status"=>1])->sum("refund_Price");
 
@@ -480,7 +490,7 @@ class Teacher extends Model {
         if($list){
             return ['code' => 200, 'msg' => '查询成功', 'data' => $list,'one'=>$one,'page'=>$page];
         }else{
-            return ['code' => 200, 'msg' => '查询暂无数据', 'data' => [],'one'=>0,'page'=>$page];
+            return ['code' => 200, 'msg' => '查询暂无数据', 'data' => [],'one'=>$one,'page'=>$page];
         }
 
     }
