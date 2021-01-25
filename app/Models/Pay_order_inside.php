@@ -3081,6 +3081,7 @@ class Pay_order_inside extends Model
 
 
     public static function getBranchSchoolIncomeeLists($body=[]){
+        print_r($body);die;
         //分校  项目三级 时间
         //无条件下  查所有订单  根据日期分组
         //查询到账数
@@ -3118,10 +3119,9 @@ class Pay_order_inside extends Model
         if(isset($body['course_id'])){
             $where['course_id'] = $body['course_id'];
         }
-        $begindata="2020-03-04";
+        $begindata="2020-04-08";
         $enddate = date('Y-m-d');
-        print_r($body['create_time']);
-        $timearr = json_decode($body['create_time']);
+
         $statetime = !empty($timearr[0])?$timearr[0]:$begindata;
         $endtime = !empty($timearr[1])?$timearr[1]:$enddate;
         $state_time = $statetime." 00:00:00";
