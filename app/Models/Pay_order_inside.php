@@ -118,15 +118,18 @@ class Pay_order_inside extends Model
             $count = count($order);
             //金额计算
             //已支付金额  流转表中pay_status=1
-//            $partyprice = self::whereIn('school_id',$schoolarr)->whereBetween('create_time', [$state_time, $end_time])->where()
+           $partyprice = self::whereIn('school_id',$schoolarr)->whereBetween('create_time', [$state_time, $end_time])->where('pay_status',1)->sum('pay_price');
                 //已确认金额  流转表中 pay_status=1，confirm_status=2
+           $surecount = self::whereIn('school_id',$schoolarr)->whereBetween('create_time', [$state_time, $end_time])->where('pay_status',1)->where('confirm_status',2)->sum('pay_price');
                 //待确认金额  流转表中 pay_status=1，confirm_status=0
+           $wsurecount = self::whereIn('school_id',$schoolarr)->whereBetween('create_time', [$state_time, $end_time])->where('pay_status',1)->where('confirm_status',0)->sum('pay_price');
                 //已退费金额  退费表中 confirm_status=1，refund_plan=2
+           $refuntcount = Refund_order::whereIn('school_id',$schoolarr)->whereBetween('create_time', [$state_time, $end_time])->where('confirm_status',1)->where('refund_plan',2)->sum('reality_price');
             $paycount=[
-                'paycount' =>'123456',
-                'surecount' =>'123456',
-                'wsurecount' =>'123456',
-                'refuntcount' =>'123456',
+                'paycount' => $partyprice,
+                'surecount' => $surecount,
+                'wsurecount' => $wsurecount,
+                'refuntcount' => $refuntcount,
             ];
         }else{
             //两数组合并
@@ -139,16 +142,19 @@ class Pay_order_inside extends Model
             $count = count($order) + count($external);
             //金额计算
             //已支付金额  流转表中pay_status=1  第三方表 pay_status=1，status=0
-            $wanderprice =
-//            $partyprice =
-                //已确认金额  流转表中 pay_status=1，confirm_status=2
-                //待确认金额  流转表中 pay_status=1，confirm_status=0
-                //已退费金额  退费表中 confirm_status=1，refund_plan=2
+            $wanderprice = Pay_order_external::where(['pay_status'=>1,'status'=>0,'del_flag'=>0])->sum('pay_price');
+            $partyprice = self::whereIn('school_id',$schoolarr)->whereBetween('create_time', [$state_time, $end_time])->where('pay_status',1)->sum('pay_price');
+            $count = $wanderprice + $partyprice;
+            $surecount = self::whereIn('school_id',$schoolarr)->whereBetween('create_time', [$state_time, $end_time])->where('pay_status',1)->where('confirm_status',2)->sum('pay_price');
+            //待确认金额  流转表中 pay_status=1，confirm_status=0
+            $wsurecount = self::whereIn('school_id',$schoolarr)->whereBetween('create_time', [$state_time, $end_time])->where('pay_status',1)->where('confirm_status',0)->sum('pay_price');
+            //已退费金额  退费表中 confirm_status=1，refund_plan=2
+            $refuntcount = Refund_order::whereIn('school_id',$schoolarr)->whereBetween('create_time', [$state_time, $end_time])->where('confirm_status',1)->where('refund_plan',2)->sum('reality_price');
             $paycount=[
-                'paycount' =>'123456',
-                'surecount' =>'123456',
-                'wsurecount' =>'123456',
-                'refuntcount' =>'123456',
+                'paycount' =>$count,
+                'surecount' =>$surecount,
+                'wsurecount' =>$wsurecount,
+                'refuntcount' =>$refuntcount,
             ];
         }
         $date = array_column($all, 'create_time');
