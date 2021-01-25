@@ -3202,8 +3202,8 @@ class Pay_order_inside extends Model
             $lists['intoreturn'] = $lists['intoreturn'] + $refundorderPrice;
             //成本
             $chengben = self::where($where)->whereBetween('create_time', [$school_start_time, $school_end_time])->sum('sum_Price');
-            $listv['countCost'] = $chengben;
-            $lists['countCost'] = $lists['countCost'] + $chengben;
+            $listv['countCost'] = sprintf("%.2f",$chengben);
+            $lists['countCost'] = sprintf("%.2f",$lists['countCost'] + $chengben);
             //报名费用
             $baoming = self::where($where)->whereBetween('create_time', [$school_start_time, $school_end_time])->sum('sign_Price');
             $baomingzong = $chengben + $baoming;
