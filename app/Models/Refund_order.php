@@ -218,6 +218,7 @@ class Refund_order extends Model
             'total'=>$count
         ];
         unset($where['confirm_status']);
+        unset($where['refund_plan']);
         //退费总金额
         $tuicount = self::where($where)->where(function($query) use ($data,$schoolarr,$school_id) {
             if(isset($data['confirm_order_type'])){
