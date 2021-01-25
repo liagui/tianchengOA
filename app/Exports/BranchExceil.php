@@ -24,31 +24,31 @@ use Maatwebsite\Excel\Concerns\FromCollection;
 use Maatwebsite\Excel\Concerns\WithHeadings;
 class BranchExceil implements FromCollection, WithHeadings{
     protected $data;
-    protected $time;
-    public function __construct($invoices,$time){
+    public function __construct($invoices){
         $this->data = $invoices;
-        $this->time = $time;
     }
     public function collection() {
         $body = $this->data;
-        $timearr = $this->time;
             //新数组赋值
             $array = [];
             //获取分校业绩列表
             $list = DB::table('school')->selectRaw('any_value(school.id) as school_id , any_value(count(school.id)) as t_count , any_value(school.one_extraction_ratio) as one_extraction_ratio , any_value(school.two_extraction_ratio) as two_extraction_ratio , any_value(school.school_name) as school_name , any_value(school.level) as level , any_value(school.tax_point) as tax_point , any_value(school.commission) as commission , any_value(school.deposit) as deposit , any_value(sum(pay_order_inside.after_tax_amount)) as after_tax_amount,any_value(pay_order_inside.sum_Price) as sum_Price,any_value(sum(if(pay_order_inside.confirm_status = 1 , pay_order_inside.pay_price , 0))) as pay_price,any_value(sum(pay_order_inside.agent_margin)) as agent_margin,any_value(pay_order_inside.first_out_of_amount) as first_out_of_amount,any_value(pay_order_inside.second_out_of_amount) as second_out_of_amount,any_value(pay_order_inside.education_id) as education_id,any_value(pay_order_inside.major_id) as major_id,any_value(sum(pay_order_inside.sign_Price)) as sign_Price')->leftjoin("pay_order_inside", function ($join) {
                 $join->on('school.id', '=', 'pay_order_inside.school_id');
-            })->where('school.is_del', 0)->where(function ($query) use ($body,$timearr) {
+            })->where('school.is_del', 0)->where(function ($query) use ($body) {
                 //判断分校id是否为空和合法
                 if (isset($body['school_id']) && !empty($body['school_id']) && $body['school_id'] > 0) {
                     $query->where('school.id', '=', $body['school_id']);
                 }
                 //获取日期
-                if (isset($timearr) && !empty($timearr)) {
-                    $create_time = json_decode($timearr,true);
-                    $state_time = $create_time[0] . " 00:00:00";
-                    $end_time = $create_time[1] . " 23:59:59";
-                    $query->whereBetween('pay_order_inside.comfirm_time', [$state_time, $end_time]);
-                }
+                // if (isset($body['search_time']) && !empty($body['search_time'])) {
+                //     $create_time = json_decode($body['search_time']);
+                //     $state_time = $create_time[0] . " 00:00:00";
+                //     $end_time = $create_time[1] . " 23:59:59";
+                //     $query->whereBetween('pay_order_inside.comfirm_time', [$state_time, $end_time]);
+                // }
+                $state_time = $body['search_time'][0] . " 00:00:00";
+                $end_time =$body['search_time'][1] . " 23:59:59";
+                $query->whereBetween('pay_order_inside.comfirm_time', [$state_time, $end_time]);
             })->orderByDesc('school.create_time')->groupBy(DB::raw('school.id'))->get()->toArray();
             //循环获取相关信息
             foreach ($list as $k => $v) {
@@ -87,8 +87,8 @@ class BranchExceil implements FromCollection, WithHeadings{
                     $query->where('school_id', '=', $body['school_id'])->whereIn('confirm_order_type', [2, 3]);
 
                     //获取日期
-                    if (isset($timearr) && !empty($timearr)) {
-                        $create_time = json_decode($timearr);
+                    if (isset($body['search_time']) && !empty($body['search_time'])) {
+                        $create_time = json_decode($body['search_time']);
                         $state_time = $create_time[0] . " 00:00:00";
                         $end_time = $create_time[1] . " 23:59:59";
                         $query->whereBetween('pay_order_inside.comfirm_time', [$state_time, $end_time]);
@@ -99,8 +99,8 @@ class BranchExceil implements FromCollection, WithHeadings{
                     $query->where('school_id', '=', $body['school_id'])->where('education_id', '>', 0)->where('major_id', '>', 0);
 
                     //获取日期
-                    if (isset($timearr) && !empty($timearr)) {
-                        $create_time = json_decode($timearr, true);
+                    if (isset($body['search_time']) && !empty($body['search_time'])) {
+                        $create_time = json_decode($body['search_time'], true);
                         $state_time = $create_time[0] . " 00:00:00";
                         $end_time = $create_time[1] . " 23:59:59";
                         $query->whereBetween('pay_order_inside.comfirm_time', [$state_time, $end_time]);
@@ -114,8 +114,8 @@ class BranchExceil implements FromCollection, WithHeadings{
                     $query->where('school_id', '=', $body['school_id']);
 
                     //获取日期
-                    if (isset($timearr) && !empty($timearr)) {
-                        $create_time = json_decode($timearr, true);
+                    if (isset($body['search_time']) && !empty($body['search_time'])) {
+                        $create_time = json_decode($body['search_time'], true);
                         $state_time = $create_time[0] . " 00:00:00";
                         $end_time = $create_time[1] . " 23:59:59";
                         $query->whereBetween('pay_order_inside.comfirm_time', [$state_time, $end_time]);
