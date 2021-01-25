@@ -39,19 +39,19 @@ class OrderExport implements FromCollection, WithHeadings {
             $where['pay_type'] = $data['pay_type'];
         }
         //支付状态
-        if(isset($data['pay_status'])){
+        if(!empty($data['pay_status'])){
             $where['pay_status'] = $data['pay_status'];
         }
         //订单是否回访
-        if(isset($data['return_visit'])){
+        if(!empty($data['return_visit'])){
             $where['return_visit'] = $data['return_visit'];
         }
         //订单状态
-        if(isset($data['confirm_status'])){
+        if(!empty($data['confirm_status'])){
             $where['confirm_status'] = $data['confirm_status'];
         }
         //学校id
-        if(isset($data['school_id'])){
+        if(!empty($data['school_id'])){
             $where['school_id'] = $data['school_id'];
         }
         //科目id&学科id
@@ -65,7 +65,7 @@ class OrderExport implements FromCollection, WithHeadings {
             }
         }
         //课程id
-        if(isset($data['course_id'])){
+        if(!empty($data['course_id'])){
             $where['course_id'] = $data['course_id'];
         }
         //数据   流转订单 + 第三方支付订单
@@ -75,10 +75,10 @@ class OrderExport implements FromCollection, WithHeadings {
                     ->orwhere('name',$data['order_no'])
                     ->orwhere('mobile',$data['order_no']);
             }
-            if(isset($data['classes'])){
+            if(isset($data['classes']) && !empty($data['classes'])){
                 $query->where('classes',$data['classes']);
             }
-            if(isset($data['confirm_order_type'])){
+            if(isset($data['confirm_order_type']) && !empty($data['confirm_order_type'])){
                 $query->where('confirm_order_type',$data['confirm_order_type']);
             }
             $query->whereIn('school_id',$schoolarr);
