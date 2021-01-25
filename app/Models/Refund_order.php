@@ -137,9 +137,9 @@ class Refund_order extends Model
                 $query->where('confirm_order_type',$data['confirm_order_type']);
             }
             if(isset($data['order_on']) && !empty($data['order_on'])){
-                $query->where('refund_no',$data['order_on'])
-                    ->orwhere('student_name',$data['order_on'])
-                    ->orwhere('phone',$data['order_on']);
+                $query->where('refund_no','like','%'.$data['order_on'].'%')
+                    ->orwhere('student_name','like','%'.$data['order_on'].'%')
+                    ->orwhere('phone','like','%'.$data['order_on'].'%');
             }
             if(!empty($school_id)){
                 $query->whereIn('school_id',$school_id);
@@ -155,9 +155,9 @@ class Refund_order extends Model
                 $query->where('confirm_order_type',$data['confirm_order_type']);
             }
             if(isset($data['order_on']) && !empty($data['order_on'])){
-                $query->where('refund_no',$data['order_on'])
-                    ->orwhere('student_name',$data['order_on'])
-                    ->orwhere('phone',$data['order_on']);
+                $query->where('refund_no','like','%'.$data['order_on'].'%')
+                    ->orwhere('student_name','like','%'.$data['order_on'].'%')
+                    ->orwhere('phone','like','%'.$data['order_on'].'%');
             }
             if(!empty($school_id)){
                 $query->whereIn('school_id',$school_id);
