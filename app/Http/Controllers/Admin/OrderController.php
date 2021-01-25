@@ -514,10 +514,14 @@ class OrderController extends Controller {
          * return  array
          */
     public function getAchievementSchoolListExceil(){
-        if(!isset(self::$accept_data['school_id']) || empty(self::$accept_data['school_id'])){
-            return response()->json(['code' => 201 , 'msg' => '请选择分校']);
+        // if(!isset(self::$accept_data['school_id']) || empty(self::$accept_data['school_id'])){
+        //     return response()->json(['code' => 201 , 'msg' => '请选择分校']);
+        // }
+        $time = [];
+        if(isset(self::$accept_data['search_time']) && !empty(self::$accept_data['search_time'])){
+            $time = json_decode(self::$accept_data['search_time']);
         }
-        return Excel::download(new \App\Exports\BranchExceil(self::$accept_data), '分校业绩.xlsx');
+        return Excel::download(new \App\Exports\BranchExceil(self::$accept_data,$time), '分校业绩.xlsx');
     }
     //支付信息
     public function paylist(){
