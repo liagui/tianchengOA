@@ -33,7 +33,7 @@ class StudentDatum extends Model {
         if(isset($data['school_name'])){
             $school_id = School::select('id')->where('school_name','like','%'.$data['school_name'].'%')->where('is_del',0)->get();
         }
-        print_r($school_id);die;
+        print_r($school_id);
 
         $count = self::leftJoin('pay_order_inside','student_information.order_id','=','pay_order_inside.id')
         	->leftJoin('student','student.id','=','student_information.student_id')
