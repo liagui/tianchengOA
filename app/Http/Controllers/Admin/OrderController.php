@@ -26,6 +26,7 @@ class OrderController extends Controller {
     //订单导出
     public function orderListExceil(){
         $schoolarr = $this->underlingLook(1);
+        print_r($schoolarr);
         return Excel::download(new \App\Exports\OrderExport(self::$accept_data,$schoolarr['data']), '订单总览.xlsx');
     }
     //手动报单
