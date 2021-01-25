@@ -52,7 +52,7 @@ class Pay_order_inside extends Model
             $where['return_visit'] = $data['return_visit'];
         }
         //订单状态
-        if(isset($data['confirm_status'])){
+        if(isset($data['confirm_status']) && $data['confirm_status'] > -1){
             $where['confirm_status'] = $data['confirm_status'];
         }
         //学校id
@@ -113,7 +113,7 @@ class Pay_order_inside extends Model
         ->orderByDesc('id')
         ->get()->toArray();
         //分校只显示流转
-        if(!empty($data['isBranchSchool']) && $data['isBranchSchool'] == true){
+        if(!empty($data['isBranchSchool']) && $data['isBranchSchool'] == true && $data['confirm_status'] == -1){
             $all = $order;
             $count = count($order);
             //金额计算
