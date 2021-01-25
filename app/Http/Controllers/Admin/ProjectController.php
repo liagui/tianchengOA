@@ -698,26 +698,16 @@ class ProjectController extends Controller {
         }
     }
 
-    //学院列表
+    //通过专业列表查询地区报名费
     public function academicList(){
-        $list = Education::where(['is_hide'=>0,'is_del'=>0])->get()->toArray();
-        return response()->json(['code' => 200 , 'msg' => '查询成功','data'=>$list]);
-    }
-
-    /*
-         * @param  院校报名列表
-         * @param  author  苏振文
-         * @param  ctime   2021/1/20 14:38
-         * return  array
-         */
-    public function enteyList(){
-        $data = self::$accept_data;
-        $list = Entey_fee::where(['education_id'=>$data['education_id'],'is_show'=>0,'is_del'=>0])->get()->toArray();
-        if($list){
-            return response()->json(['code' => 200 , 'msg' => '查询成功','data'=>$list]);
-        }else{
-            return response()->json(['code' => 202 , 'msg' => '暂无信息']);
+        $body= self::$accept_data;
+        //判断专业的id是否为空
+        if(!isset($body['education_id']) || $body['education_id'] <= 0){
+            return ['code' => 202 , 'msg' => '院校id不合法'];
         }
+        //通过id获取地区报名费
+        $major_list = Entey_fee::select('id as value','entry_name as label' , 'cost')->where('education_id' , $body['education_id'])->where('is_del' , 0)->get();
+        return ['code' => 200 , 'msg' => '获取地区列表成功' , 'data' => $major_list];
     }
     /*
          * @param  单条详情
