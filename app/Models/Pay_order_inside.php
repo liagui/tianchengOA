@@ -3120,6 +3120,7 @@ class Pay_order_inside extends Model
         }
         $begindata="2020-03-04";
         $enddate = date('Y-m-d');
+        print_r($body['create_time']);die;
         $timearr = json_decode($body['create_time']);
         $statetime = !empty($timearr[0])?$timearr[0]:$begindata;
         $endtime = !empty($timearr[1])?$timearr[1]:$enddate;
