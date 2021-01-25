@@ -375,7 +375,11 @@ class OrderController extends Controller {
             self::$accept_data['schoolId'] = $school_arr['data'];
             //获取专业列表
 //            $data = Pay_order_inside::getBranchSchoolIncomeeList(self::$accept_data);
-            $data = Pay_order_inside::getBranchSchoolIncomeeLists(self::$accept_data);
+            $timearr=[];
+            if(!empty(self::$accept_data['create_time'])){
+                $timearr = json_decode(self::$accept_data['create_time']);
+            }
+            $data = Pay_order_inside::getBranchSchoolIncomeeLists(self::$accept_data,$timearr);
             if($data['code'] == 200){
                 return response()->json(['code' => 200 , 'msg' => '获取列表成功' , 'data' => $data['data']]);
             } else {
