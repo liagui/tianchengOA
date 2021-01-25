@@ -119,6 +119,7 @@ class Pay_order_inside extends Model
         }
         //分校只显示流转
         if(!empty($data['isBranchSchool']) && $data['isBranchSchool'] == true){
+
             $all = $order;
             $count = count($order);
             //金额计算
