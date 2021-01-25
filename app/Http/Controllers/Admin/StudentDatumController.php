@@ -59,7 +59,7 @@ class StudentDatumController extends Controller {
         }catch (Exception $ex) {
             return response()->json(['code' => 500 , 'msg' => $ex->getMessage()]);
         }
-    } 
+    }
     //获取资料的id
     public function getInitiatorById(){
         //获取提交的参数
