@@ -102,7 +102,7 @@ class Pay_order_inside extends Model
             ->orderByDesc('id')
             ->get()->toArray();
             //如果学校名称为空 查询第三方表
-        if(empty($data['school_name'])){
+        if(!isset($data['school_name']) && empty($data['school_name'])){
             $external = Pay_order_external::where(function($query) use ($data,$schoolarr) {
                 if (isset($data['order_no']) && !empty($data['order_no'])) {
                     $query->where('order_no', $data['order_no'])
@@ -138,21 +138,21 @@ class Pay_order_inside extends Model
                 'refuntcount' => $refuntcount,
             ];
         }else{
-            // if($data['confirm_status'] == -1){
-            //     $all = $external;
-            //      //循环查询分类
-            //     $count = count($external);
-            //     //已支付金额 第三方表 pay_status=1，status=0
-            //     $wanderprice = Pay_order_external::where(['pay_status'=>1,'status'=>0,'del_flag'=>0])->sum('pay_price');
-            //     //已退费金额  退费表中 confirm_status=1，refund_plan=2
-            //     $refuntcount = Refund_order::whereIn('school_id',$schoolarr)->whereBetween('create_time', [$state_time, $end_time])->where('confirm_status',1)->where('refund_plan',2)->sum('reality_price');
-            //     $paycount=[
-            //         'paycount' =>$wanderprice,
-            //         'surecount' =>0,
-            //         'wsurecount' =>0,
-            //         'refuntcount' =>$refuntcount,
-            //     ];
-            // }else{
+            if(isset($data['confirm_status']) && $data['confirm_status'] == -1){
+                $all = $external;
+                 //循环查询分类
+                $count = count($all);
+                //已支付金额 第三方表 pay_status=1，status=0
+                $wanderprice = Pay_order_external::where(['pay_status'=>1,'status'=>0,'del_flag'=>0])->sum('pay_price');
+                //已退费金额  退费表中 confirm_status=1，refund_plan=2
+                $refuntcount = Refund_order::whereIn('school_id',$schoolarr)->whereBetween('create_time', [$state_time, $end_time])->where('confirm_status',1)->where('refund_plan',2)->sum('reality_price');
+                $paycount=[
+                    'paycount' =>$wanderprice,
+                    'surecount' =>0,
+                    'wsurecount' =>0,
+                    'refuntcount' =>$refuntcount,
+                ];
+            }else{
                 //两数组合并
                 if (!empty($order) && !empty($external)) {
                     $all = array_merge($order, $external);//合并两个二维数组
@@ -177,7 +177,7 @@ class Pay_order_inside extends Model
                     'wsurecount' =>$wsurecount,
                     'refuntcount' =>$refuntcount,
                 ];
-        //  }
+          }
         }
         $date = array_column($all, 'create_time');
         array_multisort($date, SORT_DESC, $all);
@@ -188,7 +188,7 @@ class Pay_order_inside extends Model
         if(!empty($res)){
             foreach ($res as $k=>&$v){
                 //查学校
-                if(empty($v['school_id']) || $v['school_id'] == 0){
+                if(!isset($v['school_id']) || empty($v['school_id']) || $v['school_id'] == 0){
                         $v['school_name'] = '';
                 }else{
                     $school = School::where(['id'=>$v['school_id']])->first();
@@ -278,7 +278,7 @@ class Pay_order_inside extends Model
                     }
                 }
 
-                if(!empty($v['status']) && $v['status'] == 0){
+                if(isset($v['status']) && strlen($v['status']) >0 && $v['status'] == 0){
                     $v['confirm_status_text'] = '待提交';
                 }else if($v['confirm_status'] == 0){
                     $v['confirm_status_text'] = '待总校财务确认';
