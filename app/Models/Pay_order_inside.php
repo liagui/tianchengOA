@@ -3190,16 +3190,16 @@ class Pay_order_inside extends Model
             $lists['accountCount'] = $lists['accountCount'] + $orderCount;
             //到账金额
             $ordersumPrice = self::where($where)->whereBetween('create_time', [$school_start_time, $school_end_time])->sum('pay_price');
-            $listv['ordersumPrice'] = $ordersumPrice;
-            $lists['intoaccount'] = $lists['intoaccount'] + $ordersumPrice;
+            $listv['ordersumPrice'] = sprintf("%.2f",$ordersumPrice);
+            $lists['intoaccount'] = sprintf("%.2f",$lists['intoaccount'] + $ordersumPrice);
             //退费数量
             $refundorderCount = Refund_order::where(['refund_plan'=>2,'school_id'=>$listv['school_id']])->whereBetween('remit_time', [$school_start_time, $school_end_time])->count();
             $listv['refundorderCount'] = $refundorderCount;
             $lists['returnCount'] = $lists['returnCount'] + $refundorderCount;
             //退费金额
             $refundorderPrice = Refund_order::where(['refund_plan'=>2,'school_id'=>$listv['school_id']])->whereBetween('remit_time', [$school_start_time, $school_end_time])->sum('reality_price');
-            $listv['refundorderPrice'] = $refundorderPrice;
-            $lists['intoreturn'] = $lists['intoreturn'] + $refundorderPrice;
+            $listv['refundorderPrice'] = sprintf("%.2f",$refundorderPrice);
+            $lists['intoreturn'] = sprintf("%.2f",$lists['intoreturn'] + $refundorderPrice);
             //成本
             $chengben = self::where($where)->whereBetween('create_time', [$school_start_time, $school_end_time])->sum('sum_Price');
             $listv['countCost'] = sprintf("%.2f",$chengben);
@@ -3207,20 +3207,20 @@ class Pay_order_inside extends Model
             //报名费用
             $baoming = self::where($where)->whereBetween('create_time', [$school_start_time, $school_end_time])->sum('sign_Price');
             $baomingzong = $chengben + $baoming;
-            $listv['baomingzong'] = $baomingzong;
-            $lists['countPrice'] = $lists['countPrice'] + $baomingzong;
+            $listv['baomingzong'] = sprintf("%.2f",$baomingzong);
+            $lists['countPrice'] = sprintf("%.2f",$lists['countPrice'] + $baomingzong);
             //分校实际佣金
             $yongjin = self::where($where)->whereBetween('create_time', [$school_start_time, $school_end_time])->sum('actual_commission');
-            $listv['yongjin'] = $yongjin;
+            $listv['yongjin'] = sprintf("%.2f",$yongjin);
             //保证金
             $baozhengjin = self::where($where)->whereBetween('create_time', [$school_start_time, $school_end_time])->sum('earnest_money');
-            $listv['baozhengjin'] = $baozhengjin;
+            $listv['baozhengjin'] = sprintf("%.2f",$baozhengjin);
             //收入
             $shouru = $ordersumPrice -$baozhengjin;
-            $listv['shouru'] = $shouru;
-            $lists['practicalEnter'] = $lists['practicalEnter'] + $shouru;
+            $listv['shouru'] = sprintf("%.2f",$shouru);
+            $lists['practicalEnter'] = sprintf("%.2f",$lists['practicalEnter'] + $shouru);
             //总支出
-            $lists['expend'] =$chengben + $refundorderPrice + $baoming;
+            $lists['expend'] =sprintf("%.2f",$chengben + $refundorderPrice + $baoming);
         }
         return ['code' => 200 , 'msg' => '获取列表成功' , 'data' => ['list' =>$list , 'total' => $count, 'pagesize' => $pagesize , 'page' => $page,'count'=>$lists]];
     }
