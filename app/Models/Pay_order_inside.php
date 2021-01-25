@@ -101,17 +101,20 @@ class Pay_order_inside extends Model
             ->whereBetween('create_time', [$state_time, $end_time])
             ->orderByDesc('id')
             ->get()->toArray();
-        $external = Pay_order_external::where(function($query) use ($data,$schoolarr) {
-            if (isset($data['order_no']) && !empty($data['order_no'])) {
-                $query->where('order_no', $data['order_no'])
-                    ->orwhere('name', $data['order_no'])
-                    ->orwhere('mobile', $data['order_no']);
-            }
-        })->where($where)
-            ->where(['pay_status'=>1,'status'=>0])
-        ->whereBetween('create_time', [$state_time, $end_time])
-        ->orderByDesc('id')
-        ->get()->toArray();
+            //如果学校名称为空 查询第三方表
+        if(empty($data['school_name'])){
+            $external = Pay_order_external::where(function($query) use ($data,$schoolarr) {
+                if (isset($data['order_no']) && !empty($data['order_no'])) {
+                    $query->where('order_no', $data['order_no'])
+                        ->orwhere('name', $data['order_no'])
+                        ->orwhere('mobile', $data['order_no']);
+                }
+            })->where($where)
+                ->where(['pay_status'=>1,'status'=>0])
+            ->whereBetween('create_time', [$state_time, $end_time])
+            ->orderByDesc('id')
+            ->get()->toArray();
+        }
         //分校只显示流转
         if(!empty($data['isBranchSchool']) && $data['isBranchSchool'] == true ){
             $all = $order;
