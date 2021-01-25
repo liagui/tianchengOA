@@ -30,10 +30,9 @@ class StudentDatum extends Model {
     	}
         //学校id
         $school_id=[];
-        if(isset($data['school_name'])){
-            $school_id = School::select('id')->where('school_name','like','%'.$data['school_name'].'%')->where('is_del',0)->get();
+        if(isset($body['school_name'])){
+            $school_id = School::select('id')->where('school_name','like','%'.$body['school_name'].'%')->where('is_del',0)->get();
         }
-        print_r($school_id);
 
         $count = self::leftJoin('pay_order_inside','student_information.order_id','=','pay_order_inside.id')
         	->leftJoin('student','student.id','=','student_information.student_id')
