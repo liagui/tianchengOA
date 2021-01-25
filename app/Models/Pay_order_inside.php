@@ -113,7 +113,7 @@ class Pay_order_inside extends Model
         ->orderByDesc('id')
         ->get()->toArray();
         //分校只显示流转
-        if(!empty($data['isBranchSchool']) && $data['isBranchSchool'] == true && $data['confirm_status'] == -1){
+        if(!empty($data['isBranchSchool']) && $data['isBranchSchool'] == true ){
             $all = $order;
             $count = count($order);
             //金额计算
