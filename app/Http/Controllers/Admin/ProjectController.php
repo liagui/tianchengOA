@@ -698,6 +698,11 @@ class ProjectController extends Controller {
         }
     }
 
+    //学院列表
+    public function academicList(){
+        $list = Education::where(['is_hide'=>0,'is_del'=>0])->get()->toArray();
+        return response()->json(['code' => 200 , 'msg' => '查询成功','data'=>$list]);
+    }
 
     /*
          * @param  院校报名列表

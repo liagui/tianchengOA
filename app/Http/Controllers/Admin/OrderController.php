@@ -200,7 +200,7 @@ class OrderController extends Controller {
         //学员未回访数量
         $studentCount = Pay_order_inside::whereIn('school_id',$schoolarr['data'])->where(['return_visit'=>0])->count();
         //财务待审核数量
-        $financeCount = Pay_order_inside::whereIn('school_id',$schoolarr['data'])->where(['confirm_status'=>0,'pay_status'=>1])->count();
+        $financeCount = Pay_order_inside::whereIn('school_id',$schoolarr['data'])->where(['confirm_status'=>0,'pay_status'=>3])->count();
         //退费未处理数量
         $returnCount = Refund_order::whereIn('school_id',$schoolarr['data'])->where(['confirm_status'=>0])->count();
         //待确认订单数量

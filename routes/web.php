@@ -135,6 +135,7 @@ $router->group(['prefix' => 'admin' , 'namespace' => 'Admin','middleware'=> ['jw
         $router->post('doUpdateCategoryEducation', 'ProjectController@doUpdateCategoryEducation');     //修改学历成本关联的项目
 
         //新增学院报名费用（szw）
+        $router->post('academicList', 'ProjectController@academicList');                         //学院列表
         $router->post('enteyList', 'ProjectController@enteyList');                         //学院报名列表
         $router->post('enteyListOne', 'ProjectController@enteyListOne');                         //学院报名单个详情
         $router->post('enteyUp', 'ProjectController@enteyUp');                         //学院报名修改
