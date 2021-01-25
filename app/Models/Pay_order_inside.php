@@ -249,23 +249,21 @@ class Pay_order_inside extends Model
                         $v['first_pay_text'] = '最后一笔尾款';
                     }
                 }
-                if(empty($v['confirm_status'])){
-                    $v['confirm_status_text'] = '';
-                }else{
-                    if(!empty($v['status']) && $v['status'] == 0){
-                        $v['confirm_status_text'] = '待提交';
-                    }else if($v['confirm_status'] == 0){
-                        $v['confirm_status_text'] = '待总校财务确认';
-                    }else if($v['confirm_status'] == 1){
-                        $v['confirm_status_text'] = '待总校确认';
-                    }else if($v['confirm_status'] == 2){
-                        $v['confirm_status_text'] = '已确认';
-                    }else if($v['confirm_status'] == 3){
-                        $v['confirm_status_text'] = '被财务驳回';
-                    }else if($v['confirm_status'] == 4){
-                        $v['confirm_status_text'] = '被总校驳回';
-                    }
+
+                if(!empty($v['status']) && $v['status'] == 0){
+                    $v['confirm_status_text'] = '待提交';
+                }else if($v['confirm_status'] == 0){
+                    $v['confirm_status_text'] = '待总校财务确认';
+                }else if($v['confirm_status'] == 1){
+                    $v['confirm_status_text'] = '待总校确认';
+                }else if($v['confirm_status'] == 2){
+                    $v['confirm_status_text'] = '已确认';
+                }else if($v['confirm_status'] == 3){
+                    $v['confirm_status_text'] = '被财务驳回';
+                }else if($v['confirm_status'] == 4){
+                    $v['confirm_status_text'] = '被总校驳回';
                 }
+
                 //course  课程
                 $course = Course::select('course_name')->where(['id'=>$v['course_id']])->first();
                 $v['course_name'] = $course['course_name'];
