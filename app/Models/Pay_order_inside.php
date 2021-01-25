@@ -3081,7 +3081,7 @@ class Pay_order_inside extends Model
 
 
     public static function getBranchSchoolIncomeeLists($body=[]){
-        print_r($body);die;
+
         //分校  项目三级 时间
         //无条件下  查所有订单  根据日期分组
         //查询到账数

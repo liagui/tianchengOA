@@ -373,7 +373,7 @@ class OrderController extends Controller {
 
             //分校的id传递
             self::$accept_data['schoolId'] = $school_arr['data'];
-
+  print_r(self::$accept_data);die;
             //获取专业列表
 //            $data = Pay_order_inside::getBranchSchoolIncomeeList(self::$accept_data);
             $data = Pay_order_inside::getBranchSchoolIncomeeLists(self::$accept_data);
