@@ -3202,13 +3202,13 @@ class Pay_order_inside extends Model
             $lists['intoreturn'] = $lists['intoreturn'] + $refundorderPrice;
             //成本
             $chengben = self::where($where)->whereBetween('create_time', [$school_start_time, $school_end_time])->sum('sum_Price');
-            $listv['countCost'] = number_format($chengben,2);
-            $lists['countCost'] = number_format($lists['countCost'] + $chengben,2);
+            $listv['countCost'] = $chengben;
+            $lists['countCost'] = $lists['countCost'] + $chengben;
             //报名费用
             $baoming = self::where($where)->whereBetween('create_time', [$school_start_time, $school_end_time])->sum('sign_Price');
             $baomingzong = $chengben + $baoming;
-            $listv['baomingzong'] = number_format($baomingzong,2);
-            $lists['countPrice'] = number_format($lists['countPrice'] + $baomingzong,2);
+            $listv['baomingzong'] = $baomingzong;
+            $lists['countPrice'] = $lists['countPrice'] + $baomingzong;
             //分校实际佣金
             $yongjin = self::where($where)->whereBetween('create_time', [$school_start_time, $school_end_time])->sum('actual_commission');
             $listv['yongjin'] = $yongjin;
