@@ -114,6 +114,8 @@ class Pay_order_inside extends Model
             ->whereBetween('create_time', [$state_time, $end_time])
             ->orderByDesc('id')
             ->get()->toArray();
+        }else{
+            $external = [];
         }
         //分校只显示流转
         if(!empty($data['isBranchSchool']) && $data['isBranchSchool'] == true ){
