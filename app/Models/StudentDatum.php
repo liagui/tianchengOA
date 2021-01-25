@@ -33,13 +33,14 @@ class StudentDatum extends Model {
         if(isset($data['school_name'])){
             $school_id = School::select('id')->where('school_name','like','%'.$data['school_name'].'%')->where('is_del',0)->get();
         }
+        print_r($school_id);die;
 
         $count = self::leftJoin('pay_order_inside','student_information.order_id','=','pay_order_inside.id')
         	->leftJoin('student','student.id','=','student_information.student_id')
 
         	->where(function($query) use ($body,$oneSubject,$twoSubject,$school_id) {
                 if(!empty($school_id)){
-                    $query->where('student_information.school_id',$school_id);
+                    $query->whereIn('student_information.school_id',$school_id);
                 }else{
                     $query->whereIn('student_information.school_id',$body['school_ids']['data']);
                 }
