@@ -33,7 +33,7 @@ class Material extends Model {
         $count = self::select('material.submit_time', 'material.create_name', 'material.school_id', 'material.status', 'material.id',"material.submit_name")->where(function($query) use ($data,$school_id,$school_arr) {
 
             if(isset($school_arr) && !empty($school_arr)){
-                $query->where('material.school_id',$school_arr);
+                $query->whereIn('material.school_id',$school_arr);
             }else{
                 $query->whereIn('material.school_id',$school_id['data']);
             }
@@ -47,7 +47,7 @@ class Material extends Model {
         //分页数据
         $data = self::select('material.submit_time', 'material.create_name','create_name','create_id','material.school_id', 'material.status', 'material.id','material.courier_company','material.courier_number','material.courier_note','material.delivery_time')->where(function($query) use ($data,$school_id,$school_arr) {
             if(isset($school_arr) && !empty($school_arr)){
-                $query->where('material.school_id',$school_arr);
+                $query->whereIn('material.school_id',$school_arr);
             }else{
                 $query->whereIn('material.school_id',$school_id['data']);
             }
