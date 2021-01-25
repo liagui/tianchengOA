@@ -132,10 +132,10 @@ class Pay_order_inside extends Model
                 //已退费金额  退费表中 confirm_status=1，refund_plan=2
            $refuntcount = Refund_order::whereIn('school_id',$schoolarr)->whereBetween('create_time', [$state_time, $end_time])->where('confirm_status',1)->where('refund_plan',2)->sum('reality_price');
             $paycount=[
-                'paycount' => $partyprice,
-                'surecount' => $surecount,
-                'wsurecount' => $wsurecount,
-                'refuntcount' => $refuntcount,
+                'paycount' => sprintf("%.2f",$partyprice),
+                'surecount' => sprintf("%.2f",$surecount),
+                'wsurecount' => sprintf("%.2f",$wsurecount),
+                'refuntcount' => sprintf("%.2f",$refuntcount),
             ];
         }else{
             if(isset($data['confirm_status']) && $data['confirm_status'] == -1){
@@ -147,10 +147,10 @@ class Pay_order_inside extends Model
                 //已退费金额  退费表中 confirm_status=1，refund_plan=2
                 $refuntcount = Refund_order::whereIn('school_id',$schoolarr)->whereBetween('create_time', [$state_time, $end_time])->where('confirm_status',1)->where('refund_plan',2)->sum('reality_price');
                 $paycount=[
-                    'paycount' =>$wanderprice,
+                    'paycount' =>sprintf("%.2f",$wanderprice),
                     'surecount' =>0,
                     'wsurecount' =>0,
-                    'refuntcount' =>$refuntcount,
+                    'refuntcount' =>sprintf("%.2f",$refuntcount),
                 ];
             }else{
                 //两数组合并
@@ -172,10 +172,10 @@ class Pay_order_inside extends Model
                 //已退费金额  退费表中 confirm_status=1，refund_plan=2
                 $refuntcount = Refund_order::whereIn('school_id',$schoolarr)->whereBetween('create_time', [$state_time, $end_time])->where('confirm_status',1)->where('refund_plan',2)->sum('reality_price');
                 $paycount=[
-                    'paycount' =>$counts,
-                    'surecount' =>$surecount,
-                    'wsurecount' =>$wsurecount,
-                    'refuntcount' =>$refuntcount,
+                    'paycount' =>sprintf("%.2f",$counts),
+                    'surecount' =>sprintf("%.2f",$surecount),
+                    'wsurecount' =>sprintf("%.2f",$wsurecount),
+                    'refuntcount' =>sprintf("%.2f",$refuntcount),
                 ];
           }
         }
