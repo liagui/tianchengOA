@@ -138,7 +138,7 @@ class Pay_order_inside extends Model
                 'refuntcount' => $refuntcount,
             ];
         }else{
-            if($data['confirm_status'] == -1){
+            if($data['confirm_status'] == '-1'){
                 $all = $external;
                  //循环查询分类
                  $count = count($external);
