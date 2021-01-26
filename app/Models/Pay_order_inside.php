@@ -4010,6 +4010,7 @@ class Pay_order_inside extends Model
                     //    $agent_margin = $v['agent_margin'] && !empty($v['agent_margin']) ? $v['agent_margin'] : 0;
 
                        //一级分校下面的所有二级分校
+                       $agent_margin = 0;
                        $seond_school_id = School::select('id','deposit','tax_point','one_extraction_ratio')->where('parent_id', $v['school_id'])->where('level', 2)->get()->toArray();
                        $seond_school_ids = array_column($seond_school_id, 'id');
                        if(!empty($seond_school_id)){
@@ -4055,8 +4056,6 @@ class Pay_order_inside extends Model
                                 }
                             }
                             $agent_margin = sprintf("%01.2f",$firstprice) + sprintf("%01.2f",$seedprice);
-                       }else{
-                           $agent_margin = 0;
                        }
                        //一级分校的实际返佣=返佣金额-一级分校的保证金+（二级分校的一级抽离金额+三级分校的一级抽离金额）*（1-押金比例）-（一级分校退费*返佣比例+二级分校退费*二级分校1级抽离比例+三级分校退费*二级分校1级抽离比例）
                         //二级分校的一级抽离金额
