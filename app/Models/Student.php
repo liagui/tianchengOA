@@ -800,6 +800,7 @@ class Student extends Model {
                 $add['course_id'] = $order['course_id'];
                 $add['initiator_id'] = $admin['id'];
                 $add['create_time'] = date("Y-m-d H:i:s");
+                $add['datum_create_time'] = date("Y-m-d H:i:s");
                 DB::table("student_information")->insert($add);
                 return ['code' => 200 , 'msg' => '更改资料收集状态成功'];
             }
