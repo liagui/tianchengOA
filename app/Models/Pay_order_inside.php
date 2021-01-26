@@ -1433,7 +1433,7 @@ class Pay_order_inside extends Model
          */
     public static function rejectOrder($data,$schoolarr){
         $where['del_flag'] = 0;  //未删除
-        $where['confirm_status'] = 2;  //已驳回
+
         //科目id&学科id
         if(!empty($data['project_id'])){
             $parent = json_decode($data['project_id'], true);
@@ -1496,6 +1496,7 @@ class Pay_order_inside extends Model
                 $query->whereIn('pay_type', $paytype);
             }
             $query->whereIn('school_id',$schoolarr);
+            $query->whereIn('confirm_status',[3,4]);
         })
         ->whereBetween('create_time', [$state_time, $end_time])
         ->where($where)
@@ -1515,6 +1516,7 @@ class Pay_order_inside extends Model
                 $query->whereIn('pay_type', $paytype);
             }
             $query->whereIn('school_id',$schoolarr);
+            $query->whereIn('confirm_status',[3,4]);
         })
         ->where($where)
         ->where('pay_status','!=',2)
