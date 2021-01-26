@@ -586,20 +586,38 @@ class Refund_order extends Model
                         $orderone['school_name'] = $school['school_name'];
                     }
                 }
-                if($orderone['pay_type'] == 1){
-                    $orderone['pay_type_text'] = '微信';
-                }else if ($orderone['pay_type'] == 2){
-                    $orderone['pay_type_text'] = '支付宝';
-                }else if ($orderone['pay_type'] == 3){
-                    $orderone['pay_type_text'] = '汇聚微信';
-                }else if ($orderone['pay_type'] == 4){
-                    $orderone['pay_type_text'] = '汇聚支付宝';
-                }else if ($orderone['pay_type'] == 5){
-                    $orderone['pay_type_text'] = '银行卡支付';
-                }else if ($orderone['pay_type'] == 6){
-                    $orderone['pay_type_text'] = '对公转账';
-                }else if ($orderone['pay_type'] == 7){
-                    $orderone['pay_type_text'] = '支付宝账号对公';
+                if($v['pay_type'] <= 9){
+                    if(!empty($v['offline_id'])){
+                        $chnnel = Channel::where(['id'=>$v['offline_id']])->first();
+                        if($v['pay_type'] == 1){
+                            $v['pay_type_text'] = $chnnel['channel_name'].'-微信';
+                        }else if ($v['pay_type'] == 2){
+                            $v['pay_type_text'] = $chnnel['channel_name'].'-支付宝';
+                        }else if ($v['pay_type'] == 3){
+                            $v['pay_type_text'] = $chnnel['channel_name'].'-汇聚-微信';
+                        }else if ($v['pay_type'] == 4){
+                            $v['pay_type_text'] =$chnnel['channel_name'].'-汇聚-支付宝';
+                        }else if ($v['pay_type'] == 5 ||$v['pay_type'] == 8||$v['pay_type'] == 9){
+                            $v['pay_type_text'] =$chnnel['channel_name'].'-银联';
+                        }else if ($v['pay_type'] == 6){
+                            $v['pay_type_text'] =$chnnel['channel_name'].'-汇付';
+                        }
+                    }else{
+                        $v['pay_type_text']='';
+                    }
+                }else{
+                    if(!empty($v['offline_id'])){
+                        $offline = OfflinePay::where(['id'=>$v['offline_id']])->first();
+                        if ($v['pay_type'] == 10){
+                            $v['pay_type_text'] = '银行卡支付-'.$offline['account_name'];
+                        }else if ($v['pay_type'] == 11){
+                            $v['pay_type_text'] = '对公转账-'.$offline['account_name'];
+                        }else if ($v['pay_type'] == 12){
+                            $v['pay_type_text'] = '支付宝账号对公-'.$offline['account_name'];
+                        }
+                    }else{
+                        $v['pay_type_text']='';
+                    }
                 }
                 if($orderone['pay_status'] == 0){
                     $orderone['pay_status_text'] = '未支付';
@@ -649,16 +667,18 @@ class Refund_order extends Model
                         $orderone['first_pay_text'] = '最后一笔尾款';
                     }
                 }
-                if(empty($orderone['confirm_status'])){
-                    $orderone['confirm_status_text'] = '';
-                }else{
-                    if($orderone['confirm_status'] == 0){
-                        $orderone['confirm_status_text'] = '未确认';
-                    }else if($orderone['confirm_status'] == 1){
-                        $orderone['confirm_status_text'] = '确认';
-                    }else if($orderone['confirm_status'] == 2){
-                        $orderone['confirm_status_text'] = '驳回';
-                    }
+                if(isset($v['status']) && strlen($v['status']) >0 && $v['status'] == 0){
+                    $v['confirm_status_text'] = '待提交';
+                }else if($v['confirm_status'] == 0){
+                    $v['confirm_status_text'] = '待总校财务确认';
+                }else if($v['confirm_status'] == 1){
+                    $v['confirm_status_text'] = '待总校确认';
+                }else if($v['confirm_status'] == 2){
+                    $v['confirm_status_text'] = '已确认';
+                }else if($v['confirm_status'] == 3){
+                    $v['confirm_status_text'] = '被财务驳回';
+                }else if($v['confirm_status'] == 4){
+                    $v['confirm_status_text'] = '被总校驳回';
                 }
                 //course  课程
                 $course = Course::select('course_name')->where(['id'=>$orderone['course_id']])->first();
