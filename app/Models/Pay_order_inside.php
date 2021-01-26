@@ -4026,30 +4026,30 @@ class Pay_order_inside extends Model
                     //    $agent_margin = $v['agent_margin'] && !empty($v['agent_margin']) ? $v['agent_margin'] : 0;
 
                        //一级分校下面的所有二级分校
-                       $seond_school_id = School::select('id')->where('parent_id', $v['school_id'])->where('level', 2)->get()->toArray();
+                       $seond_school_id = School::select('id','deposit')->where('parent_id', $v['school_id'])->where('level', 2)->get()->toArray();
                        $seond_school_ids = array_column($seond_school_id, 'id');
-                    //    if(!empty($seond_school_id)){
-                    //        //循环分校 查询每个分校一级抽离*押金比例
-                    //        $firstprice=0;
-                    //         foreach($seond_school_id as $onek=>$onev){
-                    //             $oneprice = self::where(['school_id'=>$onev['id'],'pay_status'=>1,'confirm_status'=>2])->sum('first_out_of_amount');
-                    //             $oneschoolprice = $oneprice * $onev['deposit'];
-                    //             $firstprice = $firstprice + $oneschoolprice;
-                    //         }
-                    //         $seedprice = 0;
-                            $three_school_id = School::select('id')->whereIn('parent_id', $seond_school_ids)->where('level', 3)->get()->toArray();
+                       if(!empty($seond_school_id)){
+                           //循环分校 查询每个分校一级抽离*押金比例
+                           $firstprice=0;
+                            foreach($seond_school_id as $onek=>$onev){
+                                $oneprice = self::where(['school_id'=>$onev['id'],'pay_status'=>1,'confirm_status'=>2])->sum('first_out_of_amount');
+                                $oneschoolprice = $oneprice * ($onev['deposit']/100);
+                                $firstprice = $firstprice + $oneschoolprice;
+                            }
+                            $seedprice = 0;
+                            $three_school_id = School::select('id','deposit')->whereIn('parent_id', $seond_school_ids)->where('level', 3)->get()->toArray();
                             $three_school_ids = array_column($three_school_id, 'id');
-                    //         if(!empty($three_school_id)){
-                    //             foreach($three_school_id as $twok=>$twov){
-                    //                 $twoprice = self::where(['school_id'=>$twov['id'],'pay_status'=>1,'confirm_status'=>2])->sum('first_out_of_amount');
-                    //                 $twoschoolprice = $twoprice * $twov['one_extraction_ratio'];
-                    //                 $seedprice = $seedprice + $twoschoolprice;
-                    //             }
-                    //         }
-                    //         $agent_margin = $firstprice + $seedprice;
-                    //    }else{
+                            if(!empty($three_school_id)){
+                                foreach($three_school_id as $twok=>$twov){
+                                    $twoprice = self::where(['school_id'=>$twov['id'],'pay_status'=>1,'confirm_status'=>2])->sum('first_out_of_amount');
+                                    $twoschoolprice = $twoprice * ($twov['deposit']/100);
+                                    $seedprice = $seedprice + $twoschoolprice;
+                                }
+                            }
+                            $agent_margin = $firstprice + $seedprice;
+                       }else{
                            $agent_margin = 0;
-                    //    }
+                       }
                        //一级分校的实际返佣=返佣金额-一级分校的保证金+（二级分校的一级抽离金额+三级分校的一级抽离金额）*（1-押金比例）-（一级分校退费*返佣比例+二级分校退费*二级分校1级抽离比例+三级分校退费*二级分校1级抽离比例）
                         //二级分校的一级抽离金额
                         $first_out_of_amount1 = self::whereIn('school_id', $seond_school_ids)->sum('first_out_of_amount');
