@@ -71,6 +71,7 @@ class Refund_order extends Model
             'project_id' => $data['project_id'],
             'subject_id' => $data['subject_id'],
             'pay_credentials' => $credentialss,
+            'remit_time' => date('Y-m-d H:i:s'),
         ];
         $add = self::insert($res);
         if($add){
