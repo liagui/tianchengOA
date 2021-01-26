@@ -828,21 +828,21 @@ class Pay_order_inside extends Model
             if($school['tax_point'] == 0 && strlen($school['tax_point'])  > 0){
                 $kousui = 0;
             }else{
-                $kousui = $daokuan * ($school['tax_point']/100);
+                $kousui = $daokuan * ((int)$school['tax_point']/100);
             }
             $suihou = $daokuan - $kousui; //税后金额
             //////////////////////////////////
             if($school['commission'] == 0 && strlen($school['commission'])  > 0){
                 $fanyong = 0;
             }else{
-                $fanyong = $daokuan * ($school['commission']/100); //返佣金额
+                $fanyong = $daokuan * ((int)$school['commission']/100); //返佣金额
             }
             ///////////////////
 
             if($school['deposit'] == 0 && strlen($school['deposit'])  > 0){
                 $baozhengjin = 0;
             }else{
-                $baozhengjin = $fanyong * ($school['deposit']/100); //保证金
+                $baozhengjin = $fanyong * ((int)$school['deposit']/100); //保证金
             }
             //一级没有保证金  二级给一级代理保证金  三级给二级代理保证金
             if($school['level'] == 1){
@@ -852,16 +852,16 @@ class Pay_order_inside extends Model
                 //一级分校的实际返佣=返佣金额-一级分校的保证金+（二级分校的一级抽离金额+三级分校的一级抽离金额）*（1-押金比例）
             }else if($school['level'] == 2){
                 //一级抽离金额
-                $yijichoulijine = $daokuan * ($school['one_extraction_ratio']/100);
+                $yijichoulijine = $daokuan * ((int)$school['one_extraction_ratio']/100);
                 $dailibaozhengjin = $yijichoulijine * $school['deposit'];
                 $erjichoulijine = 0;
                 //二级分校的实际返佣=二级分校的返佣金额-二级分校的保证金+三级分校的二级抽离金额*（1-押金比例）
             }else if($school['level'] == 3){
                 //一级抽离金额
-                $yijichoulijine = $daokuan * ($school['one_extraction_ratio']/100);
+                $yijichoulijine = $daokuan * ((int)$school['one_extraction_ratio']/100);
                 //二级抽离金额
-                $erjichoulijine = $daokuan * ($school['two_extraction_ratio']/100);
-                $dailibaozhengjin = $erjichoulijine * ($school['deposit']/100);
+                $erjichoulijine = $daokuan * ((int)$school['two_extraction_ratio']/100);
+                $dailibaozhengjin = $erjichoulijine * ((int)$school['deposit']/100);
                 //三级分校的实际返佣=三级分校的返佣金额
             }
             //查成本
