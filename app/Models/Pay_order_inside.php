@@ -1785,10 +1785,15 @@ class Pay_order_inside extends Model
         if(isset($data['school_id'])){
             $where['school_id'] = $data['school_id'];
         }
-        //支付方式
-        if(!empty($data['pay_type'])){
-            $where['pay_type'] = $data['pay_type'];
-        }
+         //支付方式
+         $paytype=[];
+         if(isset($data['pay_type']) && !empty($data['pay_type'])){
+             if($data['pay_type'] == 5){
+                 $paytype = [5,8,9];
+             }else{
+                 $paytype = [$data['pay_type']];
+             }
+         }
         //订单类型
         if(isset($data['confirm_order_type'])){
             $where['confirm_order_type'] = $data['confirm_order_type'];
@@ -1816,7 +1821,7 @@ class Pay_order_inside extends Model
         $page     = isset($data['page']) && $data['page'] > 0 ? $data['page'] : 1;
         $offset   = ($page - 1) * $pagesize;
 
-        $count = self::where(function($query) use ($data) {
+        $count = self::where(function($query) use ($data,$paytype) {
             if(isset($data['pay_status'])){
                 $query->where('pay_status',$data['pay_status']);
             }
@@ -1824,6 +1829,9 @@ class Pay_order_inside extends Model
                 $query->where('order_no',$data['order_no'])
                     ->orwhere('name',$data['order_no'])
                     ->orwhere('mobile',$data['order_no']);
+            }
+            if(!empty($paytype)){
+                $query->whereIn('pay_type', $paytype);
             }
         })
         ->where($where)
@@ -1831,7 +1839,7 @@ class Pay_order_inside extends Model
         ->whereBetween('create_time', [$state_time, $end_time])
         ->count();
         //数据   流转订单
-        $order = self::where(function($query) use ($data) {
+        $order = self::where(function($query) use ($data,$paytype) {
             if(isset($data['pay_status'])){
                 $query->where('pay_status',$data['pay_status']);
             }
@@ -1839,6 +1847,9 @@ class Pay_order_inside extends Model
                 $query->where('order_no',$data['order_no'])
                     ->orwhere('name',$data['order_no'])
                     ->orwhere('mobile',$data['order_no']);
+            }
+            if(!empty($paytype)){
+                $query->whereIn('pay_type', $paytype);
             }
         })
         ->where($where)
