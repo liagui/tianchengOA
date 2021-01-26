@@ -515,6 +515,7 @@ class Pay_order_inside extends Model
     public static function awaitOrder($data,$schoolarr){
         $where['del_flag'] = 0;  //未删除
         $where['pay_status'] = 1;  //支付状态
+        //总校判断的是财务审核过的
         if(!isset($data['isBranchSchool']) || empty($data['isBranchSchool']) || $data['isBranchSchool'] != true){
             $where['confirm_status'] = 1;  //审核状态
         }
