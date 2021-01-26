@@ -59,6 +59,7 @@ class Pay_order_apply extends Model
         $count = 0;
         if(!empty($order)){
             foreach ($order as $k=>&$v){
+                $v['pay_price'] = $v['price'];
                 $count++;
                 //查学校
                 $school = School::where(['id'=>$v['school_id']])->first();
