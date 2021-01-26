@@ -1336,12 +1336,12 @@ class Pay_order_inside extends Model
         //         return ['code' => 201 , 'msg' => '所填金额大于支付金额'];
         //     }
         // }
-        if($data['confirm_order_type'] == 3){
-            $ppppp = $data['course_Price'] + $data['sign_Price'];
-            if($ppppp > $external['pay_price']){
-                return ['code' => 201 , 'msg' => '所填金额大于支付金额'];
-            }
-        }
+        // if($data['confirm_order_type'] == 3){
+        //     $ppppp = $data['course_Price'] + $data['sign_Price'];
+        //     if($ppppp > $external['pay_price']){
+        //         return ['code' => 201 , 'msg' => '所填金额大于支付金额'];
+        //     }
+        // }
         //入库
         $insert=[
             'name' => $data['name'],//姓名
@@ -1369,7 +1369,7 @@ class Pay_order_inside extends Model
             'pay_voucher_user_id' => $admin['id'], //上传凭证人
             'pay_voucher_time' => date('Y-m-d H:i:s'), //上传凭证时间
             'pay_voucher' => isset($data['pay_voucher'])?$data['pay_voucher']:'', //支付凭证
-            'course_Price' => isset($data['course_Price'])?$data['course_Price']:0,
+            'course_Price' => $external['pay_price'],
             'sum_Price' => $external['pay_price'],
             'sign_Price' => isset($data['sign_Price'])?$data['sign_Price']:0,
             'admin_id' => $admin['id'],
