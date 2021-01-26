@@ -4102,7 +4102,7 @@ class Pay_order_inside extends Model
                                 $oneschoolprices = $actual_receipts * ($onev['one_extraction_ratio']/100);
                                 //代理保证金
                                 $twoschoolprice = $oneschoolprices*($onev['deposit']/100);
-                                $agent_margin = $agent_margin + $twoschoolprice;
+                                $agent_margin = $agent_margin + sprintf("%01.2f",$twoschoolprice);
                            }
                        }
                        //三级分校的二级抽离金额
