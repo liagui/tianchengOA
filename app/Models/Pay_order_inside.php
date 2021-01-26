@@ -3285,7 +3285,7 @@ class Pay_order_inside extends Model
             $baozhengjin = self::where($where)->whereBetween('create_time', [$school_start_time, $school_end_time])->sum('earnest_money');
             $listv['baozhengjin'] = sprintf("%.2f",$baozhengjin);
             //收入
-            $shouru = $ordersumPrice -$baozhengjin - $baozhengjin;
+            $shouru = $ordersumPrice - $baozhengjin - $baoming;
             $listv['shouru'] = sprintf("%.2f",$shouru);
             $lists['practicalEnter'] = sprintf("%.2f",$lists['practicalEnter'] + $shouru);
             //总支出
