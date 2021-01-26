@@ -4052,9 +4052,9 @@ class Pay_order_inside extends Model
                        }
                        //一级分校的实际返佣=返佣金额-一级分校的保证金+（二级分校的一级抽离金额+三级分校的一级抽离金额）*（1-押金比例）-（一级分校退费*返佣比例+二级分校退费*二级分校1级抽离比例+三级分校退费*二级分校1级抽离比例）
                         //二级分校的一级抽离金额
-                        $first_out_of_amount1 = self::whereIn('school_id', $seond_school_ids)->sum('first_out_of_amount');
+                        $first_out_of_amount1 = self::whereIn('school_id', $seond_school_ids)->where(['pay_status'=>1,'confirm_status'=>2])->sum('first_out_of_amount');
                         //三级分校的一级抽离金额
-                        $first_out_of_amount2 = self::whereIn('school_id', $three_school_ids)->sum('first_out_of_amount');
+                        $first_out_of_amount2 = self::whereIn('school_id', $three_school_ids)->where(['pay_status'=>1,'confirm_status'=>2])->sum('first_out_of_amount');
                         //一级分校退费金额
                         $first_refund_Price = Refund_order::where('school_id', $v['school_id'])->where('confirm_status', 1)->sum('refund_Price');
                         //二级分校退费金额
@@ -4070,7 +4070,7 @@ class Pay_order_inside extends Model
 
                        //二级分校的一级抽离比例一级抽离比例
                        $first_out_of_amount = $v['one_extraction_ratio'] && !empty($v['one_extraction_ratio']) ? $v['one_extraction_ratio'] : '';
-                       $first_out_of_money = !empty($v['first_out_of_amount']) && $v['first_out_of_amount'] > 0 ? $v['first_out_of_amount'] : '';
+                       $first_out_of_money = self::where('school_id', $v['school_id'])->where(['pay_status'=>1,'confirm_status'=>2])->sum('first_out_of_amount');
                        $second_out_of_amount = '';
                        $second_out_of_money = '';
                        //代理保证金
