@@ -4135,7 +4135,7 @@ class Pay_order_inside extends Model
                        $three_refund_Price = Refund_order::where('school_id', $v['school_id'])->where('confirm_status', 1)->sum('refund_Price');
 
                        //返佣 - 保证金-代理保证金 + 所有抽离金额
-                       $actual_commission_refund = sprintf("%01.2f",$commission_money - $bond - $agent_margin + $first_out_of_money + $second_out_of_money);
+                       $actual_commission_refund = sprintf("%01.2f",$commission_money - $bond  + $first_out_of_money + $second_out_of_money);
                    }
                    //数组赋值
                    $array[] = [
