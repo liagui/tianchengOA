@@ -149,6 +149,9 @@ class StudentDatum extends Model {
         if(!isset($body['id']) || empty($body['id']) || $body['id'] <= 0 ){
             return ['code' => 201 , 'msg' => 'id不合法'];
         }
+        if(!isset($body['moban_type']) || empty($body['moban_type'])){
+            $body['moban_type'] = 4;
+        }
 
         //1消防2学历3中专4健康
         if($body['moban_type'] == 1){
