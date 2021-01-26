@@ -1678,7 +1678,7 @@ class Pay_order_inside extends Model
             'reject_admin_id' => $admin['id'],
             'reject_time' => date('Y-m-d H:i:s'),
             'reject_des' => $data['reject_des'],
-            'confirm_status' => 2
+            'confirm_status' => 4
         ];
         $up = self::where(['id'=>$data['id']])->update($redate);
         if($up){
