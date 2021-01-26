@@ -196,7 +196,7 @@ class Pay_order_inside extends Model
                         $v['school_name'] = $school['school_name'];
                     }
                 }
-                if($v['pay_type'] <= 4){
+                if($v['pay_type'] <= 9){
                     if(!empty($v['offline_id'])){
                         $chnnel = Channel::where(['id'=>$v['offline_id']])->first();
                         if($v['pay_type'] == 1){
@@ -207,6 +207,10 @@ class Pay_order_inside extends Model
                             $v['pay_type_text'] = $chnnel['channel_name'].'-汇聚-微信';
                         }else if ($v['pay_type'] == 4){
                             $v['pay_type_text'] =$chnnel['channel_name'].'-汇聚-支付宝';
+                        }else if ($v['pay_type'] == 5 ||$v['pay_type'] == 8||$v['pay_type'] == 9){
+                            $v['pay_type_text'] =$chnnel['channel_name'].'-银联';
+                        }else if ($v['pay_type'] == 6){
+                            $v['pay_type_text'] =$chnnel['channel_name'].'-汇付';
                         }
                     }else{
                         $v['pay_type_text']='';
@@ -214,11 +218,11 @@ class Pay_order_inside extends Model
                 }else{
                     if(!empty($v['offline_id'])){
                         $offline = OfflinePay::where(['id'=>$v['offline_id']])->first();
-                        if ($v['pay_type'] == 5){
+                        if ($v['pay_type'] == 10){
                             $v['pay_type_text'] = '银行卡支付-'.$offline['account_name'];
-                        }else if ($v['pay_type'] == 6){
+                        }else if ($v['pay_type'] == 11){
                             $v['pay_type_text'] = '对公转账-'.$offline['account_name'];
-                        }else if ($v['pay_type'] == 7){
+                        }else if ($v['pay_type'] == 12){
                             $v['pay_type_text'] = '支付宝账号对公-'.$offline['account_name'];
                         }
                     }else{
@@ -602,7 +606,7 @@ class Pay_order_inside extends Model
                 if($school){
                     $v['school_name'] = $school['school_name'];
                 }
-                if($v['pay_type'] <= 4){
+                if($v['pay_type'] <= 9){
                     if(!empty($v['offline_id'])){
                         $chnnel = Channel::where(['id'=>$v['offline_id']])->first();
                         if($v['pay_type'] == 1){
@@ -613,6 +617,10 @@ class Pay_order_inside extends Model
                             $v['pay_type_text'] = $chnnel['channel_name'].'-汇聚-微信';
                         }else if ($v['pay_type'] == 4){
                             $v['pay_type_text'] =$chnnel['channel_name'].'-汇聚-支付宝';
+                        }else if ($v['pay_type'] == 5 ||$v['pay_type'] == 8||$v['pay_type'] == 9){
+                            $v['pay_type_text'] =$chnnel['channel_name'].'-银联';
+                        }else if ($v['pay_type'] == 6){
+                            $v['pay_type_text'] =$chnnel['channel_name'].'-汇付';
                         }
                     }else{
                         $v['pay_type_text']='';
@@ -620,11 +628,11 @@ class Pay_order_inside extends Model
                 }else{
                     if(!empty($v['offline_id'])){
                         $offline = OfflinePay::where(['id'=>$v['offline_id']])->first();
-                        if ($v['pay_type'] == 5){
+                        if ($v['pay_type'] == 10){
                             $v['pay_type_text'] = '银行卡支付-'.$offline['account_name'];
-                        }else if ($v['pay_type'] == 6){
+                        }else if ($v['pay_type'] == 11){
                             $v['pay_type_text'] = '对公转账-'.$offline['account_name'];
-                        }else if ($v['pay_type'] == 7){
+                        }else if ($v['pay_type'] == 12){
                             $v['pay_type_text'] = '支付宝账号对公-'.$offline['account_name'];
                         }
                     }else{
@@ -1020,7 +1028,7 @@ class Pay_order_inside extends Model
         //循环查询分类
         if(!empty($order)){
             foreach ($order as $k=>&$v){
-                if($v['pay_type'] <= 4){
+                if($v['pay_type'] <= 9){
                     if(!empty($v['offline_id'])){
                         $chnnel = Channel::where(['id'=>$v['offline_id']])->first();
                         if($v['pay_type'] == 1){
@@ -1031,6 +1039,10 @@ class Pay_order_inside extends Model
                             $v['pay_type_text'] = $chnnel['channel_name'].'-汇聚-微信';
                         }else if ($v['pay_type'] == 4){
                             $v['pay_type_text'] =$chnnel['channel_name'].'-汇聚-支付宝';
+                        }else if ($v['pay_type'] == 5 ||$v['pay_type'] == 8||$v['pay_type'] == 9){
+                            $v['pay_type_text'] =$chnnel['channel_name'].'-银联';
+                        }else if ($v['pay_type'] == 6){
+                            $v['pay_type_text'] =$chnnel['channel_name'].'-汇付';
                         }
                     }else{
                         $v['pay_type_text']='';
@@ -1038,11 +1050,11 @@ class Pay_order_inside extends Model
                 }else{
                     if(!empty($v['offline_id'])){
                         $offline = OfflinePay::where(['id'=>$v['offline_id']])->first();
-                        if ($v['pay_type'] == 5){
+                        if ($v['pay_type'] == 10){
                             $v['pay_type_text'] = '银行卡支付-'.$offline['account_name'];
-                        }else if ($v['pay_type'] == 6){
+                        }else if ($v['pay_type'] == 11){
                             $v['pay_type_text'] = '对公转账-'.$offline['account_name'];
-                        }else if ($v['pay_type'] == 7){
+                        }else if ($v['pay_type'] == 12){
                             $v['pay_type_text'] = '支付宝账号对公-'.$offline['account_name'];
                         }
                     }else{
@@ -1489,7 +1501,7 @@ class Pay_order_inside extends Model
         //循环查询分类
         if(!empty($order)){
             foreach ($order as $k=>&$v){
-                if($v['pay_type'] <= 4){
+                if($v['pay_type'] <= 9){
                     if(!empty($v['offline_id'])){
                         $chnnel = Channel::where(['id'=>$v['offline_id']])->first();
                         if($v['pay_type'] == 1){
@@ -1500,6 +1512,10 @@ class Pay_order_inside extends Model
                             $v['pay_type_text'] = $chnnel['channel_name'].'-汇聚-微信';
                         }else if ($v['pay_type'] == 4){
                             $v['pay_type_text'] =$chnnel['channel_name'].'-汇聚-支付宝';
+                        }else if ($v['pay_type'] == 5 ||$v['pay_type'] == 8||$v['pay_type'] == 9){
+                            $v['pay_type_text'] =$chnnel['channel_name'].'-银联';
+                        }else if ($v['pay_type'] == 6){
+                            $v['pay_type_text'] =$chnnel['channel_name'].'-汇付';
                         }
                     }else{
                         $v['pay_type_text']='';
@@ -1507,11 +1523,11 @@ class Pay_order_inside extends Model
                 }else{
                     if(!empty($v['offline_id'])){
                         $offline = OfflinePay::where(['id'=>$v['offline_id']])->first();
-                        if ($v['pay_type'] == 5){
+                        if ($v['pay_type'] == 10){
                             $v['pay_type_text'] = '银行卡支付-'.$offline['account_name'];
-                        }else if ($v['pay_type'] == 6){
+                        }else if ($v['pay_type'] == 11){
                             $v['pay_type_text'] = '对公转账-'.$offline['account_name'];
-                        }else if ($v['pay_type'] == 7){
+                        }else if ($v['pay_type'] == 12){
                             $v['pay_type_text'] = '支付宝账号对公-'.$offline['account_name'];
                         }
                     }else{
@@ -1823,34 +1839,39 @@ class Pay_order_inside extends Model
                     }
                 }
             if($v['pay_type'] <= 4){
-                if(!empty($v['offline_id'])){
-                    $chnnel = Channel::where(['id'=>$v['offline_id']])->first();
-                    if($v['pay_type'] == 1){
-                        $v['pay_type_text'] = $chnnel['channel_name'].'-微信';
-                    }else if ($v['pay_type'] == 2){
-                        $v['pay_type_text'] = $chnnel['channel_name'].'-支付宝';
-                    }else if ($v['pay_type'] == 3){
-                        $v['pay_type_text'] = $chnnel['channel_name'].'-汇聚-微信';
-                    }else if ($v['pay_type'] == 4){
-                        $v['pay_type_text'] =$chnnel['channel_name'].'-汇聚-支付宝';
+                if($v['pay_type'] <= 9){
+                    if(!empty($v['offline_id'])){
+                        $chnnel = Channel::where(['id'=>$v['offline_id']])->first();
+                        if($v['pay_type'] == 1){
+                            $v['pay_type_text'] = $chnnel['channel_name'].'-微信';
+                        }else if ($v['pay_type'] == 2){
+                            $v['pay_type_text'] = $chnnel['channel_name'].'-支付宝';
+                        }else if ($v['pay_type'] == 3){
+                            $v['pay_type_text'] = $chnnel['channel_name'].'-汇聚-微信';
+                        }else if ($v['pay_type'] == 4){
+                            $v['pay_type_text'] =$chnnel['channel_name'].'-汇聚-支付宝';
+                        }else if ($v['pay_type'] == 5 ||$v['pay_type'] == 8||$v['pay_type'] == 9){
+                            $v['pay_type_text'] =$chnnel['channel_name'].'-银联';
+                        }else if ($v['pay_type'] == 6){
+                            $v['pay_type_text'] =$chnnel['channel_name'].'-汇付';
+                        }
+                    }else{
+                        $v['pay_type_text']='';
                     }
                 }else{
-                    $v['pay_type_text']='';
-                }
-            }else{
-                if(!empty($v['offline_id'])){
-                    $offline = OfflinePay::where(['id'=>$v['offline_id']])->first();
-                    if ($v['pay_type'] == 5){
-                        $v['pay_type_text'] = '银行卡支付-'.$offline['account_name'];
-                    }else if ($v['pay_type'] == 6){
-                        $v['pay_type_text'] = '对公转账-'.$offline['account_name'];
-                    }else if ($v['pay_type'] == 7){
-                        $v['pay_type_text'] = '支付宝账号对公-'.$offline['account_name'];
+                    if(!empty($v['offline_id'])){
+                        $offline = OfflinePay::where(['id'=>$v['offline_id']])->first();
+                        if ($v['pay_type'] == 10){
+                            $v['pay_type_text'] = '银行卡支付-'.$offline['account_name'];
+                        }else if ($v['pay_type'] == 11){
+                            $v['pay_type_text'] = '对公转账-'.$offline['account_name'];
+                        }else if ($v['pay_type'] == 12){
+                            $v['pay_type_text'] = '支付宝账号对公-'.$offline['account_name'];
+                        }
+                    }else{
+                        $v['pay_type_text']='';
                     }
-                }else{
-                    $v['pay_type_text']='';
                 }
-            }
                 if($v['pay_status'] == 0){
                     $v['pay_status_text'] = '未支付';
                 }else if($v['pay_status'] == 1){
@@ -2015,6 +2036,7 @@ class Pay_order_inside extends Model
                     return ['code' => 201 , 'msg' => '请选择支付时间'];
                 }
                 unset($data['/admin/order/offlineing']);
+                $data['pay_type'] = $data['pay_type'] + 6;
                 $data['update_time'] = date('Y-m-d H:i:s');
                 $data['confirm_status'] = 1;  //总校财务确认
                 $data['sure_time'] = date('Y-m-d H:i:s');
@@ -4084,25 +4106,39 @@ class Pay_order_inside extends Model
 
             ];
         }
+        if($paylist['yl_pay_state'] == 1){
+            $payarr[]=[
+                'label'=>'银联扫码',
+                'value'=> 5
+
+            ];
+        }
+        if($paylist['hf_pay_state'] == 1){
+            $payarr[]=[
+                'label'=>'汇付扫码',
+                'value'=> 6
+
+            ];
+        }
         $bank = OfflinePay::where(['is_del'=>1,'type'=>2,'is_show'=>1])->count();
         if($bank > 0){
             $payarr[]=[
                 'label'=>'银行卡支付',
-                'value'=> 5
+                'value'=> 10
             ];
         }
         $gong = OfflinePay::where(['is_del'=>1,'type'=>1,'is_show'=>1])->count();
         if($gong > 0){
             $payarr[]=[
                 'label'=>'对公打款',
-                'value'=> 6
+                'value'=> 11
             ];
         }
         $zfb = OfflinePay::where(['is_del'=>1,'type'=>3,'is_show'=>1])->count();
         if($zfb > 0){
             $payarr[]=[
                 'label'=>'支付宝对公支付',
-                'value'=> 7
+                'value'=> 12
             ];
         }
         return ['code' => 200 , 'msg' => '获取列表成功' , 'data' => $payarr];
