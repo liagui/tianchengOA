@@ -2052,7 +2052,7 @@ class Pay_order_inside extends Model
                     return ['code' => 201 , 'msg' => '请选择支付时间'];
                 }
                 unset($data['/admin/order/offlineing']);
-                $data['pay_type'] = $data['pay_type'] + 6;
+                $data['pay_type'] = $data['pay_type'] + 5;
                 $data['update_time'] = date('Y-m-d H:i:s');
                 $data['confirm_status'] = 1;  //总校财务确认
                 $data['sure_time'] = date('Y-m-d H:i:s');
