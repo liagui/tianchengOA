@@ -4069,8 +4069,8 @@ class Pay_order_inside extends Model
                         $send_refund_Price = Refund_order::whereIn('school_id', $seond_school_ids)->where('confirm_status', 1)->sum('refund_Price');
                         //三级分校退费金额
                         $three_refund_Price = Refund_order::whereIn('school_id', $three_school_ids)->where('confirm_status', 1)->sum('refund_Price');
-                        //二级分校的一级抽离比例=后台分校管理中一级抽离比例  |  三级分校的一级抽离比例=后台分校管理中一级抽离比例
-                        $actual_commission_refund = $commission_money - $bond + ($first_out_of_amount1 + $first_out_of_amount2) * (1 - $v['deposit']) - ($first_refund_Price * $v['commission'] + $send_refund_Price * $one_extraction_ratio + $three_refund_Price * $one_extraction_ratio);
+                        //返佣 - 保证金-代理保证金 + 所有抽离金额
+                        $actual_commission_refund = sprintf("%01.2f",$commission_money - $bond - $agent_margin);
                    } elseif ($v['level'] == 2) {
                        //二级分校的一级抽离比例=后台分校管理中一级抽离比例
                        //二级分校的一级抽离金额=二级分校的一级抽离比例*实际到款
@@ -4114,7 +4114,9 @@ class Pay_order_inside extends Model
                        $three_refund_Price = Refund_order::whereIn('school_id', $three_school_ids)->where('confirm_status', 1)->sum('refund_Price');
 
                        //二级分校的实际返佣=二级分校的返佣金额-二级分校的保证金+三级分校的二级抽离金额*（1-押金比例）-（二级分校退费*返佣比例+三级分校退费*三级分校2级抽离比例）
-                       $actual_commission_refund = $commission_money - $bond + $second_out_of_amount2 * (1 - $v['deposit']) - ($send_refund_Price * $v['commission'] + $three_refund_Price * $two_extraction_ratio);
+
+                       //返佣 - 保证金-代理保证金 + 所有抽离金额
+                       $actual_commission_refund = sprintf("%01.2f",$commission_money - $bond - $agent_margin + $first_out_of_money);
                    } elseif ($v['level'] == 3) {
                        //三级分校的一级抽离比例=后台分校管理中一级抽离比例
                        //三级分校的一级抽离金额=三级分校的一级抽离比例*实际到款
@@ -4133,8 +4135,8 @@ class Pay_order_inside extends Model
                        //三级分校退费金额
                        $three_refund_Price = Refund_order::where('school_id', $v['school_id'])->where('confirm_status', 1)->sum('refund_Price');
 
-                       //三级分校的实际返佣=三级分校的返佣金额-三级分校的保证金-三级分校退费*三级分校返佣比例
-                       $actual_commission_refund = $commission_money - $bond - $three_refund_Price * $v['commission'];
+                       //返佣 - 保证金-代理保证金 + 所有抽离金额
+                       $actual_commission_refund = sprintf("%01.2f",$commission_money - $bond - $agent_margin + $first_out_of_money + $second_out_of_money);
                    }
                    //数组赋值
                    $array[] = [
