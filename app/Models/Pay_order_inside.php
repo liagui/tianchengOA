@@ -4077,12 +4077,12 @@ class Pay_order_inside extends Model
                        $agent_margin = 0;
                        //二级下面的所有三级分校
                        $three_school_id = School::select('id','deposit')->where('parent_id', $v['school_id'])->where('level', 3)->get()->toArray();
+
                        $three_school_ids = array_column($three_school_id, 'id');
                        if(!empty($three_school_id)){
                            foreach($three_school_id as $onek=>$onev){
                             $twoprice = self::where(['school_id'=>$onev['id'],'pay_status'=>1,'confirm_status'=>2])->sum('second_out_of_amount');
                             $twoschoolprice = $twoprice * ($onev['deposit']/100);
-                            echo $twoprice;
                             $agent_margin = $agent_margin + $twoschoolprice;
                            }
                        }
@@ -4107,7 +4107,7 @@ class Pay_order_inside extends Model
 
                        //二级抽离比例
                        $second_out_of_amount = $v['two_extraction_ratio'] && !empty($v['two_extraction_ratio']) ? $v['two_extraction_ratio'] : '';
-                       $second_out_of_money = !empty($v['second_out_of_amount']) && $v['second_out_of_amount'] > 0 ? $v['second_out_of_amount'] : '';
+                       $second_out_of_money = self::where(['school_id'=>$v['school_id'],'pay_status'=>1,'confirm_status'=>2])->sum('second_out_of_amount');
                        //三级分校无代理保证金
                        $agent_margin = '';
 
