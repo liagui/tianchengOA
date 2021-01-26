@@ -40,8 +40,13 @@ class Pay_order_inside extends Model
         $state_time = $statetime." 00:00:00";
         $end_time = $endtime." 23:59:59";
         //支付方式
-        if(!empty($data['pay_type'])){
-            $where['pay_type'] = $data['pay_type'];
+        $paytype=[];
+        if(isset($data['pay_type']) && !empty($data['pay_type'])){
+            if($data['pay_type'] == 5){
+                $paytype = [5,8,9];
+            }else{
+                $paytype = [$data['pay_type']];
+            }
         }
         //支付状态
         if(isset($data['pay_status'])){
@@ -80,7 +85,7 @@ class Pay_order_inside extends Model
         $offset   = ($page - 1) * $pagesize;
 
         //数据   流转订单 + 第三方支付订单
-        $order = self::where(function($query) use ($data,$schoolarr,$school_id) {
+        $order = self::where(function($query) use ($data,$schoolarr,$school_id,$paytype) {
                 if(isset($data['order_no']) && !empty($data['order_no'])){
                     $query->where('order_no',$data['order_no'])
                         ->orwhere('name',$data['order_no'])
@@ -95,6 +100,9 @@ class Pay_order_inside extends Model
                 if(!empty($school_id)){
                     $query->whereIn('school_id',$school_id);
                 }
+                if(!empty($paytype)){
+                    $query->whereIn('pay_type', $paytype);
+                }
                 $query->whereIn('school_id',$schoolarr);
             })
             ->where($where)
@@ -103,11 +111,14 @@ class Pay_order_inside extends Model
             ->get()->toArray();
             //如果学校名称为空 查询第三方表
         if(!isset($data['school_name']) && empty($data['school_name'])){
-            $external = Pay_order_external::where(function($query) use ($data,$schoolarr) {
+            $external = Pay_order_external::where(function($query) use ($data,$schoolarr,$paytype) {
                 if (isset($data['order_no']) && !empty($data['order_no'])) {
                     $query->where('order_no', $data['order_no'])
                         ->orwhere('name', $data['order_no'])
                         ->orwhere('mobile', $data['order_no']);
+                }
+                if(!empty($paytype)){
+                    $query->whereIn('pay_type', $paytype);
                 }
             })->where($where)
                 ->where(['pay_status'=>1,'status'=>0])
@@ -538,8 +549,14 @@ class Pay_order_inside extends Model
         if(isset($data['course_id'])){
             $where['course_id'] = $data['course_id'];
         }
-        if(isset($data['pay_type'])){
-            $where['pay_type'] = $data['pay_type'];
+        //支付方式
+        $paytype=[];
+        if(isset($data['pay_type']) && !empty($data['pay_type'])){
+            if($data['pay_type'] == 5){
+                $paytype = [5,8,9];
+            }else{
+                $paytype = [$data['pay_type']];
+            }
         }
         if(isset($data['confirm_order_type'])){
             $where['confirm_order_type'] = $data['confirm_order_type'];
@@ -557,7 +574,7 @@ class Pay_order_inside extends Model
         $offset   = ($page - 1) * $pagesize;
 
         //計算總數
-        $count = self::where($where)->whereIn('school_id',$schoolarr)->where(function($query) use ($data,$school_id) {
+        $count = self::where($where)->whereIn('school_id',$schoolarr)->where(function($query) use ($data,$school_id,$paytype) {
             if(isset($data['order_no']) && !empty($data['order_no'])){
                 $query->where('order_no',$data['order_no'])
                     ->orwhere('name',$data['order_no'])
@@ -565,9 +582,12 @@ class Pay_order_inside extends Model
             }
             if(!empty($school_id)){
                 $query->whereIn('school_id',$school_id);
+            }
+            if(!empty($paytype)){
+                $query->whereIn('pay_type', $paytype);
             }
         })->count();
-        $order = self::where($where)->whereIn('school_id',$schoolarr)->where(function($query) use ($data,$school_id) {
+        $order = self::where($where)->whereIn('school_id',$schoolarr)->where(function($query) use ($data,$school_id,$paytype) {
             if(isset($data['order_no']) && !empty($data['order_no'])){
                 $query->where('order_no',$data['order_no'])
                     ->orwhere('name',$data['order_no'])
@@ -575,6 +595,9 @@ class Pay_order_inside extends Model
             }
             if(!empty($school_id)){
                 $query->whereIn('school_id',$school_id);
+            }
+            if(!empty($paytype)){
+                $query->whereIn('pay_type', $paytype);
             }
         })
         ->orderByDesc('id')
@@ -945,9 +968,15 @@ class Pay_order_inside extends Model
         if(isset($data['school_name'])){
             $school_id = School::select('id')->where('school_name','like','%'.$data['school_name'].'%')->where('is_del',0)->get();
         }
-        if(isset($data['pay_type'])){
-            $where['pay_type'] = $data['pay_type'];
-        }
+         //支付方式
+         $paytype=[];
+         if(isset($data['pay_type']) && !empty($data['pay_type'])){
+             if($data['pay_type'] == 5){
+                 $paytype = [5,8,9];
+             }else{
+                 $paytype = [$data['pay_type']];
+             }
+         }
         if(isset($data['confirm_order_type']) ){
             $where['confirm_order_type'] = $data['confirm_order_type'];
         }
@@ -968,7 +997,7 @@ class Pay_order_inside extends Model
         $offset   = ($page - 1) * $pagesize;
 
         //計算總數
-        $count = self::where(function($query) use ($data,$schoolarr,$school_id) {
+        $count = self::where(function($query) use ($data,$schoolarr,$school_id,$paytype) {
             if(isset($data['order_no']) && !empty($data['order_no'])){
                 $query->where('order_no',$data['order_no'])
                     ->orwhere('name',$data['order_no'])
@@ -976,6 +1005,9 @@ class Pay_order_inside extends Model
             }
             if(!empty($school_id)){
                 $query->whereIn('school_id',$school_id);
+            }
+            if(!empty($paytype)){
+                $query->whereIn('pay_type', $paytype);
             }
             $query->whereIn('school_id',$schoolarr);
         })
@@ -983,7 +1015,7 @@ class Pay_order_inside extends Model
             ->where($where)
             ->count();
 
-        $order = self::where(function($query) use ($data,$schoolarr,$school_id) {
+        $order = self::where(function($query) use ($data,$schoolarr,$school_id,$paytype) {
             if(isset($data['order_no']) && !empty($data['order_no'])){
                 $query->where('order_no',$data['order_no'])
                     ->orwhere('name',$data['order_no'])
@@ -991,6 +1023,9 @@ class Pay_order_inside extends Model
             }
             if(!empty($school_id)){
                 $query->whereIn('school_id',$school_id);
+            }
+            if(!empty($paytype)){
+                $query->whereIn('pay_type', $paytype);
             }
             $query->whereIn('school_id',$schoolarr);
         })
@@ -1415,9 +1450,15 @@ class Pay_order_inside extends Model
         $endtime = !empty($data['end_time'])?$data['end_time']:$enddate;
         $state_time = $statetime." 00:00:00";
         $end_time = $endtime." 23:59:59";
-        if(isset($data['pay_type']) ){
-            $where['pay_type'] = $data['pay_type'];
-        }
+         //支付方式
+         $paytype=[];
+         if(isset($data['pay_type']) && !empty($data['pay_type'])){
+             if($data['pay_type'] == 5){
+                 $paytype = [5,8,9];
+             }else{
+                 $paytype = [$data['pay_type']];
+             }
+         }
         if(isset($data['confirm_order_type']) ){
             $where['confirm_order_type'] = $data['confirm_order_type'];
         }
@@ -1442,7 +1483,7 @@ class Pay_order_inside extends Model
         $offset   = ($page - 1) * $pagesize;
 
         //計算總數
-        $count = self::where(function($query) use ($data,$schoolarr,$school_id) {
+        $count = self::where(function($query) use ($data,$schoolarr,$school_id,$paytype) {
             if(isset($data['order_on']) && !empty($data['order_on'])){
                 $query->where('order_no',$data['order_on'])
                     ->orwhere('name',$data['order_on'])
@@ -1450,6 +1491,9 @@ class Pay_order_inside extends Model
             }
             if(!empty($school_id)){
                 $query->whereIn('school_id',$school_id);
+            }
+            if(!empty($paytype)){
+                $query->whereIn('pay_type', $paytype);
             }
             $query->whereIn('school_id',$schoolarr);
         })
@@ -1458,7 +1502,7 @@ class Pay_order_inside extends Model
         ->where('pay_status','!=',2)
         ->count();
 
-        $order = self::where(function($query) use ($data,$schoolarr,$school_id) {
+        $order = self::where(function($query) use ($data,$schoolarr,$school_id,$paytype) {
             if(isset($data['order_on']) && !empty($data['order_on'])){
                 $query->where('order_no',$data['order_on'])
                     ->orwhere('name',$data['order_on'])
@@ -1466,6 +1510,9 @@ class Pay_order_inside extends Model
             }
             if(!empty($school_id)){
                 $query->whereIn('school_id',$school_id);
+            }
+            if(!empty($paytype)){
+                $query->whereIn('pay_type', $paytype);
             }
             $query->whereIn('school_id',$schoolarr);
         })
