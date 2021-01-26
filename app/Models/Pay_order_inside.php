@@ -4003,10 +4003,10 @@ class Pay_order_inside extends Model
                        $first_out_of_money = '';
                        $second_out_of_money = '';
                        //代理保证金
-                    //    $agent_margin = $v['agent_margin'] && !empty($v['agent_margin']) ? $v['agent_margin'] : 0;
-
-                       //一级分校下面的所有二级分校
                        $agent_margin = 0;
+                       //所有一级的抽离金额
+                       $ononepricechouli = 0;
+                       //一级分校下面的所有二级分校
                        $seond_school_id = School::select('id','deposit','tax_point','one_extraction_ratio')->where('parent_id', $v['school_id'])->where('level', 2)->get()->toArray();
                        $seond_school_ids = array_column($seond_school_id, 'id');
                        if(!empty($seond_school_id)){
@@ -4025,13 +4025,13 @@ class Pay_order_inside extends Model
                                 $actual_receipt = sprintf("%.2f", $after_tax_amounts - $sum_costs);
                                  //抽离金额
                                 $oneschoolprice = $actual_receipt * ($onev['one_extraction_ratio']/100);
+                                $ononepricechouli = $ononepricechouli + $oneschoolprice;
                                 //代理保证金
                                 $onechouli = $oneschoolprice*($onev['deposit']/100);
                                 $firstprice = $firstprice + $onechouli;
                             }
                             $seedprice = 0;
                             $three_school_id = School::select('id','deposit','tax_point','one_extraction_ratio')->whereIn('parent_id', $seond_school_ids)->where('level', 3)->get()->toArray();
-                            $three_school_ids = array_column($three_school_id, 'id');
                             if(!empty($three_school_id)){
                                 foreach($three_school_id as $twok=>$twov){
                                     //到账
@@ -4046,6 +4046,7 @@ class Pay_order_inside extends Model
                                     $actual_receipts = sprintf("%.2f", $after_tax_amountss - $sum_costss);
                                     //抽离金额
                                     $oneschoolprices = $actual_receipts * ($twov['one_extraction_ratio']/100);
+                                    $ononepricechouli = $ononepricechouli + $oneschoolprices;
                                     //代理保证金
                                     $twoschoolprice = $oneschoolprices*($twov['deposit']/100);
                                     $seedprice = $seedprice + $twoschoolprice;
@@ -4055,7 +4056,7 @@ class Pay_order_inside extends Model
                        }
                         //返佣 - 保证金-代理保证金 + 所有抽离金额 分校的退费订单
                         $returnschoolprice = Refund_order::where(['school_id'=>$v['school_id'],'refund_plan'=>2])->whereBetween('refund_time', [$state_time, $end_time])->sum('reality_price');
-                        $actual_commission_refund = sprintf("%01.2f",$commission_money - $bond - $agent_margin - $returnschoolprice);
+                        $actual_commission_refund = sprintf("%01.2f",$commission_money - $bond - $agent_margin + $ononepricechouli- $returnschoolprice);
                    } elseif ($v['level'] == 2) {
                        //二级分校的一级抽离比例=后台分校管理中一级抽离比例
                        //二级分校的一级抽离金额=二级分校的一级抽离比例*实际到款
@@ -4068,9 +4069,10 @@ class Pay_order_inside extends Model
                        $second_out_of_money = '';
                        //代理保证金
                        $agent_margin = 0;
+                       //二级返佣金额
+                       $twochouliprice = 0;
                        //二级下面的所有三级分校
-                       $three_school_id = School::select('id','deposit','tax_point','one_extraction_ratio')->where('parent_id', $v['school_id'])->where('level', 3)->get()->toArray();
-                       $three_school_ids = array_column($three_school_id, 'id');
+                       $three_school_id = School::select('id','deposit','tax_point','one_extraction_ratio','two_extraction_ratio')->where('parent_id', $v['school_id'])->where('level', 3)->get()->toArray();
                        if(!empty($three_school_id)){
                            foreach($three_school_id as $onek=>$onev){
                                 //到账
@@ -4088,11 +4090,14 @@ class Pay_order_inside extends Model
                                 //代理保证金
                                 $twoschoolprice = $oneschoolprices*($onev['deposit']/100);
                                 $agent_margin = $agent_margin + sprintf("%01.2f",$twoschoolprice);
+                                //二级抽离金额
+                                $twochouliprices = $actual_receipts * ($onev['two_extraction_ratio']/100);
+                                $twochouliprice = $twochouliprice + $twochouliprices;
                            }
                        }
                        //返佣 - 保证金-代理保证金 + 所有抽离金额
                        $returnschoolprice = Refund_order::where(['school_id'=>$v['school_id'],'refund_plan'=>2])->whereBetween('refund_time', [$state_time, $end_time])->sum('reality_price');
-                       $actual_commission_refund = sprintf("%01.2f",$commission_money - $bond - $agent_margin + $first_out_of_money - $returnschoolprice);
+                       $actual_commission_refund = sprintf("%01.2f",$commission_money - $bond - $agent_margin + $twochouliprice - $returnschoolprice);
                    } elseif ($v['level'] == 3) {
                        //三级分校的一级抽离比例=后台分校管理中一级抽离比例
                        //三级分校的一级抽离金额=三级分校的一级抽离比例*实际到款
@@ -4109,7 +4114,7 @@ class Pay_order_inside extends Model
                        $agent_margin = '';
                        //返佣 - 保证金-代理保证金 + 所有抽离金额
                        $returnschoolprice = Refund_order::where(['school_id'=>$v['school_id'],'refund_plan'=>2])->whereBetween('refund_time', [$state_time, $end_time])->sum('reality_price');
-                       $actual_commission_refund = sprintf("%01.2f",$commission_money - $bond  + $first_out_of_money + $second_out_of_money - $returnschoolprice);
+                       $actual_commission_refund = sprintf("%01.2f",$commission_money - $bond - $returnschoolprice);
                    }
                    //数组赋值
                    $array[] = [
