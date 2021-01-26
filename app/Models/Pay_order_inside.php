@@ -750,7 +750,6 @@ class Pay_order_inside extends Model
         $admin = isset(AdminLog::getAdminInfo()->admin_user) ? AdminLog::getAdminInfo()->admin_user : [];
         $order = self::where(['id'=>$data['id']])->first();
         unset($data['/admin/order/notarizeOrder']);
-
         if(empty($data['education_id'])){
             unset($data['education_id']);
             unset($data['major_id']);
@@ -766,17 +765,6 @@ class Pay_order_inside extends Model
             return ['code' => 201 , 'msg' => '请选择订单确认状态'];
         }
         if($data['confirm_status'] == 1){
-            // if($data['confirm_order_type'] == 2){
-            //     if($data['sign_Price'] != $order['pay_price']){
-            //         return ['code' => 201 , 'msg' => '所填金额不等于支付金额'];
-            //     }
-            // }
-            // if($data['confirm_order_type'] == 3){
-            //     $ppppp = $data['course_Price'] + $data['sign_Price'];
-            //     if($ppppp != $order['pay_price']){
-            //         return ['code' => 201 , 'msg' => '所填金额不等于支付金额'];
-            //     }
-            // }
             $data['comfirm_time'] = date('Y-m-d H:i:s');
             //确认订单  排课  订单是定金 随便排，订单是尾款查询这个课程的订单的定金分配的班主任
             if($order['first_pay'] == 2 || $order['first_pay']==3){
@@ -918,7 +906,7 @@ class Pay_order_inside extends Model
                 ];
                 StudentCourse::insert($student_course);
             }
-            //判断是报名订单，生成报名订单
+            //生成报名订单
             if($order['confirm_order_type'] > 1){
                 $applyarr = [
                     'order_id' => $order['id'],
