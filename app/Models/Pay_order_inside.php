@@ -4082,6 +4082,7 @@ class Pay_order_inside extends Model
                            foreach($three_school_id as $onek=>$onev){
                             $twoprice = self::where(['school_id'=>$onev['id'],'pay_status'=>1,'confirm_status'=>2])->sum('second_out_of_amount');
                             $twoschoolprice = $twoprice * ($onev['deposit']/100);
+                            echo $twoprice;
                             $agent_margin = $agent_margin + $twoschoolprice;
                            }
                        }
