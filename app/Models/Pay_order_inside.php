@@ -3900,7 +3900,7 @@ class Pay_order_inside extends Model
                any_value(school.commission) as commission ,
                any_value(school.deposit) as deposit ,
                any_value(sum(pay_order_inside.after_tax_amount)) as after_tax_amount,
-               any_value(pay_order_inside.sign_Price) as sign_Price,
+               any_value(pay_order_inside.sum_Price) as sum_Price,
                any_value(sum(if(pay_order_inside.confirm_status = 2 ,
                pay_order_inside.pay_price , 0))) as pay_price,
                any_value(sum(pay_order_inside.agent_margin)) as agent_margin,
@@ -4003,7 +4003,7 @@ class Pay_order_inside extends Model
                 //    $sum_cost = sprintf("%.2f", $education_cost + $v['sign_Price']);
 
                    //实际到款=税后金额-成本
-                   $actual_receipt = $after_tax_amount > $v['sum_Price'] ? sprintf("%.2f", $after_tax_amount - $v['sign_Price']) : 0;
+                   $actual_receipt = sprintf("%.2f", $after_tax_amount - $v['sing_Price']);
 
                    //返佣比例=后台分校管理中佣金比例
                    $commission_rebate = $v['commission'];
@@ -4110,9 +4110,9 @@ class Pay_order_inside extends Model
                        'tax_deduction_ratio' => $tax_deduction_ratio,
                        'after_tax_amount' => $after_tax_amount,
                        'order_number' => $order_number,
-                       'sum_cost' => $v['sign_Price'],
+                       'sum_cost' => $v['sing_Price'],
                        'commission_rebate' => $commission_rebate,
-                       'commission_money' => sprintf("%.2f", $commission_money),
+                       'commission_money' => $commission_money,
                        'bond' => $bond,
                        'agent_margin' => $agent_margin,
                        'first_out_of_amount' => $first_out_of_amount,
