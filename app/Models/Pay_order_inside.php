@@ -1343,6 +1343,7 @@ class Pay_order_inside extends Model
         //     }
         // }
         //入库
+        $bm = isset($data['sign_Price'])?$data['sign_Price']:0;
         $insert=[
             'name' => $data['name'],//姓名
             'mobile' =>$data['mobile'],//手机号
@@ -1369,9 +1370,9 @@ class Pay_order_inside extends Model
             'pay_voucher_user_id' => $admin['id'], //上传凭证人
             'pay_voucher_time' => date('Y-m-d H:i:s'), //上传凭证时间
             'pay_voucher' => isset($data['pay_voucher'])?$data['pay_voucher']:'', //支付凭证
-            'course_Price' => $external['pay_price'],
+            'course_Price' => $external['pay_price'] - $bm,
             'sum_Price' => $external['pay_price'],
-            'sign_Price' => isset($data['sign_Price'])?$data['sign_Price']:0,
+            'sign_Price' => $bm,
             'admin_id' => $admin['id'],
             'offline_id' => $external['offline_id']
         ];
