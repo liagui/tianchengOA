@@ -4046,7 +4046,7 @@ class Pay_order_inside extends Model
                                     $seedprice = $seedprice + $twoschoolprice;
                                 }
                             }
-                            $agent_margin = $firstprice + $seedprice;
+                            $agent_margin = sprintf("%01.2f",$firstprice) + sprintf("%01.2f",$seedprice);
                        }else{
                            $agent_margin = 0;
                        }
