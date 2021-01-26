@@ -822,23 +822,27 @@ class Pay_order_inside extends Model
             //返佣金额=实际到款*返佣比例
             //保证金=返佣金额*后台分校管理中押金比例
             $school = School::where(['id'=>$data['school_id']])->first();
+            ///////////////////////
             $daokuan = $order['pay_price'];
+            ////////////////////////////
             if($school['tax_point'] == 0 && strlen($school['tax_point'])  > 0){
                 $kousui = 0;
             }else{
-                $kousui = $daokuan * (100/$school['tax_point']);
+                $kousui = $daokuan * ($school['tax_point']/100);
             }
             $suihou = $daokuan - $kousui; //税后金额
+            //////////////////////////////////
             if($school['commission'] == 0 && strlen($school['commission'])  > 0){
                 $fanyong = 0;
             }else{
-                $fanyong = $daokuan * (100/$school['commission']); //返佣金额
+                $fanyong = $daokuan * ($school['commission']/100); //返佣金额
             }
+            ///////////////////
 
             if($school['deposit'] == 0 && strlen($school['deposit'])  > 0){
                 $baozhengjin = 0;
             }else{
-                $baozhengjin = $daokuan * (100/$school['deposit']); //保证金
+                $baozhengjin = $fanyong * ($school['deposit']/100); //保证金
             }
             //一级没有保证金  二级给一级代理保证金  三级给二级代理保证金
             if($school['level'] == 1){
@@ -848,16 +852,16 @@ class Pay_order_inside extends Model
                 //一级分校的实际返佣=返佣金额-一级分校的保证金+（二级分校的一级抽离金额+三级分校的一级抽离金额）*（1-押金比例）
             }else if($school['level'] == 2){
                 //一级抽离金额
-                $yijichoulijine = $daokuan * (100/$school['one_extraction_ratio']);
+                $yijichoulijine = $daokuan * ($school['one_extraction_ratio']/100);
                 $dailibaozhengjin = $yijichoulijine * $school['deposit'];
                 $erjichoulijine = 0;
                 //二级分校的实际返佣=二级分校的返佣金额-二级分校的保证金+三级分校的二级抽离金额*（1-押金比例）
             }else if($school['level'] == 3){
                 //一级抽离金额
-                $yijichoulijine = $daokuan * (100/$school['one_extraction_ratio']);
+                $yijichoulijine = $daokuan * ($school['one_extraction_ratio']/100);
                 //二级抽离金额
-                $erjichoulijine = $daokuan * (100/$school['two_extraction_ratio']);
-                $dailibaozhengjin = $erjichoulijine * (100/$school['deposit']);
+                $erjichoulijine = $daokuan * ($school['two_extraction_ratio']/100);
+                $dailibaozhengjin = $erjichoulijine * ($school['deposit']/100);
                 //三级分校的实际返佣=三级分校的返佣金额
             }
             //查成本
@@ -3885,7 +3889,27 @@ class Pay_order_inside extends Model
                $array = [];
 
                //获取分校业绩列表
-               $list = DB::table('school')->selectRaw('any_value(school.id) as school_id , any_value(count(school.id)) as t_count , any_value(school.one_extraction_ratio) as one_extraction_ratio , any_value(school.two_extraction_ratio) as two_extraction_ratio , any_value(school.school_name) as school_name , any_value(school.level) as level , any_value(school.tax_point) as tax_point , any_value(school.commission) as commission , any_value(school.deposit) as deposit , any_value(sum(pay_order_inside.after_tax_amount)) as after_tax_amount,any_value(pay_order_inside.sum_Price) as sum_Price,any_value(sum(if(pay_order_inside.confirm_status = 1 , pay_order_inside.pay_price , 0))) as pay_price,any_value(sum(pay_order_inside.agent_margin)) as agent_margin,any_value(pay_order_inside.first_out_of_amount) as first_out_of_amount,any_value(pay_order_inside.second_out_of_amount) as second_out_of_amount,any_value(pay_order_inside.education_id) as education_id,any_value(pay_order_inside.major_id) as major_id,any_value(sum(pay_order_inside.sign_Price)) as sign_Price')->leftjoin("pay_order_inside", function ($join) {
+               $list = DB::table('school')->selectRaw('
+               any_value(school.id) as school_id ,
+               any_value(count(school.id)) as t_count ,
+               any_value(school.one_extraction_ratio) as one_extraction_ratio ,
+               any_value(school.two_extraction_ratio) as two_extraction_ratio ,
+               any_value(school.school_name) as school_name ,
+               any_value(school.level) as level ,
+               any_value(school.tax_point) as tax_point ,
+               any_value(school.commission) as commission ,
+               any_value(school.deposit) as deposit ,
+               any_value(sum(pay_order_inside.after_tax_amount)) as after_tax_amount,
+               any_value(pay_order_inside.sum_Price) as sum_Price,
+               any_value(sum(if(pay_order_inside.confirm_status = 2 ,
+               pay_order_inside.pay_price , 0))) as pay_price,
+               any_value(sum(pay_order_inside.agent_margin)) as agent_margin,
+               any_value(pay_order_inside.first_out_of_amount) as first_out_of_amount,
+               any_value(pay_order_inside.second_out_of_amount) as second_out_of_amount,
+               any_value(pay_order_inside.education_id) as education_id,
+               any_value(pay_order_inside.major_id) as major_id,
+               any_value(sum(pay_order_inside.sign_Price)) as sign_Price'
+               )->leftjoin("pay_order_inside", function ($join) {
                    $join->on('school.id', '=', 'pay_order_inside.school_id');
                })->where('school.is_del', 0)->where(function ($query) use ($body,$school_id) {
                    //判断分校id是否为空和合法
