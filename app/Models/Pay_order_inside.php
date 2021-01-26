@@ -515,7 +515,7 @@ class Pay_order_inside extends Model
     public static function awaitOrder($data,$schoolarr){
         $where['del_flag'] = 0;  //未删除
         $where['pay_status'] = 1;  //支付状态
-        if(empty($data['isBranchSchool']) && $data['isBranchSchool'] != true){
+        if(!isset($data['isBranchSchool']) || empty($data['isBranchSchool']) || $data['isBranchSchool'] != true){
             $where['confirm_status'] = 1;  //审核状态
         }
         //科目id&学科id
