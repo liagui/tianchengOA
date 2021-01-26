@@ -63,7 +63,7 @@ class Major extends Model {
         $major_array = [
             'education_id'        =>   isset($body['education_id']) && $body['education_id'] > 0 ? $body['education_id'] : 0 ,
             'major_name'          =>   $body['major_name'] ,
-            'price'               =>   $body['price'] ,
+            'price'               =>   isset($body['price'])?$body['price']:0,
             'is_hide'             =>   isset($body['is_hide']) && $body['is_hide'] == 1 ? 1 : 0 ,
             'admin_id'            =>   $admin_id ,
             'create_time'         =>   date('Y-m-d H:i:s')
