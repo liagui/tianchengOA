@@ -3285,7 +3285,7 @@ class Pay_order_inside extends Model
             $baozhengjin = self::where($where)->whereBetween('create_time', [$school_start_time, $school_end_time])->sum('earnest_money');
             $listv['baozhengjin'] = sprintf("%.2f",$baozhengjin);
             //收入
-            $shouru = $ordersumPrice -$baozhengjin - $baoming;
+            $shouru = $ordersumPrice -$baozhengjin - $baozhengjin;
             $listv['shouru'] = sprintf("%.2f",$shouru);
             $lists['practicalEnter'] = sprintf("%.2f",$lists['practicalEnter'] + $shouru);
             //总支出
@@ -3970,19 +3970,19 @@ class Pay_order_inside extends Model
                            $query->whereBetween('pay_order_inside.comfirm_time', [$state_time, $end_time]);
                        }
                    })->count();
-                   $chengben_number = self::where(function ($query) use ($body) {
-                       //分校查询
-                       $query->where('school_id', '=', $body['school_id'])->where('education_id', '>', 0)->where('major_id', '>', 0);
+                //    $chengben_number = self::where(function ($query) use ($body) {
+                //        //分校查询
+                //        $query->where('school_id', '=', $body['school_id'])->where('education_id', '>', 0)->where('major_id', '>', 0);
 
-                       //获取日期
-                       if (isset($body['search_time']) && !empty($body['search_time'])) {
-                           $create_time = json_decode($body['search_time'], true);
-                           $state_time = $create_time[0] . " 00:00:00";
-                           $end_time = $create_time[1] . " 23:59:59";
-                           $query->whereBetween('pay_order_inside.comfirm_time', [$state_time, $end_time]);
-                       }
-                   })->count();
-                   $order_number = $enroll_number + $chengben_number;
+                //        //获取日期
+                //        if (isset($body['search_time']) && !empty($body['search_time'])) {
+                //            $create_time = json_decode($body['search_time'], true);
+                //            $state_time = $create_time[0] . " 00:00:00";
+                //            $end_time = $create_time[1] . " 23:59:59";
+                //            $query->whereBetween('pay_order_inside.comfirm_time', [$state_time, $end_time]);
+                //        }
+                //    })->count();
+                //    $order_number = $enroll_number + $chengben_number;
 
                    //成本=学历成本+报名费用
                 //    $education_major_ids = self::select('major_id')->where(function ($query) use ($body) {
@@ -3997,13 +3997,12 @@ class Pay_order_inside extends Model
                 //            $query->whereBetween('pay_order_inside.comfirm_time', [$state_time, $end_time]);
                 //        }
                 //    })->get()->toArray();
-
                 //    $major_ids = array_column($education_major_ids, 'major_id');
                 //    $education_cost = Major::whereIn('id', $major_ids)->sum('price');
-                //    $sum_cost = sprintf("%.2f", $education_cost + $v['sign_Price']);
+                   $sum_cost = $order_number = $v['sign_Price'];
 
                    //实际到款=税后金额-成本
-                   $actual_receipt = sprintf("%.2f", $after_tax_amount - $v['sing_Price']);
+                   $actual_receipt = sprintf("%.2f", $after_tax_amount - $sum_cost);
 
                    //返佣比例=后台分校管理中佣金比例
                    $commission_rebate = $v['commission'];
@@ -4110,7 +4109,7 @@ class Pay_order_inside extends Model
                        'tax_deduction_ratio' => $tax_deduction_ratio,
                        'after_tax_amount' => $after_tax_amount,
                        'order_number' => $order_number,
-                       'sum_cost' => $v['sing_Price'],
+                       'sum_cost' => $sum_cost,
                        'commission_rebate' => $commission_rebate,
                        'commission_money' => $commission_money,
                        'bond' => $bond,
