@@ -4080,13 +4080,13 @@ class Pay_order_inside extends Model
                        $three_school_ids = array_column($three_school_id, 'id');
                        if(!empty($three_school_id)){
                            foreach($three_school_id as $onek=>$onev){
-                            $twoprice = self::where(['school_id'=>$onev['id'],'pay_status'=>1,'confirm_status'=>2])->sum('first_out_of_amount');
+                            $twoprice = self::where(['school_id'=>$onev['id'],'pay_status'=>1,'confirm_status'=>2])->sum('second_out_of_amount');
                             $twoschoolprice = $twoprice * $onev['second_out_of_amount'];
                             $agent_margin = $agent_margin + $twoschoolprice;
                            }
                        }
                        //三级分校的二级抽离金额
-                       $second_out_of_amount2 = self::whereIn('school_id', $three_school_ids)->sum('second_out_of_amount');
+                       $second_out_of_amount2 = self::whereIn('school_id', $three_school_ids)->where(['pay_status'=>1,'confirm_status'=>2])->sum('second_out_of_amount');
 
                        //二级分校退费金额
                        $send_refund_Price = Refund_order::where('school_id', $v['school_id'])->where('confirm_status', 1)->sum('refund_Price');
