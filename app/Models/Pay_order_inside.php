@@ -1838,7 +1838,6 @@ class Pay_order_inside extends Model
                         $v['school_name'] = $school['school_name'];
                     }
                 }
-            if($v['pay_type'] <= 4){
                 if($v['pay_type'] <= 9){
                     if(!empty($v['offline_id'])){
                         $chnnel = Channel::where(['id'=>$v['offline_id']])->first();
@@ -1967,7 +1966,7 @@ class Pay_order_inside extends Model
             'total'=>$count
         ];
         return ['code' => 200 , 'msg' => '查询成功','data'=>$order,'where'=>$data,'page'=>$page];
-    }
+        }
     /*
          * @param 根据类型查账户
          * @param  type  类型
