@@ -883,8 +883,7 @@ class Pay_order_inside extends Model
             $data['sum_Price'] = $chengben;    //成本价
             $data['confirm_status'] = 2;
             $data['sure_time'] = date('Y-m-d H:i:s');
-        }
-        if($data['confirm_status'] == 2){
+        }else{
             if(!isset($data['reject_des'])){
                 return ['code' => 201 , 'msg' => '请填写驳回原因'];
             }
@@ -892,9 +891,6 @@ class Pay_order_inside extends Model
             $data['reject_admin_id'] = $admin['id'];
             $data['confirm_status'] = 4;
             $data['sure_time'] = date('Y-m-d H:i:s');
-        }
-        if($data['confirm_status'] == 0){
-            return ['code' => 201 , 'msg' => '请选择状态'];
         }
         $data['update_time'] = date('Y-m-d H:i:s');
         $up = self::where(['id'=>$data['id']])->update($data);
