@@ -41,9 +41,9 @@ class Major extends Model {
         }
 
         //判断成本价格是否为空
-        if(!isset($body['price'])){
-            return ['code' => 201 , 'msg' => '请输入成本价格'];
-        }
+        // if(!isset($body['price'])){
+        //     return ['code' => 201 , 'msg' => '请输入成本价格'];
+        // }
 
         //判断是否展示是否选择
         if(isset($body['is_hide']) && !in_array($body['is_hide'] , [0,1])){
