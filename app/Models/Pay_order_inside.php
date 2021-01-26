@@ -4022,9 +4022,9 @@ class Pay_order_inside extends Model
                                 //成本
                                 $sum_costs = self::where(['school_id'=>$onev['id'],'pay_status'=>1,'confirm_status'=>2])->whereBetween('comfirm_time', [$state_time, $end_time])->sum('sign_Price');
                                 //实际到款=税后金额-成本
-                                $actual_receipt = sprintf("%.2f", $after_tax_amounts - $sum_costs);
+                                $actual_receiptss = sprintf("%.2f", $after_tax_amounts - $sum_costs);
                                  //抽离金额
-                                $oneschoolprice = $actual_receipt * ($onev['one_extraction_ratio']/100);
+                                $oneschoolprice = $actual_receiptss * ($onev['one_extraction_ratio']/100);
                                 $ononepricechouli = $ononepricechouli + $oneschoolprice;
                                 //代理保证金
                                 $onechouli = $oneschoolprice*($onev['deposit']/100);
