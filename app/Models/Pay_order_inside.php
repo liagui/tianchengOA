@@ -1308,11 +1308,11 @@ class Pay_order_inside extends Model
         if(empty($external)){
             return ['code' => 201 , 'msg' => '订单号有误'];
         }
-        if($data['confirm_order_type'] == 2){
-            if($data['sign_Price'] > $external['pay_price']){
-                return ['code' => 201 , 'msg' => '所填金额大于支付金额'];
-            }
-        }
+        // if($data['confirm_order_type'] == 2){
+        //     if($data['sign_Price'] > $external['pay_price']){
+        //         return ['code' => 201 , 'msg' => '所填金额大于支付金额'];
+        //     }
+        // }
         if($data['confirm_order_type'] == 3){
             $ppppp = $data['course_Price'] + $data['sign_Price'];
             if($ppppp > $external['pay_price']){
