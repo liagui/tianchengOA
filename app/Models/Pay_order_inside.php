@@ -4076,7 +4076,7 @@ class Pay_order_inside extends Model
                        //代理保证金
                        $agent_margin = 0;
                        //二级下面的所有三级分校
-                       $three_school_id = School::select('id')->where('parent_id', $v['school_id'])->where('level', 3)->get()->toArray();
+                       $three_school_id = School::select('id','one_extraction_ratio')->where('parent_id', $v['school_id'])->where('level', 3)->get()->toArray();
                        $three_school_ids = array_column($three_school_id, 'id');
                        if(!empty($three_school_id)){
                            foreach($three_school_id as $onek=>$onev){
