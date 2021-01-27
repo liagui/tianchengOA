@@ -1774,7 +1774,7 @@ class Pay_order_inside extends Model
          */
     public static function auditOrder($data){
         $where['del_flag']=0;
-        $where['confirm_status']=0;
+        // $where['confirm_status']=0;
         //判断时间
         $begindata="2020-03-04";
         $enddate = date('Y-m-d');
@@ -1837,6 +1837,7 @@ class Pay_order_inside extends Model
         })
         ->where($where)
         ->where(['is_handorder'=>1])
+        ->whereIn('confirm_status',[0,1,2])
         ->whereBetween('create_time', [$state_time, $end_time])
         ->count();
         //数据   流转订单
@@ -1855,6 +1856,7 @@ class Pay_order_inside extends Model
         })
         ->where($where)
         ->where(['is_handorder'=>1])
+        ->whereIn('confirm_status',[0,1,2])
         ->whereBetween('create_time', [$state_time, $end_time])
         ->orderByDesc('id')
         ->offset($offset)->limit($pagesize)
