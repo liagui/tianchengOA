@@ -397,8 +397,9 @@ class Pay_order_inside extends Model
             unset($data['major_id']);
         }
         //根据条件查询第三方订单，如果有，直接到流转，否则就进去审核订单
+        $data['pay_price'] = $data['course_Price'];
         $data['course_Price'] = $data['course_Price'] - $data['sign_Price'];
-        $data['sign_Price'] = isset($data['sign_Price'])?$data['sign_Price']:0;
+        $data['sign_Price'] = $data['sign_Price'];
         $data['add_time'] =date('Y-m-d H:i:s');
         $data['confirm_status'] = 0;
         $data['pay_voucher_user_id'] = $admin['id']; //上传凭证人
@@ -409,7 +410,6 @@ class Pay_order_inside extends Model
         $data['create_time'] =date('Y-m-d H:i:s');
         $data['pay_time'] =isset($data['pay_time'])?$data['pay_time']:date('Y-m-d H:i:s');;
         $data['pay_status'] = 3;  //3是待审核
-        $data['pay_price'] = $data['course_Price'];
         $add = self::insert($data);
         if($add){
             return ['code' => 200 , 'msg' => '报单成功'];
