@@ -3355,7 +3355,7 @@ class Pay_order_inside extends Model
         })->count();
 
         //支付方式
-        $pay_type_array = [1=>'微信',2=>'支付宝',3=>'微信',4=>'支付宝',5=>'银行卡转账',6=>'对公转账',7=>'支付宝账号对公转账'];
+        $pay_type_array = [1=>'微信',2=>'支付宝',3=>'汇聚微信',4=>'汇聚支付宝',5=>'银联支付','6'=>'汇付支付','8'=>'银联微信','9'=>'银联支付宝',10=>'银行卡转账',11=>'对公转账',12=>'支付宝账号对公转账'];
 
         //回访状态
         $return_visit_array = [0=>'否',1=>'是'];
@@ -3406,7 +3406,7 @@ class Pay_order_inside extends Model
                 $end_time    = $body['create_time']." 23:59:59";
                 $query->where('create_time', '>=' , $state_time)->where('create_time', '<=' , $end_time);
                 $query->where('pay_status' , '=' , 1);
-                $query->where('confirm_status' , '=' , 1);
+                $query->where('confirm_status' , '=' , 2);
             })->orderBy('create_time' , 'asc')->offset($offset)->limit($pagesize)->get()->toArray();
 
             //循环获取相关信息
