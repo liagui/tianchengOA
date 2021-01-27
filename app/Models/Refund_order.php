@@ -182,8 +182,10 @@ class Refund_order extends Model
                 }
                 if($v['confirm_status'] == 0){
                     $v['confirm_status_text'] = '未确认';
-                }else{
+                }else if($v['confirm_status'] == 1){
                     $v['confirm_status_text'] = '已确认';
+                }else if($v['confirm_status'] == 2){
+                    $v['confirm_status_text'] = '已驳回';
                 }
                 if($v['refund_plan'] == 0){
                     $v['refund_plan_text'] = '未确认';
@@ -536,8 +538,8 @@ class Refund_order extends Model
                 if(!isset($data['refund_cause']) || empty($data['refund_cause'])){
                     return ['code' => 201, 'msg' => '请填写驳回原因'];
                 }
-                $up['confirm_status'] = 1;
-                $up['refund_plan'] = 3;
+                $up['confirm_status'] = 2;
+                $up['refund_plan'] = 0;
                 $up['refund_cause'] = $data['refund_cause'];
                 $up['refund_time'] = date('Y-m-d H:i:s');
                 $up['confirm_user_id'] = $admin['id'];
