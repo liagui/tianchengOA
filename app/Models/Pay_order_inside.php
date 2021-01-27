@@ -391,15 +391,28 @@ class Pay_order_inside extends Model
         if(!isset($data['pay_voucher']) || empty($data['pay_voucher'])){
             return ['code' => 201 , 'msg' => '未上传支付凭证'];
         }
+        $chaxunm = [];
         unset($data['/admin/order/handOrder']);
         if(empty($data['education_id'])){
             unset($data['education_id']);
             unset($data['major_id']);
+        }else{
+            $chaxunm=[
+                'education_id'=>$data['education_id'],
+                'major_id' =>$data['major_id']
+            ];
         }
-        //根据条件查询第三方订单，如果有，直接到流转，否则就进去审核订单
-        $data['pay_price'] = $data['course_Price'];
-        $data['course_Price'] = $data['course_Price'] - $data['sign_Price'];
-        $data['sign_Price'] = $data['sign_Price'];
+        //根据条件查询订单 有就不扣报名费
+        $order = self::where(['mobile'=>$data['mobile'],'course_id'=>$data['course_id'],'school_id'=>$data['school_id'],'project_id'=>$data['project_id'],'subject_id'=>$data['project_id'],'confirm_status'=>2])->where($chaxunm)->first();
+        if(!empty($order)){
+            $data['pay_price'] = $data['course_Price'];
+            $data['course_Price'] = $data['course_Price'];
+            $data['sign_Price'] = 0;
+        }else{
+            $data['pay_price'] = $data['course_Price'];
+            $data['course_Price'] = $data['course_Price'] - $data['sign_Price'];
+            $data['sign_Price'] = $data['sign_Price'];
+        }
         $data['add_time'] =date('Y-m-d H:i:s');
         $data['confirm_status'] = 0;
         $data['pay_voucher_user_id'] = $admin['id']; //上传凭证人
@@ -1340,19 +1353,27 @@ class Pay_order_inside extends Model
         if(empty($external)){
             return ['code' => 201 , 'msg' => '订单号有误'];
         }
-        // if($data['confirm_order_type'] == 2){
-        //     if($data['sign_Price'] > $external['pay_price']){
-        //         return ['code' => 201 , 'msg' => '所填金额大于支付金额'];
-        //     }
-        // }
-        // if($data['confirm_order_type'] == 3){
-        //     $ppppp = $data['course_Price'] + $data['sign_Price'];
-        //     if($ppppp > $external['pay_price']){
-        //         return ['code' => 201 , 'msg' => '所填金额大于支付金额'];
-        //     }
-        // }
-        //入库
+        $chaxunm = [];
+        if(!empty($data['education_id'])){
+            $chaxunm['education_id'] = $data['education_id'];
+        }
+        if(!empty($data['major_id'])){
+            $chaxunm['major_id'] = $data['major_id'];
+        }
+        //根据条件查询订单 有就不扣报名费
         $bm = isset($data['sign_Price'])?$data['sign_Price']:0;
+        $order = self::where(['mobile'=>$data['mobile'],'course_id'=>$data['course_id'],'school_id'=>$data['school_id'],'project_id'=>$data['project_id'],'subject_id'=>$data['project_id'],'confirm_status'=>2])->where($chaxunm)->first();
+        if(!empty($order)){
+            $pay_price = $external['pay_price'];
+            $course_Price = $external['pay_price'];
+            $sign_Price = 0;
+        }else{
+            $pay_price = $external['pay_price'];
+            $course_Price = $external['pay_price'] - $bm;
+            $sign_Price = $bm;
+        }
+        //入库
+
         $insert=[
             'name' => $data['name'],//姓名
             'mobile' =>$data['mobile'],//手机号
@@ -1360,7 +1381,7 @@ class Pay_order_inside extends Model
             'create_time' => date('Y-m-d H:i:s'),//订单创建时间
             'add_time' => $external['create_time'],//第三方生成订单时间
             'pay_time' => $external['pay_time'],//支付成功时间
-            'pay_price' => $external['pay_price'],//支付金额
+            'pay_price' => $pay_price,//支付金额
             'course_id' => $data['course_id'],//课程id
             'project_id' => $data['project_id'],//项目id
             'subject_id' => $data['subject_id'], //学科id
@@ -1379,9 +1400,9 @@ class Pay_order_inside extends Model
             'pay_voucher_user_id' => $admin['id'], //上传凭证人
             'pay_voucher_time' => date('Y-m-d H:i:s'), //上传凭证时间
             'pay_voucher' => isset($data['pay_voucher'])?$data['pay_voucher']:'', //支付凭证
-            'course_Price' => $external['pay_price'] - $bm,
+            'course_Price' => $course_Price,
             'sum_Price' => $external['pay_price'],
-            'sign_Price' => $bm,
+            'sign_Price' => $sign_Price,
             'admin_id' => $admin['id'],
             'offline_id' => $external['offline_id']
         ];
