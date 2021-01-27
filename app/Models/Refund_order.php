@@ -269,9 +269,9 @@ class Refund_order extends Model
         })->where(['confirm_status'=>1])->whereBetween('create_time', [$state_time, $end_time])->sum('refund_Price');
         //已退金额   refund_plan = 2
         $yituicount = self::where($where)->where(function($query) use ($data,$schoolarr,$school_id) {
-            if(isset($data['confirm_order_type'])){
-                $query->where('confirm_order_type',$data['confirm_order_type']);
-            }
+            // if(isset($data['confirm_order_type'])){
+            //     $query->where('confirm_order_type',$data['confirm_order_type']);
+            // }
             if(isset($data['order_on']) && !empty($data['order_on'])){
                 $query->where('refund_no','like','%'.$data['order_on'].'%')
                     ->orwhere('student_name','like','%'.$data['order_on'].'%')
