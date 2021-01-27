@@ -281,7 +281,7 @@ class Refund_order extends Model
                 $query->whereIn('school_id',$school_id);
             }
             $query->whereIn('school_id',$schoolarr);
-        })->where(['refund_plan'=>2])->whereBetween('create_time', [$state_time, $end_time])->sum('refund_Price');
+        })->where(['refund_plan'=>2])->whereBetween('create_time', [$state_time, $end_time])->sum('reality_price');
         //未处理条数
         $weisum = self::where($where)->where(function($query) use ($data,$schoolarr,$school_id) {
             if(isset($data['confirm_order_type'])){
