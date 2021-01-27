@@ -3970,7 +3970,7 @@ class Pay_order_inside extends Model
 
                        //一级学校的退费 分校的退费订单
                        $returnschoolprice = Refund_order::where(['school_id'=>$v['school_id'],'refund_plan'=>2])->whereBetween('refund_time', [$state_time, $end_time])->sum('reality_price');
-                       $returnschoolprice = sprintf("%01.2f",$returnschoolprice * ($v['commission']/100));
+                       $returnschoolprice = sprintf("%01.2f",$returnschoolprice * ($commission_rebate/100));
 
                        //一级分校下面的所有二级分校
                        $seond_school_id = School::select('id','deposit','tax_point','one_extraction_ratio')->where('parent_id', $v['school_id'])->where('level', 2)->get()->toArray();
@@ -3997,7 +3997,7 @@ class Pay_order_inside extends Model
                                 $firstprice = $firstprice + $onechouli;
                                 //学校退费  * 一级抽离比例
                                 $tworeturnschoolprice = Refund_order::where(['school_id'=>$onev['id'],'refund_plan'=>2])->whereBetween('refund_time', [$state_time, $end_time])->sum('reality_price');
-                                $returnschoolprice = $returnschoolprice + sprintf("%01.2f",$tworeturnschoolprice * ($v['one_extraction_ratio']/100));
+                                $returnschoolprice = $returnschoolprice + sprintf("%01.2f",$tworeturnschoolprice * ($onev['one_extraction_ratio']/100));
                             }
                             $seedprice = 0;
                             $three_school_id = School::select('id','deposit','tax_point','one_extraction_ratio')->whereIn('parent_id', $seond_school_ids)->where('level', 3)->get()->toArray();
@@ -4020,8 +4020,8 @@ class Pay_order_inside extends Model
                                     $twoschoolprice = $oneschoolprices*($twov['deposit']/100);
                                     $seedprice = $seedprice + $twoschoolprice;
                                     //学校退费  * 一级抽离比例
-                                $threereturnschoolprice = Refund_order::where(['school_id'=>$twov['id'],'refund_plan'=>2])->whereBetween('refund_time', [$state_time, $end_time])->sum('reality_price');
-                                $returnschoolprice = $returnschoolprice + sprintf("%01.2f",$threereturnschoolprice * ($twov['one_extraction_ratio']/100));
+                                   $threereturnschoolprice = Refund_order::where(['school_id'=>$twov['id'],'refund_plan'=>2])->whereBetween('refund_time', [$state_time, $end_time])->sum('reality_price');
+                                   $returnschoolprice = $returnschoolprice + sprintf("%01.2f",$threereturnschoolprice * ($twov['one_extraction_ratio']/100));
                                 }
                             }
                             $agent_margin = sprintf("%01.2f",$firstprice) + sprintf("%01.2f",$seedprice);
@@ -4045,7 +4045,7 @@ class Pay_order_inside extends Model
                        $twochouliprice = 0;
                        //二级分校退费金额   再乘返佣比例
                        $returnschoolprice = Refund_order::where(['school_id'=>$v['school_id'],'refund_plan'=>2])->whereBetween('refund_time', [$state_time, $end_time])->sum('reality_price');
-                       $returnschoolprice = sprintf("%01.2f",$returnschoolprice * ($v['commission']/100));
+                       $returnschoolprice = sprintf("%01.2f",$returnschoolprice * ($commission_rebate/100));
 
                        //二级下面的所有三级分校
                        $three_school_id = School::select('id','deposit','tax_point','one_extraction_ratio','two_extraction_ratio')->where('parent_id', $v['school_id'])->where('level', 3)->get()->toArray();
@@ -4094,7 +4094,7 @@ class Pay_order_inside extends Model
                        //退费金额
                        $returnschoolprice = Refund_order::where(['school_id'=>$v['school_id'],'refund_plan'=>2])->whereBetween('refund_time', [$state_time, $end_time])->sum('reality_price');
                        //退费金额 * 返佣比例
-                       $returnschoolprice = sprintf("%01.2f",$returnschoolprice * ($v['commission']/100));
+                       $returnschoolprice = sprintf("%01.2f",$returnschoolprice * ($commission_rebate/100));
 
                        $actual_commission_refund = sprintf("%01.2f",$commission_money - $bond - $returnschoolprice);
                    }
