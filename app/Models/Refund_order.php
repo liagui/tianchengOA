@@ -476,7 +476,16 @@ class Refund_order extends Model
             return ['code' => 200, 'msg' => '修改成功'];
         }else{
             if($data['status'] == 0 || empty($data['status'])){
-                return ['code' => 201 , 'msg' => '请选择状态'];
+                if(isset($data['pay_credentials']) && !empty($data['pay_credentials'])) {
+                    $credentials = json_decode($data['pay_credentials'],true);
+                    $credentialss = implode(',',$credentials);
+                    $up['pay_credentials'] = $credentialss;
+                    $up['remit_time'] = date('Y-m-d H:i:s');
+                }
+                $up['refund_reason'] = $data['refund_reason'];
+                $up['reality_price'] = $data['reality_price'];
+                $date = self::where(['id'=>$data['id']])->update($up);
+                return ['code' => 200, 'msg' => '修改成功'];
             }
             //判断是通过还是驳回
             if($data['status'] == 1){
