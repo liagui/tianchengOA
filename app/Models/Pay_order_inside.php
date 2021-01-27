@@ -3369,10 +3369,9 @@ class Pay_order_inside extends Model
             }
 
             //获取日期
-            // $state_time  = $body['create_time']." 00:00:00";
-            // $end_time    = $body['create_time']." 23:59:59";
-            $state_time = '2021-01-01 00:00:00';
-            $end_time = '2035-01-01 00:00:00';
+            $time = substr($body['create_time'],0,10);
+            $state_time  = $time." 00:00:00";
+            $end_time    = $time." 23:59:59";
             $query->where('create_time', '>=' , $state_time)->where('create_time', '<=' , $end_time);
             $query->where('pay_status' , '=' , 1);
             $query->where('confirm_status' , '=' , 2);
@@ -3426,10 +3425,9 @@ class Pay_order_inside extends Model
                 }
 
                 //获取日期
-                // $state_time  = $body['create_time']." 00:00:00";
-                // $end_time    = $body['create_time']." 23:59:59";
-                $state_time = '2021-01-01 00:00:00';
-                $end_time = '2035-01-01 00:00:00';
+                $time = substr($body['create_time'],0,10);
+                $state_time  = $time." 00:00:00";
+                $end_time    = $time." 23:59:59";
                 $query->where('create_time', '>=' , $state_time)->where('create_time', '<=' , $end_time);
                 $query->where('pay_status' , '=' , 1);
                 $query->where('confirm_status' , '=' , 2);
