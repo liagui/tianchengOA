@@ -48,9 +48,9 @@ class Course extends Model {
         }
 
         //判断课程价格是否为空
-        if(!isset($body['course_price'])){
-            return ['code' => 201 , 'msg' => '请输入课程价格'];
-        }
+        // if(!isset($body['course_price'])){
+        //     return ['code' => 201 , 'msg' => '请输入课程价格'];
+        // }
 
         //判断是否展示是否选择
         if(isset($body['is_hide']) && !in_array($body['is_hide'] , [0,1])){
@@ -83,7 +83,7 @@ class Course extends Model {
             'category_one_id'     =>   isset($body['parent_id']) && $body['parent_id'] > 0 ? $body['parent_id'] : 0 ,
             'category_tow_id'     =>   isset($body['child_id']) && $body['child_id'] > 0 ? $body['child_id'] : 0 ,
             'course_name'         =>   $body['course_name'] ,
-            'price'               =>   $body['course_price'] ,
+            // 'price'               =>   $body['course_price'] ,
             'is_hide'             =>   isset($body['is_hide']) && $body['is_hide'] == 1 ? 1 : 0 ,
             'admin_id'            =>   $admin_id ,
             'create_time'         =>   date('Y-m-d H:i:s')
@@ -134,9 +134,9 @@ class Course extends Model {
         }
 
         //判断课程价格是否为空
-        if(!isset($body['course_price'])){
-            return ['code' => 201 , 'msg' => '请输入课程价格'];
-        }
+        // if(!isset($body['course_price'])){
+        //     return ['code' => 201 , 'msg' => '请输入课程价格'];
+        // }
 
         //判断是否展示是否选择
         if(isset($body['is_hide']) && !in_array($body['is_hide'] , [0,1])){
@@ -163,7 +163,7 @@ class Course extends Model {
             //组装课程数组信息
             $course_array = [
                 'course_name'         =>   $body['course_name'] ,
-                'price'               =>   $body['course_price'] ,
+                // 'price'               =>   $body['course_price'] ,
                 'is_hide'             =>   isset($body['is_hide']) && $body['is_hide'] == 1 ? 1 : 0 ,
                 'is_del'              =>   isset($body['is_del']) && $body['is_del'] == 1 ? 1 : 0 ,
                 'update_time'         =>   date('Y-m-d H:i:s')
