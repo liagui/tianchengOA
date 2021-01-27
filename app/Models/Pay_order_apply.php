@@ -20,8 +20,9 @@ class Pay_order_apply extends Model
         $state_time = $statetime." 00:00:00";
         $end_time = $endtime." 23:59:59";
         //学校id
-        if(isset($data['school_id'])){
-            $where['school_id'] = $data['school_id'];
+        $school_id=[];
+        if(isset($data['school_name'])){
+            $school_id = School::select('id')->where('school_name','like','%'.$data['school_name'].'%')->where('is_del',0)->get();
         }
         //科目id&学科id
         if(!empty($data['project_id'])){
@@ -37,17 +38,32 @@ class Pay_order_apply extends Model
         if(isset($data['course_id'])){
             $where['course_id'] = $data['course_id'];
         }
+        //支付方式
+        $paytype=[];
+        if(isset($data['pay_type']) && !empty($data['pay_type'])){
+            if($data['pay_type'] == 5){
+                $paytype = [5,8,9];
+            }else{
+                $paytype = [$data['pay_type']];
+            }
+        }
         //每页显示的条数
         $pagesize = (int)isset($data['pagesize']) && $data['pagesize'] > 0 ? $data['pagesize'] : 20;
         $page     = isset($data['page']) && $data['page'] > 0 ? $data['page'] : 1;
         $offset   = ($page - 1) * $pagesize;
 
         //数据   流转订单 + 第三方支付订单
-        $order = self::where(function($query) use ($data,$schoolarr) {
+        $order = self::where(function($query) use ($data,$schoolarr,$school_id,$paytype) {
             if(isset($data['order_no']) && !empty($data['order_no'])){
-                $query->where('order_no',$data['order_no'])
-                    ->orwhere('name',$data['order_no'])
-                    ->orwhere('mobile',$data['order_no']);
+                $query->where('order_no','like','%'.$data['order_no'].'%')
+                    ->orwhere('name','like','%'.$data['order_no'].'%')
+                    ->orwhere('mobile','like','%'.$data['order_no'].'%');
+            }
+            if(!empty($school_id)){
+                $query->whereIn('school_id',$school_id);
+            }
+            if(!empty($paytype)){
+                $query->whereIn('pay_type', $paytype);
             }
             $query->whereIn('school_id',$schoolarr);
         })
