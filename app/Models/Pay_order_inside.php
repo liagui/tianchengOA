@@ -4096,7 +4096,8 @@ class Pay_order_inside extends Model
                        'first_out_of_money' => $first_out_of_money,
                        'second_out_of_amount' => $second_out_of_amount,
                        'second_out_of_money' => $second_out_of_money,
-                       'actual_commission_refund' => $actual_commission_refund
+                       'actual_commission_refund' => $actual_commission_refund,
+                       'returnschoolprice' => $returnschoolprice
                    ];
                }
                return ['code' => 200, 'msg' => '获取列表成功', 'data' => ['list' => $array, 'total' => $count, 'pagesize' => $pagesize, 'page' => $page]];
