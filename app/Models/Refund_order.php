@@ -251,7 +251,7 @@ class Refund_order extends Model
                 $query->whereIn('school_id',$school_id);
             }
             $query->whereIn('school_id',$schoolarr);
-        })->where(['confirm_status'=>0])->whereBetween('create_time', [$state_time, $end_time])->sum('refund_Price');
+        })->where(['confirm_status'=>1,'refund_plan'=>1])->whereBetween('create_time', [$state_time, $end_time])->sum('refund_Price');
         //已确认金额   confirm_status 1
         $surecount = self::where($where)->where(function($query) use ($data,$schoolarr,$school_id) {
             if(isset($data['confirm_order_type'])){
