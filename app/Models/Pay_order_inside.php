@@ -3351,7 +3351,7 @@ class Pay_order_inside extends Model
             $end_time    = $body['create_time']." 23:59:59";
             $query->where('create_time', '>=' , $state_time)->where('create_time', '<=' , $end_time);
             $query->where('pay_status' , '=' , 1);
-            $query->where('confirm_status' , '=' , 1);
+            $query->where('confirm_status' , '=' , 2);
         })->count();
 
         //支付方式
