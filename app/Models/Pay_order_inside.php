@@ -403,7 +403,7 @@ class Pay_order_inside extends Model
                 ];
             }
             //根据条件查询订单 有就不扣报名费
-            $order = self::where(['mobile'=>$data['mobile'],'course_id'=>$data['course_id'],'school_id'=>$data['school_id'],'project_id'=>$data['project_id'],'subject_id'=>$data['subject_id'],'confirm_status'=>2])->first();
+            $order = self::where(['mobile'=>$data['mobile'],'course_id'=>$data['course_id'],'school_id'=>$data['school_id'],'project_id'=>$data['project_id'],'subject_id'=>$data['subject_id'],'confirm_status'=>1])->first();
             if(!empty($order)){
                 $data['pay_price'] = $data['course_Price'];
                 $data['sign_Price'] = 0;
@@ -1361,7 +1361,7 @@ class Pay_order_inside extends Model
         }
         //根据条件查询订单 有就不扣报名费
         $bm = isset($data['sign_Price'])?$data['sign_Price']:0;
-        $order = self::where(['mobile'=>$data['mobile'],'course_id'=>$data['course_id'],'school_id'=>$data['school_id'],'project_id'=>$data['project_id'],'subject_id'=>$data['project_id'],'confirm_status'=>2])->where($chaxunm)->first();
+        $order = self::where(['mobile'=>$data['mobile'],'course_id'=>$data['course_id'],'school_id'=>$data['school_id'],'project_id'=>$data['project_id'],'subject_id'=>$data['subject_id'],'confirm_status'=>1])->where($chaxunm)->first();
         if(!empty($order)){
             $pay_price = $external['pay_price'];
             $course_Price = $external['pay_price'];
