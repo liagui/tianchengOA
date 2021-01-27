@@ -4048,12 +4048,12 @@ class Pay_order_inside extends Model
                                 $actual_receipts = sprintf("%.2f", $threeafter_tax_amountss - $threesum_costss);
                                 //抽离金额
                                 $oneschoolprices = $actual_receipts * ($onev['one_extraction_ratio']/100);
-                                //代理保证金
-                                $twoschoolprice = $oneschoolprices*($onev['deposit']/100);
-                                $agent_margin = $agent_margin + sprintf("%01.2f",$twoschoolprice);
                                 //二级抽离金额
                                 $twochouliprices = $actual_receipts * ($onev['two_extraction_ratio']/100);
                                 $twochouliprice = $twochouliprice + $twochouliprices;
+                                //代理保证金
+                                $twoschoolprice = $twochouliprices*($onev['deposit']/100);
+                                $agent_margin = $agent_margin + sprintf("%01.2f",$twoschoolprice);
                            }
                        }
                        //返佣 - 保证金-代理保证金 + 所有抽离金额
