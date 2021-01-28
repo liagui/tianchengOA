@@ -297,12 +297,28 @@ class Refund_order extends Model
             }
             $query->whereIn('school_id',$schoolarr);
         })->where(['confirm_status'=>0])->whereBetween('create_time', [$state_time, $end_time])->count();
+        //未打款条数
+        $weidksum = self::where($where)->where(function($query) use ($data,$schoolarr,$school_id) {
+            if(isset($data['confirm_order_type'])){
+                $query->where('confirm_order_type',$data['confirm_order_type']);
+            }
+            if(isset($data['order_on']) && !empty($data['order_on'])){
+                $query->where('refund_no','like','%'.$data['order_on'].'%')
+                    ->orwhere('student_name','like','%'.$data['order_on'].'%')
+                    ->orwhere('phone','like','%'.$data['order_on'].'%');
+            }
+            if(!empty($school_id)){
+                $query->whereIn('school_id',$school_id);
+            }
+            $query->whereIn('school_id',$schoolarr);
+        })->where(['confirm_status'=>1,'refund_plan'=>1])->whereBetween('create_time', [$state_time, $end_time])->count();
         $count=[
             'tuicount' => $tuicount,
             'weicount' => $weicount,
             'surecoun' => $surecount,
             'yituicount' => $yituicount,
             'weisum' => $weisum,
+            'weidksum' => $weidksum,
         ];
         return ['code' => 200 , 'msg' => '查询成功','data'=>$order,'page'=>$page,'count'=>$count];
     }
