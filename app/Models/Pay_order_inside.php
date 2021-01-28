@@ -3314,6 +3314,7 @@ class Pay_order_inside extends Model
             //保证金=返佣金额*后台分校管理中押金比例
             $baozhengjin = sprintf("%.2f", $commission_money * ($schoolOne['deposit'] / 100));
             $listv['baozhengjin'] = $baozhengjin;
+
             //分校实际佣金
             if ($schoolOne['level'] == 1) {
                 //代理保证金
@@ -3422,7 +3423,7 @@ class Pay_order_inside extends Model
                 //退费金额
                 $returnschoolprice = Refund_order::where(['school_id'=>$schoolOne['school_id'],'refund_plan'=>2])->whereBetween('refund_time', [$state_time, $end_time])->sum('reality_price');
                 //退费金额 * 返佣比例
-                $returnschoolprice = sprintf("%01.2f",$returnschoolprice * ($schoolOne['commission']/100));
+                $returnschoolprice = $returnschoolprice * ($schoolOne['commission']/100);
                 $actual_commission_refund = sprintf("%01.2f",$commission_money - $baozhengjin - $returnschoolprice);
             }
             $listv['yongjin'] = $actual_commission_refund;
