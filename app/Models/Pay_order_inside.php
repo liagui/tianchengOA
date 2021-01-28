@@ -3288,7 +3288,7 @@ class Pay_order_inside extends Model
             $listv['refundorderCount'] = $refundorderCount;
             $lists['returnCount'] = $lists['returnCount'] + $refundorderCount;
             //退费金额
-            $refundorderPrice = Refund_order::where(['refund_plan'=>2,'school_id'=>$listv['school_id']])->whereBetween('remit_time', [$school_start_time, $school_end_time])->sum('reality_price');
+            $refundorderPrice = Refund_order::where(['refund_plan'=>2,'school_id'=>$listv['school_id']])->whereBetween('refund_time', [$school_start_time, $school_end_time])->sum('reality_price');
             $listv['refundorderPrice'] = sprintf("%.2f",$refundorderPrice);
             $lists['intoreturn'] = sprintf("%.2f",$lists['intoreturn'] + $refundorderPrice);
             //成本
