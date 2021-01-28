@@ -1518,7 +1518,7 @@ class Pay_order_inside extends Model
         })
         ->whereBetween('create_time', [$state_time, $end_time])
         ->where($where)
-        ->where('pay_status','!=',2)
+        // ->where('pay_status','!=',2)
         ->count();
 
         $order = self::where(function($query) use ($data,$schoolarr,$school_id,$paytype) {
@@ -1537,7 +1537,7 @@ class Pay_order_inside extends Model
             $query->whereIn('confirm_status',[3,4]);
         })
         ->where($where)
-        ->where('pay_status','!=',2)
+        // ->where('pay_status','!=',2)
         ->whereBetween('create_time', [$state_time, $end_time])
         ->orderByDesc('id')
         ->offset($offset)->limit($pagesize)->get()->toArray();
@@ -3276,11 +3276,11 @@ class Pay_order_inside extends Model
             $school_start_time = $time.' 00:00:00';
             $school_end_time = $time.' 23:59:59';
             //到账数量
-            $orderCount = self::where($where)->whereBetween('create_time', [$school_start_time, $school_end_time])->count();
+            $orderCount = self::where($where)->whereIn('confirm_status',[1,2])->whereBetween('create_time', [$school_start_time, $school_end_time])->count();
             $listv['orderCount'] = $orderCount;
             $lists['accountCount'] = $lists['accountCount'] + $orderCount;
             //到账金额
-            $ordersumPrice = self::where($where)->whereBetween('create_time', [$school_start_time, $school_end_time])->sum('pay_price');
+            $ordersumPrice = self::where($where)->whereIn('confirm_status',[1,2])->whereBetween('create_time', [$school_start_time, $school_end_time])->sum('pay_price');
             $listv['ordersumPrice'] = sprintf("%.2f",$ordersumPrice);
             $lists['intoaccount'] = sprintf("%.2f",$lists['intoaccount'] + $ordersumPrice);
             //退费数量
