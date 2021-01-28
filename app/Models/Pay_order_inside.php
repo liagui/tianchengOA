@@ -3288,7 +3288,7 @@ class Pay_order_inside extends Model
             $listv['refundorderCount'] = $refundorderCount;
             $lists['returnCount'] = $lists['returnCount'] + $refundorderCount;
             //退费金额
-            $refundorderPrice = Refund_order::where(['refund_plan'=>2,'school_id'=>$listv['school_id']])->whereBetween('refund_time', [$school_start_time, $school_end_time])->sum('reality_price');
+            $refundorderPrice  = Refund_order::where(['refund_plan'=>2,'school_id'=>$listv['school_id']])->whereBetween('refund_time', [$school_start_time, $school_end_time])->sum('reality_price');
             $listv['refundorderPrice'] = sprintf("%.2f",$refundorderPrice);
             $lists['intoreturn'] = sprintf("%.2f",$lists['intoreturn'] + $refundorderPrice);
             //成本
@@ -3386,11 +3386,11 @@ class Pay_order_inside extends Model
                 //二级返佣金额
                 $twochouliprice = 0;
                 //二级分校退费金额   再乘返佣比例
-                $returnschoolprice = Refund_order::where(['school_id'=>$schoolOne['school_id'],'refund_plan'=>2])->whereBetween('refund_time', [$state_time, $end_time])->sum('reality_price');
+                $returnschoolprice = Refund_order::where(['school_id'=>$listv['school_id'],'refund_plan'=>2])->whereBetween('refund_time', [$state_time, $end_time])->sum('reality_price');
                 $returnschoolprice = sprintf("%01.2f",$returnschoolprice * ($schoolOne['commission']/100));
 
                 //二级下面的所有三级分校
-                $three_school_id = School::select('id','deposit','tax_point','one_extraction_ratio','two_extraction_ratio')->where('parent_id', $schoolOne['school_id'])->where('level', 3)->get()->toArray();
+                $three_school_id = School::select('id','deposit','tax_point','one_extraction_ratio','two_extraction_ratio')->where('parent_id', $listv['school_id'])->where('level', 3)->get()->toArray();
                 if(!empty($three_school_id)){
                     foreach($three_school_id as $onek=>$onev){
                          //到账
@@ -3421,7 +3421,7 @@ class Pay_order_inside extends Model
             } elseif ($schoolOne['level'] == 3) {
                 //返佣 - 保证金-代理保证金 + 所有抽离金额
                 //退费金额
-                $returnschoolprice = Refund_order::where(['school_id'=>$schoolOne['school_id'],'refund_plan'=>2])->whereBetween('refund_time', [$state_time, $end_time])->sum('reality_price');
+                $returnschoolprice = Refund_order::where(['school_id'=>$listv['school_id'],'refund_plan'=>2])->whereBetween('refund_time', [$state_time, $end_time])->sum('reality_price');
                 //退费金额 * 返佣比例
                 $returnschoolprice = $returnschoolprice * ($schoolOne['commission']/100);
                 $actual_commission_refund = sprintf("%01.2f",$commission_money - $baozhengjin - $returnschoolprice);
