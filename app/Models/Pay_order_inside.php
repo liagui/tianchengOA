@@ -787,7 +787,7 @@ class Pay_order_inside extends Model
                 }
             }else {
                 //值班班主任 排课
-                $classlead = Admin::where(['is_del' => 1, 'is_forbid' => 1, 'status' => 1, 'is_use' => 1])->get()->toArray();
+                $classlead = Admin::where(['is_del' => 1, 'is_forbid' => 1, 'status' => 1, 'is_use' => 1])->get();
                 if (!empty($classlead)) {
                     if(count($classlead) ==1){
                         $data['have_user_id'] = $classlead[0]['id'];
@@ -2058,7 +2058,7 @@ class Pay_order_inside extends Model
             $ups=[
                 'confirm_status'=>3,
                 'reject_time'=>date('Y-m-d H:i:s'),
-                'reject_des'=>$data['reject_des'],
+                'reject_des'=>isset($data['reject_des'])?$data['reject_des']:'',
                 'reject_admin_id'=>$admin['id'],
             ];
             $ups['update_time'] = date('Y-m-d H:i:s');
