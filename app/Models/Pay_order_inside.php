@@ -3292,7 +3292,7 @@ class Pay_order_inside extends Model
             $listv['refundorderPrice'] = sprintf("%.2f",$refundorderPrice);
             $lists['intoreturn'] = sprintf("%.2f",$lists['intoreturn'] + $refundorderPrice);
             //报名退费金额
-            $singorderPrice  = Refund_order::where(['refund_plan'=>2,'school_id'=>$listv['school_id']])->whereBetween('refund_time', [$school_start_time, $school_end_time])->sum('sing_price');
+            $singorderPrice  = Refund_order::where(['refund_plan'=>2,'school_id'=>$listv['school_id']])->whereBetween('refund_time', [$school_start_time, $school_end_time])->sum('reality_sing_price');
             $listv['singorderPrice'] = sprintf("%.2f",$singorderPrice);
             //成本
             $chengben = self::where($where)->whereBetween('create_time', [$school_start_time, $school_end_time])->sum('sum_Price');
