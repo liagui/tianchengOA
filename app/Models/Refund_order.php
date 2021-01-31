@@ -45,9 +45,6 @@ class Refund_order extends Model
         if(!isset($data['school_id']) || empty($data['school_id'])){
             return ['code' => 201 , 'msg' => '未选择学校'];
         }
-        if(!isset($data['refund_price']) || empty($data['refund_price'])){
-            return ['code' => 201 , 'msg' => '未填写退费金额'];
-        }
         if(isset($data['pay_credentials']) && !empty($data['pay_credentials'])){
             $credentials = json_decode($data['pay_credentials'],true);
             $credentialss = implode(',',$credentials);
@@ -61,7 +58,8 @@ class Refund_order extends Model
             'student_name' => $data['student_name'],
             'phone' => $data['phone'],
             'refund_no' => 'TF'.date('YmdHis', time()) . rand(1111, 9999),
-            'refund_Price' => $data['refund_price'],
+            'refund_Price' => isset($data['refund_price'])?$data['refund_price']:0,
+            'sing_price' => isset($data['sing_price'])?$data['sing_price']:0,
             'school_id' => $data['school_id'],
             'confirm_status' => 0,
             'create_time' => date('Y-m-d H:i:s'),
@@ -80,6 +78,7 @@ class Refund_order extends Model
             return ['code' => 201 , 'msg' => '申请失败'];
         }
     }
+
     /*
          * @param 列表
          * @param  school_id     学校
