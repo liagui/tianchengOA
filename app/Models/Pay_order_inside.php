@@ -3232,10 +3232,10 @@ class Pay_order_inside extends Model
             'returnCount'=>0,//总退费订单数
             'intoaccount'=>0,//总到账金额
             'intoreturn'=>0,//总退费金额
-            'expend'=>0,//总支出
-            'countPrice'=>0,//总报名费
-            'countCost'=> 0,//总成本
-            'practicalEnter'=> 0,//总实际收入
+            'expend'=>0,//成本支出
+            'countPrice'=>0,//分校佣金支出
+            'countCost'=> 0,//保证金总金额
+            'practicalEnter'=> 0,//实际收入
         ];
         $count = 0;
 
@@ -3287,19 +3287,22 @@ class Pay_order_inside extends Model
             $refundorderCount = Refund_order::where(['refund_plan'=>2,'school_id'=>$listv['school_id']])->whereBetween('remit_time', [$school_start_time, $school_end_time])->count();
             $listv['refundorderCount'] = $refundorderCount;
             $lists['returnCount'] = $lists['returnCount'] + $refundorderCount;
-            //退费金额
+            //课程退费金额
             $refundorderPrice  = Refund_order::where(['refund_plan'=>2,'school_id'=>$listv['school_id']])->whereBetween('refund_time', [$school_start_time, $school_end_time])->sum('reality_price');
             $listv['refundorderPrice'] = sprintf("%.2f",$refundorderPrice);
             $lists['intoreturn'] = sprintf("%.2f",$lists['intoreturn'] + $refundorderPrice);
+            //报名退费金额
+            $singorderPrice  = Refund_order::where(['refund_plan'=>2,'school_id'=>$listv['school_id']])->whereBetween('refund_time', [$school_start_time, $school_end_time])->sum('sing_price');
+            $listv['singorderPrice'] = sprintf("%.2f",$singorderPrice);
             //成本
             $chengben = self::where($where)->whereBetween('create_time', [$school_start_time, $school_end_time])->sum('sum_Price');
             $listv['countCost'] = sprintf("%.2f",$chengben);
-            $lists['countCost'] = sprintf("%.2f",$lists['countCost'] + $chengben);
+            $lists['expend'] = sprintf("%.2f",$lists['expend'] + $chengben);
             //报名费用
             $baoming = self::where($where)->whereBetween('create_time', [$school_start_time, $school_end_time])->sum('sign_Price');
             $baomingzong = $chengben + $baoming;
             $listv['baomingzong'] = sprintf("%.2f",$baomingzong);
-            $lists['countPrice'] = sprintf("%.2f",$lists['countPrice'] + $baomingzong);
+
 
             //查询分校信息
             $schoolOne = School::where('id', $listv['school_id'])->first();
@@ -3311,9 +3314,11 @@ class Pay_order_inside extends Model
             $actual_receipt = sprintf("%.2f", $after_tax_amount - $baoming);
             //返佣金额=实际到款*返佣比例
             $commission_money = sprintf("%.2f", $actual_receipt * ($schoolOne['commission'] / 100));
+            $lists['countPrice'] = sprintf("%.2f",$lists['countPrice'] + $commission_money);
             //保证金=返佣金额*后台分校管理中押金比例
             $baozhengjin = sprintf("%.2f", $commission_money * ($schoolOne['deposit'] / 100));
             $listv['baozhengjin'] = $baozhengjin;
+            $lists['countCost'] = sprintf("%.2f",$lists['countCost'] + $baozhengjin);
 
             //分校实际佣金
             if ($schoolOne['level'] == 1) {
@@ -4048,7 +4053,9 @@ class Pay_order_inside extends Model
                        $two_school_name = '';
                        $three_school_name = $v['school_name'];
                    }
-
+                   //查询学校报名金额
+                   $singschoolprice = Refund_order::where(['school_id'=>$v['school_id'],'refund_plan'=>2])->whereBetween('refund_time', [$state_time, $end_time])->sum('sing_price');
+                   $v['singschoolprice'] = sprintf("%01.2f",$singschoolprice);
                    //到款业绩=到款金额
                    $payment_performance = sprintf("%.2f", $v['pay_price']);
 

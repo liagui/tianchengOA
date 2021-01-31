@@ -373,8 +373,6 @@ class OrderController extends Controller {
 
             //分校的id传递
             self::$accept_data['schoolId'] = $school_arr['data'];
-            //获取专业列表
-//            $data = Pay_order_inside::getBranchSchoolIncomeeList(self::$accept_data);
             $timearr=[];
             if(!empty(self::$accept_data['create_time'])){
                 $timearr = json_decode(self::$accept_data['create_time']);
