@@ -3300,7 +3300,7 @@ class Pay_order_inside extends Model
             $lists['expend'] = sprintf("%.2f",$lists['expend'] + $chengben);
             //报名费用
             $baoming = self::where($where)->whereBetween('create_time', [$school_start_time, $school_end_time])->sum('sign_Price');
-            $baomingzong = $chengben + $baoming;
+            $baomingzong = $baoming;
             $listv['baomingzong'] = sprintf("%.2f",$baomingzong);
 
 
