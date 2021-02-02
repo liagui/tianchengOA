@@ -3361,13 +3361,13 @@ class Pay_order_inside extends Model
                      if(!empty($three_school_id)){
                          foreach($three_school_id as $twok=>$twov){
                              //到账
-                             $onepricess = self::where(['school_id'=>$twov['id'],'pay_status'=>1,'confirm_status'=>2])->whereBetween('comfirm_time', [$state_time, $end_time])->sum('pay_price');
+                             $onepricess = self::where(['school_id'=>$twov['id'],'pay_status'=>1,'confirm_status'=>2])->whereBetween('comfirm_time', [$school_start_time, $school_end_time])->sum('pay_price');
                              //扣税=到账金额*扣税比例
                              $tax_deductionss = sprintf("%.2f", $onepricess * ($twov['tax_point'] / 100));
                              //税后金额=到账金额-扣税
                              $after_tax_amountss = $onepricess - $tax_deductionss;
                              //成本
-                             $sum_costss = self::where(['school_id'=>$twov['id'],'pay_status'=>1,'confirm_status'=>2])->whereBetween('comfirm_time', [$state_time, $end_time])->sum('sign_Price');
+                             $sum_costss = self::where(['school_id'=>$twov['id'],'pay_status'=>1,'confirm_status'=>2])->whereBetween('comfirm_time', [$school_start_time, $school_end_time])->sum('sign_Price');
                              //实际到款=税后金额-成本
                              $actual_receipts = sprintf("%.2f", $after_tax_amountss - $sum_costss);
                              //抽离金额
@@ -3377,7 +3377,7 @@ class Pay_order_inside extends Model
                              $twoschoolprice = $oneschoolprices*($twov['deposit']/100);
                              $seedprice = $seedprice + $twoschoolprice;
                              //学校退费  * 一级抽离比例
-                            $threereturnschoolprice = Refund_order::where(['school_id'=>$twov['id'],'refund_plan'=>2])->whereBetween('refund_time', [$state_time, $end_time])->sum('reality_price');
+                            $threereturnschoolprice = Refund_order::where(['school_id'=>$twov['id'],'refund_plan'=>2])->whereBetween('refund_time', [$school_start_time, $school_end_time])->sum('reality_price');
                             $returnschoolprice = $returnschoolprice + sprintf("%01.2f",$threereturnschoolprice * ($twov['one_extraction_ratio']/100));
                          }
                      }
@@ -3405,7 +3405,7 @@ class Pay_order_inside extends Model
                          //税后金额=到账金额-扣税
                          $threeafter_tax_amountss = $threeprice - $threetax_deductionss;
                          //成本
-                         $threesum_costss = self::where(['school_id'=>$onev['id'],'pay_status'=>1,'confirm_status'=>2])->whereBetween('comfirm_time', [$state_time, $end_time])->sum('sign_Price');
+                         $threesum_costss = self::where(['school_id'=>$onev['id'],'pay_status'=>1,'confirm_status'=>2])->whereBetween('comfirm_time', [$school_start_time, $school_end_time])->sum('sign_Price');
                          //实际到款=税后金额-成本
                          $actual_receipts = sprintf("%.2f", $threeafter_tax_amountss - $threesum_costss);
                          //抽离金额
