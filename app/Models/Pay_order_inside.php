@@ -3438,7 +3438,7 @@ class Pay_order_inside extends Model
             $listv['shouru'] = sprintf("%.2f",$shouru);
             $lists['practicalEnter'] = sprintf("%.2f",$lists['practicalEnter'] + $shouru);
             //总支出
-            $lists['expend'] =sprintf("%.2f",$chengben + $refundorderPrice + $baoming);
+//            $lists['expend'] =sprintf("%.2f",$chengben + $refundorderPrice + $baoming);
         }
         return ['code' => 200 , 'msg' => '获取列表成功' , 'data' => ['list' =>$list , 'total' => $count, 'pagesize' => $pagesize , 'page' => $page,'count'=>$lists]];
     }
