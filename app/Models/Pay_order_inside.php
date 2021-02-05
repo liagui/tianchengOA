@@ -3435,8 +3435,8 @@ class Pay_order_inside extends Model
                 $lists['countPrice'] = sprintf("%.2f",$lists['countPrice'] + $actual_commission_refund);
             }
             $listv['yongjin'] = $actual_commission_refund;
-            //收入
-            $shouru = $ordersumPrice - $baozhengjin - $baoming;
+            //收入 = 到账-报名-退费-分校返佣-保证金
+            $shouru = $ordersumPrice - $lists['expend'] - $lists['intoreturn'] - $lists['countCost'] - $lists['countPrice'];
             $listv['shouru'] = sprintf("%.2f",$shouru);
             $lists['practicalEnter'] = sprintf("%.2f",$lists['practicalEnter'] + $shouru);
         }
