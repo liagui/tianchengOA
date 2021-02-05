@@ -3315,7 +3315,6 @@ class Pay_order_inside extends Model
             $actual_receipt = sprintf("%.2f", $after_tax_amount - $baoming);
             //返佣金额=实际到款*返佣比例
             $commission_money = sprintf("%.2f", $actual_receipt * ($schoolOne['commission'] / 100));
-            $lists['countPrice'] = sprintf("%.2f",$lists['countPrice'] + $commission_money);
             //保证金=返佣金额*后台分校管理中押金比例
             $baozhengjin = sprintf("%.2f", $commission_money * ($schoolOne['deposit'] / 100));
             $listv['baozhengjin'] = $baozhengjin;
@@ -3386,6 +3385,7 @@ class Pay_order_inside extends Model
                 }
                  //返佣 - 保证金-代理保证金 + 所有抽离金额
                  $actual_commission_refund = sprintf("%01.2f",$commission_money - $baozhengjin - $agent_margin + $ononepricechouli- $returnschoolprice);
+                $lists['countPrice'] = sprintf("%.2f",$lists['countPrice'] + $actual_commission_refund);
             } elseif ($schoolOne['level'] == 2) {
                 //代理保证金
                 $agent_margin = 0;
@@ -3424,6 +3424,7 @@ class Pay_order_inside extends Model
                 }
                 //返佣 - 保证金-代理保证金 + 所有抽离金额
                 $actual_commission_refund = sprintf("%01.2f",$commission_money - $baozhengjin - $agent_margin + $twochouliprice - $returnschoolprice);
+                $lists['countPrice'] = sprintf("%.2f",$lists['countPrice'] + $actual_commission_refund);
             } elseif ($schoolOne['level'] == 3) {
                 //返佣 - 保证金-代理保证金 + 所有抽离金额
                 //退费金额
@@ -3431,14 +3432,13 @@ class Pay_order_inside extends Model
                 //退费金额 * 返佣比例
                 $returnschoolprice = $returnschoolprice * ($schoolOne['commission']/100);
                 $actual_commission_refund = sprintf("%01.2f",$commission_money - $baozhengjin - $returnschoolprice);
+                $lists['countPrice'] = sprintf("%.2f",$lists['countPrice'] + $actual_commission_refund);
             }
             $listv['yongjin'] = $actual_commission_refund;
             //收入
             $shouru = $ordersumPrice - $baozhengjin - $baoming;
             $listv['shouru'] = sprintf("%.2f",$shouru);
             $lists['practicalEnter'] = sprintf("%.2f",$lists['practicalEnter'] + $shouru);
-            //总支出
-//            $lists['expend'] =sprintf("%.2f",$chengben + $refundorderPrice + $baoming);
         }
         return ['code' => 200 , 'msg' => '获取列表成功' , 'data' => ['list' =>$list , 'total' => $count, 'pagesize' => $pagesize , 'page' => $page,'count'=>$lists]];
     }
