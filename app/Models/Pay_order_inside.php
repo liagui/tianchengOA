@@ -3297,11 +3297,12 @@ class Pay_order_inside extends Model
             //成本
             $chengben = self::where($where)->whereBetween('create_time', [$school_start_time, $school_end_time])->sum('sum_Price');
             $listv['countCost'] = sprintf("%.2f",$chengben);
-            $lists['expend'] = sprintf("%.2f",$lists['expend'] + $chengben);
+
             //报名费用
             $baoming = self::where($where)->whereBetween('create_time', [$school_start_time, $school_end_time])->sum('sign_Price');
             $baomingzong = $baoming;
             $listv['baomingzong'] = sprintf("%.2f",$baomingzong);
+            $lists['expend'] = sprintf("%.2f",$lists['expend'] + $baoming);
 
 
             //查询分校信息
