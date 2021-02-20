@@ -4186,8 +4186,8 @@ class Pay_order_inside extends Model
                        if($actual_receipt < 0){
                            $suidian = 100-$tax_deduction_ratio;
                            $onemoneys = sprintf("%01.2f",$payment_performance * ($suidian/100) - $sum_cost);
-                           $fanyongtwos = sprintf("%01.2f",$onemoneys * $commission_rebate);
-                           $actual_commission_refund = sprintf("%01.2f",$fanyongtwos + $bond + $ononepricechouli - $firstprice - $seedprice - $ononepricechouli- $returnschoolprice);
+                           $fanyongtwos = sprintf("%01.2f",$onemoneys * ($commission_rebate/100));
+                           $actual_commission_refund = sprintf("%01.2f",$fanyongtwos + $bond + $ononepricechouli -$agent_margin - $ononepricechouli- $returnschoolprice);
                        }else {
                            $actual_commission_refund = sprintf("%01.2f",$commission_money - $bond - $agent_margin + $ononepricechouli- $returnschoolprice);
                        }
@@ -4241,7 +4241,7 @@ class Pay_order_inside extends Model
                            if($actual_receipt < 0){
                                $suidian = 100-$tax_deduction_ratio;
                                $onemoneys = sprintf("%01.2f",$payment_performance * ($suidian/100) - $sum_cost);
-                               $fanyongtwos = sprintf("%01.2f",$onemoneys * $commission_rebate);
+                               $fanyongtwos = sprintf("%01.2f",$onemoneys * ($commission_rebate/100));
                                $actual_commission_refund = sprintf("%01.2f",$fanyongtwos + $bond + $twochouliprice - $agent_margin- $twochouliprice- $returnschoolprice);
                            }else {
                                $actual_commission_refund = sprintf("%01.2f", $commission_money - $bond - $agent_margin + $twochouliprice - $returnschoolprice);
@@ -4270,8 +4270,8 @@ class Pay_order_inside extends Model
                        if ($actual_receipt < 0) {
                            $suidian = 100 - $tax_deduction_ratio;
                            $onemoneys = sprintf("%01.2f", $payment_performance * ($suidian / 100) - $sum_cost);
-                           $fanyongtwos = sprintf("%01.2f", $onemoneys * $commission_rebate);
-                           $actual_commission_refund = sprintf("%01.2f",$fanyongtwos - $returnschoolprice + $bond);
+                           $fanyongtwos = sprintf("%01.2f",$onemoneys * ($commission_rebate/100));
+                           $actual_commission_refund = sprintf("%01.2f",$fanyongtwos+$bond- $returnschoolprice);
                        } else {
                            $actual_commission_refund = sprintf("%01.2f", $commission_money - $bond - $returnschoolprice);
                        }
