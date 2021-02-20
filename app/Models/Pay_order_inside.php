@@ -4106,6 +4106,7 @@ class Pay_order_inside extends Model
                    $commission_rebate = $v['commission'];
 
                    //返佣金额=实际到款*返佣比例
+
                    $commission_money = sprintf("%.2f", $actual_receipt * ($commission_rebate / 100));
 
                    //保证金=返佣金额*后台分校管理中押金比例
@@ -4181,8 +4182,15 @@ class Pay_order_inside extends Model
                             $agent_margin = sprintf("%01.2f",$firstprice) + sprintf("%01.2f",$seedprice);
                        }
                         //返佣 - 保证金-代理保证金 + 所有抽离金额
-
-                        $actual_commission_refund = sprintf("%01.2f",$commission_money - $bond - $agent_margin + $ononepricechouli- $returnschoolprice);
+                       //实际到款金额是负数  （到账金额*（1-税点）-成本）*返佣比例+保证金+三级分校一级抽离金额+二级分校一级抽离金额-代理保证金-退费金额如果
+                       if($actual_receipt < 0){
+                           $suidian = 100-$tax_deduction_ratio;
+                           $onemoneys = sprintf("%01.2f",$payment_performance * ($suidian/100) - $sum_cost);
+                           $fanyongtwos = sprintf("%01.2f",$onemoneys * $commission_rebate);
+                           $actual_commission_refund = sprintf("%01.2f",$fanyongtwos + $bond + $ononepricechouli - $firstprice - $seedprice - $ononepricechouli- $returnschoolprice);
+                       }else {
+                           $actual_commission_refund = sprintf("%01.2f",$commission_money - $bond - $agent_margin + $ononepricechouli- $returnschoolprice);
+                       }
                    } elseif ($v['level'] == 2) {
                        //二级分校的一级抽离比例=后台分校管理中一级抽离比例
                        //二级分校的一级抽离金额=二级分校的一级抽离比例*实际到款
@@ -4228,29 +4236,45 @@ class Pay_order_inside extends Model
                                 $returnschoolprice =$returnschoolprice + sprintf("%01.2f",$threereturnschoolprice * ($onev['two_extraction_ratio']/100));
                            }
                        }
-                       //返佣 - 保证金-代理保证金 + 所有抽离金额
-                       $actual_commission_refund = sprintf("%01.2f",$commission_money - $bond - $agent_margin + $twochouliprice - $returnschoolprice);
-                   } elseif ($v['level'] == 3) {
+                           //返佣 - 保证金-代理保证金 + 所有抽离金额
+                           //到账金额是负数  （到账金额*（1-税点）-成本）*返佣比例+保证金+三级分校一级抽离金额-代理保证金-退费金额如果
+                           if($actual_receipt < 0){
+                               $suidian = 100-$tax_deduction_ratio;
+                               $onemoneys = sprintf("%01.2f",$payment_performance * ($suidian/100) - $sum_cost);
+                               $fanyongtwos = sprintf("%01.2f",$onemoneys * $commission_rebate);
+                               $actual_commission_refund = sprintf("%01.2f",$fanyongtwos + $bond + $twochouliprice - $agent_margin- $twochouliprice- $returnschoolprice);
+                           }else {
+                               $actual_commission_refund = sprintf("%01.2f", $commission_money - $bond - $agent_margin + $twochouliprice - $returnschoolprice);
+                           }
+                       } elseif ($v['level'] == 3) {
                        //三级分校的一级抽离比例=后台分校管理中一级抽离比例
                        //三级分校的一级抽离金额=三级分校的一级抽离比例*实际到款
                        //三级分校的二级抽离比例=后台分校管理中二级抽离比例
                        //三级分校的二级抽离金额=三级分校的二级抽比例*实际到款
                        //三级分校的实际返佣=三级分校的返佣金额-三级分校的保证金-三级分校退费*三级分校返佣比例
                        $first_out_of_amount = $v['one_extraction_ratio'] && !empty($v['one_extraction_ratio']) ? $v['one_extraction_ratio'] : '';
-                       $first_out_of_money = sprintf("%01.2f",$actual_receipt * ($first_out_of_amount/100));
+                       $first_out_of_money = sprintf("%01.2f", $actual_receipt * ($first_out_of_amount / 100));
 
                        //二级抽离比例
                        $second_out_of_amount = $v['two_extraction_ratio'] && !empty($v['two_extraction_ratio']) ? $v['two_extraction_ratio'] : '';
-                       $second_out_of_money = sprintf("%01.2f",$actual_receipt * ($second_out_of_amount/100));
+                       $second_out_of_money = sprintf("%01.2f", $actual_receipt * ($second_out_of_amount / 100));
                        //三级分校无代理保证金
                        $agent_margin = '';
                        //返佣 - 保证金-代理保证金 + 所有抽离金额
                        //退费金额
-                       $returnschoolprice = Refund_order::where(['school_id'=>$v['school_id'],'refund_plan'=>2])->whereBetween('refund_time', [$state_time, $end_time])->sum('reality_price');
+                       $returnschoolprice = Refund_order::where(['school_id' => $v['school_id'], 'refund_plan' => 2])->whereBetween('refund_time', [$state_time, $end_time])->sum('reality_price');
                        //退费金额 * 返佣比例
-                       $returnschoolprice = sprintf("%01.2f",$returnschoolprice * ($commission_rebate/100));
+                       $returnschoolprice = sprintf("%01.2f", $returnschoolprice * ($commission_rebate / 100));
 
-                       $actual_commission_refund = sprintf("%01.2f",$commission_money - $bond - $returnschoolprice);
+                       //到账金额是负数  （到账金额*（1-税点）-成本）*返佣比例+保证金-退费金额如果
+                       if ($actual_receipt < 0) {
+                           $suidian = 100 - $tax_deduction_ratio;
+                           $onemoneys = sprintf("%01.2f", $payment_performance * ($suidian / 100) - $sum_cost);
+                           $fanyongtwos = sprintf("%01.2f", $onemoneys * $commission_rebate);
+                           $actual_commission_refund = sprintf("%01.2f",$fanyongtwos - $returnschoolprice + $bond);
+                       } else {
+                           $actual_commission_refund = sprintf("%01.2f", $commission_money - $bond - $returnschoolprice);
+                       }
                    }
                    //数组赋值
                    $array[] = [
