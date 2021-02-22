@@ -4225,8 +4225,7 @@ class Pay_order_inside extends Model
                                 $actual_receipts = sprintf("%.2f", $threeafter_tax_amountss - $threesum_costss);
                                 //二级抽离金额
                                 $twochouliprices = $actual_receipts * ($onev['two_extraction_ratio']/100);
-                                $twos = $twochouliprices * ($onev['deposit']/100);
-                                $twochouliprice = $twochouliprice + $twos;
+                                $twochouliprice = $twochouliprice + $twochouliprices;
                                 //代理保证金
                                 $twoschoolprice = $twochouliprices*($onev['deposit']/100);
                                 $agent_margin = $agent_margin + sprintf("%01.2f",$twoschoolprice);
