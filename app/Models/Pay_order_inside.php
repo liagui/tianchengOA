@@ -3393,7 +3393,7 @@ class Pay_order_inside extends Model
                      $agent_margin = sprintf("%01.2f",$firstprice) + sprintf("%01.2f",$seedprice);
                 }
                  //返佣 - 保证金-代理保证金 + 所有抽离金额
-                if($ordersumPrice < 0){
+                if($ordersumPrice <= 0){
                     $suidian = 100-$schoolOne['tax_point'];
                     $onemoneys = sprintf("%01.2f",$ordersumPrice * ($suidian/100) - $baoming);
                     $fanyongtwos = sprintf("%01.2f",$onemoneys * ($schoolOne['commission']/100));
@@ -3446,7 +3446,7 @@ class Pay_order_inside extends Model
                 }
                 //返佣 - 保证金-代理保证金 + 所有抽离金额
                 //到账金额是负数  （到账金额*（1-税点）-成本）*返佣比例+保证金+三级分校一级抽离金额-代理保证金-退费金额如果
-                if($ordersumPrice < 0){
+                if($ordersumPrice <= 0){
                     $suidian = 100-$schoolOne['tax_point'];
                     $onemoneys = sprintf("%01.2f",$ordersumPrice * ($suidian/100) - $baoming);
                     $fanyongtwos = sprintf("%01.2f",$onemoneys * ($schoolOne['commission']/100));
@@ -3464,7 +3464,7 @@ class Pay_order_inside extends Model
                 //退费金额 * 返佣比例
                 $returnschoolprice = $returnschoolprice * ($schoolOne['commission']/100);
                 //到账金额是负数  （到账金额*（1-税点）-成本）*返佣比例+保证金-退费金额如果
-                if ($ordersumPrice < 0) {
+                if ($ordersumPrice <= 0) {
                     $suidian = 100-$schoolOne['tax_point'];
                     $onemoneys = sprintf("%01.2f",$ordersumPrice * ($suidian/100) - $baoming);
                     $fanyongtwos = sprintf("%01.2f",$onemoneys * ($schoolOne['commission']/100));
