@@ -3385,7 +3385,14 @@ class Pay_order_inside extends Model
                      $agent_margin = sprintf("%01.2f",$firstprice) + sprintf("%01.2f",$seedprice);
                 }
                  //返佣 - 保证金-代理保证金 + 所有抽离金额
-                 $actual_commission_refund = sprintf("%01.2f",$commission_money - $baozhengjin - $agent_margin + $ononepricechouli- $returnschoolprice);
+                if($actual_receipt < 0){
+                    $suidian = 100-$schoolOne['tax_point'];
+                    $onemoneys = sprintf("%01.2f",$ordersumPrice * ($suidian/100) - $baoming);
+                    $fanyongtwos = sprintf("%01.2f",$onemoneys * ($schoolOne['commission']/100));
+                    $actual_commission_refund = sprintf("%01.2f",$fanyongtwos +$baozhengjin + $ononepricechouli -abs($agent_margin) - abs($ononepricechouli)- abs($returnschoolprice));
+                }else {
+                    $actual_commission_refund = sprintf("%01.2f",$commission_money - abs($baozhengjin) - abs($agent_margin) + $ononepricechouli- abs($returnschoolprice));
+                }
                 $lists['countPrice'] = sprintf("%.2f",$lists['countPrice'] + $actual_commission_refund);
             } elseif ($schoolOne['level'] == 2) {
                 //代理保证金
@@ -3424,7 +3431,15 @@ class Pay_order_inside extends Model
                     }
                 }
                 //返佣 - 保证金-代理保证金 + 所有抽离金额
-                $actual_commission_refund = sprintf("%01.2f",$commission_money - $baozhengjin - $agent_margin + $twochouliprice - $returnschoolprice);
+                //到账金额是负数  （到账金额*（1-税点）-成本）*返佣比例+保证金+三级分校一级抽离金额-代理保证金-退费金额如果
+                if($actual_receipt < 0){
+                    $suidian = 100-$schoolOne['tax_point'];
+                    $onemoneys = sprintf("%01.2f",$ordersumPrice * ($suidian/100) - $baoming);
+                    $fanyongtwos = sprintf("%01.2f",$onemoneys * ($schoolOne['commission']/100));
+                    $actual_commission_refund = sprintf("%01.2f",$fanyongtwos + $baozhengjin + $twochouliprice - abs($agent_margin)- abs($twochouliprice)- abs($returnschoolprice));
+                }else {
+                    $actual_commission_refund = sprintf("%01.2f", $commission_money - abs($baozhengjin) - abs($agent_margin) + $twochouliprice - abs($returnschoolprice));
+                }
                 $lists['countPrice'] = sprintf("%.2f",$lists['countPrice'] + $actual_commission_refund);
             } elseif ($schoolOne['level'] == 3) {
                 //返佣 - 保证金-代理保证金 + 所有抽离金额
@@ -3432,7 +3447,15 @@ class Pay_order_inside extends Model
                 $returnschoolprice = Refund_order::where(['school_id'=>$listv['school_id'],'refund_plan'=>2])->whereBetween('refund_time', [$school_start_time, $school_end_time])->sum('reality_price');
                 //退费金额 * 返佣比例
                 $returnschoolprice = $returnschoolprice * ($schoolOne['commission']/100);
-                $actual_commission_refund = sprintf("%01.2f",$commission_money - $baozhengjin - $returnschoolprice);
+                //到账金额是负数  （到账金额*（1-税点）-成本）*返佣比例+保证金-退费金额如果
+                if ($actual_receipt < 0) {
+                    $suidian = 100-$schoolOne['tax_point'];
+                    $onemoneys = sprintf("%01.2f",$ordersumPrice * ($suidian/100) - $baoming);
+                    $fanyongtwos = sprintf("%01.2f",$onemoneys * ($schoolOne['commission']/100));
+                    $actual_commission_refund = sprintf("%01.2f",$fanyongtwos+$baozhengjin- abs($returnschoolprice));
+                } else {
+                    $actual_commission_refund = sprintf("%01.2f", $commission_money - abs($baozhengjin) - abs($returnschoolprice));
+                }
                 $lists['countPrice'] = sprintf("%.2f",$lists['countPrice'] + $actual_commission_refund);
             }
             $listv['yongjin'] = $actual_commission_refund;
