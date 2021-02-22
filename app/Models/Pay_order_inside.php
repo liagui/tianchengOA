@@ -3958,7 +3958,7 @@ class Pay_order_inside extends Model
             //新数组赋值
             $array = [];
             //获取收入详情列表
-            $list = Refund_order::select("refund_no","create_time","student_name","phone","school_id","refund_Price","refund_reason")->where(function($query) use ($body){
+            $list = Refund_order::select("refund_no","create_time","student_name","phone","school_id","reality_price","refund_reason")->where(function($query) use ($body){
                 //判断分校id是否为空和合法
                 if(isset($body['school_id']) && !empty($body['school_id']) && $body['school_id'] > 0){
                     $query->where('school_id' , '=' , $body['school_id']);
