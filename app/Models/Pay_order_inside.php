@@ -3391,9 +3391,9 @@ class Pay_order_inside extends Model
                     $suidian = 100-$schoolOne['tax_point'];
                     $onemoneys = sprintf("%01.2f",$ordersumPrice * ($suidian/100) - $baoming);
                     $fanyongtwos = sprintf("%01.2f",$onemoneys * ($schoolOne['commission']/100));
-                    $actual_commission_refund = sprintf("%01.2f",$fanyongtwos +$baozhengjin + $ononepricechouli -abs($agent_margin) - abs($ononepricechouli)- abs($returnschoolprice));
+                    $actual_commission_refund = sprintf("%01.2f",$fanyongtwos +$baozhengjin + $ononepricechouli -$agent_margin - $ononepricechouli- $returnschoolprice);
                 }else {
-                    $actual_commission_refund = sprintf("%01.2f",$commission_money - abs($baozhengjin) - abs($agent_margin) + $ononepricechouli- abs($returnschoolprice));
+                    $actual_commission_refund = sprintf("%01.2f",$commission_money - abs($baozhengjin) - $agent_margin + $ononepricechouli- $returnschoolprice);
                 }
                 $lists['countPrice'] = sprintf("%.2f",$lists['countPrice'] + $actual_commission_refund);
             } elseif ($schoolOne['level'] == 2) {
@@ -3438,9 +3438,9 @@ class Pay_order_inside extends Model
                     $suidian = 100-$schoolOne['tax_point'];
                     $onemoneys = sprintf("%01.2f",$ordersumPrice * ($suidian/100) - $baoming);
                     $fanyongtwos = sprintf("%01.2f",$onemoneys * ($schoolOne['commission']/100));
-                    $actual_commission_refund = sprintf("%01.2f",$fanyongtwos + $baozhengjin + $twochouliprice - abs($agent_margin)- abs($twochouliprice)- abs($returnschoolprice));
+                    $actual_commission_refund = sprintf("%01.2f",$fanyongtwos + $baozhengjin + $twochouliprice - $agent_margin- $twochouliprice- $returnschoolprice);
                 }else {
-                    $actual_commission_refund = sprintf("%01.2f", $commission_money - abs($baozhengjin) - abs($agent_margin) + $twochouliprice - abs($returnschoolprice));
+                    $actual_commission_refund = sprintf("%01.2f", $commission_money - abs($baozhengjin) - $agent_margin + $twochouliprice - $returnschoolprice);
                 }
                 $lists['countPrice'] = sprintf("%.2f",$lists['countPrice'] + $actual_commission_refund);
             } elseif ($schoolOne['level'] == 3) {
@@ -3454,9 +3454,9 @@ class Pay_order_inside extends Model
                     $suidian = 100-$schoolOne['tax_point'];
                     $onemoneys = sprintf("%01.2f",$ordersumPrice * ($suidian/100) - $baoming);
                     $fanyongtwos = sprintf("%01.2f",$onemoneys * ($schoolOne['commission']/100));
-                    $actual_commission_refund = sprintf("%01.2f",$fanyongtwos+$baozhengjin- abs($returnschoolprice));
+                    $actual_commission_refund = sprintf("%01.2f",$fanyongtwos+$baozhengjin- $returnschoolprice);
                 } else {
-                    $actual_commission_refund = sprintf("%01.2f", $commission_money - abs($baozhengjin) - abs($returnschoolprice));
+                    $actual_commission_refund = sprintf("%01.2f", $commission_money - $baozhengjin -$returnschoolprice);
                 }
                 $lists['countPrice'] = sprintf("%.2f",$lists['countPrice'] + $actual_commission_refund);
             }
