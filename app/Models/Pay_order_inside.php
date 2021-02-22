@@ -4187,9 +4187,9 @@ class Pay_order_inside extends Model
                            $suidian = 100-$tax_deduction_ratio;
                            $onemoneys = sprintf("%01.2f",$payment_performance * ($suidian/100) - $sum_cost);
                            $fanyongtwos = sprintf("%01.2f",$onemoneys * ($commission_rebate/100));
-                           $actual_commission_refund = sprintf("%01.2f",abs($fanyongtwos) + abs($bond) + abs($ononepricechouli) -abs($agent_margin) - abs($ononepricechouli)- abs($returnschoolprice));
+                           $actual_commission_refund = sprintf("%01.2f",$fanyongtwos +$bond + $ononepricechouli -abs($agent_margin) - abs($ononepricechouli)- abs($returnschoolprice));
                        }else {
-                           $actual_commission_refund = sprintf("%01.2f",$commission_money - abs($bond) - abs($agent_margin) + abs($ononepricechouli)- abs($returnschoolprice));
+                           $actual_commission_refund = sprintf("%01.2f",$commission_money - abs($bond) - abs($agent_margin) + $ononepricechouli- abs($returnschoolprice));
                        }
                    } elseif ($v['level'] == 2) {
                        //二级分校的一级抽离比例=后台分校管理中一级抽离比例
@@ -4240,9 +4240,9 @@ class Pay_order_inside extends Model
                                $suidian = 100-$tax_deduction_ratio;
                                $onemoneys = sprintf("%01.2f",$payment_performance * ($suidian/100) - $sum_cost);
                                $fanyongtwos = sprintf("%01.2f",$onemoneys * ($commission_rebate/100));
-                               $actual_commission_refund = sprintf("%01.2f",abs($fanyongtwos) + abs($bond) + abs($twochouliprice) - abs($agent_margin)- abs($twochouliprice)- abs($returnschoolprice));
+                               $actual_commission_refund = sprintf("%01.2f",$fanyongtwos + $bond + $twochouliprice - abs($agent_margin)- abs($twochouliprice)- abs($returnschoolprice));
                            }else {
-                               $actual_commission_refund = sprintf("%01.2f", abs($commission_money) - abs($bond) - abs($agent_margin) + abs($twochouliprice) - abs($returnschoolprice));
+                               $actual_commission_refund = sprintf("%01.2f", $commission_money - abs($bond) - abs($agent_margin) + $twochouliprice - abs($returnschoolprice));
                            }
                        } elseif ($v['level'] == 3) {
                        //三级分校的一级抽离比例=后台分校管理中一级抽离比例
@@ -4269,9 +4269,9 @@ class Pay_order_inside extends Model
                            $suidian = 100 - $tax_deduction_ratio;
                            $onemoneys = sprintf("%01.2f", $payment_performance * ($suidian / 100) - $sum_cost);
                            $fanyongtwos = sprintf("%01.2f",$onemoneys * ($commission_rebate/100));
-                           $actual_commission_refund = sprintf("%01.2f",abs($fanyongtwos)+($bond)- abs($returnschoolprice));
+                           $actual_commission_refund = sprintf("%01.2f",$fanyongtwos+$bond- abs($returnschoolprice));
                        } else {
-                           $actual_commission_refund = sprintf("%01.2f", abs($commission_money) - abs($bond) - abs($returnschoolprice));
+                           $actual_commission_refund = sprintf("%01.2f", $commission_money - abs($bond) - abs($returnschoolprice));
                        }
                    }
                    //数组赋值
