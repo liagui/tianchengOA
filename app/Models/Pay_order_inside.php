@@ -3359,8 +3359,8 @@ class Pay_order_inside extends Model
                          $firstprice = $firstprice + $onechouli;
                          //学校退费  * 一级抽离比例
                          $tworeturnschoolprice = Refund_order::where(['school_id'=>$onev['id'],'refund_plan'=>2])->whereBetween('refund_time', [$school_start_time, $school_end_time])->sum('reality_price');
-                         $tworeturnschoolsingprice = Refund_order::where(['school_id'=>$onev['id'],'refund_plan'=>2])->whereBetween('refund_time', [$school_start_time, $school_end_time])->sum('reality_sing_price');
-                         $tworeturnschoolprice = $tworeturnschoolprice + $tworeturnschoolsingprice;
+//                         $tworeturnschoolsingprice = Refund_order::where(['school_id'=>$onev['id'],'refund_plan'=>2])->whereBetween('refund_time', [$school_start_time, $school_end_time])->sum('reality_sing_price');
+//                         $tworeturnschoolprice = $tworeturnschoolprice + $tworeturnschoolsingprice;
                          $returnschoolprice = $returnschoolprice + sprintf("%01.2f",$tworeturnschoolprice * ($onev['one_extraction_ratio']/100));
                      }
                      $seedprice = 0;
@@ -3385,8 +3385,8 @@ class Pay_order_inside extends Model
                              $seedprice = $seedprice + $twoschoolprice;
                              //学校退费  * 一级抽离比例
                             $threereturnschoolprice = Refund_order::where(['school_id'=>$twov['id'],'refund_plan'=>2])->whereBetween('refund_time', [$school_start_time, $school_end_time])->sum('reality_price');
-                            $threereturnschoolsingprice = Refund_order::where(['school_id'=>$twov['id'],'refund_plan'=>2])->whereBetween('refund_time', [$school_start_time, $school_end_time])->sum('reality_sing_price');
-                            $threereturnschoolprice = $threereturnschoolsingprice + $threereturnschoolprice;
+//                            $threereturnschoolsingprice = Refund_order::where(['school_id'=>$twov['id'],'refund_plan'=>2])->whereBetween('refund_time', [$school_start_time, $school_end_time])->sum('reality_sing_price');
+//                            $threereturnschoolprice = $threereturnschoolsingprice + $threereturnschoolprice;
                             $returnschoolprice = $returnschoolprice + sprintf("%01.2f",$threereturnschoolprice * ($twov['one_extraction_ratio']/100));
                          }
                      }
@@ -3411,8 +3411,6 @@ class Pay_order_inside extends Model
                 $returnschoolprice = Refund_order::where(['school_id'=>$listv['school_id'],'refund_plan'=>2])->whereBetween('refund_time', [$school_start_time, $school_end_time])->sum('reality_price');
                 $returnschoolsingprice = Refund_order::where(['school_id'=>$listv['school_id'],'refund_plan'=>2])->whereBetween('refund_time', [$school_start_time, $school_end_time])->sum('reality_sing_price');
                 $returnschoolprice = $returnschoolprice + $returnschoolsingprice;
-
-
                 $returnschoolprice = sprintf("%01.2f",$returnschoolprice * ($schoolOne['commission']/100));
 
                 //二级下面的所有三级分校
@@ -3439,8 +3437,8 @@ class Pay_order_inside extends Model
                          $agent_margin = $agent_margin + sprintf("%01.2f",$twoschoolprice);
                          //算出每个三级分校的退费
                          $threereturnschoolprice = Refund_order::where(['school_id'=>$onev['id'],'refund_plan'=>2])->whereBetween('refund_time', [$school_start_time, $school_end_time])->sum('reality_price');
-                         $threereturnschoolsingprice = Refund_order::where(['school_id'=>$onev['id'],'refund_plan'=>2])->whereBetween('refund_time', [$school_start_time, $school_end_time])->sum('reality_sing_price');
-                         $threereturnschoolprice = $threereturnschoolprice + $threereturnschoolsingprice;
+//                         $threereturnschoolsingprice = Refund_order::where(['school_id'=>$onev['id'],'refund_plan'=>2])->whereBetween('refund_time', [$school_start_time, $school_end_time])->sum('reality_sing_price');
+//                         $threereturnschoolprice = $threereturnschoolprice + $threereturnschoolsingprice;
                          $returnschoolprice =$returnschoolprice + sprintf("%01.2f",$threereturnschoolprice * ($onev['two_extraction_ratio']/100));
                     }
                 }
