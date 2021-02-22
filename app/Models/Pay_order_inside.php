@@ -3462,11 +3462,7 @@ class Pay_order_inside extends Model
             }
             $listv['yongjin'] = $actual_commission_refund;
             //收入 = 到账-报名-退费-分校返佣-保证金
-            if($ordersumPrice <=0){
-                $shouru = 0;
-            }else {
-                $shouru = $ordersumPrice - $lists['expend'] - $lists['intoreturn'] - $lists['countCost'] - $lists['countPrice'];
-            }
+            $shouru = $ordersumPrice - $lists['expend'] - $lists['intoreturn'] - $lists['countCost'] - $lists['countPrice'];
             $listv['shouru'] = sprintf("%.2f",$shouru);
             $lists['practicalEnter'] = sprintf("%.2f",$lists['practicalEnter'] + $shouru);
         }
