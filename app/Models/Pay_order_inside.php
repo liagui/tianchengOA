@@ -3977,7 +3977,7 @@ class Pay_order_inside extends Model
                     'name'          =>  $v['student_name'] && !empty($v['student_name']) ? $v['student_name'] : '-'  , //姓名
                     'mobile'        =>  $v['phone'] && !empty($v['phone']) ? $v['phone'] : '-' ,  //手机号
                     'school_name'   =>  $school_name && !empty($school_name) ? $school_name : '-' ,    //所属分校
-                    'refund_price'  =>  $v['refund_Price'] && $v['refund_Price'] > 0 ? floatval($v['refund_Price']) : '-' ,  //退费金额
+                    'refund_price'  =>  $v['reality_price'] && $v['reality_price'] > 0 ? floatval($v['reality_price']) : '-' ,  //退费金额
                     'refund_reason' =>  $v['refund_reason'] && !empty($v['refund_reason']) ? $v['refund_reason'] : '-'       //退费原因
                 ];
             }
