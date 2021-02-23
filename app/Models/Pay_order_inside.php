@@ -4060,7 +4060,8 @@ class Pay_order_inside extends Model
                any_value(pay_order_inside.education_id) as education_id,
                any_value(pay_order_inside.major_id) as major_id,
                any_value(sum(pay_order_inside.sign_Price)) as sign_Price'
-               )->leftjoin("pay_order_inside", function ($join) {
+               )->leftjoin('refund_order','on','refund_order.school_id=school.id')
+                   ->leftjoin("pay_order_inside", function ($join) {
                    $join->on('school.id', '=', 'pay_order_inside.school_id');
                })->where('school.is_del', 0)->where(function ($query) use ($body, $school_id) {
                    //判断分校id是否为空和合法
@@ -4074,7 +4075,7 @@ class Pay_order_inside extends Model
                        $state_time = $create_time[0] . " 00:00:00";
                        $end_time = $create_time[1] . " 23:59:59";
                        $query->whereBetween('pay_order_inside.comfirm_time', [$state_time, $end_time]);
-//                       $query->whereBetween('refund_order.refund_time', [$state_time, $end_time]);
+                       $query->orWhereBetween('refund_order.refund_time', [$state_time, $end_time]);
                    }
                })->orderByDesc('school.create_time')->groupBy(DB::raw('school.id'))->offset($offset)->limit($pagesize)->get()->toArray();
 //            if(empty($list)){
