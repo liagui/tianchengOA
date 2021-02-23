@@ -4082,7 +4082,7 @@ class Pay_order_inside extends Model
                        $state_time = $create_time[0] . " 00:00:00";
                        $end_time = $create_time[1] . " 23:59:59";
                        $query->whereBetween('pay_order_inside.comfirm_time', [$state_time, $end_time]);
-                       $query->whereBetween('refund_order.refund_time', [$state_time, $end_time]);
+//                       $query->whereBetween('refund_order.refund_time', [$state_time, $end_time]);
                    }
                })->orderByDesc('school.create_time')->groupBy(DB::raw('school.id'))->offset($offset)->limit($pagesize)->get()->toArray();
 
