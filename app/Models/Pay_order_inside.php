@@ -4025,7 +4025,7 @@ class Pay_order_inside extends Model
             $end_time = $create_time[1] . " 23:59:59";
             //获取数量
             $count = DB::table('school')->selectRaw("count(school.id) as t_count")
-                ->leftJoin('refund_order','on','refund_order.school_id = school.id')
+                ->leftJoin('refund_order','on','school.id = refund_order.school_id ')
                 ->leftjoin("pay_order_inside", function ($join) {
                 $join->on('school.id', '=', 'pay_order_inside.school_id');
             })->where('school.is_del', 0)->where(function ($query) use ($body, $school_id, $state_time, $end_time) {
@@ -4063,7 +4063,7 @@ class Pay_order_inside extends Model
                any_value(pay_order_inside.education_id) as education_id,
                any_value(pay_order_inside.major_id) as major_id,
                any_value(sum(pay_order_inside.sign_Price)) as sign_Price'
-               )->leftjoin('refund_order','on','refund_order.school_id=school.id')
+               ) ->leftJoin('refund_order','on','school.id = refund_order.school_id')
                    ->leftjoin("pay_order_inside", function ($join) {
                    $join->on('school.id', '=', 'pay_order_inside.school_id');
                })->where('school.is_del', 0)->where(function ($query) use ($body, $school_id) {
