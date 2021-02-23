@@ -4030,20 +4030,8 @@ class Pay_order_inside extends Model
                //获取日期
             $query->whereBetween('pay_order_inside.comfirm_time', [$state_time, $end_time]);
            })->groupBy(DB::raw('school.id'))->get()->count();
-
-           $counts = DB::table('school')->selectRaw("count(school.id) as t_count")->leftjoin("refund_order", function ($join) {
-               $join->on('school.id', '=', 'refund_order.school_id');
-           })->where('school.is_del', 0)->where('refund_order.refund_plan', 2)->where(function ($query) use ($body,$school_id,$state_time,$end_time) {
-               //判断分校id是否为空和合法
-               if ( !empty($school_id)) {
-                   $query->whereIn('id',$school_id);
-               }
-               //获取日期
-               $query->whereBetween('refund_order.refund_time', [$state_time, $end_time]);
-           })->groupBy(DB::raw('school.id'))->get()->count();
-           $count = $count + $counts;
            //判断数量是否大于0
-           if ($count > 0) {
+//           if ($count > 0) {
                //新数组赋值
                $array = [];
 
@@ -4347,7 +4335,7 @@ class Pay_order_inside extends Model
                }
                return ['code' => 200, 'msg' => '获取列表成功', 'data' => ['list' => $array, 'total' => $count, 'pagesize' => $pagesize, 'page' => $page]];
            }
-       }
+//       }
         return ['code' => 200 , 'msg' => '获取列表成功' , 'data' => ['list' => [] , 'total' => 0 , 'pagesize' => $pagesize , 'page' => $page]];
     }
 
