@@ -3450,9 +3450,9 @@ class Pay_order_inside extends Model
                     $suidian = 100-$schoolOne['tax_point'];
                     $onemoneys = sprintf("%01.2f",$ordersumPrice * ($suidian/100) - $baoming);
                     $fanyongtwos = sprintf("%01.2f",$onemoneys * ($schoolOne['commission']/100));
-                    $actual_commission_refund = sprintf("%01.2f",$fanyongtwos + $baozhengjin + $twochouliprice - $agent_margin- $twochouliprice- $returnschoolprice);
+                    $actual_commission_refund = sprintf("%01.2f",$fanyongtwos + $baozhengjin + $twochouliprice - abs($agent_margin)- abs($twochouliprice)- abs($returnschoolprice));
                 }else {
-                    $actual_commission_refund = sprintf("%01.2f", $commission_money - abs($baozhengjin) - $agent_margin + $twochouliprice - $returnschoolprice);
+                    $actual_commission_refund = sprintf("%01.2f", $commission_money - abs($baozhengjin) - abs($agent_margin) + $twochouliprice - abs($returnschoolprice));
                 }
                 $lists['countPrice'] = sprintf("%.2f",$lists['countPrice'] + $actual_commission_refund);
             } elseif ($schoolOne['level'] == 3) {
@@ -3469,9 +3469,9 @@ class Pay_order_inside extends Model
                     $suidian = 100-$schoolOne['tax_point'];
                     $onemoneys = sprintf("%01.2f",$ordersumPrice * ($suidian/100) - $baoming);
                     $fanyongtwos = sprintf("%01.2f",$onemoneys * ($schoolOne['commission']/100));
-                    $actual_commission_refund = sprintf("%01.2f",$fanyongtwos+$baozhengjin- $returnschoolprice);
+                    $actual_commission_refund = sprintf("%01.2f",$fanyongtwos+$baozhengjin- abs($returnschoolprice));
                 } else {
-                    $actual_commission_refund = sprintf("%01.2f", $commission_money - $baozhengjin -$returnschoolprice);
+                    $actual_commission_refund = sprintf("%01.2f", $commission_money - abs($baozhengjin) -abs($returnschoolprice));
                 }
                 $lists['countPrice'] = sprintf("%.2f",$lists['countPrice'] + $actual_commission_refund);
             }
@@ -3479,7 +3479,7 @@ class Pay_order_inside extends Model
             //收入 = 到账-报名-退费-分校返佣-保证金
             $shouru = $ordersumPrice - $baoming - $zhanshireturnschoolprice - $baozhengjin - $actual_commission_refund;
             $listv['shouru'] = sprintf("%.2f",$shouru);
-            $lists['practicalEnter'] = $listv['shouru'] + $lists['practicalEnter'];
+            $lists['practicalEnter'] = sprintf("%.2f",$listv['shouru'] + $lists['practicalEnter']);
         }
         return ['code' => 200 , 'msg' => '获取列表成功' , 'data' => ['list' =>$list , 'total' => $count, 'pagesize' => $pagesize , 'page' => $page,'count'=>$lists]];
     }
