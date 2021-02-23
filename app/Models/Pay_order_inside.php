@@ -4024,7 +4024,9 @@ class Pay_order_inside extends Model
             $state_time = $create_time[0] . " 00:00:00";
             $end_time = $create_time[1] . " 23:59:59";
             //获取数量
-            $count = DB::table('school')->selectRaw("count(school.id) as t_count")->leftjoin("pay_order_inside", function ($join) {
+            $count = DB::table('school')->selectRaw("count(school.id) as t_count")
+                ->leftJoin('refund_order','on','refund_order.school_id = school.id')
+                ->leftjoin("pay_order_inside", function ($join) {
                 $join->on('school.id', '=', 'pay_order_inside.school_id');
             })->where('school.is_del', 0)->where(function ($query) use ($body, $school_id, $state_time, $end_time) {
                 //判断分校id是否为空和合法
@@ -4033,6 +4035,7 @@ class Pay_order_inside extends Model
                 }
                 //获取日期
                 $query->whereBetween('pay_order_inside.comfirm_time', [$state_time, $end_time]);
+                $query->orWhereBetween('refund_order.refund_time', [$state_time, $end_time]);
             })->groupBy(DB::raw('school.id'))->get()->count();
 //            判断数量是否大于0
            if ($count > 0) {
