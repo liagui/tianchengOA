@@ -4020,16 +4020,16 @@ class Pay_order_inside extends Model
             $state_time = $create_time[0] . " 00:00:00";
             $end_time = $create_time[1] . " 23:59:59";
            //获取数量
-           $count = DB::table('school')->selectRaw("count(school.id) as t_count")->leftjoin("pay_order_inside", function ($join) {
-               $join->on('school.id', '=', 'pay_order_inside.school_id');
-           })->where('school.is_del', 0)->where(function ($query) use ($body,$school_id,$state_time,$end_time) {
-               //判断分校id是否为空和合法
-            if ( !empty($school_id)) {
-                $query->whereIn('id',$school_id);
-            }
-               //获取日期
-            $query->whereBetween('pay_order_inside.comfirm_time', [$state_time, $end_time]);
-           })->groupBy(DB::raw('school.id'))->get()->count();
+//           $count = DB::table('school')->selectRaw("count(school.id) as t_count")->leftjoin("pay_order_inside", function ($join) {
+//               $join->on('school.id', '=', 'pay_order_inside.school_id');
+//           })->where('school.is_del', 0)->where(function ($query) use ($body,$school_id,$state_time,$end_time) {
+//               //判断分校id是否为空和合法
+//            if ( !empty($school_id)) {
+//                $query->whereIn('id',$school_id);
+//            }
+//               //获取日期
+//            $query->whereBetween('pay_order_inside.comfirm_time', [$state_time, $end_time]);
+//           })->groupBy(DB::raw('school.id'))->get()->count();
            //判断数量是否大于0
 //           if ($count > 0) {
                //新数组赋值
@@ -4073,7 +4073,47 @@ class Pay_order_inside extends Model
 //                       $query->whereBetween('refund_order.refund_time', [$state_time, $end_time]);
                    }
                })->orderByDesc('school.create_time')->groupBy(DB::raw('school.id'))->offset($offset)->limit($pagesize)->get()->toArray();
+               if(empty($list)){
+                   $list = DB::table('school')->selectRaw('
+               any_value(school.id) as school_id ,
+               any_value(count(school.id)) as t_count ,
+               any_value(school.one_extraction_ratio) as one_extraction_ratio ,
+               any_value(school.two_extraction_ratio) as two_extraction_ratio ,
+               any_value(school.school_name) as school_name ,
+               any_value(school.level) as level ,
+               any_value(school.tax_point) as tax_point ,
+               any_value(school.commission) as commission ,
+               any_value(school.deposit) as deposit'
+                   )->leftjoin("refund_order", function ($join) {
+                       $join->on('school.id', '=', 'refund_order.school_id');
+                   })->where('school.is_del', 0)->where(function ($query) use ($body,$school_id) {
+                       //判断分校id是否为空和合法
+                       if ( !empty($school_id)) {
+                           $query->whereIn('id',$school_id);
+                       }
 
+                       //获取日期
+                       if (isset($body['search_time']) && !empty($body['search_time'])) {
+                           $create_time = json_decode($body['search_time'], true);
+                           $state_time = $create_time[0] . " 00:00:00";
+                           $end_time = $create_time[1] . " 23:59:59";
+                       $query->whereBetween('refund_order.refund_time', [$state_time, $end_time]);
+                       }
+                   })->orderByDesc('school.create_time')->groupBy(DB::raw('school.id'))->offset($offset)->limit($pagesize)->get()->toArray();
+                 if(!empty($list)){
+                     foreach ($list as $addk=>&$addv){
+                         $addv['after_tax_amount'] = 0;
+                         $addv['sum_Price'] = 0;
+                         $addv['pay_price'] = 0;
+                         $addv['agent_margin'] = 0;
+                         $addv['first_out_of_amount'] = 0;
+                         $addv['second_out_of_amount'] = 0;
+                         $addv['education_id'] = 0;
+                         $addv['major_id'] = 0;
+                         $addv['sign_Price'] = 0;
+                     }
+                 }
+               }
                //循环获取相关信息
                foreach ($list as $k => $v) {
                    $v = (array)$v;
