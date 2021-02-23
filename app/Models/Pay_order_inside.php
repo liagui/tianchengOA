@@ -4030,18 +4030,6 @@ class Pay_order_inside extends Model
                //获取日期
             $query->whereBetween('pay_order_inside.comfirm_time', [$state_time, $end_time]);
            })->groupBy(DB::raw('school.id'))->get()->count();
-
-           $counts = DB::table('school')->selectRaw("count(school.id) as t_count")->leftjoin("refund_order", function ($join) {
-               $join->on('school.id', '=', 'refund_order.school_id');
-           })->where('school.is_del', 0)->where('refund_order.return_plan', 2)->where(function ($query) use ($body,$school_id,$state_time,$end_time) {
-               //判断分校id是否为空和合法
-               if ( !empty($school_id)) {
-                   $query->whereIn('id',$school_id);
-               }
-               //获取日期
-               $query->whereBetween('refund_order.refunt_time', [$state_time, $end_time]);
-           })->groupBy(DB::raw('school.id'))->get()->count();
-           $count = $count + $counts;
            //判断数量是否大于0
            if ($count > 0) {
                //新数组赋值
@@ -4082,21 +4070,6 @@ class Pay_order_inside extends Model
                        $state_time = $create_time[0] . " 00:00:00";
                        $end_time = $create_time[1] . " 23:59:59";
                        $query->whereBetween('pay_order_inside.comfirm_time', [$state_time, $end_time]);
-                   }
-               })->leftjoin("refund_order", function ($join) {
-                   $join->on('school.id', '=', 'refund_order.school_id');
-               })->where('school.is_del', 0)->where('refund_order.refund_plan', 2)->where(function ($query) use ($body,$school_id) {
-                   //判断分校id是否为空和合法
-                   if ( !empty($school_id)) {
-                       $query->whereIn('id',$school_id);
-                   }
-
-                   //获取日期
-                   if (isset($body['search_time']) && !empty($body['search_time'])) {
-                       $create_time = json_decode($body['search_time'], true);
-                       $state_time = $create_time[0] . " 00:00:00";
-                       $end_time = $create_time[1] . " 23:59:59";
-                       $query->whereBetween('refund_order.refunt_time', [$state_time, $end_time]);
                    }
                })->orderByDesc('school.create_time')->groupBy(DB::raw('school.id'))->offset($offset)->limit($pagesize)->get()->toArray();
 
