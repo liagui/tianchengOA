@@ -3245,6 +3245,7 @@ class Pay_order_inside extends Model
         $orderlist = self::selectRaw("any_value(create_time) as create_time,any_value(school_id) as school_id")->where($where)->whereBetween('create_time', [$state_time, $end_time])->orderBy('create_time','desc')->groupBy(DB::raw("date_format(create_time , '%Y%m%d')"))->offset($offset)->limit($pagesize)->get()->toArray();
         $returnlist = Refund_order::selectRaw("any_value(create_time) as create_time,any_value(school_id) as school_id")->where('refund_plan',2)->where($refundwhere)->whereBetween('create_time', [$state_time, $end_time])->orderBy('create_time','desc')->groupBy(DB::raw("date_format(create_time , '%Y%m%d')"))->offset($offset)->limit($pagesize)->get()->toArray();
         $list = array_merge($orderlist,$returnlist);
+        $list = array_unique($list);
         foreach ($list as $listk => &$listv){
             $count++;
             //查询分校名
