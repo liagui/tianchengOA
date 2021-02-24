@@ -3242,10 +3242,9 @@ class Pay_order_inside extends Model
         $count = 0;
 
         //所有时间
-        $orderlist = self::selectRaw("any_value(create_time) as create_time,any_value(school_id) as school_id")->where($where)->whereBetween('create_time', [$state_time, $end_time])->orderBy('create_time','desc')->groupBy(DB::raw("date_format(create_time , '%Y%m%d')"))->offset($offset)->limit($pagesize)->get()->toArray();
-        $returnlist = Refund_order::selectRaw("any_value(create_time) as create_time,any_value(school_id) as school_id")->where('refund_plan',2)->where($refundwhere)->whereBetween('create_time', [$state_time, $end_time])->orderBy('create_time','desc')->groupBy(DB::raw("date_format(create_time , '%Y%m%d')"))->offset($offset)->limit($pagesize)->get()->toArray();
-        $list = array_merge($orderlist,$returnlist);
-        $list = array_unique($list);
+        $orderlist = self::selectRaw("any_value(date_format(create_time , '%Y-%m-%d')) as create_time,any_value(school_id) as school_id")->where($where)->whereBetween('create_time', [$state_time, $end_time])->orderBy('create_time','desc')->groupBy(DB::raw("date_format(create_time , '%Y%m%d')"))->offset($offset)->limit($pagesize)->get()->toArray();
+        $returnlist = Refund_order::selectRaw("any_value(date_format(create_time , '%Y-%m-%d')) as create_time,any_value(school_id) as school_id")->where('refund_plan',2)->where($refundwhere)->whereBetween('create_time', [$state_time, $end_time])->orderBy('create_time','desc')->groupBy(DB::raw("date_format(create_time , '%Y%m%d')"))->offset($offset)->limit($pagesize)->get()->toArray();
+        $list = assoc_unique(array_merge($orderlist,$returnlist),'create_time');
         foreach ($list as $listk => &$listv){
             $count++;
             //查询分校名
@@ -3294,8 +3293,9 @@ class Pay_order_inside extends Model
             $lists['returnCount'] = $lists['returnCount'] + $refundorderCount;
             //课程退费金额
             $refundorderPrice  = Refund_order::where(['refund_plan'=>2,'school_id'=>$listv['school_id']])->whereBetween('refund_time', [$school_start_time, $school_end_time])->sum('reality_price');
+            $refundordersingPrice  = Refund_order::where(['refund_plan'=>2,'school_id'=>$listv['school_id']])->whereBetween('refund_time', [$school_start_time, $school_end_time])->sum('reality_sing_price');
             $listv['refundorderPrice'] = sprintf("%.2f",$refundorderPrice);
-            $lists['intoreturn'] = sprintf("%.2f",$lists['intoreturn'] + $refundorderPrice);
+            $lists['intoreturn'] = sprintf("%.2f",$lists['intoreturn'] + $refundorderPrice + $refundordersingPrice);
             //报名退费金额
             $singorderPrice  = Refund_order::where(['refund_plan'=>2,'school_id'=>$listv['school_id']])->whereBetween('refund_time', [$school_start_time, $school_end_time])->sum('reality_sing_price');
             $listv['singorderPrice'] = sprintf("%.2f",$singorderPrice);
