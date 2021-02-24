@@ -251,6 +251,20 @@ class Refund_order extends Model
             }
             $query->whereIn('school_id',$schoolarr);
         })->where(['confirm_status'=>1,'refund_plan'=>1])->whereBetween('create_time', [$state_time, $end_time])->sum('reality_price');
+        $weisingcount = self::where($where)->where(function($query) use ($data,$schoolarr,$school_id) {
+            if(isset($data['confirm_order_type'])){
+                $query->where('confirm_order_type',$data['confirm_order_type']);
+            }
+            if(isset($data['order_on']) && !empty($data['order_on'])){
+                $query->where('refund_no','like','%'.$data['order_on'].'%')
+                    ->orwhere('student_name','like','%'.$data['order_on'].'%')
+                    ->orwhere('phone','like','%'.$data['order_on'].'%');
+            }
+            if(!empty($school_id)){
+                $query->whereIn('school_id',$school_id);
+            }
+            $query->whereIn('school_id',$schoolarr);
+        })->where(['confirm_status'=>1,'refund_plan'=>1])->whereBetween('create_time', [$state_time, $end_time])->sum('reality_sing_price');
         //已确认金额   confirm_status 1
         $surecount = self::where($where)->where(function($query) use ($data,$schoolarr,$school_id) {
             if(isset($data['confirm_order_type'])){
@@ -313,7 +327,7 @@ class Refund_order extends Model
         })->where(['confirm_status'=>1,'refund_plan'=>1])->whereBetween('create_time', [$state_time, $end_time])->count();
         $count=[
             'tuicount' => $tuicount,
-            'weicount' => $weicount,
+            'weicount' => $weicount + $weisingcount,
             'surecoun' => $surecount,
             'yituicount' => $yituicount,
             'weisum' => $weisum,
