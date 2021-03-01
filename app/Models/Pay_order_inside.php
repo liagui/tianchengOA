@@ -1867,8 +1867,8 @@ class Pay_order_inside extends Model
             }
             if(isset($data['order_no']) && !empty($data['order_no'])){
                 $query->where('order_no',$data['order_no'])
-                    ->orwhere('name',$data['order_no'])
-                    ->orwhere('mobile',$data['order_no']);
+                       ->orwhere('name',$data['order_no'])
+                       ->orwhere('mobile',$data['order_no']);
             }
             if(!empty($paytype)){
                 $query->whereIn('pay_type', $paytype);

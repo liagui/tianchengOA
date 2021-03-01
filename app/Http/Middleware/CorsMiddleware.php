@@ -27,7 +27,6 @@ class CorsMiddleware
             'https://officialoa.longde999.cn',
             'http://officialoapi.longde999.cn',
             'https://officialoapi.longde999.cn'
-
         ];
         $origin = isset($_SERVER['HTTP_ORIGIN']) ? $_SERVER['HTTP_ORIGIN'] : '';
 
