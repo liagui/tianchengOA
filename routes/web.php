@@ -97,6 +97,7 @@ $router->group(['prefix' => 'admin' , 'namespace' => 'Admin','middleware'=> ['jw
         $router->post('remitOrder', 'OrderController@remitOrder');//修改打款状态
         $router->post('relevanceOrder', 'OrderController@relevanceOrder');//关联订单列表
         $router->post('relevanceVoucher', 'OrderController@relevanceVoucher');//关联支付凭证列表
+        $router->post('addremark', 'OrderController@addremark');//添加备注
         //核对订单
         $router->post('auditOrder', 'OrderController@auditOrder');//核对款订单列表
         $router->post('offlinepay', 'OrderController@offlinepay');//核对款根据类型查账户
