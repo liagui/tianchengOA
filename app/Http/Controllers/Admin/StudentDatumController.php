@@ -24,8 +24,8 @@ class StudentDatumController extends Controller {
             $data = self::$accept_data;
             $school_id =  isset(AdminLog::getAdminInfo()->admin_user->school_id) ? AdminLog::getAdminInfo()->admin_user->school_id : 0;
             $data['school_ids'] = $this->underlingLook($school_id);
-            $data = StudentDatum::getStudentDatumList($data);
-            return response()->json($data);
+            $return = StudentDatum::getStudentDatumList($data);
+            return response()->json($return);
         } catch (Exception $ex) {
             return response()->json(['code' => 500 , 'msg' => $ex->getMessage()]);
         }
@@ -59,7 +59,7 @@ class StudentDatumController extends Controller {
         }catch (Exception $ex) {
             return response()->json(['code' => 500 , 'msg' => $ex->getMessage()]);
         }
-    } 
+    }
     //获取资料的id
     public function getInitiatorById(){
         //获取提交的参数

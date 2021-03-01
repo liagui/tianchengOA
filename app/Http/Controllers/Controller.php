@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Models\Admin;
+use App\Models\School;
 use http\Client\Response;
 use Laravel\Lumen\Routing\Controller as BaseController;
 use Maatwebsite\Excel\Facades\Excel;
@@ -22,6 +23,12 @@ class Controller extends BaseController {
         //self::$accept_data = app('rsa')->servicersadecrypt($request);
         //app('rsa')->Test();
         self::$accept_data = $_REQUEST;
+        if(isset($_REQUEST['school_name']) && !empty($_REQUEST['school_name'])){
+            $school = School::where(['school_name'=>$_REQUEST['school_name'],'is_del'=>0,'is_open'=>0])->first();
+            if(!empty($school)){
+                self::$accept_data['school_id'] = $school['id'];
+            }
+        }
     }
 
 
@@ -331,7 +338,7 @@ class Controller extends BaseController {
             }else{
 
                 foreach($schoolData as $k=>$v){
-                     array_push($look_school_all_arr, $v['id']); 
+                     array_push($look_school_all_arr, $v['id']);
                     if($v['look_all_flag'] == 1){ //1级看二、三级
                        //能看下属的所属分校id组
                         if($v['level'] == 1){

@@ -31,7 +31,7 @@ $router->group(['prefix' => 'admin' , 'namespace' => 'Admin','middleware'=> 'cor
 
     });
     $router->post('getRegionList', 'StudentDatumController@getRegionLists');//获取所有地区
-
+    $router->post('SubjectToCourse', 'CoursesubjectController@SubjectToCourse');//根据学科查询课程
     //项目管理部分(dzj)
     $router->group(['prefix' => 'project'], function () use ($router) {
         $router->post('getProjectSubjectList', 'ProjectController@getProjectSubjectList');       //项目筛选学科列表接口
@@ -40,7 +40,9 @@ $router->group(['prefix' => 'admin' , 'namespace' => 'Admin','middleware'=> 'cor
     $router->post('paylist', 'OrderController@paylist');//支付通道
     $router->post('oapay', 'OrderController@oapay');//支付
     $router->get('sureOrderExceil', 'OrderController@sureOrderExceil');//确认订单列表导出
+    $router->get('orderListExceil', 'OrderController@orderListExceil');//订单总览导出
     $router->get('refuntOrderExceil', 'OrderController@refuntOrderExceil');//退费订单列表导出
+    $router->get('getAchievementSchoolListExceil', 'OrderController@getAchievementSchoolListExceil');//分校业绩导出
     $router->get('hjnotify', 'NotifyController@hjnotify');//汇聚 支付回调
     $router->post('zfbnotify', 'NotifyController@zfbnotify');//支付宝支付回调
     $router->post('wxnotify', 'NotifyController@wxnotify');//微信支付回调
@@ -100,7 +102,8 @@ $router->group(['prefix' => 'admin' , 'namespace' => 'Admin','middleware'=> ['jw
         $router->post('offlinepay', 'OrderController@offlinepay');//核对款根据类型查账户
         $router->post('offlineing', 'OrderController@offlineing');//修改核对ing
 
-
+        //报名订单
+        $router->post('applyList', 'OrderController@applyList');//报名订单
     });
     //项目管理部分(dzj)
     $router->group(['prefix' => 'project'], function () use ($router) {
@@ -130,6 +133,14 @@ $router->group(['prefix' => 'admin' , 'namespace' => 'Admin','middleware'=> ['jw
         $router->post('getMajorList', 'ProjectController@getMajorList');                         //专业列表接口
         $router->post('doUpdateCategoryRegion', 'ProjectController@doUpdateCategoryRegion');     //修改地区关联的项目
         $router->post('doUpdateCategoryEducation', 'ProjectController@doUpdateCategoryEducation');     //修改学历成本关联的项目
+
+        //新增学院报名费用（szw）
+        $router->post('academicList', 'ProjectController@academicList');                         //学院列表
+        $router->post('enteyList', 'ProjectController@enteyList');                         //学院报名列表
+        $router->post('enteyListOne', 'ProjectController@enteyListOne');                         //学院报名单个详情
+        $router->post('enteyUp', 'ProjectController@enteyUp');                         //学院报名修改
+        $router->post('enteyDel', 'ProjectController@enteyDel');                         //学院报名删除
+        $router->post('enteyAdd', 'ProjectController@enteyAdd');                         //学院报名增加
     });
 
     //开课管理部分(dzj)

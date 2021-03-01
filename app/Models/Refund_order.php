@@ -45,9 +45,6 @@ class Refund_order extends Model
         if(!isset($data['school_id']) || empty($data['school_id'])){
             return ['code' => 201 , 'msg' => '未选择学校'];
         }
-        if(!isset($data['refund_price']) || empty($data['refund_price'])){
-            return ['code' => 201 , 'msg' => '未填写退费金额'];
-        }
         if(isset($data['pay_credentials']) && !empty($data['pay_credentials'])){
             $credentials = json_decode($data['pay_credentials'],true);
             $credentialss = implode(',',$credentials);
@@ -61,7 +58,8 @@ class Refund_order extends Model
             'student_name' => $data['student_name'],
             'phone' => $data['phone'],
             'refund_no' => 'TF'.date('YmdHis', time()) . rand(1111, 9999),
-            'refund_Price' => $data['refund_price'],
+            'refund_Price' => isset($data['refund_price'])?$data['refund_price']:0,
+            'sing_price' => isset($data['sing_price'])?$data['sing_price']:0,
             'school_id' => $data['school_id'],
             'confirm_status' => 0,
             'create_time' => date('Y-m-d H:i:s'),
@@ -71,6 +69,7 @@ class Refund_order extends Model
             'project_id' => $data['project_id'],
             'subject_id' => $data['subject_id'],
             'pay_credentials' => $credentialss,
+            'remit_time' => date('Y-m-d H:i:s'),
         ];
         $add = self::insert($res);
         if($add){
@@ -79,6 +78,7 @@ class Refund_order extends Model
             return ['code' => 201 , 'msg' => '申请失败'];
         }
     }
+
     /*
          * @param 列表
          * @param  school_id     学校
@@ -102,8 +102,9 @@ class Refund_order extends Model
             $where['refund_plan'] = $data['refund_plan'];
         }
         //学校id
-        if(isset($data['school_id'])){
-            $where['school_id'] = $data['school_id'];
+        $school_id=[];
+        if(isset($data['school_name'])){
+            $school_id = School::select('id')->where('school_name','like','%'.$data['school_name'].'%')->where('is_del',0)->get();
         }
         //判断时间
         $begindata="2020-03-04";
@@ -117,15 +118,31 @@ class Refund_order extends Model
         $page     = isset($data['page']) && $data['page'] > 0 ? $data['page'] : 1;
         $offset   = ($page - 1) * $pagesize;
 
+        //科目id&学科id
+        if(!empty($data['project_id'])){
+            $parent = json_decode($data['project_id'], true);
+            if(!empty($parent[0])){
+                $where['project_id'] = $parent[0];
+                if(!empty($parent[1])){
+                    $where['subject_id'] = $parent[1];
+                }
+            }
+        }
+        if(isset($data['course_id'])){
+            $where['course_id'] = $data['course_id'];
+        }
         //計算總數
-        $count = self::where($where)->where(function($query) use ($data,$schoolarr) {
+        $count = self::where($where)->where(function($query) use ($data,$schoolarr,$school_id) {
             if(isset($data['confirm_order_type'])){
                 $query->where('confirm_order_type',$data['confirm_order_type']);
             }
             if(isset($data['order_on']) && !empty($data['order_on'])){
-                $query->where('refund_no',$data['order_on'])
-                    ->orwhere('student_name',$data['order_on'])
-                    ->orwhere('phone',$data['order_on']);
+                $query->where('refund_no','like','%'.$data['order_on'].'%')
+                    ->orwhere('student_name','like','%'.$data['order_on'].'%')
+                    ->orwhere('phone','like','%'.$data['order_on'].'%');
+            }
+            if(!empty($school_id)){
+                $query->whereIn('school_id',$school_id);
             }
             $query->whereIn('school_id',$schoolarr);
         })
@@ -133,14 +150,17 @@ class Refund_order extends Model
         ->count();
 
         //列表
-        $order = self::where($where)->where(function($query) use ($data,$schoolarr) {
+        $order = self::where($where)->where(function($query) use ($data,$schoolarr,$school_id) {
             if(isset($data['confirm_order_type'])){
                 $query->where('confirm_order_type',$data['confirm_order_type']);
             }
             if(isset($data['order_on']) && !empty($data['order_on'])){
-                $query->where('refund_no',$data['order_on'])
-                    ->orwhere('student_name',$data['order_on'])
-                    ->orwhere('phone',$data['order_on']);
+                $query->where('refund_no','like','%'.$data['order_on'].'%')
+                    ->orwhere('student_name','like','%'.$data['order_on'].'%')
+                    ->orwhere('phone','like','%'.$data['order_on'].'%');
+            }
+            if(!empty($school_id)){
+                $query->whereIn('school_id',$school_id);
             }
             $query->whereIn('school_id',$schoolarr);
         })
@@ -161,8 +181,10 @@ class Refund_order extends Model
                 }
                 if($v['confirm_status'] == 0){
                     $v['confirm_status_text'] = '未确认';
-                }else{
+                }else if($v['confirm_status'] == 1){
                     $v['confirm_status_text'] = '已确认';
+                }else if($v['confirm_status'] == 2){
+                    $v['confirm_status_text'] = '已驳回';
                 }
                 if($v['refund_plan'] == 0){
                     $v['refund_plan_text'] = '未确认';
@@ -197,22 +219,119 @@ class Refund_order extends Model
             'page' =>$page,
             'total'=>$count
         ];
+        unset($where['confirm_status']);
+        unset($where['refund_plan']);
         //退费总金额
-        $tuicount = self::whereIn('school_id',$schoolarr)->sum('refund_Price');
+        $tuicount = self::where($where)->where(function($query) use ($data,$schoolarr,$school_id) {
+            if(isset($data['confirm_order_type'])){
+                $query->where('confirm_order_type',$data['confirm_order_type']);
+            }
+            if(isset($data['order_on']) && !empty($data['order_on'])){
+                $query->where('refund_no','like','%'.$data['order_on'].'%')
+                    ->orwhere('student_name','like','%'.$data['order_on'].'%')
+                    ->orwhere('phone','like','%'.$data['order_on'].'%');
+            }
+            if(!empty($school_id)){
+                $query->whereIn('school_id',$school_id);
+            }
+            $query->whereIn('school_id',$schoolarr);
+        })->whereBetween('create_time', [$state_time, $end_time])->sum('refund_Price');
         //未确认金额   confirm_status 0
-        $weicount = self::whereIn('school_id',$schoolarr)->where(['confirm_status'=>0])->sum('refund_Price');
+        $weicount = self::where($where)->where(function($query) use ($data,$schoolarr,$school_id) {
+            if(isset($data['confirm_order_type'])){
+                $query->where('confirm_order_type',$data['confirm_order_type']);
+            }
+            if(isset($data['order_on']) && !empty($data['order_on'])){
+                $query->where('refund_no','like','%'.$data['order_on'].'%')
+                    ->orwhere('student_name','like','%'.$data['order_on'].'%')
+                    ->orwhere('phone','like','%'.$data['order_on'].'%');
+            }
+            if(!empty($school_id)){
+                $query->whereIn('school_id',$school_id);
+            }
+            $query->whereIn('school_id',$schoolarr);
+        })->where(['confirm_status'=>1,'refund_plan'=>1])->whereBetween('create_time', [$state_time, $end_time])->sum('reality_price');
+        $weisingcount = self::where($where)->where(function($query) use ($data,$schoolarr,$school_id) {
+            if(isset($data['confirm_order_type'])){
+                $query->where('confirm_order_type',$data['confirm_order_type']);
+            }
+            if(isset($data['order_on']) && !empty($data['order_on'])){
+                $query->where('refund_no','like','%'.$data['order_on'].'%')
+                    ->orwhere('student_name','like','%'.$data['order_on'].'%')
+                    ->orwhere('phone','like','%'.$data['order_on'].'%');
+            }
+            if(!empty($school_id)){
+                $query->whereIn('school_id',$school_id);
+            }
+            $query->whereIn('school_id',$schoolarr);
+        })->where(['confirm_status'=>1,'refund_plan'=>1])->whereBetween('create_time', [$state_time, $end_time])->sum('reality_sing_price');
         //已确认金额   confirm_status 1
-        $surecount = self::whereIn('school_id',$schoolarr)->where(['confirm_status'=>1])->sum('refund_Price');
+        $surecount = self::where($where)->where(function($query) use ($data,$schoolarr,$school_id) {
+            if(isset($data['confirm_order_type'])){
+                $query->where('confirm_order_type',$data['confirm_order_type']);
+            }
+            if(isset($data['order_on']) && !empty($data['order_on'])){
+                $query->where('refund_no','like','%'.$data['order_on'].'%')
+                    ->orwhere('student_name','like','%'.$data['order_on'].'%')
+                    ->orwhere('phone','like','%'.$data['order_on'].'%');
+            }
+            if(!empty($school_id)){
+                $query->whereIn('school_id',$school_id);
+            }
+            $query->whereIn('school_id',$schoolarr);
+        })->where(['confirm_status'=>1])->whereBetween('create_time', [$state_time, $end_time])->sum('refund_Price');
         //已退金额   refund_plan = 2
-        $yituicount = self::whereIn('school_id',$schoolarr)->where(['refund_plan'=>2])->sum('refund_Price');
+        $yituicount = self::where($where)->where(function($query) use ($data,$schoolarr,$school_id) {
+            // if(isset($data['confirm_order_type'])){
+            //     $query->where('confirm_order_type',$data['confirm_order_type']);
+            // }
+            if(isset($data['order_on']) && !empty($data['order_on'])){
+                $query->where('refund_no','like','%'.$data['order_on'].'%')
+                    ->orwhere('student_name','like','%'.$data['order_on'].'%')
+                    ->orwhere('phone','like','%'.$data['order_on'].'%');
+            }
+            if(!empty($school_id)){
+                $query->whereIn('school_id',$school_id);
+            }
+            $query->whereIn('school_id',$schoolarr);
+        })->where(['refund_plan'=>2])->whereBetween('create_time', [$state_time, $end_time])->sum('reality_price');
         //未处理条数
-        $weisum = self::whereIn('school_id',$schoolarr)->where(['confirm_status'=>0])->count();
+        $weisum = self::where($where)->where(function($query) use ($data,$schoolarr,$school_id) {
+            if(isset($data['confirm_order_type'])){
+                $query->where('confirm_order_type',$data['confirm_order_type']);
+            }
+            if(isset($data['order_on']) && !empty($data['order_on'])){
+                $query->where('refund_no','like','%'.$data['order_on'].'%')
+                    ->orwhere('student_name','like','%'.$data['order_on'].'%')
+                    ->orwhere('phone','like','%'.$data['order_on'].'%');
+            }
+            if(!empty($school_id)){
+                $query->whereIn('school_id',$school_id);
+            }
+            $query->whereIn('school_id',$schoolarr);
+        })->where(['confirm_status'=>0])->whereBetween('create_time', [$state_time, $end_time])->count();
+        //未打款条数
+        $weidksum = self::where($where)->where(function($query) use ($data,$schoolarr,$school_id) {
+            if(isset($data['confirm_order_type'])){
+                $query->where('confirm_order_type',$data['confirm_order_type']);
+            }
+            if(isset($data['order_on']) && !empty($data['order_on'])){
+                $query->where('refund_no','like','%'.$data['order_on'].'%')
+                    ->orwhere('student_name','like','%'.$data['order_on'].'%')
+                    ->orwhere('phone','like','%'.$data['order_on'].'%');
+            }
+            if(!empty($school_id)){
+                $query->whereIn('school_id',$school_id);
+            }
+            $query->whereIn('school_id',$schoolarr);
+        })->where(['confirm_status'=>1,'refund_plan'=>1])->whereBetween('create_time', [$state_time, $end_time])->count();
         $count=[
             'tuicount' => $tuicount,
-            'weicount' => $weicount,
+            'weicount' => $weicount + $weisingcount,
             'surecoun' => $surecount,
             'yituicount' => $yituicount,
             'weisum' => $weisum,
+            'weidksum' => $weidksum,
         ];
         return ['code' => 200 , 'msg' => '查询成功','data'=>$order,'page'=>$page,'count'=>$count];
     }
@@ -388,7 +507,16 @@ class Refund_order extends Model
             return ['code' => 200, 'msg' => '修改成功'];
         }else{
             if($data['status'] == 0 || empty($data['status'])){
-                return ['code' => 201 , 'msg' => '请选择状态'];
+                if(isset($data['pay_credentials']) && !empty($data['pay_credentials'])) {
+                    $credentials = json_decode($data['pay_credentials'],true);
+                    $credentialss = implode(',',$credentials);
+                    $up['pay_credentials'] = $credentialss;
+                    $up['remit_time'] = date('Y-m-d H:i:s');
+                }
+                $up['refund_reason'] = $data['refund_reason'];
+                $up['reality_price'] = $data['reality_price'];
+                $date = self::where(['id'=>$data['id']])->update($up);
+                return ['code' => 200, 'msg' => '修改成功'];
             }
             //判断是通过还是驳回
             if($data['status'] == 1){
@@ -422,6 +550,7 @@ class Refund_order extends Model
                 $up['confirm_status'] = 1;
                 $up['order_id'] = implode(',',$orderid);
                 $up['reality_price'] = $data['reality_price'];
+                $up['reality_sing_price'] = $data['reality_sing_price'];
                 $up['school_id'] = $data['school_id'];
                 $up['refund_reason'] = $data['refund_reason'];
                 $up['refund_time'] = date('Y-m-d H:i:s');
@@ -439,8 +568,8 @@ class Refund_order extends Model
                 if(!isset($data['refund_cause']) || empty($data['refund_cause'])){
                     return ['code' => 201, 'msg' => '请填写驳回原因'];
                 }
-                $up['confirm_status'] = 1;
-                $up['refund_plan'] = 3;
+                $up['confirm_status'] = 2;
+                $up['refund_plan'] = 0;
                 $up['refund_cause'] = $data['refund_cause'];
                 $up['refund_time'] = date('Y-m-d H:i:s');
                 $up['confirm_user_id'] = $admin['id'];
@@ -472,8 +601,10 @@ class Refund_order extends Model
         if($order['confirm_status'] == 0){
             $data['confirm_status'] = 1;
         }
-        $credent = json_decode($data['refund_credentials'],true);
-        $data['refund_credentials'] = implode(',',$credent);
+        if(isset($data['refund_credentials']) && !empty($data['refund_credentials'])){
+            $credent = json_decode($data['refund_credentials'],true);
+            $data['refund_credentials'] = implode(',',$credent);
+        }
         unset($data['/admin/order/remitOrder']);
         $up = self::where(['id' => $data['id']])->update($data);
         if($up){
@@ -499,21 +630,43 @@ class Refund_order extends Model
                         $orderone['school_name'] = $school['school_name'];
                     }
                 }
-                if($orderone['pay_type'] == 1){
-                    $orderone['pay_type_text'] = '微信';
-                }else if ($orderone['pay_type'] == 2){
-                    $orderone['pay_type_text'] = '支付宝';
-                }else if ($orderone['pay_type'] == 3){
-                    $orderone['pay_type_text'] = '汇聚微信';
-                }else if ($orderone['pay_type'] == 4){
-                    $orderone['pay_type_text'] = '汇聚支付宝';
-                }else if ($orderone['pay_type'] == 5){
-                    $orderone['pay_type_text'] = '银行卡支付';
-                }else if ($orderone['pay_type'] == 6){
-                    $orderone['pay_type_text'] = '对公转账';
-                }else if ($orderone['pay_type'] == 7){
-                    $orderone['pay_type_text'] = '支付宝账号对公';
+
+                if($orderone['pay_type'] <= 9){
+                    if(!empty($orderone['offline_id'])){
+                        $chnnel = Channel::where(['id'=>$v['offline_id']])->first();
+                        if($orderone['pay_type'] == 1){
+                            $orderone['pay_type_text'] = $chnnel['channel_name'].'-微信';
+                        }else if ($orderone['pay_type'] == 2){
+                            $orderone['pay_type_text'] = $chnnel['channel_name'].'-支付宝';
+                        }else if ($orderone['pay_type'] == 3){
+                            $orderone['pay_type_text'] = $chnnel['channel_name'].'-汇聚-微信';
+                        }else if ($orderone['pay_type'] == 4){
+                            $orderone['pay_type_text'] =$chnnel['channel_name'].'-汇聚-支付宝';
+                        }else if ($orderone['pay_type'] == 5 ||$orderone['pay_type'] == 8||$orderone['pay_type'] == 9){
+                            $orderone['pay_type_text'] =$chnnel['channel_name'].'-银联';
+                        }else if ($orderone['pay_type'] == 6){
+                            $orderone['pay_type_text'] =$chnnel['channel_name'].'-汇付';
+                        }
+                    }else{
+                        $orderone['pay_type_text']='';
+                    }
+                }else{
+                    if(!empty($orderone['offline_id'])){
+                        $offline = OfflinePay::where(['id'=>$orderone['offline_id']])->first();
+                        if ($orderone['pay_type'] == 10){
+                            $orderone['pay_type_text'] = '银行卡支付-'.$offline['account_name'];
+                        }else if ($orderone['pay_type'] == 11){
+                            $orderone['pay_type_text'] = '对公转账-'.$offline['account_name'];
+                        }else if ($orderone['pay_type'] == 12){
+                            $orderone['pay_type_text'] = '支付宝账号对公-'.$offline['account_name'];
+                        }
+                    }else{
+                        $orderone['pay_type_text']='';
+                    }
                 }
+
+
+
                 if($orderone['pay_status'] == 0){
                     $orderone['pay_status_text'] = '未支付';
                 }else{
@@ -562,16 +715,18 @@ class Refund_order extends Model
                         $orderone['first_pay_text'] = '最后一笔尾款';
                     }
                 }
-                if(empty($orderone['confirm_status'])){
-                    $orderone['confirm_status_text'] = '';
-                }else{
-                    if($orderone['confirm_status'] == 0){
-                        $orderone['confirm_status_text'] = '未确认';
-                    }else if($orderone['confirm_status'] == 1){
-                        $orderone['confirm_status_text'] = '确认';
-                    }else if($orderone['confirm_status'] == 2){
-                        $orderone['confirm_status_text'] = '驳回';
-                    }
+                if(isset($orderone['status']) && strlen($orderone['status']) >0 && $orderone['status'] == 0){
+                    $orderone['confirm_status_text'] = '待提交';
+                }else if($orderone['confirm_status'] == 0){
+                    $orderone['confirm_status_text'] = '待总校财务确认';
+                }else if($orderone['confirm_status'] == 1){
+                    $orderone['confirm_status_text'] = '待总校确认';
+                }else if($orderone['confirm_status'] == 2){
+                    $orderone['confirm_status_text'] = '已确认';
+                }else if($orderone['confirm_status'] == 3){
+                    $orderone['confirm_status_text'] = '被财务驳回';
+                }else if($orderone['confirm_status'] == 4){
+                    $orderone['confirm_status_text'] = '被总校驳回';
                 }
                 //course  课程
                 $course = Course::select('course_name')->where(['id'=>$orderone['course_id']])->first();

@@ -34,7 +34,7 @@ class Teacher extends Model {
             if(isset($data['keyword']) && !empty(isset($data['keyword']))){
                 $query->where('admin.real_name','like','%'.$data['keyword'].'%')->orWhere('admin.mobile','like','%'.$data['keyword'].'%')->orWhere('admin.wx','like','%'.$data['keyword'].'%');
             }
-        })->count();
+        })->where('is_del',1)->count();
         $data = self::where('admin.role_id',3)->where(function($query) use ($data){
             if(isset($data['school_id']) && !empty(isset($data['school_id']))){
                 $query->whereRaw("find_in_set({$data['school_id']},admin.school_id)");
@@ -48,7 +48,7 @@ class Teacher extends Model {
             if(isset($data['keyword']) && !empty(isset($data['keyword']))){
                 $query->where('admin.real_name','like','%'.$data['keyword'].'%')->orWhere('admin.mobile','like','%'.$data['keyword'].'%')->orWhere('admin.wx','like','%'.$data['keyword'].'%');
             }
-        })->offset($offset)->limit($pagesize)->get();
+        })->where('is_del',1)->offset($offset)->limit($pagesize)->get();
         foreach($data as $k=>&$v){
             $school = explode(",",$v['school_id']);
             $category = explode(",",$v['category_id']);
@@ -68,13 +68,13 @@ class Teacher extends Model {
             $diff_category = array_diff($category_id, $category);
 
             if($school[0] == 0 && !(count($diff_school) > 0)){
-                $data[$k]['school'] = "全部";
+                $data[$k]['school'] = "全部分校";
             }else{
                 //查询分校名称
                 $data[$k]['school'] = implode(',',array_column($vv['school'] , 'school_name'));
             }
             if($category[0] == 0 && !(count($diff_category) > 0)){
-                $data[$k]['category'] = "全部";
+                $data[$k]['category'] = "全部分校";
             }else{
                 //查询项目名称
                 $data[$k]['category'] = implode(',',array_column($vv['category'] , 'name'));
@@ -221,6 +221,7 @@ class Teacher extends Model {
     }
 
 
+    //status  1值班中2休息中3已离职
     public static function getTeacherPerformance($data){
         //每页显示的条数
         $pagesize = (int)isset($data['pagesize']) && $data['pagesize'] > 0 ? $data['pagesize'] : 20;
@@ -229,12 +230,30 @@ class Teacher extends Model {
         //查询所有班主任
         //搜索条件  时间区间   开始时间和结束时间
         //对比订单  comfirm_time 是否在这个时间区间内
+        $where['is_del'] = 1;
+        if(isset($data['status']) && !empty($data['status'])){
+            if($data['status'] == 1){
+                $where['dimission'] = 0;
+                $where['status'] = 1;
+            }elseif ($data['status'] == 2){
+                $where['dimission'] = 0;
+                $where['status'] = 0;
+            }elseif ($data['status'] == 3){
+                $where['dimission'] = 1;
+            }
+        }
         $count = self::where('role_id',3)->count();
-        $teacher = self::select("real_name","mobile","wx","id")->where('role_id',3)->offset($offset)->limit($pagesize)->get()->toArray();
-
+        $teacher = self::select("real_name","mobile","wx","id","dimission","status as teacherstatus")->where($where)->where('role_id',3)->offset($offset)->limit($pagesize)->get()->toArray();
         foreach($teacher as $k =>&$v){
-
-
+            if($v['dimission'] == 0){
+                if($v['teacherstatus'] == 1){
+                    $v['status'] = 1; //值班中
+                }else{
+                    $v['status'] = 2; //休息中
+                }
+            }else{
+                $v['status'] = 3;  //已离职
+            }
             $res1 = Pay_order_inside::select()->where("seas_status",0)->where("have_user_id",$v['id'])
             ->where(function($query) use ($data){
                 if(isset($data['start_time']) && !empty(isset($data['start_time']))  && isset($data['end_time']) && !empty(isset($data['end_time']))){
@@ -242,7 +261,7 @@ class Teacher extends Model {
                 }
             })
             ->get()->toArray();
-            foreach($res1 as $k => &$vv){
+            foreach($res1 as $kk => &$vv){
                 //是否回访
                 $a = Orderdocumentary::where("order_id",$v['id'])->first();
                 if(empty($a)){
@@ -309,7 +328,17 @@ class Teacher extends Model {
         $page     = isset($data['page']) && $data['page'] > 0 ? $data['page'] : 1;
         $offset   = ($page - 1) * $pagesize;
         //班主任姓名
-        $one = self::select("real_name")->where("id",$data['teacher_id'])->first()->toArray();
+        $one = self::select("real_name")->where("id",$data['teacher_id'])->first();
+        if($one == null){
+            $one =[
+                'real_name' => "",
+                'completed_performance'=> 0,
+                'return_premium'=> 0,
+                'sum_singular'=> 0,
+                'yet_singular'=> 0,
+                'not_singular'=> 0,
+            ];
+        }
         //退费金额
         $one['return_premium'] = DB::table("refund_order")->where(["teacher_id"=>$data['teacher_id'],"refund_plan"=>2,"confirm_status"=>1])->sum("refund_Price");
 
@@ -461,7 +490,7 @@ class Teacher extends Model {
         if($list){
             return ['code' => 200, 'msg' => '查询成功', 'data' => $list,'one'=>$one,'page'=>$page];
         }else{
-            return ['code' => 200, 'msg' => '查询暂无数据', 'data' => [],'one'=>[],'page'=>$page];
+            return ['code' => 200, 'msg' => '查询暂无数据', 'data' => [],'one'=>$one,'page'=>$page];
         }
 
     }

@@ -4,6 +4,7 @@ use App\Http\Controllers\Controller;
 use App\Models\AdminLog;
 use App\Models\Channel;
 use App\Models\Course;
+use App\Models\Pay_order_apply;
 use App\Models\Pay_order_external;
 use App\Models\Pay_order_inside;
 use App\Models\PaySet;
@@ -12,6 +13,7 @@ use App\Tools\AlipayFactory;
 use App\Tools\Hfpos\qrcp_E1103;
 use App\Tools\Yl\YinpayFactory;
 use App\Tools\QRcode;
+use Illuminate\Support\Facades\DB;
 use Maatwebsite\Excel\Facades\Excel;
 
 class OrderController extends Controller {
@@ -20,6 +22,11 @@ class OrderController extends Controller {
         $schoolarr = $this->underlingLook(AdminLog::getAdminInfo()->admin_user->school_id);
         $list = Pay_order_inside::orderList(self::$accept_data,$schoolarr['data']);
         return response()->json($list);
+    }
+    //订单导出
+    public function orderListExceil(){
+        $schoolarr = $this->underlingLook(self::$accept_data['adminschool_id']);
+        return Excel::download(new \App\Exports\OrderExport(self::$accept_data,$schoolarr['data']), '订单总览.xlsx');
     }
     //手动报单
     public function handOrder(){
@@ -190,16 +197,28 @@ class OrderController extends Controller {
     public function redDot(){
         $schoolarr = $this->underlingLook(AdminLog::getAdminInfo()->admin_user->school_id);
         $schoolarr = (array)$schoolarr;
-        //待确认订单
-        $orderCount = Pay_order_inside::whereIn('school_id',$schoolarr['data'])->where(['confirm_status'=>0,'pay_status'=>1])->count();
-        //退费待确认
+        //学员未回访数量
+        $studentCount = Pay_order_inside::whereIn('school_id',$schoolarr['data'])->where(['return_visit'=>0])->count();
+        //财务待审核数量
+        $financeCount = Pay_order_inside::whereIn('school_id',$schoolarr['data'])->where(['confirm_status'=>0,'pay_status'=>3])->count();
+        //退费未处理数量
         $returnCount = Refund_order::whereIn('school_id',$schoolarr['data'])->where(['confirm_status'=>0])->count();
+        //待确认订单数量
+        $orderCount = Pay_order_inside::whereIn('school_id',$schoolarr)->where(['confirm_status'=>1,'del_flag'=>0,'pay_status'=>1])->count();
         $data=[
-            'zongcount' => $orderCount,
+            'studentcount' => $studentCount,
+            'financecount' => $financeCount,
+            'returncount' => $returnCount,
             'daicount' => $orderCount,
-            'tuicount' => $returnCount,
         ];
         return response()->json(['code'=>200,'msg'=>'获取成功','data'=>$data]);
+    }
+
+    //报名订单
+    public function applyList(){
+        $schoolarr = $this->underlingLook(AdminLog::getAdminInfo()->admin_user->school_id);
+        $list = Pay_order_apply::applyList(self::$accept_data,$schoolarr['data']);
+        return response()->json($list);
     }
     /*
      * @param  description   开课管理列表接口
@@ -354,9 +373,11 @@ class OrderController extends Controller {
 
             //分校的id传递
             self::$accept_data['schoolId'] = $school_arr['data'];
-
-            //获取专业列表
-            $data = Pay_order_inside::getBranchSchoolIncomeeList(self::$accept_data);
+            $timearr=[];
+            if(!empty(self::$accept_data['create_time'])){
+                $timearr = json_decode(self::$accept_data['create_time']);
+            }
+            $data = Pay_order_inside::getBranchSchoolIncomeeLists(self::$accept_data,$timearr);
             if($data['code'] == 200){
                 return response()->json(['code' => 200 , 'msg' => '获取列表成功' , 'data' => $data['data']]);
             } else {
@@ -369,7 +390,7 @@ class OrderController extends Controller {
     /*
      * @param  description   财务管理-分校收入详情-已确认订单
      * @param  参数说明       body包含以下参数[
-     *     school_id         分校id
+     *     school_id         分校名称
      *     order_time        订单时间
      * ]
      * @param author    dzj
@@ -482,6 +503,19 @@ class OrderController extends Controller {
         } catch (Exception $ex) {
             return response()->json(['code' => 500 , 'msg' => $ex->getMessage()]);
         }
+    }
+    /*
+         * @param  分校业绩导出
+         * @param  $user_id     参数
+         * @param  author  苏振文
+         * @param  ctime   2021/1/14 9:42
+         * return  array
+         */
+    public function getAchievementSchoolListExceil(){
+        // if(!isset(self::$accept_data['school_id']) || empty(self::$accept_data['school_id'])){
+        //     return response()->json(['code' => 201 , 'msg' => '请选择分校']);
+        // }
+        return Excel::download(new \App\Exports\BranchExceil(self::$accept_data), '分校业绩.xlsx');
     }
     //支付信息
     public function paylist(){
