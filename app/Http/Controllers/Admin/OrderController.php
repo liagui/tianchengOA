@@ -162,6 +162,18 @@ class OrderController extends Controller {
         $list = Refund_order::remitOrder(self::$accept_data);
         return response()->json($list);
     }
+    //退费打款添加备注
+    public function addremark(){
+        $data = self::$accept_data;
+        if(empty($data['remark'])){
+            return response()->json(['code' => 201, 'msg' => '备注不能为空']);
+        }
+        if(empty($data['id'])){
+            return response()->json(['code' => 201, 'msg' => '订单号不能为空']);
+        }
+        $list = Refund_order::addremark(self::$accept_data);
+        return response()->json($list);
+    }
     //关联退费订单
     public function relevanceOrder(){
         $list = Refund_order::relevanceOrder(self::$accept_data);

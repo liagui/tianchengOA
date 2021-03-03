@@ -18,6 +18,9 @@ class Refund_order extends Model
          * @param  refund_price   退费金额
          * @param  school_id   学校
          * @param  refund_reason   退费原因
+         * @param  bank_name   银行名
+         * @param  openbank_name   开户行名称
+         * @param bank_card   卡号
          * @param  author  苏振文
          * @param  ctime   2020/9/9 10:45
          * return  array
@@ -70,6 +73,9 @@ class Refund_order extends Model
             'subject_id' => $data['subject_id'],
             'pay_credentials' => $credentialss,
             'remit_time' => date('Y-m-d H:i:s'),
+            'bank_name' => $data['bank_name'],
+            'openbank_name' => $data['openbank_name'],
+            'bank_card' => $data['bank_card'],
         ];
         $add = self::insert($res);
         if($add){
@@ -611,6 +617,16 @@ class Refund_order extends Model
             return ['code' => 200, 'msg' => '上传成功'];
         }else{
             return ['code' => 201, 'msg' => '修改失败'];
+        }
+    }
+    //退款确认添加备注
+    public static function addremark($data){
+        unset($data['/admin/order/addremark']);
+        $up = self::where(['id' => $data['id']])->update(['remit_remark'=>$data['remark']]);
+        if($up){
+            return ['code' => 200, 'msg' => '添加成功'];
+        }else{
+            return ['code' => 201, 'msg' => '添加失败'];
         }
     }
     //关联订单列表 id  订单id
