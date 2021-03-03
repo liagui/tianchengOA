@@ -3479,6 +3479,8 @@ class Pay_order_inside extends Model
             //收入 = 到账-报名-退费-分校返佣-保证金
             $shouru = $ordersumPrice - $baoming - $zhanshireturnschoolprice - $baozhengjin - $actual_commission_refund;
             $listv['shouru'] = sprintf("%.2f",$shouru);
+            //总校承担费用 = 课程退费 - 分校应承担费用 + 报名退费
+            $listv['zongreturnPrice'] = $listv['refundorderPrice'] - $returnschoolprice + $listv['singorderPrice'];
             $lists['practicalEnter'] = sprintf("%.2f",$listv['shouru'] + $lists['practicalEnter']);
         }
         return ['code' => 200 , 'msg' => '获取列表成功' , 'data' => ['list' =>$list , 'total' => $count, 'pagesize' => $pagesize , 'page' => $page,'count'=>$lists]];
