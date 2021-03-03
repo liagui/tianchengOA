@@ -154,7 +154,7 @@ class Course extends Model {
         if($is_exists && $is_exists > 0){
             //组装课程数组信息
             $course_array = [
-                'price'               =>   $body['course_price'] ,
+                'price'               =>   isset($body['course_price'])?$body['course_price']:0 ,
                 'is_hide'             =>   isset($body['is_hide']) && $body['is_hide'] == 1 ? 1 : 0 ,
                 'is_del'              =>   isset($body['is_del']) && $body['is_del'] == 1 ? 1 : 0 ,
                 'update_time'         =>   date('Y-m-d H:i:s')
