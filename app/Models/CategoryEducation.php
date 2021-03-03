@@ -98,7 +98,7 @@ class CategoryEducation extends Model {
 
         //前项目id转化
         $pre_category_id = json_decode($body['pre_category_id'] , true);
-        $last_category_id= json_decode($body['last_category_id'] , true);
+//        $last_category_id= json_decode($body['last_category_id'] , true);
 
         //判断此项目在学历成本是否存在
         $is_exists = self::where('parent_id' , $pre_category_id[0])->where('is_del' , 0)->count();
@@ -107,23 +107,24 @@ class CategoryEducation extends Model {
         }
 
         //判断父级id是否在表中是否存在
-        $is_exists_parentId = Project::where('id' , $last_category_id[0])->where('parent_id' , 0)->where('is_del' , 0)->count();
+        $is_exists_parentId = Project::where('id' , $body['last_category_id'])->where('parent_id' , 0)->where('is_del' , 0)->count();
         if(!$is_exists_parentId || $is_exists_parentId <= 0){
-            return ['code' => 203 , 'msg' => '此项目名称不存在'];
+            return ['code' => 203 , 'msg' => '此项目已在列表中存在'];
         }
 
         //获取后端的操作员id
         $admin_id = isset(AdminLog::getAdminInfo()->admin_user->id) ? AdminLog::getAdminInfo()->admin_user->id : 0;
 
         //学科id
-        $pre_category_id_1 = isset($pre_category_id[1]) && $pre_category_id[1] > 0 ? $pre_category_id[1] : 0;
+        $pre_category_id_1 = isset($pre_category_id[0]) && $pre_category_id[0] > 0 ? $pre_category_id[0] : 0;
 
         //根据项目的id获取学历成本的id
         $education_id = Education::select('id')->where('parent_id' , $pre_category_id[0])->where('child_id' , $pre_category_id_1)->get()->toArray();
         $education_ids= array_column($education_id , 'id');
 
         //学科id
-        $last_category_id_1 = isset($last_category_id[1]) && $last_category_id[1] > 0 ? $last_category_id[1] : 0;
+//        $last_category_id_1 = isset($last_category_id[1]) && $last_category_id[1] > 0 ? $last_category_id[1] : 0;
+        $last_category_id_1 = $body['last_category_id'];
 
         //开启事务
         DB::beginTransaction();
@@ -143,13 +144,14 @@ class CategoryEducation extends Model {
             }
         } else {
             //更新数据信息
-            if(false !== Education::whereIn('id',$education_ids)->update(['parent_id' => $last_category_id[0] , 'child_id' => $last_category_id_1 , 'update_time' => date('Y-m-d H:i:s')])){
+            $clintid = Category::where(['parent_id'=>$last_category_id_1,'is_del'=>0,'is_hide'=>0])->orderBy('id','desc')->first();
+            if(false !== Education::whereIn('id',$education_ids)->update(['parent_id' => $last_category_id_1 , 'child_id' => $clintid['id'] , 'update_time' => date('Y-m-d H:i:s')])){
                 self::where('parent_id' , $pre_category_id[0])->update(['is_del' => 1 , 'update_time' => date('Y-m-d H:i:s')]);
-                $is_exists = self::where('parent_id' , $last_category_id[0])->where('is_del' , 0)->count();
+                $is_exists = self::where('parent_id' , $last_category_id_1)->where('is_del' , 0)->count();
                 if(!$is_exists || $is_exists <= 0){
                     //数组信息
                     $array = [
-                        'parent_id'           =>   $last_category_id[0] ,
+                        'parent_id'           =>   $last_category_id_1 ,
                         'admin_id'            =>   $admin_id ,
                         'create_time'         =>   date('Y-m-d H:i:s')
                     ];
