@@ -435,6 +435,7 @@ class StudentDatum extends Model {
              }
              $body['create_time']=date('Y-m-d H:i:s');
              $body['type']= 3;
+             $body['student_sex']= 0;
              $admin_name = isset(AdminLog::getAdminInfo()->admin_user->real_name) ? AdminLog::getAdminInfo()->admin_user->real_name : '';
              $StudentDatumArr = self::where(['id'=>$id])->first();
              if(empty($StudentDatumArr)){
