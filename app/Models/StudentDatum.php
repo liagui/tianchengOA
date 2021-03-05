@@ -125,7 +125,7 @@ class StudentDatum extends Model {
                 $v['audit'] =  $v['audit_status'] <=0 ?'待审核':($v['audit_status']==1?'审核通过':'驳回');
                 $v['consignee'] =  $v['consignee_status'] <=0 ?'待收集':($v['consignee_status']==1?'收集中':($v['consignee_status']==2?'已收集':"重新收集"));
                 //类型
-                if($v['project_name'] == '消防设施操作员初级' || $v['project_name'] == '消防设施操作员中级' || $v['project_name'] == '消防设施操作员高级'){
+                if($v['project_name'] == '消防设施操作员初级' || $v['project_name'] == '消防设施操作员中级' || $v['project_name'] == '消防设施操作员高级'|| $v['project_name'] == '消防工程师'){
                      $v['moban_type'] =1;
                 }else if($v['project_name'] == '学历提升'|| $v['project_name'] == '成考'|| $v['project_name'] == '高起专'|| $v['project_name'] == '专升本'|| $v['project_name'] == '高起本'){
                     $v['moban_type'] =2;
