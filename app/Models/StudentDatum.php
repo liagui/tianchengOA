@@ -156,6 +156,7 @@ class StudentDatum extends Model {
          //1消防2学历3中专4健康
          if($body['moban_type'] == 1){
              $body['type'] = 1;
+             unset($body['moban_type']);
              if(!isset($body['student_name']) || empty($body['student_name'])){
                  return ['code' => 201 , 'msg' => '请输入学员姓名'];
              }
@@ -224,7 +225,7 @@ class StudentDatum extends Model {
                  unset($body['/admin/datum/doDatumInsert']);
              }
              $body['create_time']=date('Y-m-d H:i:s');
-             $body['type']= 3;
+             $body['type']= 1;
              $admin_name = isset(AdminLog::getAdminInfo()->admin_user->real_name) ? AdminLog::getAdminInfo()->admin_user->real_name : '';
              $StudentDatumArr = self::where(['id'=>$id])->first();
              if(empty($StudentDatumArr)){
@@ -333,6 +334,7 @@ class StudentDatum extends Model {
              }
              $id = $body['id'];
              unset($body['id']);
+             unset($body['moban_type']);
              if(isset($body['/admin/datum/doDatumInsert'])){
                  unset($body['/admin/datum/doDatumInsert']);
              }
@@ -427,6 +429,7 @@ class StudentDatum extends Model {
              }
              $id = $body['id'];
              unset($body['id']);
+             unset($body['moban_type']);
              if(isset($body['/admin/datum/doDatumInsert'])){
                  unset($body['/admin/datum/doDatumInsert']);
              }
@@ -478,6 +481,7 @@ class StudentDatum extends Model {
              }
          }else if($body['moban_type'] == 4){
             $body['type']= 4;
+             unset($body['moban_type']);
             //判断学员资料关系表的id是否为空
             if(!isset($body['branch_school']) || empty($body['branch_school']) || $body['branch_school'] <= 0 ){
                 return ['code' => 201 , 'msg' => '学校标识不合法'];
