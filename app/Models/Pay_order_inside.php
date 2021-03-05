@@ -2093,15 +2093,7 @@ class Pay_order_inside extends Model
                 $up = Pay_order_inside::where(['id'=>$data['id']])->update($data);
                 $orderfind = Pay_order_inside::where(['id'=>$data['id']])->first();
                 if($orderfind['first_pay'] == 2 ){
-                    $orderarr = Pay_order_inside::where(['mobile'=>$orderfind['mobile'],'course_id'=>$orderfind['course_id'],'school_id'=>$orderfind['school_id'],'project_id'=>$orderfind['project_id'],'subject_id'=>$orderfind['subject_id']])->whereIn('first_pay',['3,4'])->get();
-                    if(!empty($orderarr)){
-                        $orderarr->toArray();
-                    }
-                    foreach ($orderarr as $k=>$v){
-                        Pay_order_inside::where(['id'=>$v['id']])->update(['sign_Price'=>0,'course_Price'=>$v['pay_price']]);
-                    }
-                }else if($orderfind['first_pay'] == 3){
-                    $orderarr = Pay_order_inside::where(['mobile'=>$orderfind['mobile'],'course_id'=>$orderfind['course_id'],'school_id'=>$orderfind['school_id'],'project_id'=>$orderfind['project_id'],'subject_id'=>$orderfind['subject_id']])->whereIn('first_pay',['4'])->get();
+                    $orderarr = Pay_order_inside::where(['mobile'=>$orderfind['mobile'],'course_id'=>$orderfind['course_id'],'school_id'=>$orderfind['school_id'],'project_id'=>$orderfind['project_id'],'subject_id'=>$orderfind['subject_id']])->whereIn('first_pay',[3,4])->get();
                     if(!empty($orderarr)){
                         $orderarr->toArray();
                     }
@@ -2109,6 +2101,15 @@ class Pay_order_inside extends Model
                         Pay_order_inside::where(['id'=>$v['id']])->update(['sign_Price'=>0,'course_Price'=>$v['pay_price']]);
                     }
                 }
+//                else if($orderfind['first_pay'] == 3){
+//                    $orderarr = Pay_order_inside::where(['mobile'=>$orderfind['mobile'],'course_id'=>$orderfind['course_id'],'school_id'=>$orderfind['school_id'],'project_id'=>$orderfind['project_id'],'subject_id'=>$orderfind['subject_id']])->whereIn('first_pay',['4'])->get();
+//                    if(!empty($orderarr)){
+//                        $orderarr->toArray();
+//                    }
+//                    foreach ($orderarr as $k=>$v){
+//                        Pay_order_inside::where(['id'=>$v['id']])->update(['sign_Price'=>0,'course_Price'=>$v['pay_price']]);
+//                    }
+//                }
                 if($up){
                     return ['code' => 200 , 'msg' => '成功'];
                 }else{
