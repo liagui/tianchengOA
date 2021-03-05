@@ -1173,6 +1173,7 @@ class Pay_order_inside extends Model
          * return  array
          */
     public static function unsubmittedOrder($data){
+        return ['code' => 201 , 'msg' => '无此订单'];
         //默认不传订单号   展示空页面
         $res=[];
         if(!isset($data['order_no'])){
