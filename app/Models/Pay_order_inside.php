@@ -405,14 +405,13 @@ class Pay_order_inside extends Model
             ];
         }
         //根据条件查询订单 有就不扣报名费
-        $order = self::where(['mobile'=>$data['mobile'],'course_id'=>$data['course_id'],'school_id'=>$data['school_id'],'project_id'=>$data['project_id'],'subject_id'=>$data['subject_id'],'confirm_status'=>1])->first();
+        $order = self::where(['mobile'=>$data['mobile'],'course_id'=>$data['course_id'],'school_id'=>$data['school_id'],'project_id'=>$data['project_id'],'subject_id'=>$data['subject_id']])->whereIn('confirm_status',[1,2])->first();
         if(!empty($order)){
             $data['pay_price'] = $data['course_Price'];
             $data['sign_Price'] = 0;
         }else{
             $data['pay_price'] = $data['course_Price'];
             $data['course_Price'] = $data['course_Price'] - $data['sign_Price'];
-            $data['sign_Price'] = $data['sign_Price'];
         }
         $data['add_time'] =date('Y-m-d H:i:s');
         $data['confirm_status'] = 0;
@@ -2092,6 +2091,18 @@ class Pay_order_inside extends Model
                 $data['confirm_status'] = 1;  //总校财务确认
                 $data['sure_time'] = date('Y-m-d H:i:s');
                 $up = Pay_order_inside::where(['id'=>$data['id']])->update($data);
+                $orderfind = Pay_order_inside::where(['id'=>$data['id']])->first();
+                if($orderfind['first_pay'] == 2 ){
+                    $orderarr = Pay_order_inside::where(['mobile'=>$data['mobile'],'course_id'=>$data['course_id'],'school_id'=>$data['school_id'],'project_id'=>$data['project_id'],'subject_id'=>$data['subject_id']])->whereIn('first_pay',['3,4'])->get()->toArray();
+                    foreach ($orderarr as $k=>$v){
+                        Pay_order_inside::where(['id'=>$v['id']])->update(['sign_Price'=>0,'course_Price'=>$v['pay_price']]);
+                    }
+                }else if($orderfind['first_pay'] == 3){
+                    $orderarr = Pay_order_inside::where(['mobile'=>$data['mobile'],'course_id'=>$data['course_id'],'school_id'=>$data['school_id'],'project_id'=>$data['project_id'],'subject_id'=>$data['subject_id']])->whereIn('first_pay',['4'])->get()->toArray();
+                    foreach ($orderarr as $k=>$v){
+                        Pay_order_inside::where(['id'=>$v['id']])->update(['sign_Price'=>0,'course_Price'=>$v['pay_price']]);
+                    }
+                }
                 if($up){
                     return ['code' => 200 , 'msg' => '成功'];
                 }else{
