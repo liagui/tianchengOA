@@ -254,7 +254,7 @@ class StudentDatum extends Model {
                      'datum_create_time'=>$body['create_time'],
                      'update_time'=> date('Y-m-d H:i:s')
                  ];
-                 self::where('id',$id)->update($body);
+//                 self::where('id',$id)->update($body);
                  $res = self::where('id',$id)->update($update); //修改学员资料订单关系表的内容
                  if(!$res){
                      DB::rollBack();
@@ -369,7 +369,7 @@ class StudentDatum extends Model {
                      'datum_create_time'=>$body['create_time'],
                      'update_time'=> date('Y-m-d H:i:s')
                  ];
-                 self::where('id',$id)->update($body);
+//                 self::where('id',$id)->update($body);
                  $res = self::where('id',$id)->update($update); //修改学员资料订单关系表的内容
                  if(!$res){
                      DB::rollBack();
@@ -466,7 +466,7 @@ class StudentDatum extends Model {
                      'datum_create_time'=>$body['create_time'],
                      'update_time'=> date('Y-m-d H:i:s')
                  ];
-                 self::where('id',$id)->update($body);
+//                 self::where('id',$id)->update($body);
                  $res = self::where('id',$id)->update($update); //修改学员资料订单关系表的内容
                  if(!$res){
                      DB::rollBack();
@@ -646,7 +646,7 @@ class StudentDatum extends Model {
                     'datum_create_time'=>$body['create_time'],
                     'update_time'=> date('Y-m-d H:i:s')
                 ];
-                self::where('id',$id)->update($body);
+//                self::where('id',$id)->update($body);
                 $res = self::where('id',$id)->update($update); //修改学员资料订单关系表的内容
                 if(!$res){
                     DB::rollBack();
