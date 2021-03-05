@@ -198,7 +198,7 @@ class StudentDatum extends Model {
              if(!isset($body['professional']) || empty($body['professional'])){
                  return ['code' => 201 , 'msg' => '请输入专业'];
              }
-             if(!isset($body['student_region']) || empty($body['student_region'])){
+             if(!isset($body['studen_address']) || empty($body['studen_address'])){
                  return ['code' => 201 , 'msg' => '请输入常住地'];
              }
              if(!isset($body['source']) || empty($body['source'])){
