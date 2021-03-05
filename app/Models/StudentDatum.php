@@ -254,7 +254,7 @@ class StudentDatum extends Model {
                      'datum_create_time'=>$body['create_time'],
                      'update_time'=> date('Y-m-d H:i:s')
                  ];
-                 $res = self::where('id',$id)->update($update); //修改学员资料订单关系表的内容
+                 $res = self::where('id',$id)->update($update,$body); //修改学员资料订单关系表的内容
                  if(!$res){
                      DB::rollBack();
                      return ['code'=>203,'msg'=>'资料提交失败,请重试！'];
@@ -368,7 +368,7 @@ class StudentDatum extends Model {
                      'datum_create_time'=>$body['create_time'],
                      'update_time'=> date('Y-m-d H:i:s')
                  ];
-                 $res = self::where('id',$id)->update($update); //修改学员资料订单关系表的内容
+                 $res = self::where('id',$id)->update($update,$body); //修改学员资料订单关系表的内容
                  if(!$res){
                      DB::rollBack();
                      return ['code'=>203,'msg'=>'资料提交失败,请重试！'];
@@ -464,7 +464,7 @@ class StudentDatum extends Model {
                      'datum_create_time'=>$body['create_time'],
                      'update_time'=> date('Y-m-d H:i:s')
                  ];
-                 $res = self::where('id',$id)->update($update); //修改学员资料订单关系表的内容
+                 $res = self::where('id',$id)->update($update,$body); //修改学员资料订单关系表的内容
                  if(!$res){
                      DB::rollBack();
                      return ['code'=>203,'msg'=>'资料提交失败,请重试！'];
@@ -643,7 +643,7 @@ class StudentDatum extends Model {
                     'datum_create_time'=>$body['create_time'],
                     'update_time'=> date('Y-m-d H:i:s')
                 ];
-                $res = self::where('id',$id)->update($update); //修改学员资料订单关系表的内容
+                $res = self::where('id',$id)->update($update,$body); //修改学员资料订单关系表的内容
                 if(!$res){
                     DB::rollBack();
                     return ['code'=>203,'msg'=>'资料提交失败,请重试！'];
