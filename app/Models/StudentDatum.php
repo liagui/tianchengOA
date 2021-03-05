@@ -324,7 +324,7 @@ class StudentDatum extends Model {
              if(!isset($body['email']) || empty($body['email'])){
                  return ['code' => 201 , 'msg' => '请输入邮箱'];
              }
-             if(!isset($body['student_region']) || empty($body['student_region'])){
+             if(!isset($body['studen_address']) || empty($body['studen_address'])){
                  return ['code' => 201 , 'msg' => '请输入联系地址'];
              }
              if(!isset($body['zipcode']) || empty($body['zipcode'])){
