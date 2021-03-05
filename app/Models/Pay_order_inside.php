@@ -109,25 +109,26 @@ class Pay_order_inside extends Model
             ->whereBetween('create_time', [$state_time, $end_time])
             ->orderByDesc('id')
             ->get()->toArray();
+        $external = [];
         //如果学校名称为空 查询第三方表
-        if(!isset($data['school_name']) && empty($data['school_name'])){
-            $external = Pay_order_external::where(function($query) use ($data,$schoolarr,$paytype) {
-                if (isset($data['order_no']) && !empty($data['order_no'])) {
-                    $query->where('order_no', $data['order_no'])
-                        ->orwhere('name', $data['order_no'])
-                        ->orwhere('mobile', $data['order_no']);
-                }
-                if(!empty($paytype)){
-                    $query->whereIn('pay_type', $paytype);
-                }
-            })->where($where)
-                ->where(['pay_status'=>1,'status'=>0])
-                ->whereBetween('create_time', [$state_time, $end_time])
-                ->orderByDesc('id')
-                ->get()->toArray();
-        }else{
-            $external = [];
-        }
+//        if(!isset($data['school_name']) && empty($data['school_name'])){
+//            $external = Pay_order_external::where(function($query) use ($data,$schoolarr,$paytype) {
+//                if (isset($data['order_no']) && !empty($data['order_no'])) {
+//                    $query->where('order_no', $data['order_no'])
+//                        ->orwhere('name', $data['order_no'])
+//                        ->orwhere('mobile', $data['order_no']);
+//                }
+//                if(!empty($paytype)){
+//                    $query->whereIn('pay_type', $paytype);
+//                }
+//            })->where($where)
+//                ->where(['pay_status'=>1,'status'=>0])
+//                ->whereBetween('create_time', [$state_time, $end_time])
+//                ->orderByDesc('id')
+//                ->get()->toArray();
+//        }else{
+//            $external = [];
+//        }
         //分校只显示流转
         if(!empty($data['isBranchSchool']) && $data['isBranchSchool'] == true){
 
@@ -174,7 +175,8 @@ class Pay_order_inside extends Model
                 $count = count($order) + count($external);
                 //金额计算
                 //已支付金额  流转表中pay_status=1  第三方表 pay_status=1，status=0
-                $wanderprice = Pay_order_external::where(['pay_status'=>1,'status'=>0,'del_flag'=>0])->sum('pay_price');
+//                $wanderprice = Pay_order_external::where(['pay_status'=>1,'status'=>0,'del_flag'=>0])->sum('pay_price');
+                $wanderprice = 0;
                 $partyprice = self::whereIn('school_id',$schoolarr)->whereBetween('create_time', [$state_time, $end_time])->where('pay_status',1)->sum('pay_price');
                 $counts = $wanderprice + $partyprice;
                 $surecount = self::whereIn('school_id',$schoolarr)->whereBetween('create_time', [$state_time, $end_time])->where('pay_status',1)->where('confirm_status',2)->sum('pay_price');
