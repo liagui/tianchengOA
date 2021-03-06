@@ -227,7 +227,7 @@ class StudentDatum extends Model {
              $body['create_time']=date('Y-m-d H:i:s');
              $body['type']= 1;
              $admin_name = isset(AdminLog::getAdminInfo()->admin_user->real_name) ? AdminLog::getAdminInfo()->admin_user->real_name : '';
-             $StudentDatumArr = self::where(['id'=>$id])->first();
+             $StudentDatumArr = self::where(['information_id'=>$id])->first();
              if(empty($StudentDatumArr)){
                  return ['code'=>201,'msg'=>'暂无数据信息'];
              }else{
@@ -236,7 +236,7 @@ class StudentDatum extends Model {
                      $datumDelRes=Datum::where('id',$StudentDatumArr['id'])->update(['is_del'=>0,'update_time'=>date('Y-m-d H:i:s')]);
                      if(!$datumDelRes){
                          DB::rollBack();
-                         return ['code'=>203,'msg'=>' 资料提交失败，请重试 '];
+                         return ['code'=>203,'msg'=>' 资料提交失败，请重试!'];
                      }
                      $OrderUpdate = ['consignee_name'=>$admin_name,'update_time'=>date('Y-m-d H:i:s')]; //修改订单状态
                  }else{
@@ -246,7 +246,7 @@ class StudentDatum extends Model {
                  $datumId = Datum::insertGetId($body);  //添加资料
                  if($datumId<=0){
                      DB::rollBack();
-                     return ['code'=>203,'msg'=>'资料提交失败，请重试'];
+                     return ['code'=>203,'msg'=>'资料提交失败，请重试!!'];
                  }
                  $update = [
                      'information_id'=>$datumId,
@@ -255,10 +255,10 @@ class StudentDatum extends Model {
                      'update_time'=> date('Y-m-d H:i:s')
                  ];
                  Datum::where('id',$id)->update($body);
-                 $res = self::where('id',$id)->update($update); //修改学员资料订单关系表的内容
+                 $res = self::where('id',$StudentDatumArr['id'])->update($update); //修改学员资料订单关系表的内容
                  if(!$res){
                      DB::rollBack();
-                     return ['code'=>203,'msg'=>'资料提交失败,请重试！'];
+                     return ['code'=>203,'msg'=>'资料提交失败,请重试!!!'];
                  }
 
                  $orderRes = Pay_order_inside::where('id',$StudentDatumArr['order_id'])->update($OrderUpdate); //修改订单表 资料收集状态
@@ -268,7 +268,7 @@ class StudentDatum extends Model {
                      return ['code'=>200,'msg'=>'资料提交成功'];
                  }else{
                      DB::rollBack();
-                     return ['code'=>203,'msg'=>'资料提交失败,请重试！！'];
+                     return ['code'=>203,'msg'=>'资料提交失败,请重试!!!!'];
                  }
              }
 
@@ -340,9 +340,8 @@ class StudentDatum extends Model {
                  unset($body['/admin/datum/doDatumInsert']);
              }
              $body['create_time']=date('Y-m-d H:i:s');
-             $body['type']= 3;
              $admin_name = isset(AdminLog::getAdminInfo()->admin_user->real_name) ? AdminLog::getAdminInfo()->admin_user->real_name : '';
-             $StudentDatumArr = self::where(['id'=>$id])->first();
+             $StudentDatumArr = self::where(['information_id'=>$id])->first();
              if(empty($StudentDatumArr)){
                  return ['code'=>201,'msg'=>'暂无数据信息'];
              }else{
@@ -370,7 +369,7 @@ class StudentDatum extends Model {
                      'update_time'=> date('Y-m-d H:i:s')
                  ];
                  Datum::where('id',$id)->update($body);
-                 $res = self::where('id',$id)->update($update); //修改学员资料订单关系表的内容
+                 $res = self::where('id',$StudentDatumArr['id'])->update($update); //修改学员资料订单关系表的内容
                  if(!$res){
                      DB::rollBack();
                      return ['code'=>203,'msg'=>'资料提交失败,请重试！'];
@@ -421,6 +420,9 @@ class StudentDatum extends Model {
              if(!isset($body['years']) || empty($body['years'])){
                  return ['code' => 201 , 'msg' => '请输入毕业年月'];
              }
+             if(strtotime($body['years'])<=strtotime($body['startyears'])){
+                 return ['code' => 201 , 'msg' => '请输入正确的毕业时间'];
+             }
              //判断毕业年月是否为空
              if(!isset($body['branch_name']) || empty($body['branch_name'])){
                  return ['code' => 201 , 'msg' => '请输入分校名称'];
@@ -437,9 +439,8 @@ class StudentDatum extends Model {
              }
              $body['create_time']=date('Y-m-d H:i:s');
              $body['type']= 3;
-             $body['student_sex']= 0;
              $admin_name = isset(AdminLog::getAdminInfo()->admin_user->real_name) ? AdminLog::getAdminInfo()->admin_user->real_name : '';
-             $StudentDatumArr = self::where(['id'=>$id])->first();
+             $StudentDatumArr = self::where(['information_id'=>$id])->first();
              if(empty($StudentDatumArr)){
                  return ['code'=>201,'msg'=>'暂无数据信息'];
              }else{
@@ -467,7 +468,7 @@ class StudentDatum extends Model {
                      'update_time'=> date('Y-m-d H:i:s')
                  ];
                  Datum::where('id',$id)->update($body);
-                 $res = self::where('id',$id)->update($update); //修改学员资料订单关系表的内容
+                 $res = self::where('id',$StudentDatumArr['id'])->update($update); //修改学员资料订单关系表的内容
                  if(!$res){
                      DB::rollBack();
                      return ['code'=>203,'msg'=>'资料提交失败,请重试！'];
@@ -614,12 +615,10 @@ class StudentDatum extends Model {
             if(isset($body['/admin/datum/doDatumInsert'])){
                 unset($body['/admin/datum/doDatumInsert']);
             }
-
-
             $body['create_time']=date('Y-m-d H:i:s');
             DB::beginTransaction();
             $admin_name = isset(AdminLog::getAdminInfo()->admin_user->real_name) ? AdminLog::getAdminInfo()->admin_user->real_name : '';
-            $StudentDatumArr = self::where(['id'=>$id])->first();
+            $StudentDatumArr = self::where(['information_id'=>$id])->first();
             if(empty($StudentDatumArr)){
                 return ['code'=>201,'msg'=>'暂无数据信息'];
             }else{
@@ -647,14 +646,12 @@ class StudentDatum extends Model {
                     'update_time'=> date('Y-m-d H:i:s')
                 ];
                 Datum::where('id',$id)->update($body);
-                $res = self::where('id',$id)->update($update); //修改学员资料订单关系表的内容
+                $res = self::where('id',$StudentDatumArr['id'])->update($update); //修改学员资料订单关系表的内容
                 if(!$res){
                     DB::rollBack();
                     return ['code'=>203,'msg'=>'资料提交失败,请重试！'];
                 }
-
                 $orderRes = Pay_order_inside::where('id',$StudentDatumArr['order_id'])->update($OrderUpdate); //修改订单表 资料收集状态
-
                 if($orderRes){
                     DB::commit();
                     return ['code'=>200,'msg'=>'资料提交成功'];
