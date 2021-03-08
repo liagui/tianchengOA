@@ -190,7 +190,7 @@ class Refund_order extends Model
                 }else if($v['confirm_status'] == 1){
                     $v['confirm_status_text'] = '已确认';
                 }else if($v['confirm_status'] == 2){
-                    $v['confirm_status_text'] = '已驳回';
+                    $v['confirm_status_text'] = '被驳回';
                 }else if($v['confirm_status'] == 3){
                     $v['confirm_status_text'] = '待财务确认';
                 }
@@ -208,7 +208,7 @@ class Refund_order extends Model
                 }else if($v['confirm_status'] == 1){
                     $v['finance_text'] = '已确认';
                 }else if($v['confirm_status'] == 2){
-                    $v['finance_text'] = '已驳回';
+                    $v['finance_text'] = '被驳回';
                 }else if($v['confirm_status'] == 3){
                     $v['finance_text'] = '待确认';
                 }
