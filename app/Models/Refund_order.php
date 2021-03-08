@@ -191,6 +191,8 @@ class Refund_order extends Model
                     $v['confirm_status_text'] = '已确认';
                 }else if($v['confirm_status'] == 2){
                     $v['confirm_status_text'] = '已驳回';
+                }else if($v['confirm_status'] == 3){
+                    $v['confirm_status_text'] = '待财务确认';
                 }
                 if($v['refund_plan'] == 0){
                     $v['refund_plan_text'] = '未确认';
