@@ -227,7 +227,7 @@ class StudentDatum extends Model {
              $body['create_time']=date('Y-m-d H:i:s');
              $body['type']= 1;
              $admin_name = isset(AdminLog::getAdminInfo()->admin_user->real_name) ? AdminLog::getAdminInfo()->admin_user->real_name : '';
-             $StudentDatumArr = self::where(['information_id'=>$id])->first();
+             $StudentDatumArr = self::where(['id'=>$id])->first();
              if(empty($StudentDatumArr)){
                  return ['code'=>201,'msg'=>'暂无数据信息'];
              }else{
@@ -254,7 +254,7 @@ class StudentDatum extends Model {
                      'datum_create_time'=>$body['create_time'],
                      'update_time'=> date('Y-m-d H:i:s')
                  ];
-                 Datum::where('id',$id)->update($body);
+                 Datum::where('id',$StudentDatumArr['information_id'])->update($body);
                  $res = self::where('id',$StudentDatumArr['id'])->update($update); //修改学员资料订单关系表的内容
                  if(!$res){
                      DB::rollBack();
@@ -341,7 +341,7 @@ class StudentDatum extends Model {
              }
              $body['create_time']=date('Y-m-d H:i:s');
              $admin_name = isset(AdminLog::getAdminInfo()->admin_user->real_name) ? AdminLog::getAdminInfo()->admin_user->real_name : '';
-             $StudentDatumArr = self::where(['information_id'=>$id])->first();
+             $StudentDatumArr = self::where(['id'=>$id])->first();
              if(empty($StudentDatumArr)){
                  return ['code'=>201,'msg'=>'暂无数据信息'];
              }else{
@@ -368,7 +368,7 @@ class StudentDatum extends Model {
                      'datum_create_time'=>$body['create_time'],
                      'update_time'=> date('Y-m-d H:i:s')
                  ];
-                 Datum::where('id',$id)->update($body);
+                 Datum::where('id',$StudentDatumArr['information_id'])->update($body);
                  $res = self::where('id',$StudentDatumArr['id'])->update($update); //修改学员资料订单关系表的内容
                  if(!$res){
                      DB::rollBack();
@@ -440,7 +440,7 @@ class StudentDatum extends Model {
              $body['create_time']=date('Y-m-d H:i:s');
              $body['type']= 3;
              $admin_name = isset(AdminLog::getAdminInfo()->admin_user->real_name) ? AdminLog::getAdminInfo()->admin_user->real_name : '';
-             $StudentDatumArr = self::where(['information_id'=>$id])->first();
+             $StudentDatumArr = self::where(['id'=>$id])->first();
              if(empty($StudentDatumArr)){
                  return ['code'=>201,'msg'=>'暂无数据信息'];
              }else{
@@ -467,7 +467,7 @@ class StudentDatum extends Model {
                      'datum_create_time'=>$body['create_time'],
                      'update_time'=> date('Y-m-d H:i:s')
                  ];
-                 Datum::where('id',$id)->update($body);
+                 Datum::where('id',$StudentDatumArr['information_id'])->update($body);
                  $res = self::where('id',$StudentDatumArr['id'])->update($update); //修改学员资料订单关系表的内容
                  if(!$res){
                      DB::rollBack();
@@ -618,7 +618,7 @@ class StudentDatum extends Model {
             $body['create_time']=date('Y-m-d H:i:s');
             DB::beginTransaction();
             $admin_name = isset(AdminLog::getAdminInfo()->admin_user->real_name) ? AdminLog::getAdminInfo()->admin_user->real_name : '';
-            $StudentDatumArr = self::where(['information_id'=>$id])->first();
+            $StudentDatumArr = self::where(['id'=>$id])->first();
             if(empty($StudentDatumArr)){
                 return ['code'=>201,'msg'=>'暂无数据信息'];
             }else{
@@ -645,7 +645,7 @@ class StudentDatum extends Model {
                     'datum_create_time'=>$body['create_time'],
                     'update_time'=> date('Y-m-d H:i:s')
                 ];
-                Datum::where('id',$id)->update($body);
+                Datum::where('id',$StudentDatumArr['information_id'])->update($body);
                 $res = self::where('id',$StudentDatumArr['id'])->update($update); //修改学员资料订单关系表的内容
                 if(!$res){
                     DB::rollBack();
