@@ -75,7 +75,7 @@ class Refund_order extends Model
             'remit_time' => date('Y-m-d H:i:s'),
             'bank_name' => $data['bank_name'],
             'openbank_name' => $data['openbank_name'],
-            'bank_card' => $data['bank_card'],
+            'bank_card' => $data['bank_card']
         ];
         $add = self::insert($res);
         if($add){
@@ -202,6 +202,15 @@ class Refund_order extends Model
                     $v['refund_plan_text'] = '已打款';
                 }else if($v['refund_plan'] == 3){
                     $v['refund_plan_text'] = '被驳回';
+                }
+                if($v['confirm_status'] == 0){
+                    $v['finance_text'] = '待退费员确认';
+                }else if($v['confirm_status'] == 1){
+                    $v['finance_text'] = '已确认';
+                }else if($v['confirm_status'] == 2){
+                    $v['finance_text'] = '已驳回';
+                }else if($v['confirm_status'] == 3){
+                    $v['finance_text'] = '待确认';
                 }
                 //course  课程
                 $course = Course::select('course_name')->where(['id'=>$v['course_id']])->first();
