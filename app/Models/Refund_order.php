@@ -634,7 +634,7 @@ class Refund_order extends Model
         }
     }
     //财务确认退费
-    public function financeOrder($data){
+    public static function financeOrder($data){
         //status 1通过2驳回
         $up = self::where(['id' => $data['id']])->update(['confirm_status'=>$data['status']]);
         if($up){
