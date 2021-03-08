@@ -509,7 +509,7 @@ class Refund_order extends Model
         if(!$order){
             return ['code' => 201 , 'msg' => '参数不对'];
         }
-        if($order['confirm_status'] == 1){
+        if($order['confirm_status'] == 2){
             return ['code' => 200, 'msg' => '修改成功'];
         }else{
             if($data['status'] == 0 || empty($data['status'])){
@@ -553,7 +553,7 @@ class Refund_order extends Model
                 $up['course_id'] = $data['course_id'];
                 $up['student_name'] = $data['student_name'];
                 $up['phone'] = $data['phone'];
-                $up['confirm_status'] = 1;
+                $up['confirm_status'] = 3;
                 $up['order_id'] = implode(',',$orderid);
                 $up['reality_price'] = $data['reality_price'];
                 $up['reality_sing_price'] = $data['reality_sing_price'];
@@ -600,6 +600,9 @@ class Refund_order extends Model
          */
     public static function remitOrder($data){
         $order = self::where(['id' => $data['id']])->first();
+        if($order['confirm_status'] != 1){
+            return ['code' => 201 , 'msg' => '财务未审核'];
+        }
         if(!$order){
             return ['code' => 201 , 'msg' => '参数不对'];
         }
@@ -617,6 +620,16 @@ class Refund_order extends Model
             return ['code' => 200, 'msg' => '上传成功'];
         }else{
             return ['code' => 201, 'msg' => '修改失败'];
+        }
+    }
+    //财务确认退费
+    public function financeOrder($data){
+        //status 1通过2驳回
+        $up = self::where(['id' => $data['id']])->update(['confirm_status'=>$data['status']]);
+        if($up){
+            return ['code' => 200, 'msg' => '审核成功'];
+        }else{
+            return ['code' => 201, 'msg' => '审核失败'];
         }
     }
     //退款确认添加备注
