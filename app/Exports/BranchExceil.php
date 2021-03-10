@@ -34,8 +34,8 @@ class BranchExceil implements FromCollection, WithHeadings{
         //学校id
         $school_id = [];
         if (isset($body['school_id'])) {
-            $school_id[0]=$body['school_id'];
-//            $school_id = School::select('id')->where('school_name', 'like', '%' . $body['school_name'] . '%')->where('is_del', 0)->get();
+//            $school_id[0]=$body['school_id'];
+            $school_id = School::select('id')->where('school_name', 'like', '%' . $body['school_name'] . '%')->where('is_del', 0)->get();
         }
 
         if (!empty($body['search_time'])) {
