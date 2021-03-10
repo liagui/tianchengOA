@@ -4038,9 +4038,9 @@ class Pay_order_inside extends Model
 
         //学校id
         $school_id=[];
-        if(isset($data['school_id'])){
-//            $school_id[0]=$body['school_id'];
-            $school_id = School::select('id')->where('school_name','like','%'.$body['school_name'].'%')->where('is_del',0)->get();
+        if(isset($body['school_id'])){
+            $school_id[0]=$body['school_id'];
+//            $school_id = School::select('id')->where('school_name','like','%'.$body['school_name'].'%')->where('is_del',0)->get();
         }
 
         if(!empty($body['search_time'])) {
@@ -4055,7 +4055,7 @@ class Pay_order_inside extends Model
                 ->where('school.is_del', 0)->where(function ($query) use ($body, $school_id, $state_time, $end_time) {
                     //判断分校id是否为空和合法
                     if (!empty($school_id)) {
-                        $query->whereIn('id', $school_id);
+                        $query->whereIn('school.id', $school_id);
                     }
                     //获取日期
                     $query->whereBetween('pay_order_inside.comfirm_time', [$state_time, $end_time]);
@@ -4066,7 +4066,7 @@ class Pay_order_inside extends Model
                 })->where('refund_order.refund_plan',2)->where('school.is_del', 0)->where(function ($query) use ($body, $school_id, $state_time, $end_time) {
                     //判断分校id是否为空和合法
                     if (!empty($school_id)) {
-                        $query->whereIn('id', $school_id);
+                        $query->whereIn('school.id', $school_id);
                     }
                     //获取日期
                     $query->whereBetween('refund_order.refund_time', [$state_time, $end_time]);
@@ -4103,7 +4103,7 @@ class Pay_order_inside extends Model
                     ->where('school.is_del', 0)->where(function ($query) use ($body, $school_id) {
                         //判断分校id是否为空和合法
                         if (!empty($school_id)) {
-                            $query->whereIn('id', $school_id);
+                            $query->whereIn('school.id', $school_id);
                         }
                         //获取日期
                         if (isset($body['search_time']) && !empty($body['search_time'])) {
@@ -4139,7 +4139,7 @@ class Pay_order_inside extends Model
                         ->where('refund_order.refund_plan', 2)->where('school.is_del', 0)->where(function ($query) use ($body, $school_id) {
                             //判断分校id是否为空和合法
                             if (!empty($school_id)) {
-                                $query->whereIn('id', $school_id);
+                                $query->whereIn('school.id', $school_id);
                             }
                             //获取日期
                             if (isset($body['search_time']) && !empty($body['search_time'])) {
