@@ -33,7 +33,7 @@ class BranchExceil implements FromCollection, WithHeadings{
         $array = [];
         //学校id
         $school_id = [];
-        if (isset($data['school_name'])) {
+        if (isset($body['school_name'])) {
             $school_id = School::select('id')->where('school_name', 'like', '%' . $body['school_name'] . '%')->where('is_del', 0)->get();
         }
 
