@@ -100,9 +100,8 @@ class BranchExceil implements FromCollection, WithHeadings{
                         }
                         //获取日期
                         if (isset($body['search_time']) && !empty($body['search_time'])) {
-                            $create_time = json_decode($body['search_time'], true);
-                            $state_time = $create_time[0] . " 00:00:00";
-                            $end_time = $create_time[1] . " 23:59:59";
+                            $state_time = $body['search_time'][0] . " 00:00:00";
+                            $end_time = $body['search_time'][1] . " 23:59:59";
                             $query->whereBetween('pay_order_inside.comfirm_time', [$state_time, $end_time]);
                         }
                     })->orderByDesc('school.create_time')->groupBy(DB::raw('school.id'))->get()->toArray();
@@ -136,9 +135,8 @@ class BranchExceil implements FromCollection, WithHeadings{
                             }
                             //获取日期
                             if (isset($body['search_time']) && !empty($body['search_time'])) {
-                                $create_time = json_decode($body['search_time'], true);
-                                $state_time = $create_time[0] . " 00:00:00";
-                                $end_time = $create_time[1] . " 23:59:59";
+                                $state_time = $body['search_time'][0] . " 00:00:00";
+                                $end_time = $body['search_time'][1] . " 23:59:59";
                                 $query->whereBetween('refund_order.refund_time', [$state_time, $end_time]);
                             }
                         })->orderByDesc('school.create_time')->groupBy(DB::raw('school.id'))->get()->toArray();
@@ -183,9 +181,8 @@ class BranchExceil implements FromCollection, WithHeadings{
 
                         //获取日期
                         if (isset($body['search_time']) && !empty($body['search_time'])) {
-                            $create_time = json_decode($body['search_time'], true);
-                            $state_time = $create_time[0] . " 00:00:00";
-                            $end_time = $create_time[1] . " 23:59:59";
+                            $state_time = $body['search_time'][0] . " 00:00:00";
+                            $end_time = $body['search_time'][1] . " 23:59:59";
                             $query->whereBetween('pay_order_inside.comfirm_time', [$state_time, $end_time]);
                         }
                     })->count();
@@ -195,9 +192,8 @@ class BranchExceil implements FromCollection, WithHeadings{
 
                         //获取日期
                         if (isset($body['search_time']) && !empty($body['search_time'])) {
-                            $create_time = json_decode($body['search_time'], true);
-                            $state_time = $create_time[0] . " 00:00:00";
-                            $end_time = $create_time[1] . " 23:59:59";
+                            $state_time = $body['search_time'][0] . " 00:00:00";
+                            $end_time = $body['search_time'][1] . " 23:59:59";
                             $query->whereBetween('pay_order_inside.comfirm_time', [$state_time, $end_time]);
                         }
                     })->count();
