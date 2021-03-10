@@ -381,25 +381,25 @@ class BranchExceil implements FromCollection, WithHeadings{
 
                     //数组赋值
                     $array[] = [
-                        'first_school_name' => isset($first_school_name) ? $first_school_name : '',
-                        'two_school_name' => isset($two_school_name) ? $two_school_name : '',
-                        'three_school_name' => isset($three_school_name) ? $three_school_name : '',
-                        'payment_performance' => $payment_performance,
-                        'actual_receipt' => $actual_receipt,   //实际到款
-                        'tax_deduction_ratio' => $tax_deduction_ratio,
-                        'after_tax_amount' => $after_tax_amount,
-                        'order_number' => $order_number,
-                        'sum_cost' => $sum_cost,
-                        'commission_rebate' => $commission_rebate,
-                        'commission_money' => $commission_money,
-                        'bond' => $bond,
-                        'agent_margin' => $agent_margin,
-                        'first_out_of_amount' => isset($first_out_of_amount) ? $first_out_of_amount : '',
-                        'first_out_of_money' => isset($first_out_of_money) ? $first_out_of_money : '',
-                        'second_out_of_amount' => isset($second_out_of_amount) ? $second_out_of_amount : '',
-                        'second_out_of_money' => isset($second_out_of_money) ? $second_out_of_money : '',
-                        'returnschoolprice' => $returnschoolprice,
-                        'actual_commission_refund' => $actual_commission_refund
+                        'first_school_name' => isset($first_school_name) ? $first_school_name : '', //一级分校
+                        'two_school_name' => isset($two_school_name) ? $two_school_name : '', //二级分校
+                        'three_school_name' => isset($three_school_name) ? $three_school_name : '',//三级分校
+                        'payment_performance' => $payment_performance,//到款金额
+                        'actual_receipt' => $actual_receipt,   //扣税比例
+                        'after_tax_amount' => $after_tax_amount,//税后金额
+                        'order_number' => $order_number,//订单数
+                        'sum_cost' => $sum_cost,//成本
+                        'tax_deduction_ratio' => $tax_deduction_ratio,//实际到款
+                        'commission_rebate' => $commission_rebate,//返佣比例
+                        'commission_money' => $commission_money,//返佣金额
+                        'bond' => $bond,//保证金
+                        'agent_margin' => $agent_margin,//代理保证金
+                        'first_out_of_amount' => isset($first_out_of_amount) ? $first_out_of_amount : '',//一级抽离比例
+                        'first_out_of_money' => isset($first_out_of_money) ? $first_out_of_money : '',//一级抽离金额
+                        'second_out_of_amount' => isset($second_out_of_amount) ? $second_out_of_amount : '',//二级抽离比例
+                        'second_out_of_money' => isset($second_out_of_money) ? $second_out_of_money : '',//二级抽离金额
+                        'returnschoolprice' => $returnschoolprice,//课程金额退费
+                        'actual_commission_refund' => $actual_commission_refund//实际返佣
                     ];
                 }
                 return collect($array);
