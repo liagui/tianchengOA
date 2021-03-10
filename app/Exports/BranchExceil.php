@@ -385,11 +385,11 @@ class BranchExceil implements FromCollection, WithHeadings{
                         'two_school_name' => isset($two_school_name) ? $two_school_name : '', //二级分校
                         'three_school_name' => isset($three_school_name) ? $three_school_name : '',//三级分校
                         'payment_performance' => $payment_performance,//到款金额
-                        'actual_receipt' => $actual_receipt,   //扣税比例
+                        'tax_deduction_ratio' => $tax_deduction_ratio,//扣税比例
                         'after_tax_amount' => $after_tax_amount,//税后金额
                         'order_number' => $order_number,//订单数
                         'sum_cost' => $sum_cost,//成本
-                        'tax_deduction_ratio' => $tax_deduction_ratio,//实际到款
+                        'actual_receipt' => $actual_receipt,   //实际到款
                         'commission_rebate' => $commission_rebate,//返佣比例
                         'commission_money' => $commission_money,//返佣金额
                         'bond' => $bond,//保证金
