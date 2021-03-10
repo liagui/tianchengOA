@@ -37,9 +37,9 @@ class BranchExceil implements FromCollection, WithHeadings{
         }
 
         if (!empty($body['search_time'])) {
-            $create_time = json_decode($body['search_time'], true);
-            $state_time = $create_time[0] . " 00:00:00";
-            $end_time = $create_time[1] . " 23:59:59";
+//            $create_time = json_decode($body['search_time'], true);
+            $state_time = $body['search_time'][0] . " 00:00:00";
+            $end_time = $body['search_time'][1] . " 23:59:59";
             // 获取数量
             $count1 = DB::table('school')->selectRaw("count(school.id) as t_count")
                 ->leftjoin("pay_order_inside", function ($join) {
