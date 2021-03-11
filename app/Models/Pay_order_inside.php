@@ -4037,10 +4037,26 @@ class Pay_order_inside extends Model
         $offset   = ($page - 1) * $pagesize;
 
         //学校id
-        $school_id=[];
-        if(isset($body['school_id'])){
-            $school_id[0]=$body['school_id'];
-//            $school_id = School::select('id')->where('school_name','like','%'.$body['school_name'].'%')->where('is_del',0)->get();
+        $school_id = [];
+        if(isset($body['school_id']) || !empty($body['school_id'])){
+            $bodyschool = School::where(['id'=>$body['school_id'],'is_del'=>0,'is_open'=>0,'look_all_flag'=>1])->first();
+            if(!empty($bodyschool)){
+                array_push($school_id,$bodyschool['id']);
+                //查询学校，将此学校的二级和三级都查询出来
+                $schoolarr1 = School::select('id')->where(['parent_id'=>$body['school_id'],'is_del'=>0,'is_open'=>0,'look_all_flag'=>1])->get()->toArray();
+                if(!empty($schoolarr1)){
+                    foreach ($schoolarr1 as $k=>$v){
+                        array_push($school_id,$v['id']);
+                        //查询三级
+                        $schoolarr2 = School::select('id')->where(['parent_id'=>$v['id'],'is_del'=>0,'is_open'=>0,'look_all_flag'=>1])->get()->toArray();
+                        if(!empty($schoolarr2)){
+                            foreach ($schoolarr2 as $ks=>$vs){
+                                array_push($school_id,$vs['id']);
+                            }
+                        }
+                    }
+                }
+            }
         }
 
         if(!empty($body['search_time'])) {
