@@ -4458,11 +4458,17 @@ class Pay_order_inside extends Model
                     $array[$k]['first_out_of_amount'] = sprintf("%01.2f", $v['first_out_of_amount']).'%';//抽离比例（一级）
                     $array[$k]['second_out_of_amount'] = sprintf("%01.2f", $v['second_out_of_amount']).'%';//抽离比例（二级）
                     if(!empty($array[$k]['first_school_name'])){
-                        $temp = $array[$k];
-                        unset($array[$k]);
-                        array_unshift($array,$temp);
+                        $array[$k]['level'] = 1;
+                    }
+                    if(!empty($array[$k]['two_school_name'])){
+                        $array[$k]['level'] = 2;
+                    }
+                    if(!empty($array[$k]['three_school_name'])){
+                        $array[$k]['level'] = 3;
                     }
                 }
+                $last_names = array_column($array,'level');
+                array_multisort($last_names,SORT_ASC,$array);
                 return ['code' => 200, 'msg' => '获取列表成功', 'data' => ['list' => $array, 'total' => $count, 'pagesize' => $pagesize, 'page' => $page]];
             }
         }
