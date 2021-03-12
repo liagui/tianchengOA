@@ -4453,6 +4453,13 @@ class Pay_order_inside extends Model
                         'returnschoolprice' => $returnschoolprice
                     ];
                 }
+                foreach($array as $k => $v){
+                    if(!empty($array[$k]['first_school_name'])){
+                        $temp = $array[$k];
+                        unset($array[$k]);
+                        array_unshift($array,$temp);
+                    }
+                }
                 return ['code' => 200, 'msg' => '获取列表成功', 'data' => ['list' => $array, 'total' => $count, 'pagesize' => $pagesize, 'page' => $page]];
             }
         }
