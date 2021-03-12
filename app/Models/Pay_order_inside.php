@@ -4454,6 +4454,9 @@ class Pay_order_inside extends Model
                     ];
                 }
                 foreach($array as $k => $v){
+                    $array[$k]['commission_rebate'] = sprintf("%01.2f", $v['commission_rebate']).'%';//返佣比例
+                    $array[$k]['first_out_of_amount'] = sprintf("%01.2f", $v['first_out_of_amount']).'%';//抽离比例（一级）
+                    $array[$k]['second_out_of_amount'] = sprintf("%01.2f", $v['second_out_of_amount']).'%';//抽离比例（二级）
                     if(!empty($array[$k]['first_school_name'])){
                         $temp = $array[$k];
                         unset($array[$k]);
