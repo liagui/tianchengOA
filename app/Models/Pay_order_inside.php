@@ -200,6 +200,7 @@ class Pay_order_inside extends Model
         }
         if(!empty($res)){
             foreach ($res as $k=>&$v){
+                $v['pay_voucher'] = explode(",",$v['pay_voucher']);
                 //查学校
                 if(!isset($v['school_id']) || empty($v['school_id']) || $v['school_id'] == 0){
                     $v['school_name'] = '';
@@ -392,6 +393,13 @@ class Pay_order_inside extends Model
         }
         if(!isset($data['pay_voucher']) || empty($data['pay_voucher'])){
             return ['code' => 201 , 'msg' => '未上传支付凭证'];
+        }
+
+        if(isset($data['pay_voucher']) && !empty($data['pay_voucher'])){
+            $credentials = json_decode($data['pay_voucher'],true);
+            $data['pay_voucher'] = implode(',',$credentials);
+        }else{
+            $data['pay_voucher'] = '';
         }
         $chaxunm = [];
         unset($data['/admin/order/handOrder']);
