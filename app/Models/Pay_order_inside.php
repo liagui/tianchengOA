@@ -4206,6 +4206,7 @@ class Pay_order_inside extends Model
                 $onleschool = array_column($list,'school_id');
                 //查看所有一级分校是否都在数组中，没有就从新添加进去
                 foreach ($list as $onlek=>$onlev){
+                    $onlev = (array)$onlev;
                     //不是一级就查询上级，然后判断是否在数组中
                     if($onlev['level'] != 1){
                         if(!in_array($onlev['parent_id'],$onleschool)){
