@@ -4498,11 +4498,11 @@ class Pay_order_inside extends Model
                         //三级分校的二级抽离比例=后台分校管理中二级抽离比例
                         //三级分校的二级抽离金额=三级分校的二级抽比例*实际到款
                         //三级分校的实际返佣=三级分校的返佣金额-三级分校的保证金-三级分校退费*三级分校返佣比例
-                        $first_out_of_amount = $v['one_extraction_ratio'] && !empty($v['one_extraction_ratio']) ? $v['one_extraction_ratio'] : '';
+                        $first_out_of_amount = $v['one_extraction_ratio'] && !empty($v['one_extraction_ratio']) ? (int)$v['one_extraction_ratio'] : 0;
                         $first_out_of_money = sprintf("%01.2f", $actual_receipt * ($first_out_of_amount / 100));
 
                         //二级抽离比例
-                        $second_out_of_amount = $v['two_extraction_ratio'] && !empty($v['two_extraction_ratio']) ? $v['two_extraction_ratio'] : '';
+                        $second_out_of_amount = $v['two_extraction_ratio'] && !empty($v['two_extraction_ratio']) ? $v['two_extraction_ratio'] : 0;
                         $second_out_of_money = sprintf("%01.2f", $actual_receipt * ($second_out_of_amount / 100));
                         //三级分校无代理保证金
                         $agent_margin = '';
