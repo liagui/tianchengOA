@@ -4561,7 +4561,7 @@ class Pay_order_inside extends Model
                 }
                 $last_names = array_column($array,'level');
                 array_multisort($last_names,SORT_ASC,$array);
-                return ['code' => 200, 'msg' => '获取列表成功', 'data' => ['list' => $array, 'total' => $count, 'pagesize' => $pagesize, 'page' => $page]];
+                return ['code' => 200, 'msg' => '获取列表成功', 'data' => ['list' => $array, 'total' => 1, 'pagesize' => $pagesize, 'page' => $page]];
             }
         }
         return ['code' => 200 , 'msg' => '获取列表成功' , 'data' => ['list' => [] , 'total' => 0 , 'pagesize' => $pagesize , 'page' => $page]];
