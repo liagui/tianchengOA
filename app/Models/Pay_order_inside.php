@@ -4065,40 +4065,41 @@ class Pay_order_inside extends Model
                     }
                 }
             }
-        }else{
-            $schoolarr = School::where(['is_open'=>0,'is_del'=>0])->get()->toArray();
-            $school_id = array_column($schoolarr,'id');
         }
+//        else{
+//            $schoolarr = School::where(['is_open'=>0,'is_del'=>0])->get()->toArray();
+//            $school_id = array_column($schoolarr,'id');
+//        }
         if(!empty($body['search_time'])) {
             $create_time = json_decode($body['search_time'], true);
             $state_time = $create_time[0] . " 00:00:00";
             $end_time = $create_time[1] . " 23:59:59";
             // 获取数量
-            $count = School::where(['is_open'=>0,'is_del'=>0])->count();
-//            $count1 = DB::table('school')->selectRaw("count(school.id) as t_count")
-//                ->leftjoin("pay_order_inside", function ($join) {
-//                    $join->on('school.id', '=', 'pay_order_inside.school_id');
-//                })
-//                ->where('school.is_del', 0)->where(function ($query) use ($body, $school_id, $state_time, $end_time) {
-//                    //判断分校id是否为空和合法
-//                    if (!empty($school_id)) {
-//                        $query->whereIn('school.id', $school_id);
-//                    }
-//                    //获取日期
-//                    $query->whereBetween('pay_order_inside.comfirm_time', [$state_time, $end_time]);
-//                })->groupBy(DB::raw('school.id'))->get()->count();
-//            $count2 = DB::table('school')->selectRaw("count(school.id) as t_count")
-//                ->leftjoin("refund_order", function ($join) {
-//                    $join->on('school.id', '=', 'refund_order.school_id');
-//                })->where('refund_order.refund_plan',2)->where('school.is_del', 0)->where(function ($query) use ($body, $school_id, $state_time, $end_time) {
-//                    //判断分校id是否为空和合法
-//                    if (!empty($school_id)) {
-//                        $query->whereIn('school.id', $school_id);
-//                    }
-//                    //获取日期
-//                    $query->whereBetween('refund_order.refund_time', [$state_time, $end_time]);
-//                })->groupBy(DB::raw('school.id'))->get()->count();
-//            $count = $count1 + $count2;
+//            $count = School::where(['is_open'=>0,'is_del'=>0])->count();
+            $count1 = DB::table('school')->selectRaw("count(school.id) as t_count")
+                ->leftjoin("pay_order_inside", function ($join) {
+                    $join->on('school.id', '=', 'pay_order_inside.school_id');
+                })
+                ->where('school.is_del', 0)->where(function ($query) use ($body, $school_id, $state_time, $end_time) {
+                    //判断分校id是否为空和合法
+                    if (!empty($school_id)) {
+                        $query->whereIn('school.id', $school_id);
+                    }
+                    //获取日期
+                    $query->whereBetween('pay_order_inside.comfirm_time', [$state_time, $end_time]);
+                })->groupBy(DB::raw('school.id'))->get()->count();
+            $count2 = DB::table('school')->selectRaw("count(school.id) as t_count")
+                ->leftjoin("refund_order", function ($join) {
+                    $join->on('school.id', '=', 'refund_order.school_id');
+                })->where('refund_order.refund_plan',2)->where('school.is_del', 0)->where(function ($query) use ($body, $school_id, $state_time, $end_time) {
+                    //判断分校id是否为空和合法
+                    if (!empty($school_id)) {
+                        $query->whereIn('school.id', $school_id);
+                    }
+                    //获取日期
+                    $query->whereBetween('refund_order.refund_time', [$state_time, $end_time]);
+                })->groupBy(DB::raw('school.id'))->get()->count();
+            $count = $count1 + $count2;
             // 判断数量是否大于0
             if ($count >= 0) {
                 //新数组赋值
@@ -4561,7 +4562,7 @@ class Pay_order_inside extends Model
                 }
                 $last_names = array_column($array,'level');
                 array_multisort($last_names,SORT_ASC,$array);
-                return ['code' => 200, 'msg' => '获取列表成功', 'data' => ['list' => $array, 'total' => 1, 'pagesize' => $pagesize, 'page' => $page]];
+                return ['code' => 200, 'msg' => '获取列表成功', 'data' => ['list' => $array, 'total' => $count, 'pagesize' => $pagesize, 'page' => $page]];
             }
         }
         return ['code' => 200 , 'msg' => '获取列表成功' , 'data' => ['list' => [] , 'total' => 0 , 'pagesize' => $pagesize , 'page' => $page]];
