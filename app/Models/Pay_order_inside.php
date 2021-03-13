@@ -4179,39 +4179,34 @@ class Pay_order_inside extends Model
                             }
                         })->orderByDesc('school.create_time')->groupBy(DB::raw('school.id'))->offset($offset)->limit($pagesize)->get()->toArray();
                 }
-                //展示所有的学校
-
-
-
-
                 //如果此学校没有数据，则都使0
-//                $idarr = array_column($list,'school_id');
-//                foreach ($school_id as $ks=>$vs){
-//                    if(!in_array($vs,$idarr)){
-//                        $newschoolemptyOne = DB::table('school')->selectRaw('
-//                           any_value(school.id) as school_id ,
-//                           any_value(count(school.id)) as t_count ,
-//                           any_value(school.one_extraction_ratio) as one_extraction_ratio ,
-//                           any_value(school.two_extraction_ratio) as two_extraction_ratio ,
-//                           any_value(school.school_name) as school_name ,
-//                           any_value(school.level) as level ,
-//                           any_value(school.parent_id) as parent_id ,
-//                           any_value(school.tax_point) as tax_point ,
-//                           any_value(school.commission) as commission ,
-//                           any_value(school.deposit) as deposit,
-//                           any_value(0) as after_tax_amount,
-//                           any_value(0) as sum_Price,
-//                           any_value(0) as pay_price,
-//                           any_value(0) as agent_margin,
-//                           any_value(0) as first_out_of_amount,
-//                           any_value(0) as second_out_of_amount,
-//                           any_value(0) as education_id,
-//                           any_value(0) as major_id,
-//                           any_value(0) as sign_Price'
-//                        )->where('id',$vs)->get()->toArray();
-//                        $list = array_merge($list,$newschoolemptyOne);
-//                    }
-//                }
+                $idarr = array_column($list,'school_id');
+                foreach ($school_id as $ks=>$vs){
+                    if(!in_array($vs,$idarr)){
+                        $newschoolemptyOne = DB::table('school')->selectRaw('
+                           any_value(school.id) as school_id ,
+                           any_value(count(school.id)) as t_count ,
+                           any_value(school.one_extraction_ratio) as one_extraction_ratio ,
+                           any_value(school.two_extraction_ratio) as two_extraction_ratio ,
+                           any_value(school.school_name) as school_name ,
+                           any_value(school.level) as level ,
+                           any_value(school.parent_id) as parent_id ,
+                           any_value(school.tax_point) as tax_point ,
+                           any_value(school.commission) as commission ,
+                           any_value(school.deposit) as deposit,
+                           any_value(0) as after_tax_amount,
+                           any_value(0) as sum_Price,
+                           any_value(0) as pay_price,
+                           any_value(0) as agent_margin,
+                           any_value(0) as first_out_of_amount,
+                           any_value(0) as second_out_of_amount,
+                           any_value(0) as education_id,
+                           any_value(0) as major_id,
+                           any_value(0) as sign_Price'
+                        )->where('id',$vs)->get()->toArray();
+                        $list = array_merge($list,$newschoolemptyOne);
+                    }
+                }
 //                $onleschool = array_column($list,'school_id');
 //                //查看三个级别分校是否都在里面
 //                $xinschoolarr=[];
