@@ -4045,7 +4045,7 @@ class Pay_order_inside extends Model
         $offset   = ($page - 1) * $pagesize;
 
         //学校id
-            $school_id = [];
+        $school_id = [];
         if(isset($body['school_id']) || !empty($body['school_id'])){
             $bodyschool = School::where(['id'=>$body['school_id'],'is_del'=>0,'is_open'=>0,'look_all_flag'=>1])->first();
             if(!empty($bodyschool)){
@@ -4065,36 +4065,40 @@ class Pay_order_inside extends Model
                     }
                 }
             }
+        }else{
+            $schoolarr = School::where(['is_open'=>0,'is_del'=>0])->get()->toArray();
+            $school_id = array_column($schoolarr,'id');
         }
         if(!empty($body['search_time'])) {
             $create_time = json_decode($body['search_time'], true);
             $state_time = $create_time[0] . " 00:00:00";
             $end_time = $create_time[1] . " 23:59:59";
             // 获取数量
-            $count1 = DB::table('school')->selectRaw("count(school.id) as t_count")
-                ->leftjoin("pay_order_inside", function ($join) {
-                    $join->on('school.id', '=', 'pay_order_inside.school_id');
-                })
-                ->where('school.is_del', 0)->where(function ($query) use ($body, $school_id, $state_time, $end_time) {
-                    //判断分校id是否为空和合法
-                    if (!empty($school_id)) {
-                        $query->whereIn('school.id', $school_id);
-                    }
-                    //获取日期
-                    $query->whereBetween('pay_order_inside.comfirm_time', [$state_time, $end_time]);
-                })->groupBy(DB::raw('school.id'))->get()->count();
-            $count2 = DB::table('school')->selectRaw("count(school.id) as t_count")
-                ->leftjoin("refund_order", function ($join) {
-                    $join->on('school.id', '=', 'refund_order.school_id');
-                })->where('refund_order.refund_plan',2)->where('school.is_del', 0)->where(function ($query) use ($body, $school_id, $state_time, $end_time) {
-                    //判断分校id是否为空和合法
-                    if (!empty($school_id)) {
-                        $query->whereIn('school.id', $school_id);
-                    }
-                    //获取日期
-                    $query->whereBetween('refund_order.refund_time', [$state_time, $end_time]);
-                })->groupBy(DB::raw('school.id'))->get()->count();
-            $count = $count1 + $count2;
+            $count = School::where(['is_open'=>0,'is_del'=>0])->count();
+//            $count1 = DB::table('school')->selectRaw("count(school.id) as t_count")
+//                ->leftjoin("pay_order_inside", function ($join) {
+//                    $join->on('school.id', '=', 'pay_order_inside.school_id');
+//                })
+//                ->where('school.is_del', 0)->where(function ($query) use ($body, $school_id, $state_time, $end_time) {
+//                    //判断分校id是否为空和合法
+//                    if (!empty($school_id)) {
+//                        $query->whereIn('school.id', $school_id);
+//                    }
+//                    //获取日期
+//                    $query->whereBetween('pay_order_inside.comfirm_time', [$state_time, $end_time]);
+//                })->groupBy(DB::raw('school.id'))->get()->count();
+//            $count2 = DB::table('school')->selectRaw("count(school.id) as t_count")
+//                ->leftjoin("refund_order", function ($join) {
+//                    $join->on('school.id', '=', 'refund_order.school_id');
+//                })->where('refund_order.refund_plan',2)->where('school.is_del', 0)->where(function ($query) use ($body, $school_id, $state_time, $end_time) {
+//                    //判断分校id是否为空和合法
+//                    if (!empty($school_id)) {
+//                        $query->whereIn('school.id', $school_id);
+//                    }
+//                    //获取日期
+//                    $query->whereBetween('refund_order.refund_time', [$state_time, $end_time]);
+//                })->groupBy(DB::raw('school.id'))->get()->count();
+//            $count = $count1 + $count2;
             // 判断数量是否大于0
             if ($count >= 0) {
                 //新数组赋值
@@ -4175,66 +4179,116 @@ class Pay_order_inside extends Model
                             }
                         })->orderByDesc('school.create_time')->groupBy(DB::raw('school.id'))->offset($offset)->limit($pagesize)->get()->toArray();
                 }
+                //展示所有的学校
+
+
+
+
                 //如果此学校没有数据，则都使0
-                $idarr = array_column($list,'school_id');
-                foreach ($school_id as $ks=>$vs){
-                    if(!in_array($vs,$idarr)){
-                        $newschoolemptyOne = DB::table('school')->selectRaw('
-                           any_value(school.id) as school_id ,
-                           any_value(count(school.id)) as t_count ,
-                           any_value(school.one_extraction_ratio) as one_extraction_ratio ,
-                           any_value(school.two_extraction_ratio) as two_extraction_ratio ,
-                           any_value(school.school_name) as school_name ,
-                           any_value(school.level) as level ,
-                           any_value(school.parent_id) as parent_id ,
-                           any_value(school.tax_point) as tax_point ,
-                           any_value(school.commission) as commission ,
-                           any_value(school.deposit) as deposit,
-                           any_value(0) as after_tax_amount,
-                           any_value(0) as sum_Price,
-                           any_value(0) as pay_price,
-                           any_value(0) as agent_margin,
-                           any_value(0) as first_out_of_amount,
-                           any_value(0) as second_out_of_amount,
-                           any_value(0) as education_id,
-                           any_value(0) as major_id,
-                           any_value(0) as sign_Price'
-                        )->where('id',$vs)->get()->toArray();
-                        $list = array_merge($list,$newschoolemptyOne);
-                    }
-                }
-                $onleschool = array_column($list,'school_id');
-                //查看所有一级分校是否都在数组中，没有就从新添加进去
-                foreach ($list as $onlek=>$onlev){
-                    $onlev = (array)$onlev;
-                    //不是一级就查询上级，然后判断是否在数组中
-                    if($onlev['level'] != 1){
-                        if(!in_array($onlev['parent_id'],$onleschool)){
-                            $newschoollevelOne = DB::table('school')->selectRaw('
-                           any_value(school.id) as school_id ,
-                           any_value(count(school.id)) as t_count ,
-                           any_value(school.one_extraction_ratio) as one_extraction_ratio ,
-                           any_value(school.two_extraction_ratio) as two_extraction_ratio ,
-                           any_value(school.school_name) as school_name ,
-                           any_value(school.level) as level ,
-                           any_value(school.parent_id) as parent_id ,
-                           any_value(school.tax_point) as tax_point ,
-                           any_value(school.commission) as commission ,
-                           any_value(school.deposit) as deposit,
-                           any_value(0) as after_tax_amount,
-                           any_value(0) as sum_Price,
-                           any_value(0) as pay_price,
-                           any_value(0) as agent_margin,
-                           any_value(0) as first_out_of_amount,
-                           any_value(0) as second_out_of_amount,
-                           any_value(0) as education_id,
-                           any_value(0) as major_id,
-                           any_value(0) as sign_Price'
-                            )->where('id',$onlev['parent_id'])->get()->toArray();
-                            $list = array_merge($list,$newschoollevelOne);
-                        }
-                    }
-                }
+//                $idarr = array_column($list,'school_id');
+//                foreach ($school_id as $ks=>$vs){
+//                    if(!in_array($vs,$idarr)){
+//                        $newschoolemptyOne = DB::table('school')->selectRaw('
+//                           any_value(school.id) as school_id ,
+//                           any_value(count(school.id)) as t_count ,
+//                           any_value(school.one_extraction_ratio) as one_extraction_ratio ,
+//                           any_value(school.two_extraction_ratio) as two_extraction_ratio ,
+//                           any_value(school.school_name) as school_name ,
+//                           any_value(school.level) as level ,
+//                           any_value(school.parent_id) as parent_id ,
+//                           any_value(school.tax_point) as tax_point ,
+//                           any_value(school.commission) as commission ,
+//                           any_value(school.deposit) as deposit,
+//                           any_value(0) as after_tax_amount,
+//                           any_value(0) as sum_Price,
+//                           any_value(0) as pay_price,
+//                           any_value(0) as agent_margin,
+//                           any_value(0) as first_out_of_amount,
+//                           any_value(0) as second_out_of_amount,
+//                           any_value(0) as education_id,
+//                           any_value(0) as major_id,
+//                           any_value(0) as sign_Price'
+//                        )->where('id',$vs)->get()->toArray();
+//                        $list = array_merge($list,$newschoolemptyOne);
+//                    }
+//                }
+//                $onleschool = array_column($list,'school_id');
+//                //查看三个级别分校是否都在里面
+//                $xinschoolarr=[];
+//                foreach ($list as $onlek=>$onlev){
+//                    $onlev = (array)$onlev;
+//                    //一级的话展示所有下级
+//                    if($onlev['level'] == 1) {
+//                        $erjischool = School::where(['parent_id'=>$onlev['id'],'is_open'=>0,'is_del'=>0])->get()->toArray();
+//                        if(!empty($erjischool)){
+//                           foreach ($erjischool as $erjik=>$erjiv){
+//                                if(!in_array($erjiv['id'],$onleschool)){
+//                                    array_push($xinschoolarr,$erjiv['id']);
+//                                }
+//                               $sanjischool = School::where(['parent_id'=>$erjiv['id'],'is_open'=>0,'is_del'=>0])->get()->toArray();
+//                               if(!empty($sanjischool)){
+//                                   foreach ($sanjischool as $sanjik=>$sanjiv){
+//                                       if(!in_array($sanjiv['id'],$onleschool)){
+//                                           array_push($xinschoolarr,$sanjiv['id']);
+//                                       }
+//                                   }
+//                               }
+//                           }
+//                        }
+//                    }else if($onlev['level'] == 2){
+//                        //先查询上级  再查询下级
+//                        $yijischool = School::where(['id'=>$onlev['parent_id'],'is_open'=>0,'is_del'=>0])->first();
+//                        if(!in_array($yijischool['id'],$onleschool)){
+//                            array_push($xinschoolarr,$yijischool['id']);
+//                        }
+//                        $sanjischool = School::where(['parent_id'=>$onlev['id'],'is_open'=>0,'is_del'=>0])->get()->toArray();
+//                        if(!empty($sanjischool)){
+//                            foreach ($sanjischool as $sanjik=>$sanjiv){
+//                                if(!in_array($sanjiv['id'],$sanjischool)){
+//                                    array_push($xinschoolarr,$sanjiv['id']);
+//                                }
+//                            }
+//                        }
+//                    }else if($onlev['level'] == 3){
+//                        //查询上级  和上上级
+//                        $erjischool = School::where(['id'=>$onlev['parent_id'],'is_open'=>0,'is_del'=>0])->get()->toArray();
+//                        foreach ($erjischool as $erjik=>$erjiv){
+//                            if(!in_array($erjischool['id'],$onleschool)){
+//                                array_push($xinschoolarr,$erjischool['id']);
+//                            }
+//                        }
+//                    }
+//                }
+
+
+
+
+//                        if(!in_array($onlev['parent_id'],$onleschool)){
+//                            $newschoollevelOne = DB::table('school')->selectRaw('
+//                           any_value(school.id) as school_id ,
+//                           any_value(count(school.id)) as t_count ,
+//                           any_value(school.one_extraction_ratio) as one_extraction_ratio ,
+//                           any_value(school.two_extraction_ratio) as two_extraction_ratio ,
+//                           any_value(school.school_name) as school_name ,
+//                           any_value(school.level) as level ,
+//                           any_value(school.parent_id) as parent_id ,
+//                           any_value(school.tax_point) as tax_point ,
+//                           any_value(school.commission) as commission ,
+//                           any_value(school.deposit) as deposit,
+//                           any_value(0) as after_tax_amount,
+//                           any_value(0) as sum_Price,
+//                           any_value(0) as pay_price,
+//                           any_value(0) as agent_margin,
+//                           any_value(0) as first_out_of_amount,
+//                           any_value(0) as second_out_of_amount,
+//                           any_value(0) as education_id,
+//                           any_value(0) as major_id,
+//                           any_value(0) as sign_Price'
+//                            )->where('id',$onlev['parent_id'])->get()->toArray();
+//                            $list = array_merge($list,$newschoollevelOne);
+//                        }
+//                    }
+//                }
                 //循环获取相关信息
                 foreach ($list as $k => $v) {
 
