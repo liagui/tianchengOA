@@ -4200,6 +4200,38 @@ class Pay_order_inside extends Model
                         $list = array_merge($list,$newschoolemptyOne);
                     }
                 }
+                $onleschool = array_column($list,'school_id');
+                //查看所有一级分校是否都在数组中，没有就从新添加进去
+                foreach ($list as $onlek=>$onlev){
+                    $onlev = (array)$onlev;
+                    //不是一级就查询上级，然后判断是否在数组中
+                    if($onlev['level'] != 1){
+                        if(!in_array($onlev['parent_id'],$onleschool)){
+                            $newschoollevelOne = DB::table('school')->selectRaw('
+                           any_value(school.id) as school_id ,
+                           any_value(count(school.id)) as t_count ,
+                           any_value(school.one_extraction_ratio) as one_extraction_ratio ,
+                           any_value(school.two_extraction_ratio) as two_extraction_ratio ,
+                           any_value(school.school_name) as school_name ,
+                           any_value(school.level) as level ,
+                           any_value(school.parent_id) as parent_id ,
+                           any_value(school.tax_point) as tax_point ,
+                           any_value(school.commission) as commission ,
+                           any_value(school.deposit) as deposit,
+                           any_value(0) as after_tax_amount,
+                           any_value(0) as sum_Price,
+                           any_value(0) as pay_price,
+                           any_value(0) as agent_margin,
+                           any_value(0) as first_out_of_amount,
+                           any_value(0) as second_out_of_amount,
+                           any_value(0) as education_id,
+                           any_value(0) as major_id,
+                           any_value(0) as sign_Price'
+                            )->where('id',$onlev['parent_id'])->get()->toArray();
+                            $list = array_merge($list,$newschoollevelOne);
+                        }
+                    }
+                }
                 //循环获取相关信息
                 foreach ($list as $k => $v) {
 
