@@ -195,26 +195,26 @@ class SureOrderExceil implements FromCollection, WithHeadings {
             }
         }
         $tuyadan = [];
-        foreach ($order as $k=>$v){
+        foreach ($order as $ks=>$vs){
             $newtuyadan = [
-                'order_number' => ' '.$v['order_no'],
-                'create_time' => $v['create_time'],
-                'name' => $v['name'],
-                'mobile' => $v['mobile'],
-                'school_name' => $v['school_name'],
-                'project_name' => $v['project_name'],
-                'subject_name' => $v['subject_name'],
-                'course_name' => $v['course_name'],
-                'pay_type_text' => $v['pay_type_text'],
-                'course_Price' => $v['course_Price'],
-                'sign_Price' => $v['sign_Price'],
-                'pay_price' => $v['pay_price'],
-                'return_visit_text' => $v['return_visit_text'],
-                'classes_text' => $v['classes_text'],
-                'pay_time' => $v['pay_time'],
-                'confirm_order_type_text' => $v['confirm_order_type_text'],
-                'first_pay_text' => $v['first_pay_text'],
-                'pay_voucher' => $v['pay_voucher'],
+                'order_number' => ' '.$vs['order_no'],
+                'create_time' => $vs['create_time'],
+                'name' => $vs['name'],
+                'mobile' => $vs['mobile'],
+                'school_name' => $vs['school_name'],
+                'project_name' => $vs['project_name'],
+                'subject_name' => $vs['subject_name'],
+                'course_name' => $vs['course_name'],
+                'pay_type_text' => $vs['pay_type_text'],
+                'course_Price' => $vs['course_Price'],
+                'sign_Price' => $vs['sign_Price'],
+                'pay_price' => $vs['pay_price'],
+                'return_visit_text' => $vs['return_visit_text'],
+                'classes_text' => $vs['classes_text'],
+                'pay_time' => $vs['pay_time'],
+                'confirm_order_type_text' => $vs['confirm_order_type_text'],
+                'first_pay_text' => isset($vs['first_pay_text'])?$vs['first_pay_text']:'',
+                'pay_voucher' => $vs['pay_voucher'],
             ];
             $tuyadan[]=$newtuyadan;
         }
