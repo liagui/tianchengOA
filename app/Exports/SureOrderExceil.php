@@ -62,6 +62,7 @@ class SureOrderExceil implements FromCollection, WithHeadings {
         if(isset($data['course_id'])){
             $where['course_id'] = $data['course_id'];
         }
+
         $order = Pay_order_inside::where(function($query) use ($data,$schoolarr,$school_id,$paytype) {
             if(isset($data['order_no']) && !empty($data['order_no'])){
                 $query->where('order_no',$data['order_no'])
