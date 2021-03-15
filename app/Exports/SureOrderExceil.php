@@ -64,7 +64,7 @@ class SureOrderExceil implements FromCollection, WithHeadings {
         ->get()->toArray();
         if(!empty($order)){
             foreach ($order as $k=>&$v){
-                if($v['pay_type'] <= 4){
+                if($v['pay_type'] <= 9){
                     if(!empty($v['offline_id'])){
                         $chnnel = Channel::where(['id'=>$v['offline_id']])->first();
                         if($v['pay_type'] == 1){
@@ -75,6 +75,10 @@ class SureOrderExceil implements FromCollection, WithHeadings {
                             $v['pay_type_text'] = $chnnel['channel_name'].'-汇聚-微信';
                         }else if ($v['pay_type'] == 4){
                             $v['pay_type_text'] =$chnnel['channel_name'].'-汇聚-支付宝';
+                        }else if ($v['pay_type'] == 5 ||$v['pay_type'] == 8||$v['pay_type'] == 9){
+                            $v['pay_type_text'] =$chnnel['channel_name'].'-银联';
+                        }else if ($v['pay_type'] == 6){
+                            $v['pay_type_text'] =$chnnel['channel_name'].'-汇付';
                         }
                     }else{
                         $v['pay_type_text']='';
@@ -82,11 +86,11 @@ class SureOrderExceil implements FromCollection, WithHeadings {
                 }else{
                     if(!empty($v['offline_id'])){
                         $offline = OfflinePay::where(['id'=>$v['offline_id']])->first();
-                        if ($v['pay_type'] == 5){
+                        if ($v['pay_type'] == 10){
                             $v['pay_type_text'] = '银行卡支付-'.$offline['account_name'];
-                        }else if ($v['pay_type'] == 6){
+                        }else if ($v['pay_type'] == 11){
                             $v['pay_type_text'] = '对公转账-'.$offline['account_name'];
-                        }else if ($v['pay_type'] == 7){
+                        }else if ($v['pay_type'] == 12){
                             $v['pay_type_text'] = '支付宝账号对公-'.$offline['account_name'];
                         }
                     }else{
@@ -128,12 +132,18 @@ class SureOrderExceil implements FromCollection, WithHeadings {
                 }else if($v['first_pay'] == 4){
                     $v['first_pay_text'] = '最后一笔尾款';
                 }
-                if($v['confirm_status'] == 0){
-                    $v['confirm_status_text'] = '未确认';
+                if(isset($v['status']) && strlen($v['status']) >0 && $v['status'] == 0){
+                    $v['confirm_status_text'] = '待提交';
+                }else if($v['confirm_status'] == 0){
+                    $v['confirm_status_text'] = '待总校财务确认';
                 }else if($v['confirm_status'] == 1){
-                    $v['confirm_status_text'] = '确认';
+                    $v['confirm_status_text'] = '待总校确认';
                 }else if($v['confirm_status'] == 2){
-                    $v['confirm_status_text'] = '驳回';
+                    $v['confirm_status_text'] = '已确认';
+                }else if($v['confirm_status'] == 3){
+                    $v['confirm_status_text'] = '被财务驳回';
+                }else if($v['confirm_status'] == 4){
+                    $v['confirm_status_text'] = '被总校驳回';
                 }
                 //查学校
                 $school = School::where(['id'=>$v['school_id']])->first();
