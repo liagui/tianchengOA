@@ -213,7 +213,7 @@ class SureOrderExceil implements FromCollection, WithHeadings {
                 'classes_text' => $v['classes_text'],
                 'pay_time' => $v['pay_time'],
                 'confirm_order_type_text' => $v['confirm_order_type_text'],
-                'first_pay_text' => $v['first_pay_text'],
+                'first_pay_text' => isset($v['first_pay_text'])?$v['first_pay_text']:'',
                 'pay_voucher' => $v['pay_voucher'],
             ];
             $tuyadan[]=$newtuyadan;
