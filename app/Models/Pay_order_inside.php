@@ -4045,7 +4045,7 @@ class Pay_order_inside extends Model
         $offset   = ($page - 1) * $pagesize;
 
         //学校id
-            $school_id = [];
+        $school_id = [];
         if(isset($body['school_id']) || !empty($body['school_id'])){
             $bodyschool = School::where(['id'=>$body['school_id'],'is_del'=>0,'is_open'=>0,'look_all_flag'=>1])->first();
             if(!empty($bodyschool)){
@@ -4066,11 +4066,16 @@ class Pay_order_inside extends Model
                 }
             }
         }
+//        else{
+//            $schoolarr = School::where(['is_open'=>0,'is_del'=>0])->get()->toArray();
+//            $school_id = array_column($schoolarr,'id');
+//        }
         if(!empty($body['search_time'])) {
             $create_time = json_decode($body['search_time'], true);
             $state_time = $create_time[0] . " 00:00:00";
             $end_time = $create_time[1] . " 23:59:59";
             // 获取数量
+//            $count = School::where(['is_open'=>0,'is_del'=>0])->count();
             $count1 = DB::table('school')->selectRaw("count(school.id) as t_count")
                 ->leftjoin("pay_order_inside", function ($join) {
                     $join->on('school.id', '=', 'pay_order_inside.school_id');
@@ -4187,9 +4192,13 @@ class Pay_order_inside extends Model
                            any_value(school.school_name) as school_name ,
                            any_value(school.level) as level ,
 <<<<<<< HEAD
+<<<<<<< HEAD
 =======
                            any_value(school.parent_id) as parent_id ,
 >>>>>>> c2e58f4774bb8007eaed3008e34cbeadf9c40766
+=======
+                           any_value(school.parent_id) as parent_id ,
+>>>>>>> 56c9829d94262dbb90a60df4433d6f3e198ee60f
                            any_value(school.tax_point) as tax_point ,
                            any_value(school.commission) as commission ,
                            any_value(school.deposit) as deposit,
@@ -4206,6 +4215,83 @@ class Pay_order_inside extends Model
                         $list = array_merge($list,$newschoolemptyOne);
                     }
                 }
+//                $onleschool = array_column($list,'school_id');
+//                //查看三个级别分校是否都在里面
+//                $xinschoolarr=[];
+//                foreach ($list as $onlek=>$onlev){
+//                    $onlev = (array)$onlev;
+//                    //一级的话展示所有下级
+//                    if($onlev['level'] == 1) {
+//                        $erjischool = School::where(['parent_id'=>$onlev['id'],'is_open'=>0,'is_del'=>0])->get()->toArray();
+//                        if(!empty($erjischool)){
+//                           foreach ($erjischool as $erjik=>$erjiv){
+//                                if(!in_array($erjiv['id'],$onleschool)){
+//                                    array_push($xinschoolarr,$erjiv['id']);
+//                                }
+//                               $sanjischool = School::where(['parent_id'=>$erjiv['id'],'is_open'=>0,'is_del'=>0])->get()->toArray();
+//                               if(!empty($sanjischool)){
+//                                   foreach ($sanjischool as $sanjik=>$sanjiv){
+//                                       if(!in_array($sanjiv['id'],$onleschool)){
+//                                           array_push($xinschoolarr,$sanjiv['id']);
+//                                       }
+//                                   }
+//                               }
+//                           }
+//                        }
+//                    }else if($onlev['level'] == 2){
+//                        //先查询上级  再查询下级
+//                        $yijischool = School::where(['id'=>$onlev['parent_id'],'is_open'=>0,'is_del'=>0])->first();
+//                        if(!in_array($yijischool['id'],$onleschool)){
+//                            array_push($xinschoolarr,$yijischool['id']);
+//                        }
+//                        $sanjischool = School::where(['parent_id'=>$onlev['id'],'is_open'=>0,'is_del'=>0])->get()->toArray();
+//                        if(!empty($sanjischool)){
+//                            foreach ($sanjischool as $sanjik=>$sanjiv){
+//                                if(!in_array($sanjiv['id'],$sanjischool)){
+//                                    array_push($xinschoolarr,$sanjiv['id']);
+//                                }
+//                            }
+//                        }
+//                    }else if($onlev['level'] == 3){
+//                        //查询上级  和上上级
+//                        $erjischool = School::where(['id'=>$onlev['parent_id'],'is_open'=>0,'is_del'=>0])->get()->toArray();
+//                        foreach ($erjischool as $erjik=>$erjiv){
+//                            if(!in_array($erjischool['id'],$onleschool)){
+//                                array_push($xinschoolarr,$erjischool['id']);
+//                            }
+//                        }
+//                    }
+//                }
+
+
+
+
+//                        if(!in_array($onlev['parent_id'],$onleschool)){
+//                            $newschoollevelOne = DB::table('school')->selectRaw('
+//                           any_value(school.id) as school_id ,
+//                           any_value(count(school.id)) as t_count ,
+//                           any_value(school.one_extraction_ratio) as one_extraction_ratio ,
+//                           any_value(school.two_extraction_ratio) as two_extraction_ratio ,
+//                           any_value(school.school_name) as school_name ,
+//                           any_value(school.level) as level ,
+//                           any_value(school.parent_id) as parent_id ,
+//                           any_value(school.tax_point) as tax_point ,
+//                           any_value(school.commission) as commission ,
+//                           any_value(school.deposit) as deposit,
+//                           any_value(0) as after_tax_amount,
+//                           any_value(0) as sum_Price,
+//                           any_value(0) as pay_price,
+//                           any_value(0) as agent_margin,
+//                           any_value(0) as first_out_of_amount,
+//                           any_value(0) as second_out_of_amount,
+//                           any_value(0) as education_id,
+//                           any_value(0) as major_id,
+//                           any_value(0) as sign_Price'
+//                            )->where('id',$onlev['parent_id'])->get()->toArray();
+//                            $list = array_merge($list,$newschoollevelOne);
+//                        }
+//                    }
+//                }
                 //循环获取相关信息
                 foreach ($list as $k => $v) {
 
@@ -4420,11 +4506,11 @@ class Pay_order_inside extends Model
                         //三级分校的二级抽离比例=后台分校管理中二级抽离比例
                         //三级分校的二级抽离金额=三级分校的二级抽比例*实际到款
                         //三级分校的实际返佣=三级分校的返佣金额-三级分校的保证金-三级分校退费*三级分校返佣比例
-                        $first_out_of_amount = $v['one_extraction_ratio'] && !empty($v['one_extraction_ratio']) ? $v['one_extraction_ratio'] : '';
+                        $first_out_of_amount = $v['one_extraction_ratio'] && !empty($v['one_extraction_ratio']) ? (int)$v['one_extraction_ratio'] : 0;
                         $first_out_of_money = sprintf("%01.2f", $actual_receipt * ($first_out_of_amount / 100));
 
                         //二级抽离比例
-                        $second_out_of_amount = $v['two_extraction_ratio'] && !empty($v['two_extraction_ratio']) ? $v['two_extraction_ratio'] : '';
+                        $second_out_of_amount = $v['two_extraction_ratio'] && !empty($v['two_extraction_ratio']) ? $v['two_extraction_ratio'] : 0;
                         $second_out_of_money = sprintf("%01.2f", $actual_receipt * ($second_out_of_amount / 100));
                         //三级分校无代理保证金
                         $agent_margin = '';
