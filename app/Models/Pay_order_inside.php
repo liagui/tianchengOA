@@ -4191,14 +4191,7 @@ class Pay_order_inside extends Model
                            any_value(school.two_extraction_ratio) as two_extraction_ratio ,
                            any_value(school.school_name) as school_name ,
                            any_value(school.level) as level ,
-<<<<<<< HEAD
-<<<<<<< HEAD
-=======
                            any_value(school.parent_id) as parent_id ,
->>>>>>> c2e58f4774bb8007eaed3008e34cbeadf9c40766
-=======
-                           any_value(school.parent_id) as parent_id ,
->>>>>>> 56c9829d94262dbb90a60df4433d6f3e198ee60f
                            any_value(school.tax_point) as tax_point ,
                            any_value(school.commission) as commission ,
                            any_value(school.deposit) as deposit,
