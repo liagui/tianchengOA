@@ -123,7 +123,7 @@ class OrderExport implements FromCollection, WithHeadings {
                         $v['school_name'] = $school['school_name'];
                     }
                 }
-                if($v['pay_type'] <= 4){
+                if($v['pay_type'] <= 9){
                     if(!empty($v['offline_id'])){
                         $chnnel = Channel::where(['id'=>$v['offline_id']])->first();
                         if($v['pay_type'] == 1){
@@ -134,6 +134,10 @@ class OrderExport implements FromCollection, WithHeadings {
                             $v['pay_type_text'] = $chnnel['channel_name'].'-汇聚-微信';
                         }else if ($v['pay_type'] == 4){
                             $v['pay_type_text'] =$chnnel['channel_name'].'-汇聚-支付宝';
+                        }else if ($v['pay_type'] == 5 ||$v['pay_type'] == 8||$v['pay_type'] == 9){
+                            $v['pay_type_text'] =$chnnel['channel_name'].'-银联';
+                        }else if ($v['pay_type'] == 6){
+                            $v['pay_type_text'] =$chnnel['channel_name'].'-汇付';
                         }
                     }else{
                         $v['pay_type_text']='';
@@ -141,11 +145,11 @@ class OrderExport implements FromCollection, WithHeadings {
                 }else{
                     if(!empty($v['offline_id'])){
                         $offline = OfflinePay::where(['id'=>$v['offline_id']])->first();
-                        if ($v['pay_type'] == 5){
+                        if ($v['pay_type'] == 10){
                             $v['pay_type_text'] = '银行卡支付-'.$offline['account_name'];
-                        }else if ($v['pay_type'] == 6){
+                        }else if ($v['pay_type'] == 11){
                             $v['pay_type_text'] = '对公转账-'.$offline['account_name'];
-                        }else if ($v['pay_type'] == 7){
+                        }else if ($v['pay_type'] == 12){
                             $v['pay_type_text'] = '支付宝账号对公-'.$offline['account_name'];
                         }
                     }else{
@@ -241,27 +245,27 @@ class OrderExport implements FromCollection, WithHeadings {
             }
         }
         $tuyadan = [];
-        foreach ($all as $k=>$v){
+        foreach ($all as $ks=>$vs){
             $newtuyadan = [
-                'order_number' => ' '.$v['order_no'],
-                'create_time' => $v['create_time'],
-                'name' => $v['name'],
-                'mobile' => $v['mobile'],
-                'school_name' => $v['school_name'],
-                'project_name' => $v['project_name'],
-                'subject_name' => $v['subject_name'],
-                'course_name' => $v['course_name'],
-                'pay_type_text' => isset($v['pay_type_text'])?$v['pay_type_text']:'',
-                'course_Price' => $v['course_Price'],
-                'sign_Price' => $v['sign_Price'],
-                'pay_price' => $v['pay_price'],
-                'pay_status_text' => $v['pay_status_text'],
-                'return_visit_text' => $v['return_visit_text'],
-                'classes_text' => $v['classes_text'],
-                'pay_time' => $v['pay_time'],
-                'confirm_order_type_text' => $v['confirm_order_type_text'],
-                'first_pay_text' => $v['first_pay_text'],
-                'confirm_status_text' => $v['confirm_status_text'],
+                'order_number' => ' '.$vs['order_no'],
+                'create_time' => $vs['create_time'],
+                'name' => $vs['name'],
+                'mobile' => $vs['mobile'],
+                'school_name' => $vs['school_name'],
+                'project_name' => $vs['project_name'],
+                'subject_name' => $vs['subject_name'],
+                'course_name' => $vs['course_name'],
+                'pay_type_text' => isset($vs['pay_type_text'])?$vs['pay_type_text']:'',
+                'course_Price' => $vs['course_Price'],
+                'sign_Price' => $vs['sign_Price'],
+                'pay_price' => $vs['pay_price'],
+                'pay_status_text' => $vs['pay_status_text'],
+                'return_visit_text' => $vs['return_visit_text'],
+                'classes_text' => $vs['classes_text'],
+                'pay_time' => $vs['pay_time'],
+                'confirm_order_type_text' => $vs['confirm_order_type_text'],
+                'first_pay_text' => $vs['first_pay_text'],
+                'confirm_status_text' => $vs['confirm_status_text'],
             ];
             $tuyadan[]=$newtuyadan;
         }
