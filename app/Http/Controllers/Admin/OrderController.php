@@ -162,6 +162,11 @@ class OrderController extends Controller {
         $list = Refund_order::remitOrder(self::$accept_data);
         return response()->json($list);
     }
+    //财务进行退费确认
+    public function financeOrder(){
+        $list = Refund_order::financeOrder(self::$accept_data);
+        return response()->json($list);
+    }
     //退费打款添加备注
     public function addremark(){
         $data = self::$accept_data;

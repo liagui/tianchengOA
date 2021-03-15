@@ -125,7 +125,7 @@ class StudentDatum extends Model {
                 $v['audit'] =  $v['audit_status'] <=0 ?'待审核':($v['audit_status']==1?'审核通过':'驳回');
                 $v['consignee'] =  $v['consignee_status'] <=0 ?'待收集':($v['consignee_status']==1?'收集中':($v['consignee_status']==2?'已收集':"重新收集"));
                 //类型
-                if($v['project_name'] == '消防设施操作员初级' || $v['project_name'] == '消防设施操作员中级' || $v['project_name'] == '消防设施操作员高级'){
+                if($v['project_name'] == '消防设施操作员初级' || $v['project_name'] == '消防设施操作员中级' || $v['project_name'] == '消防设施操作员高级'|| $v['project_name'] == '消防工程师'){
                      $v['moban_type'] =1;
                 }else if($v['project_name'] == '学历提升'|| $v['project_name'] == '成考'|| $v['project_name'] == '高起专'|| $v['project_name'] == '专升本'|| $v['project_name'] == '高起本'){
                     $v['moban_type'] =2;
@@ -153,331 +153,340 @@ class StudentDatum extends Model {
         //     $body['moban_type'] = 4;
         // }
 
-        // //1消防2学历3中专4健康
-        // if($body['moban_type'] == 1){
-        //     $body['type'] = 1;
-        //     if(!isset($body['student_name']) || empty($body['student_name'])){
-        //         return ['code' => 201 , 'msg' => '请输入学员姓名'];
-        //     }
-        //     if(!isset($body['student_sex']) || !in_array($body['student_sex'] , [0,1])){
-        //         return ['code' => 201, 'msg' => '请选择性别'];
-        //     }
-        //     if(!isset($body['student_age']) || empty($body['student_age'])){
-        //         return ['code' => 201 , 'msg' => '请输入学员年龄'];
-        //     }
-        //     if(!isset($body['student_region']) || empty($body['student_region'])){
-        //         return ['code' => 201 , 'msg' => '请输入学员户籍'];
-        //     }
-        //     if(!isset($body['student_birth']) || empty($body['student_birth'])){
-        //         return ['code' => 201 , 'msg' => '请输入出生年月'];
-        //     }
-        //     if(!isset($body['student_card']) || empty($body['student_card'])){
-        //         return ['code' => 201 , 'msg' => '请输入学员身份证号'];
-        //     }
-        //     if(!isset($body['student_phone']) || empty($body['student_phone'])){
-        //         return ['code' => 201 , 'msg' => '请输入手机号'];
-        //     } else if(!preg_match('#^13[\d]{9}$|^14[\d]{9}$|^15[\d]{9}$|^17[\d]{9}$|^18[\d]{9}|^16[\d]{9}|^19[\d]{9}$#', $body['student_phone'])) {
-        //         return ['code' => 201 , 'msg' => '手机号不合法'];
-        //     }
-        //     if(!isset($body['student_lovedone']) || empty($body['student_lovedone'])){
-        //         return ['code' => 201 , 'msg' => '请输入学员亲人电话'];
-        //     }
-        //     if(!isset($body['national']) || empty($body['national'])){
-        //         return ['code' => 201 , 'msg' => '请输入民族'];
-        //     }
-        //     if(!isset($body['political']) || empty($body['political'])){
-        //         return ['code' => 201 , 'msg' => '请输入政治面貌'];
-        //     }
-        //     if(!isset($body['culture']) || empty($body['culture'])){
-        //         return ['code' => 201 , 'msg' => '请输入文化程度'];
-        //     }
-        //     if(!isset($body['graduated_school']) || empty($body['graduated_school'])){
-        //         return ['code' => 201 , 'msg' => '请输入毕业院校'];
-        //     }
-        //     if(!isset($body['professional']) || empty($body['professional'])){
-        //         return ['code' => 201 , 'msg' => '请输入专业'];
-        //     }
-        //     if(!isset($body['student_region']) || empty($body['student_region'])){
-        //         return ['code' => 201 , 'msg' => '请输入常住地'];
-        //     }
-        //     if(!isset($body['source']) || empty($body['source'])){
-        //         return ['code' => 201 , 'msg' => '请输入考生来源'];
-        //     }
-        //     if(!isset($body['work_units']) || empty($body['work_units'])){
-        //         return ['code' => 201 , 'msg' => '请输入工作单位'];
-        //     }
-        //     if(!isset($body['work_age']) || empty($body['work_age'])){
-        //         return ['code' => 201 , 'msg' => '请输入工作年限'];
-        //     }
-        //     if(!isset($body['work_shebao']) || empty($body['work_shebao'])){
-        //         return ['code' => 201 , 'msg' => '请选择是否有社保'];
-        //     }
-        //     if(!isset($body['typework']) || empty($body['typework'])){
-        //         return ['code' => 201 , 'msg' => '请输入报考工种'];
-        //     }
-        //     if(!isset($body['typeworklevl']) || empty($body['typeworklevl'])){
-        //         return ['code' => 201 , 'msg' => '请输入鉴定等级'];
-        //     }
-        //     $id = $body['id'];
-        //     unset($body['id']);
-        //     if(isset($body['/admin/datum/doDatumInsert'])){
-        //         unset($body['/admin/datum/doDatumInsert']);
-        //     }
-        //     $body['create_time']=date('Y-m-d H:i:s');
-        //     $body['type']= 3;
-        //     $admin_name = isset(AdminLog::getAdminInfo()->admin_user->real_name) ? AdminLog::getAdminInfo()->admin_user->real_name : '';
-        //     $StudentDatumArr = self::where(['id'=>$id])->first();
-        //     if(empty($StudentDatumArr)){
-        //         return ['code'=>201,'msg'=>'暂无数据信息'];
-        //     }else{
-        //         if($StudentDatumArr['audit_status'] == 2 && $StudentDatumArr['audit_id']>0 && $StudentDatumArr['gather_id']>0 ){
-        //             //正常流程走完一边（驳回）
-        //             $datumDelRes=Datum::where('id',$StudentDatumArr['id'])->update(['is_del'=>0,'update_time'=>date('Y-m-d H:i:s')]);
-        //             if(!$datumDelRes){
-        //                 DB::rollBack();
-        //                 return ['code'=>203,'msg'=>' 资料提交失败，请重试 '];
-        //             }
-        //             $OrderUpdate = ['consignee_name'=>$admin_name,'update_time'=>date('Y-m-d H:i:s')]; //修改订单状态
-        //         }else{
-        //             $OrderUpdate = ['consignee_name'=>$admin_name,'consignee_status'=>2,'update_time'=>date('Y-m-d H:i:s')]; //consignee_status 2是已收集 0 待收集  1 收集中  3 重新收集
-        //         }
-        //         //走第一遍流程
-        //         $datumId = Datum::insertGetId($body);  //添加资料
-        //         if($datumId<=0){
-        //             DB::rollBack();
-        //             return ['code'=>203,'msg'=>'资料提交失败，请重试'];
-        //         }
-        //         $update = [
-        //             'information_id'=>$datumId,
-        //             'gather_id' => isset(AdminLog::getAdminInfo()->admin_user->id) ? AdminLog::getAdminInfo()->admin_user->id : 0,
-        //             'datum_create_time'=>$body['create_time'],
-        //             'update_time'=> date('Y-m-d H:i:s')
-        //         ];
-        //         $res = self::where('id',$id)->update($update); //修改学员资料订单关系表的内容
-        //         if(!$res){
-        //             DB::rollBack();
-        //             return ['code'=>203,'msg'=>'资料提交失败,请重试！'];
-        //         }
+         //1消防2学历3中专4健康
+         if($body['moban_type'] == 1){
+             $body['type'] = 1;
+             unset($body['moban_type']);
+             if(!isset($body['student_name']) || empty($body['student_name'])){
+                 return ['code' => 201 , 'msg' => '请输入学员姓名'];
+             }
+             if(!isset($body['student_sex']) || !in_array($body['student_sex'] , [0,1])){
+                 return ['code' => 201, 'msg' => '请选择性别'];
+             }
+             if(!isset($body['student_age']) || empty($body['student_age'])){
+                 return ['code' => 201 , 'msg' => '请输入学员年龄'];
+             }
+             if(!isset($body['student_region']) || empty($body['student_region'])){
+                 return ['code' => 201 , 'msg' => '请输入学员户籍'];
+             }
+             if(!isset($body['student_birth']) || empty($body['student_birth'])){
+                 return ['code' => 201 , 'msg' => '请输入出生年月'];
+             }
+             if(!isset($body['student_card']) || empty($body['student_card'])){
+                 return ['code' => 201 , 'msg' => '请输入学员身份证号'];
+             }
+             if(!isset($body['student_phone']) || empty($body['student_phone'])){
+                 return ['code' => 201 , 'msg' => '请输入手机号'];
+             } else if(!preg_match('#^13[\d]{9}$|^14[\d]{9}$|^15[\d]{9}$|^17[\d]{9}$|^18[\d]{9}|^16[\d]{9}|^19[\d]{9}$#', $body['student_phone'])) {
+                 return ['code' => 201 , 'msg' => '手机号不合法'];
+             }
+             if(!isset($body['student_lovedone']) || empty($body['student_lovedone'])){
+                 return ['code' => 201 , 'msg' => '请输入学员亲人电话'];
+             }
+             if(!isset($body['national']) || empty($body['national'])){
+                 return ['code' => 201 , 'msg' => '请输入民族'];
+             }
+             if(!isset($body['political']) || empty($body['political'])){
+                 return ['code' => 201 , 'msg' => '请输入政治面貌'];
+             }
+             if(!isset($body['culture']) || empty($body['culture'])){
+                 return ['code' => 201 , 'msg' => '请输入文化程度'];
+             }
+             if(!isset($body['graduated_school']) || empty($body['graduated_school'])){
+                 return ['code' => 201 , 'msg' => '请输入毕业院校'];
+             }
+             if(!isset($body['professional']) || empty($body['professional'])){
+                 return ['code' => 201 , 'msg' => '请输入专业'];
+             }
+             if(!isset($body['studen_address']) || empty($body['studen_address'])){
+                 return ['code' => 201 , 'msg' => '请输入常住地'];
+             }
+             if(!isset($body['source']) || empty($body['source'])){
+                 return ['code' => 201 , 'msg' => '请输入考生来源'];
+             }
+             if(!isset($body['work_units']) || empty($body['work_units'])){
+                 return ['code' => 201 , 'msg' => '请输入工作单位'];
+             }
+             if(!isset($body['work_age']) || empty($body['work_age'])){
+                 return ['code' => 201 , 'msg' => '请输入工作年限'];
+             }
+             if(!isset($body['work_shebao']) || empty($body['work_shebao'])){
+                 return ['code' => 201 , 'msg' => '请选择是否有社保'];
+             }
+             if(!isset($body['typework']) || empty($body['typework'])){
+                 return ['code' => 201 , 'msg' => '请输入报考工种'];
+             }
+             if(!isset($body['typeworklevl']) || empty($body['typeworklevl'])){
+                 return ['code' => 201 , 'msg' => '请输入鉴定等级'];
+             }
+             $id = $body['id'];
+             unset($body['id']);
+             if(isset($body['/admin/datum/doDatumInsert'])){
+                 unset($body['/admin/datum/doDatumInsert']);
+             }
+             $body['create_time']=date('Y-m-d H:i:s');
+             $body['type']= 1;
+             $admin_name = isset(AdminLog::getAdminInfo()->admin_user->real_name) ? AdminLog::getAdminInfo()->admin_user->real_name : '';
+             $StudentDatumArr = self::where(['id'=>$id])->first();
+             if(empty($StudentDatumArr)){
+                 return ['code'=>201,'msg'=>'暂无数据信息'];
+             }else{
+                 if($StudentDatumArr['audit_status'] == 2 && $StudentDatumArr['audit_id']>0 && $StudentDatumArr['gather_id']>0 ){
+                     //正常流程走完一边（驳回）
+                     $datumDelRes=Datum::where('id',$StudentDatumArr['id'])->update(['is_del'=>0,'update_time'=>date('Y-m-d H:i:s')]);
+                     if(!$datumDelRes){
+                         DB::rollBack();
+                         return ['code'=>203,'msg'=>' 资料提交失败，请重试!'];
+                     }
+                     $OrderUpdate = ['consignee_name'=>$admin_name,'update_time'=>date('Y-m-d H:i:s')]; //修改订单状态
+                 }else{
+                     $OrderUpdate = ['consignee_name'=>$admin_name,'consignee_status'=>2,'update_time'=>date('Y-m-d H:i:s')]; //consignee_status 2是已收集 0 待收集  1 收集中  3 重新收集
+                 }
+                 //走第一遍流程
+                 $datumId = Datum::insertGetId($body);  //添加资料
+                 if($datumId<=0){
+                     DB::rollBack();
+                     return ['code'=>203,'msg'=>'资料提交失败，请重试!!'];
+                 }
+                 $update = [
+                     'information_id'=>$datumId,
+                     'gather_id' => isset(AdminLog::getAdminInfo()->admin_user->id) ? AdminLog::getAdminInfo()->admin_user->id : 0,
+                     'datum_create_time'=>$body['create_time'],
+                     'update_time'=> date('Y-m-d H:i:s')
+                 ];
+                 Datum::where('id',$StudentDatumArr['information_id'])->update($body);
+                 $res = self::where('id',$StudentDatumArr['id'])->update($update); //修改学员资料订单关系表的内容
+                 if(!$res){
+                     DB::rollBack();
+                     return ['code'=>203,'msg'=>'资料提交失败,请重试!!!'];
+                 }
 
-        //         $orderRes = Pay_order_inside::where('id',$StudentDatumArr['order_id'])->update($OrderUpdate); //修改订单表 资料收集状态
+                 $orderRes = Pay_order_inside::where('id',$StudentDatumArr['order_id'])->update($OrderUpdate); //修改订单表 资料收集状态
 
-        //         if($orderRes){
-        //             DB::commit();
-        //             return ['code'=>200,'msg'=>'资料提交成功'];
-        //         }else{
-        //             DB::rollBack();
-        //             return ['code'=>203,'msg'=>'资料提交失败,请重试！！'];
-        //         }
-        //     }
+                 if($orderRes){
+                     DB::commit();
+                     return ['code'=>200,'msg'=>'资料提交成功'];
+                 }else{
+                     DB::rollBack();
+                     return ['code'=>203,'msg'=>'资料提交失败,请重试!!!!'];
+                 }
+             }
 
 
-        // }else if($body['moban_type'] == 2){
-        //     $body['type'] = 2;
-        //     if(!isset($body['consultant']) || empty($body['consultant'])){
-        //         return ['code' => 201 , 'msg' => '请输入咨询师'];
-        //     }
-        //     if(!isset($body['pay_time']) || empty($body['pay_time'])){
-        //         return ['code' => 201 , 'msg' => '请输入付款日期'];
-        //     }
-        //     if(!isset($body['pay_price']) || empty($body['pay_price'])){
-        //         return ['code' => 201 , 'msg' => '请输入付款金额'];
-        //     }
-        //     if(!isset($body['student_name']) || empty($body['student_name'])){
-        //         return ['code' => 201 , 'msg' => '请输入学员姓名'];
-        //     }
-        //     if(!isset($body['student_card']) || empty($body['student_card'])){
-        //         return ['code' => 201 , 'msg' => '请输入学员身份证号'];
-        //     }
-        //     //判断是否查看下属分校数据
-        //     if(!isset($body['student_sex']) || !in_array($body['student_sex'] , [0,1])){
-        //         return ['code' => 201, 'msg' => '请选择性别'];
-        //     }
-        //     //判断出生年月是否为空
-        //     if(!isset($body['student_birth']) || empty($body['student_birth'])){
-        //         return ['code' => 201 , 'msg' => '请输入出生年月'];
-        //     }
-        //     if(!isset($body['national']) || empty($body['national'])){
-        //         return ['code' => 201 , 'msg' => '请输入民族'];
-        //     }
-        //     if(!isset($body['political']) || empty($body['political'])){
-        //         return ['code' => 201 , 'msg' => '请输入政治面貌'];
-        //     }
-        //     if(!isset($body['student_region']) || empty($body['student_region'])){
-        //         return ['code' => 201 , 'msg' => '生源地区'];
-        //     }
-        //     if(!isset($body['graduated_school']) || empty($body['graduated_school'])){
-        //         return ['code' => 201 , 'msg' => '请输入报考学院'];
-        //     }
-        //     if(!isset($body['level']) || empty($body['level'])){
-        //         return ['code' => 201 , 'msg' => '请输入层次'];
-        //     }
-        //     if(!isset($body['professional']) || empty($body['professional'])){
-        //         return ['code' => 201 , 'msg' => '请输入专业'];
-        //     }
-        //     if(!isset($body['student_phone']) || empty($body['student_phone'])){
-        //         return ['code' => 201 , 'msg' => '请输入手机号'];
-        //     } else if(!preg_match('#^13[\d]{9}$|^14[\d]{9}$|^15[\d]{9}$|^17[\d]{9}$|^18[\d]{9}|^16[\d]{9}|^19[\d]{9}$#', $body['student_phone'])) {
-        //         return ['code' => 201 , 'msg' => '手机号不合法'];
-        //     }
-        //     if(!isset($body['email']) || empty($body['email'])){
-        //         return ['code' => 201 , 'msg' => '请输入邮箱'];
-        //     }
-        //     if(!isset($body['student_region']) || empty($body['student_region'])){
-        //         return ['code' => 201 , 'msg' => '请输入联系地址'];
-        //     }
-        //     if(!isset($body['zipcode']) || empty($body['zipcode'])){
-        //         return ['code' => 201 , 'msg' => '请输入邮编'];
-        //     }
-        //     if(!isset($body['branch_name']) || empty($body['branch_name'])){
-        //         return ['code' => 201 , 'msg' => '请输入分校名称'];
-        //     }
-        //     $id = $body['id'];
-        //     unset($body['id']);
-        //     if(isset($body['/admin/datum/doDatumInsert'])){
-        //         unset($body['/admin/datum/doDatumInsert']);
-        //     }
-        //     $body['create_time']=date('Y-m-d H:i:s');
-        //     $body['type']= 3;
-        //     $admin_name = isset(AdminLog::getAdminInfo()->admin_user->real_name) ? AdminLog::getAdminInfo()->admin_user->real_name : '';
-        //     $StudentDatumArr = self::where(['id'=>$id])->first();
-        //     if(empty($StudentDatumArr)){
-        //         return ['code'=>201,'msg'=>'暂无数据信息'];
-        //     }else{
-        //         if($StudentDatumArr['audit_status'] == 2 && $StudentDatumArr['audit_id']>0 && $StudentDatumArr['gather_id']>0 ){
-        //             //正常流程走完一边（驳回）
-        //             $datumDelRes=Datum::where('id',$StudentDatumArr['id'])->update(['is_del'=>0,'update_time'=>date('Y-m-d H:i:s')]);
-        //             if(!$datumDelRes){
-        //                 DB::rollBack();
-        //                 return ['code'=>203,'msg'=>' 资料提交失败，请重试 '];
-        //             }
-        //             $OrderUpdate = ['consignee_name'=>$admin_name,'update_time'=>date('Y-m-d H:i:s')]; //修改订单状态
-        //         }else{
-        //             $OrderUpdate = ['consignee_name'=>$admin_name,'consignee_status'=>2,'update_time'=>date('Y-m-d H:i:s')]; //consignee_status 2是已收集 0 待收集  1 收集中  3 重新收集
-        //         }
-        //         //走第一遍流程
-        //         $datumId = Datum::insertGetId($body);  //添加资料
-        //         if($datumId<=0){
-        //             DB::rollBack();
-        //             return ['code'=>203,'msg'=>'资料提交失败，请重试'];
-        //         }
-        //         $update = [
-        //             'information_id'=>$datumId,
-        //             'gather_id' => isset(AdminLog::getAdminInfo()->admin_user->id) ? AdminLog::getAdminInfo()->admin_user->id : 0,
-        //             'datum_create_time'=>$body['create_time'],
-        //             'update_time'=> date('Y-m-d H:i:s')
-        //         ];
-        //         $res = self::where('id',$id)->update($update); //修改学员资料订单关系表的内容
-        //         if(!$res){
-        //             DB::rollBack();
-        //             return ['code'=>203,'msg'=>'资料提交失败,请重试！'];
-        //         }
+         }else if($body['moban_type'] == 2){
+             $body['type'] = 2;
+             if(!isset($body['consultant']) || empty($body['consultant'])){
+                 return ['code' => 201 , 'msg' => '请输入咨询师'];
+             }
+             if(!isset($body['pay_time']) || empty($body['pay_time'])){
+                 return ['code' => 201 , 'msg' => '请输入付款日期'];
+             }
+             if(!isset($body['pay_price']) || empty($body['pay_price'])){
+                 return ['code' => 201 , 'msg' => '请输入付款金额'];
+             }
+             if(!isset($body['student_name']) || empty($body['student_name'])){
+                 return ['code' => 201 , 'msg' => '请输入学员姓名'];
+             }
+             if(!isset($body['student_card']) || empty($body['student_card'])){
+                 return ['code' => 201 , 'msg' => '请输入学员身份证号'];
+             }
+             //判断是否查看下属分校数据
+             if(!isset($body['student_sex']) || !in_array($body['student_sex'] , [0,1])){
+                 return ['code' => 201, 'msg' => '请选择性别'];
+             }
+             //判断出生年月是否为空
+             if(!isset($body['student_birth']) || empty($body['student_birth'])){
+                 return ['code' => 201 , 'msg' => '请输入出生年月'];
+             }
+             if(!isset($body['national']) || empty($body['national'])){
+                 return ['code' => 201 , 'msg' => '请输入民族'];
+             }
+             if(!isset($body['political']) || empty($body['political'])){
+                 return ['code' => 201 , 'msg' => '请输入政治面貌'];
+             }
+             if(!isset($body['student_region']) || empty($body['student_region'])){
+                 return ['code' => 201 , 'msg' => '生源地区'];
+             }
+             if(!isset($body['graduated_school']) || empty($body['graduated_school'])){
+                 return ['code' => 201 , 'msg' => '请输入报考学院'];
+             }
+             if(!isset($body['level']) || empty($body['level'])){
+                 return ['code' => 201 , 'msg' => '请输入层次'];
+             }
+             if(!isset($body['professional']) || empty($body['professional'])){
+                 return ['code' => 201 , 'msg' => '请输入专业'];
+             }
+             if(!isset($body['student_phone']) || empty($body['student_phone'])){
+                 return ['code' => 201 , 'msg' => '请输入手机号'];
+             } else if(!preg_match('#^13[\d]{9}$|^14[\d]{9}$|^15[\d]{9}$|^17[\d]{9}$|^18[\d]{9}|^16[\d]{9}|^19[\d]{9}$#', $body['student_phone'])) {
+                 return ['code' => 201 , 'msg' => '手机号不合法'];
+             }
+             if(!isset($body['email']) || empty($body['email'])){
+                 return ['code' => 201 , 'msg' => '请输入邮箱'];
+             }
+             if(!isset($body['studen_address']) || empty($body['studen_address'])){
+                 return ['code' => 201 , 'msg' => '请输入联系地址'];
+             }
+             if(!isset($body['zipcode']) || empty($body['zipcode'])){
+                 return ['code' => 201 , 'msg' => '请输入邮编'];
+             }
+             if(!isset($body['branch_name']) || empty($body['branch_name'])){
+                 return ['code' => 201 , 'msg' => '请输入分校名称'];
+             }
+             $id = $body['id'];
+             unset($body['id']);
+             unset($body['moban_type']);
+             if(isset($body['/admin/datum/doDatumInsert'])){
+                 unset($body['/admin/datum/doDatumInsert']);
+             }
+             $body['create_time']=date('Y-m-d H:i:s');
+             $admin_name = isset(AdminLog::getAdminInfo()->admin_user->real_name) ? AdminLog::getAdminInfo()->admin_user->real_name : '';
+             $StudentDatumArr = self::where(['id'=>$id])->first();
+             if(empty($StudentDatumArr)){
+                 return ['code'=>201,'msg'=>'暂无数据信息'];
+             }else{
+                 if($StudentDatumArr['audit_status'] == 2 && $StudentDatumArr['audit_id']>0 && $StudentDatumArr['gather_id']>0 ){
+                     //正常流程走完一边（驳回）
+                     $datumDelRes=Datum::where('id',$StudentDatumArr['id'])->update(['is_del'=>0,'update_time'=>date('Y-m-d H:i:s')]);
+                     if(!$datumDelRes){
+                         DB::rollBack();
+                         return ['code'=>203,'msg'=>' 资料提交失败，请重试 '];
+                     }
+                     $OrderUpdate = ['consignee_name'=>$admin_name,'update_time'=>date('Y-m-d H:i:s')]; //修改订单状态
+                 }else{
+                     $OrderUpdate = ['consignee_name'=>$admin_name,'consignee_status'=>2,'update_time'=>date('Y-m-d H:i:s')]; //consignee_status 2是已收集 0 待收集  1 收集中  3 重新收集
+                 }
+                 //走第一遍流程
+                 $datumId = Datum::insertGetId($body);  //添加资料
+                 if($datumId<=0){
+                     DB::rollBack();
+                     return ['code'=>203,'msg'=>'资料提交失败，请重试'];
+                 }
+                 $update = [
+                     'information_id'=>$datumId,
+                     'gather_id' => isset(AdminLog::getAdminInfo()->admin_user->id) ? AdminLog::getAdminInfo()->admin_user->id : 0,
+                     'datum_create_time'=>$body['create_time'],
+                     'update_time'=> date('Y-m-d H:i:s')
+                 ];
+                 Datum::where('id',$StudentDatumArr['information_id'])->update($body);
+                 $res = self::where('id',$StudentDatumArr['id'])->update($update); //修改学员资料订单关系表的内容
+                 if(!$res){
+                     DB::rollBack();
+                     return ['code'=>203,'msg'=>'资料提交失败,请重试！'];
+                 }
 
-        //         $orderRes = Pay_order_inside::where('id',$StudentDatumArr['order_id'])->update($OrderUpdate); //修改订单表 资料收集状态
+                 $orderRes = Pay_order_inside::where('id',$StudentDatumArr['order_id'])->update($OrderUpdate); //修改订单表 资料收集状态
 
-        //         if($orderRes){
-        //             DB::commit();
-        //             return ['code'=>200,'msg'=>'资料提交成功'];
-        //         }else{
-        //             DB::rollBack();
-        //             return ['code'=>203,'msg'=>'资料提交失败,请重试！！'];
-        //         }
-        //     }
-        // }else if($body['moban_type'] == 3){
-        //     //判断学员姓名是否为空
-        //     if(!isset($body['student_name']) || empty($body['student_name'])){
-        //         return ['code' => 201 , 'msg' => '请输入学员姓名'];
-        //     }
-        //     //判断手机号是否为空
-        //     if(!isset($body['student_phone']) || empty($body['student_phone'])){
-        //         return ['code' => 201 , 'msg' => '请输入手机号'];
-        //     } else if(!preg_match('#^13[\d]{9}$|^14[\d]{9}$|^15[\d]{9}$|^17[\d]{9}$|^18[\d]{9}|^16[\d]{9}|^19[\d]{9}$#', $body['student_phone'])) {
-        //         return ['code' => 201 , 'msg' => '手机号不合法'];
-        //     }
-        //      //判断学员身份证号是否为空
-        //     if(!isset($body['student_card']) || empty($body['student_card'])){
-        //         return ['code' => 201 , 'msg' => '请输入学员身份证号'];
-        //     }
-        //     //判断出生年月是否为空
-        //     if(!isset($body['student_birth']) || empty($body['student_birth'])){
-        //         return ['code' => 201 , 'msg' => '请输入出生年月'];
-        //     }
-        //      //判断毕业学院是否为空
-        //      if(!isset($body['graduated_school']) || empty($body['graduated_school'])){
-        //         return ['code' => 201 , 'msg' => '请输入报考学院'];
-        //     }
-        //     //判断毕业专业是否为空
-        //     if(!isset($body['professional']) || empty($body['professional'])){
-        //         return ['code' => 201 , 'msg' => '请输入专业'];
-        //     }
-        //     //判断毕业年月是否为空
-        //     if(!isset($body['startyears']) || empty($body['startyears'])){
-        //         return ['code' => 201 , 'msg' => '请输入入学年月'];
-        //     }
-        //     //判断毕业年月是否为空
-        //     if(!isset($body['years']) || empty($body['years'])){
-        //         return ['code' => 201 , 'msg' => '请输入毕业年月'];
-        //     }
-        //     //判断毕业年月是否为空
-        //     if(!isset($body['branch_name']) || empty($body['branch_name'])){
-        //         return ['code' => 201 , 'msg' => '请输入分校名称'];
-        //     }
-        //     //判断毕业年月是否为空
-        //     if(!isset($body['student_region']) || empty($body['student_region'])){
-        //         return ['code' => 201 , 'msg' => '请输入毕业证寄回地址'];
-        //     }
-        //     $id = $body['id'];
-        //     unset($body['id']);
-        //     if(isset($body['/admin/datum/doDatumInsert'])){
-        //         unset($body['/admin/datum/doDatumInsert']);
-        //     }
-        //     $body['create_time']=date('Y-m-d H:i:s');
-        //     $body['type']= 3;
-        //     $admin_name = isset(AdminLog::getAdminInfo()->admin_user->real_name) ? AdminLog::getAdminInfo()->admin_user->real_name : '';
-        //     $StudentDatumArr = self::where(['id'=>$id])->first();
-        //     if(empty($StudentDatumArr)){
-        //         return ['code'=>201,'msg'=>'暂无数据信息'];
-        //     }else{
-        //         if($StudentDatumArr['audit_status'] == 2 && $StudentDatumArr['audit_id']>0 && $StudentDatumArr['gather_id']>0 ){
-        //             //正常流程走完一边（驳回）
-        //             $datumDelRes=Datum::where('id',$StudentDatumArr['id'])->update(['is_del'=>0,'update_time'=>date('Y-m-d H:i:s')]);
-        //             if(!$datumDelRes){
-        //                 DB::rollBack();
-        //                 return ['code'=>203,'msg'=>' 资料提交失败，请重试 '];
-        //             }
-        //             $OrderUpdate = ['consignee_name'=>$admin_name,'update_time'=>date('Y-m-d H:i:s')]; //修改订单状态
-        //         }else{
-        //             $OrderUpdate = ['consignee_name'=>$admin_name,'consignee_status'=>2,'update_time'=>date('Y-m-d H:i:s')]; //consignee_status 2是已收集 0 待收集  1 收集中  3 重新收集
-        //         }
-        //         //走第一遍流程
-        //         $datumId = Datum::insertGetId($body);  //添加资料
-        //         if($datumId<=0){
-        //             DB::rollBack();
-        //             return ['code'=>203,'msg'=>'资料提交失败，请重试'];
-        //         }
-        //         $update = [
-        //             'information_id'=>$datumId,
-        //             'gather_id' => isset(AdminLog::getAdminInfo()->admin_user->id) ? AdminLog::getAdminInfo()->admin_user->id : 0,
-        //             'datum_create_time'=>$body['create_time'],
-        //             'update_time'=> date('Y-m-d H:i:s')
-        //         ];
-        //         $res = self::where('id',$id)->update($update); //修改学员资料订单关系表的内容
-        //         if(!$res){
-        //             DB::rollBack();
-        //             return ['code'=>203,'msg'=>'资料提交失败,请重试！'];
-        //         }
+                 if($orderRes){
+                     DB::commit();
+                     return ['code'=>200,'msg'=>'资料提交成功'];
+                 }else{
+                     DB::rollBack();
+                     return ['code'=>203,'msg'=>'资料提交失败,请重试！！'];
+                 }
+             }
+         }else if($body['moban_type'] == 3){
+             //判断学员姓名是否为空
+             if(!isset($body['student_name']) || empty($body['student_name'])){
+                 return ['code' => 201 , 'msg' => '请输入学员姓名'];
+             }
+             //判断手机号是否为空
+             if(!isset($body['student_phone']) || empty($body['student_phone'])){
+                 return ['code' => 201 , 'msg' => '请输入手机号'];
+             } else if(!preg_match('#^13[\d]{9}$|^14[\d]{9}$|^15[\d]{9}$|^17[\d]{9}$|^18[\d]{9}|^16[\d]{9}|^19[\d]{9}$#', $body['student_phone'])) {
+                 return ['code' => 201 , 'msg' => '手机号不合法'];
+             }
+              //判断学员身份证号是否为空
+             if(!isset($body['student_card']) || empty($body['student_card'])){
+                 return ['code' => 201 , 'msg' => '请输入学员身份证号'];
+             }
+             //判断出生年月是否为空
+             if(!isset($body['student_birth']) || empty($body['student_birth'])){
+                 return ['code' => 201 , 'msg' => '请输入出生年月'];
+             }
+              //判断毕业学院是否为空
+              if(!isset($body['graduated_school']) || empty($body['graduated_school'])){
+                 return ['code' => 201 , 'msg' => '请输入报考学院'];
+             }
+             //判断毕业专业是否为空
+             if(!isset($body['professional']) || empty($body['professional'])){
+                 return ['code' => 201 , 'msg' => '请输入专业'];
+             }
+             //判断毕业年月是否为空
+             if(!isset($body['startyears']) || empty($body['startyears'])){
+                 return ['code' => 201 , 'msg' => '请输入入学年月'];
+             }
+             //判断毕业年月是否为空
+             if(!isset($body['years']) || empty($body['years'])){
+                 return ['code' => 201 , 'msg' => '请输入毕业年月'];
+             }
+             if(strtotime($body['years'])<=strtotime($body['startyears'])){
+                 return ['code' => 201 , 'msg' => '请输入正确的毕业时间'];
+             }
+             //判断毕业年月是否为空
+             if(!isset($body['branch_name']) || empty($body['branch_name'])){
+                 return ['code' => 201 , 'msg' => '请输入分校名称'];
+             }
+             //判断毕业年月是否为空
+             if(!isset($body['student_region']) || empty($body['student_region'])){
+                 return ['code' => 201 , 'msg' => '请输入毕业证寄回地址'];
+             }
+             $id = $body['id'];
+             unset($body['id']);
+             unset($body['moban_type']);
+             if(isset($body['/admin/datum/doDatumInsert'])){
+                 unset($body['/admin/datum/doDatumInsert']);
+             }
+             $body['create_time']=date('Y-m-d H:i:s');
+             $body['type']= 3;
+             $admin_name = isset(AdminLog::getAdminInfo()->admin_user->real_name) ? AdminLog::getAdminInfo()->admin_user->real_name : '';
+             $StudentDatumArr = self::where(['id'=>$id])->first();
+             if(empty($StudentDatumArr)){
+                 return ['code'=>201,'msg'=>'暂无数据信息'];
+             }else{
+                 if($StudentDatumArr['audit_status'] == 2 && $StudentDatumArr['audit_id']>0 && $StudentDatumArr['gather_id']>0 ){
+                     //正常流程走完一边（驳回）
+                     $datumDelRes=Datum::where('id',$StudentDatumArr['id'])->update(['is_del'=>0,'update_time'=>date('Y-m-d H:i:s')]);
+                     if(!$datumDelRes){
+                         DB::rollBack();
+                         return ['code'=>203,'msg'=>' 资料提交失败，请重试 '];
+                     }
+                     $OrderUpdate = ['consignee_name'=>$admin_name,'update_time'=>date('Y-m-d H:i:s')]; //修改订单状态
+                 }else{
+                     $OrderUpdate = ['consignee_name'=>$admin_name,'consignee_status'=>2,'update_time'=>date('Y-m-d H:i:s')]; //consignee_status 2是已收集 0 待收集  1 收集中  3 重新收集
+                 }
+                 //走第一遍流程
+                 $datumId = Datum::insertGetId($body);  //添加资料
+                 if($datumId<=0){
+                     DB::rollBack();
+                     return ['code'=>203,'msg'=>'资料提交失败，请重试'];
+                 }
+                 $update = [
+                     'information_id'=>$datumId,
+                     'gather_id' => isset(AdminLog::getAdminInfo()->admin_user->id) ? AdminLog::getAdminInfo()->admin_user->id : 0,
+                     'datum_create_time'=>$body['create_time'],
+                     'update_time'=> date('Y-m-d H:i:s')
+                 ];
+                 Datum::where('id',$StudentDatumArr['information_id'])->update($body);
+                 $res = self::where('id',$StudentDatumArr['id'])->update($update); //修改学员资料订单关系表的内容
+                 if(!$res){
+                     DB::rollBack();
+                     return ['code'=>203,'msg'=>'资料提交失败,请重试！'];
+                 }
 
-        //         $orderRes = Pay_order_inside::where('id',$StudentDatumArr['order_id'])->update($OrderUpdate); //修改订单表 资料收集状态
+                 $orderRes = Pay_order_inside::where('id',$StudentDatumArr['order_id'])->update($OrderUpdate); //修改订单表 资料收集状态
 
-        //         if($orderRes){
-        //             DB::commit();
-        //             return ['code'=>200,'msg'=>'资料提交成功'];
-        //         }else{
-        //             DB::rollBack();
-        //             return ['code'=>203,'msg'=>'资料提交失败,请重试！！'];
-        //         }
-        //     }
-        // }else if($body['moban_type'] == 4){
+                 if($orderRes){
+                     DB::commit();
+                     return ['code'=>200,'msg'=>'资料提交成功'];
+                 }else{
+                     DB::rollBack();
+                     return ['code'=>203,'msg'=>'资料提交失败,请重试！！'];
+                 }
+             }
+         }else if($body['moban_type'] == 4){
             $body['type']= 4;
+             unset($body['moban_type']);
             //判断学员资料关系表的id是否为空
             if(!isset($body['branch_school']) || empty($body['branch_school']) || $body['branch_school'] <= 0 ){
                 return ['code' => 201 , 'msg' => '学校标识不合法'];
@@ -606,8 +615,6 @@ class StudentDatum extends Model {
             if(isset($body['/admin/datum/doDatumInsert'])){
                 unset($body['/admin/datum/doDatumInsert']);
             }
-
-
             $body['create_time']=date('Y-m-d H:i:s');
             DB::beginTransaction();
             $admin_name = isset(AdminLog::getAdminInfo()->admin_user->real_name) ? AdminLog::getAdminInfo()->admin_user->real_name : '';
@@ -638,14 +645,13 @@ class StudentDatum extends Model {
                     'datum_create_time'=>$body['create_time'],
                     'update_time'=> date('Y-m-d H:i:s')
                 ];
-                $res = self::where('id',$id)->update($update); //修改学员资料订单关系表的内容
+                Datum::where('id',$StudentDatumArr['information_id'])->update($body);
+                $res = self::where('id',$StudentDatumArr['id'])->update($update); //修改学员资料订单关系表的内容
                 if(!$res){
                     DB::rollBack();
                     return ['code'=>203,'msg'=>'资料提交失败,请重试！'];
                 }
-
                 $orderRes = Pay_order_inside::where('id',$StudentDatumArr['order_id'])->update($OrderUpdate); //修改订单表 资料收集状态
-
                 if($orderRes){
                     DB::commit();
                     return ['code'=>200,'msg'=>'资料提交成功'];
@@ -654,7 +660,7 @@ class StudentDatum extends Model {
                     return ['code'=>203,'msg'=>'资料提交失败,请重试！！'];
                 }
             }
-    //   }
+       }
     }
 
     public static function getDatumById($body){

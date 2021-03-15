@@ -75,7 +75,7 @@ class Refund_order extends Model
             'remit_time' => date('Y-m-d H:i:s'),
             'bank_name' => $data['bank_name'],
             'openbank_name' => $data['openbank_name'],
-            'bank_card' => $data['bank_card'],
+            'bank_card' => $data['bank_card']
         ];
         $add = self::insert($res);
         if($add){
@@ -190,7 +190,9 @@ class Refund_order extends Model
                 }else if($v['confirm_status'] == 1){
                     $v['confirm_status_text'] = '已确认';
                 }else if($v['confirm_status'] == 2){
-                    $v['confirm_status_text'] = '已驳回';
+                    $v['confirm_status_text'] = '被驳回';
+                }else if($v['confirm_status'] == 3){
+                    $v['confirm_status_text'] = '待财务确认';
                 }
                 if($v['refund_plan'] == 0){
                     $v['refund_plan_text'] = '未确认';
@@ -200,6 +202,15 @@ class Refund_order extends Model
                     $v['refund_plan_text'] = '已打款';
                 }else if($v['refund_plan'] == 3){
                     $v['refund_plan_text'] = '被驳回';
+                }
+                if($v['confirm_status'] == 0){
+                    $v['finance_text'] = '待退费员确认';
+                }else if($v['confirm_status'] == 1){
+                    $v['finance_text'] = '已确认';
+                }else if($v['confirm_status'] == 2){
+                    $v['finance_text'] = '被驳回';
+                }else if($v['confirm_status'] == 3){
+                    $v['finance_text'] = '待确认';
                 }
                 //course  课程
                 $course = Course::select('course_name')->where(['id'=>$v['course_id']])->first();
@@ -509,7 +520,7 @@ class Refund_order extends Model
         if(!$order){
             return ['code' => 201 , 'msg' => '参数不对'];
         }
-        if($order['confirm_status'] == 1){
+        if($order['confirm_status'] == 2){
             return ['code' => 200, 'msg' => '修改成功'];
         }else{
             if($data['status'] == 0 || empty($data['status'])){
@@ -553,7 +564,7 @@ class Refund_order extends Model
                 $up['course_id'] = $data['course_id'];
                 $up['student_name'] = $data['student_name'];
                 $up['phone'] = $data['phone'];
-                $up['confirm_status'] = 1;
+                $up['confirm_status'] = 3;
                 $up['order_id'] = implode(',',$orderid);
                 $up['reality_price'] = $data['reality_price'];
                 $up['reality_sing_price'] = $data['reality_sing_price'];
@@ -600,6 +611,9 @@ class Refund_order extends Model
          */
     public static function remitOrder($data){
         $order = self::where(['id' => $data['id']])->first();
+        if($order['confirm_status'] != 1){
+            return ['code' => 201 , 'msg' => '财务未审核'];
+        }
         if(!$order){
             return ['code' => 201 , 'msg' => '参数不对'];
         }
@@ -617,6 +631,20 @@ class Refund_order extends Model
             return ['code' => 200, 'msg' => '上传成功'];
         }else{
             return ['code' => 201, 'msg' => '修改失败'];
+        }
+    }
+    //财务确认退费
+    public static function financeOrder($data){
+        //status 1通过2驳回
+        $refund_cause = '';
+        if($data['status'] == 2){
+            $refund_cause = $data['refund_cause'];
+        }
+        $up = self::where(['id' => $data['id']])->update(['confirm_status'=>$data['status'],'refund_cause'=>$refund_cause]);
+        if($up){
+            return ['code' => 200, 'msg' => '审核成功'];
+        }else{
+            return ['code' => 201, 'msg' => '审核失败'];
         }
     }
     //退款确认添加备注

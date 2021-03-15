@@ -200,6 +200,7 @@ class Pay_order_inside extends Model
         }
         if(!empty($res)){
             foreach ($res as $k=>&$v){
+                $v['pay_voucher'] = explode(",",$v['pay_voucher']);
                 //查学校
                 if(!isset($v['school_id']) || empty($v['school_id']) || $v['school_id'] == 0){
                     $v['school_name'] = '';
@@ -392,6 +393,13 @@ class Pay_order_inside extends Model
         }
         if(!isset($data['pay_voucher']) || empty($data['pay_voucher'])){
             return ['code' => 201 , 'msg' => '未上传支付凭证'];
+        }
+
+        if(isset($data['pay_voucher']) && !empty($data['pay_voucher'])){
+            $credentials = json_decode($data['pay_voucher'],true);
+            $data['pay_voucher'] = implode(',',$credentials);
+        }else{
+            $data['pay_voucher'] = '';
         }
         $chaxunm = [];
         unset($data['/admin/order/handOrder']);
@@ -1800,7 +1808,7 @@ class Pay_order_inside extends Model
         //判断时间
         $begindata="2020-03-04";
         $enddate = date('Y-m-d');
-        $statetime = !empty($data['state_time'])?$data['state_time']:$begindata;
+        $statetime = !empty($data['start_time'])?$data['start_time']:$begindata;
         $endtime = !empty($data['end_time'])?$data['end_time']:$enddate;
         $state_time = $statetime." 00:00:00";
         $end_time = $endtime." 23:59:59";
@@ -4037,7 +4045,7 @@ class Pay_order_inside extends Model
         $offset   = ($page - 1) * $pagesize;
 
         //学校id
-        $school_id = [];
+            $school_id = [];
         if(isset($body['school_id']) || !empty($body['school_id'])){
             $bodyschool = School::where(['id'=>$body['school_id'],'is_del'=>0,'is_open'=>0,'look_all_flag'=>1])->first();
             if(!empty($bodyschool)){
@@ -4058,7 +4066,6 @@ class Pay_order_inside extends Model
                 }
             }
         }
-
         if(!empty($body['search_time'])) {
             $create_time = json_decode($body['search_time'], true);
             $state_time = $create_time[0] . " 00:00:00";
@@ -4100,6 +4107,7 @@ class Pay_order_inside extends Model
                any_value(school.two_extraction_ratio) as two_extraction_ratio ,
                any_value(school.school_name) as school_name ,
                any_value(school.level) as level ,
+               any_value(school.parent_id) as parent_id ,
                any_value(school.tax_point) as tax_point ,
                any_value(school.commission) as commission ,
                any_value(school.deposit) as deposit ,
@@ -4137,6 +4145,7 @@ class Pay_order_inside extends Model
                            any_value(school.two_extraction_ratio) as two_extraction_ratio ,
                            any_value(school.school_name) as school_name ,
                            any_value(school.level) as level ,
+                           any_value(school.parent_id) as parent_id ,
                            any_value(school.tax_point) as tax_point ,
                            any_value(school.commission) as commission ,
                            any_value(school.deposit) as deposit,
@@ -4177,6 +4186,10 @@ class Pay_order_inside extends Model
                            any_value(school.two_extraction_ratio) as two_extraction_ratio ,
                            any_value(school.school_name) as school_name ,
                            any_value(school.level) as level ,
+<<<<<<< HEAD
+=======
+                           any_value(school.parent_id) as parent_id ,
+>>>>>>> c2e58f4774bb8007eaed3008e34cbeadf9c40766
                            any_value(school.tax_point) as tax_point ,
                            any_value(school.commission) as commission ,
                            any_value(school.deposit) as deposit,
@@ -4195,6 +4208,7 @@ class Pay_order_inside extends Model
                 }
                 //循环获取相关信息
                 foreach ($list as $k => $v) {
+
                     $v = (array)$v;
                     //获取是几级分校
                     if ($v['level'] == 1) {
@@ -4453,6 +4467,22 @@ class Pay_order_inside extends Model
                         'returnschoolprice' => $returnschoolprice
                     ];
                 }
+                foreach($array as $k => $v){
+                    $array[$k]['commission_rebate'] = sprintf("%01.2f", $v['commission_rebate']).'%';//返佣比例
+                    $array[$k]['first_out_of_amount'] = sprintf("%01.2f", $v['first_out_of_amount']).'%';//抽离比例（一级）
+                    $array[$k]['second_out_of_amount'] = sprintf("%01.2f", $v['second_out_of_amount']).'%';//抽离比例（二级）
+                    if(!empty($array[$k]['first_school_name'])){
+                        $array[$k]['level'] = 1;
+                    }
+                    if(!empty($array[$k]['two_school_name'])){
+                        $array[$k]['level'] = 2;
+                    }
+                    if(!empty($array[$k]['three_school_name'])){
+                        $array[$k]['level'] = 3;
+                    }
+                }
+                $last_names = array_column($array,'level');
+                array_multisort($last_names,SORT_ASC,$array);
                 return ['code' => 200, 'msg' => '获取列表成功', 'data' => ['list' => $array, 'total' => $count, 'pagesize' => $pagesize, 'page' => $page]];
             }
         }

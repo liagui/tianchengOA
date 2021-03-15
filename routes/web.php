@@ -94,6 +94,7 @@ $router->group(['prefix' => 'admin' , 'namespace' => 'Admin','middleware'=> ['jw
         $router->post('initOrder', 'OrderController@initOrder');//添加退款订单
         $router->post('seeOrder', 'OrderController@seeOrder');//查看退款凭证
         $router->post('amendOrder', 'OrderController@amendOrder');//修改退费状态
+        $router->post('financeOrder', 'OrderController@financeOrder');//财务审核退费订单状态
         $router->post('remitOrder', 'OrderController@remitOrder');//修改打款状态
         $router->post('relevanceOrder', 'OrderController@relevanceOrder');//关联订单列表
         $router->post('relevanceVoucher', 'OrderController@relevanceVoucher');//关联支付凭证列表

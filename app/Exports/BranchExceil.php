@@ -33,6 +33,7 @@ class BranchExceil implements FromCollection, WithHeadings{
         $array = [];
         //学校id
         $school_id = [];
+
         if(isset($body['school_id']) || !empty($body['school_id'])){
             $bodyschool = School::where(['id'=>$body['school_id'],'is_del'=>0,'is_open'=>0,'look_all_flag'=>1])->first();
             if(!empty($bodyschool)){
@@ -422,6 +423,7 @@ class BranchExceil implements FromCollection, WithHeadings{
                 return collect($array);
             }
         }else{
+
             return collect($array);
         }
     }
