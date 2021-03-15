@@ -49,17 +49,17 @@ class SureOrderExceil implements FromCollection, WithHeadings {
                 $paytype = [$data['pay_type']];
             }
         }
-        if(isset($data['confirm_order_type']) ){
+        if(isset($data['confirm_order_type']) && !empty($data['confirm_order_type']) ){
             $where['confirm_order_type'] = $data['confirm_order_type'];
         }
-        if(isset($data['return_visit'])){
+        if(isset($data['return_visit'])&& !empty($data['return_visit'])){
             $where['return_visit'] = $data['return_visit'];
         }
-        if(isset($data['classes']) ){
+        if(isset($data['classes'])&& !empty($data['classes']) ){
             $where['classes'] = $data['classes'];
         }
         //课程id
-        if(isset($data['course_id'])){
+        if(isset($data['course_id'])&& !empty($data['course_id'])){
             $where['course_id'] = $data['course_id'];
         }
         $order = Pay_order_inside::where(function($query) use ($data,$schoolarr,$school_id,$paytype) {
@@ -70,11 +70,12 @@ class SureOrderExceil implements FromCollection, WithHeadings {
             }
             if(!empty($school_id)){
                 $query->whereIn('school_id',$school_id);
+            }else{
+                $query->whereIn('school_id',$schoolarr);
             }
             if(!empty($paytype)){
                 $query->whereIn('pay_type', $paytype);
             }
-            $query->whereIn('school_id',$schoolarr);
         })
             ->where('pay_status','<',2)
             ->where($where)
