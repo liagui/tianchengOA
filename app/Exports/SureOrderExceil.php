@@ -79,6 +79,7 @@ class SureOrderExceil implements FromCollection, WithHeadings {
             ->where('pay_status','<',2)
             ->where($where)
             ->orderByDesc('id')->get()->toArray();
+        //循环查询分类
         if(!empty($order)){
             foreach ($order as $k=>&$v){
                 if($v['pay_type'] <= 9){
