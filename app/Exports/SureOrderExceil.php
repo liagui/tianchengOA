@@ -24,7 +24,7 @@ class SureOrderExceil implements FromCollection, WithHeadings {
         $data = $this->where;
         $schoolarr = $this->schools;
         $where['del_flag'] = 0;  //未删除
-        $where['confirm_status'] = 1;  //已确认
+        $where['confirm_status'] = 2;  //已确认
         //科目id&学科id
         if(!empty($data['project_id'])){
             $parent = json_decode($data['project_id'], true);
@@ -35,33 +35,50 @@ class SureOrderExceil implements FromCollection, WithHeadings {
                 }
             }
         }
-        if(isset($data['school_id']) && !empty($data['school_id'])){
-            $where['school_id'] = $data['school_id'];
+        //学校id
+        $school_id=[];
+        if(isset($data['school_name'])){
+            $school_id = School::select('id')->where('school_name','like','%'.$data['school_name'].'%')->where('is_del',0)->get();
         }
+        //支付方式
+        $paytype=[];
         if(isset($data['pay_type']) && !empty($data['pay_type'])){
-            $where['pay_type'] = $data['pay_type'];
+            if($data['pay_type'] == 5){
+                $paytype = [5,8,9];
+            }else{
+                $paytype = [$data['pay_type']];
+            }
         }
-        if(isset($data['confirm_order_type']) && !empty($data['confirm_order_type'])){
+        if(isset($data['confirm_order_type']) ){
             $where['confirm_order_type'] = $data['confirm_order_type'];
         }
-        if(isset($data['return_visit'])&& !empty($data['return_visit'])){
+        if(isset($data['return_visit'])){
             $where['return_visit'] = $data['return_visit'];
         }
-        if(isset($data['classes']) && !empty($data['classes'])){
+        if(isset($data['classes']) ){
             $where['classes'] = $data['classes'];
         }
-        $order = Pay_order_inside::where(function($query) use ($data,$schoolarr) {
+        //课程id
+        if(isset($data['course_id'])){
+            $where['course_id'] = $data['course_id'];
+        }
+        $order = self::where(function($query) use ($data,$schoolarr,$school_id,$paytype) {
             if(isset($data['order_no']) && !empty($data['order_no'])){
                 $query->where('order_no',$data['order_no'])
                     ->orwhere('name',$data['order_no'])
                     ->orwhere('mobile',$data['order_no']);
             }
+            if(!empty($school_id)){
+                $query->whereIn('school_id',$school_id);
+            }
+            if(!empty($paytype)){
+                $query->whereIn('pay_type', $paytype);
+            }
             $query->whereIn('school_id',$schoolarr);
         })
             ->where('pay_status','<',2)
-        ->where($where)
-        ->orderByDesc('id')
-        ->get()->toArray();
+            ->where($where)
+            ->orderByDesc('id')->get()->toArray();
         if(!empty($order)){
             foreach ($order as $k=>&$v){
                 if($v['pay_type'] <= 9){
