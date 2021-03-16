@@ -1895,6 +1895,7 @@ class Pay_order_inside extends Model
             ->offset($offset)->limit($pagesize)
             ->get()->toArray();
         foreach ($order as $k=>&$v){
+            $v['pay_voucher'] = !empty($v['pay_voucher'])?explode(",",$v['pay_voucher']):'';
             //查学校
             if(empty($v['school_id']) || $v['school_id'] == 0){
                 $v['school_name'] = '';
