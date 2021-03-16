@@ -626,6 +626,7 @@ class Pay_order_inside extends Model
         //循环查询分类
         if(!empty($order)){
             foreach ($order as $k=>&$v){
+                $v['pay_voucher'] = explode(",",$v['pay_voucher']);
                 //查学校
                 $school = School::where(['id'=>$v['school_id']])->first();
                 if($school){
@@ -1054,6 +1055,7 @@ class Pay_order_inside extends Model
         //循环查询分类
         if(!empty($order)){
             foreach ($order as $k=>&$v){
+                $v['pay_voucher'] = explode(",",$v['pay_voucher']);
                 if($v['pay_type'] <= 9){
                     if(!empty($v['offline_id'])){
                         $chnnel = Channel::where(['id'=>$v['offline_id']])->first();
@@ -1554,6 +1556,7 @@ class Pay_order_inside extends Model
         //循环查询分类
         if(!empty($order)){
             foreach ($order as $k=>&$v){
+                $v['pay_voucher'] = explode(",",$v['pay_voucher']);
                 if($v['pay_type'] <= 9){
                     if(!empty($v['offline_id'])){
                         $chnnel = Channel::where(['id'=>$v['offline_id']])->first();
