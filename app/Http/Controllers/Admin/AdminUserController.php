@@ -236,7 +236,14 @@ class AdminUserController extends Controller {
         // }
         if(!isset($data['school_id']) || empty($data['school_id'])){
             $data['school_id'] = 0;
+        }else{
+            $schoolIds = explode(',',$data['school_id']);
+            $schoolIdsArr = School::where('is_del',0)->pluck('id')->toArray();
+            if(count($schoolIds) == count($schoolIdsArr)){
+                $data['school_id'] =0;
+            }
         }
+
         if(isset($data['pwd'])){
             unset($data['pwd']);
         }
@@ -366,8 +373,15 @@ class AdminUserController extends Controller {
         //     $data['school_id'] = $data['school_id'];
         // }
         if(!isset($data['school_id']) || empty($data['school_id'])){
-             $data['school_id'] =0;
+            $data['school_id'] =0;
+        }else{
+            $schoolIds = explode(',',$data['school_id']);
+            $schoolIdsArr = School::where('is_del',0)->pluck('id')->toArray();
+            if(count($schoolIds) == count($schoolIdsArr)){
+                $data['school_id'] =0;
+            }
         }
+
          //7.11  end
         if(isset($data['password']) && isset($data['pwd'])){
 
@@ -531,4 +545,3 @@ class AdminUserController extends Controller {
         }
     }
 }
-
