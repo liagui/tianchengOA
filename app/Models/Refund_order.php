@@ -651,7 +651,11 @@ class Refund_order extends Model
     //退款确认添加备注
     public static function addremark($data){
         unset($data['/admin/order/addremark']);
-        $up = self::where(['id' => $data['id']])->update(['remit_remark'=>$data['remark']]);
+        $admin = isset(AdminLog::getAdminInfo()->admin_user) ? AdminLog::getAdminInfo()->admin_user : [];
+        $find = self::where(['id' => $data['id']])->first();
+        $str = $admin['username'].':'.$data['remark'].'<br/>';
+        $newstr = $find['remit_remark'].$str;
+        $up = self::where(['id' => $data['id']])->update(['remit_remark'=>$newstr]);
         if($up){
             return ['code' => 200, 'msg' => '添加成功'];
         }else{
