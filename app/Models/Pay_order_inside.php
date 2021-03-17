@@ -626,11 +626,7 @@ class Pay_order_inside extends Model
         //循环查询分类
         if(!empty($order)){
             foreach ($order as $k=>&$v){
-<<<<<<< HEAD
-                $v['pay_voucher'] = explode(",",$v['pay_voucher']);
-=======
                 $v['pay_voucher'] = !empty($v['pay_voucher'])?explode(",",$v['pay_voucher']):'';
->>>>>>> official
                 //查学校
                 $school = School::where(['id'=>$v['school_id']])->first();
                 if($school){
@@ -1059,11 +1055,7 @@ class Pay_order_inside extends Model
         //循环查询分类
         if(!empty($order)){
             foreach ($order as $k=>&$v){
-<<<<<<< HEAD
-                $v['pay_voucher'] = explode(",",$v['pay_voucher']);
-=======
                 $v['pay_voucher'] = !empty($v['pay_voucher'])?explode(",",$v['pay_voucher']):'';
->>>>>>> official
                 if($v['pay_type'] <= 9){
                     if(!empty($v['offline_id'])){
                         $chnnel = Channel::where(['id'=>$v['offline_id']])->first();
@@ -1564,11 +1556,7 @@ class Pay_order_inside extends Model
         //循环查询分类
         if(!empty($order)){
             foreach ($order as $k=>&$v){
-<<<<<<< HEAD
-                $v['pay_voucher'] = explode(",",$v['pay_voucher']);
-=======
                 $v['pay_voucher'] = !empty($v['pay_voucher'])?explode(",",$v['pay_voucher']):'';
->>>>>>> official
                 if($v['pay_type'] <= 9){
                     if(!empty($v['offline_id'])){
                         $chnnel = Channel::where(['id'=>$v['offline_id']])->first();
