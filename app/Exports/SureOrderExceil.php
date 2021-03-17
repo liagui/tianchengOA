@@ -24,7 +24,7 @@ class SureOrderExceil implements FromCollection, WithHeadings {
         $data = $this->where;
         $schoolarr = $this->schools;
         $where['del_flag'] = 0;  //未删除
-        $where['confirm_status'] = 1;  //已确认
+        $where['confirm_status'] = 2;  //已确认
         //科目id&学科id
         if(!empty($data['project_id'])){
             $parent = json_decode($data['project_id'], true);
@@ -35,36 +35,55 @@ class SureOrderExceil implements FromCollection, WithHeadings {
                 }
             }
         }
-        if(isset($data['school_id']) && !empty($data['school_id'])){
-            $where['school_id'] = $data['school_id'];
+        //学校id
+        $school_id=[];
+        if(isset($data['school_name'])){
+            $school_id = School::select('id')->where('school_name','like','%'.$data['school_name'].'%')->where('is_del',0)->get();
         }
+        //支付方式
+        $paytype=[];
         if(isset($data['pay_type']) && !empty($data['pay_type'])){
-            $where['pay_type'] = $data['pay_type'];
+            if($data['pay_type'] == 5){
+                $paytype = [5,8,9];
+            }else{
+                $paytype = [$data['pay_type']];
+            }
         }
-        if(isset($data['confirm_order_type']) && !empty($data['confirm_order_type'])){
+        if(isset($data['confirm_order_type']) && !empty($data['confirm_order_type']) ){
             $where['confirm_order_type'] = $data['confirm_order_type'];
         }
         if(isset($data['return_visit'])&& !empty($data['return_visit'])){
             $where['return_visit'] = $data['return_visit'];
         }
-        if(isset($data['classes']) && !empty($data['classes'])){
+        if(isset($data['classes'])&& !empty($data['classes']) ){
             $where['classes'] = $data['classes'];
         }
-        $order = Pay_order_inside::where(function($query) use ($data,$schoolarr) {
+        //课程id
+        if(isset($data['course_id'])&& !empty($data['course_id'])){
+            $where['course_id'] = $data['course_id'];
+        }
+        $order = Pay_order_inside::where(function($query) use ($data,$schoolarr,$school_id,$paytype) {
             if(isset($data['order_no']) && !empty($data['order_no'])){
                 $query->where('order_no',$data['order_no'])
                     ->orwhere('name',$data['order_no'])
                     ->orwhere('mobile',$data['order_no']);
             }
-            $query->whereIn('school_id',$schoolarr);
+            if(!empty($school_id)){
+                $query->whereIn('school_id',$school_id);
+            }else{
+                $query->whereIn('school_id',$schoolarr);
+            }
+            if(!empty($paytype)){
+                $query->whereIn('pay_type', $paytype);
+            }
         })
             ->where('pay_status','<',2)
-        ->where($where)
-        ->orderByDesc('id')
-        ->get()->toArray();
+            ->where($where)
+            ->orderByDesc('id')->get()->toArray();
+        //循环查询分类
         if(!empty($order)){
             foreach ($order as $k=>&$v){
-                if($v['pay_type'] <= 4){
+                if($v['pay_type'] <= 9){
                     if(!empty($v['offline_id'])){
                         $chnnel = Channel::where(['id'=>$v['offline_id']])->first();
                         if($v['pay_type'] == 1){
@@ -75,6 +94,10 @@ class SureOrderExceil implements FromCollection, WithHeadings {
                             $v['pay_type_text'] = $chnnel['channel_name'].'-汇聚-微信';
                         }else if ($v['pay_type'] == 4){
                             $v['pay_type_text'] =$chnnel['channel_name'].'-汇聚-支付宝';
+                        }else if ($v['pay_type'] == 5 ||$v['pay_type'] == 8||$v['pay_type'] == 9){
+                            $v['pay_type_text'] =$chnnel['channel_name'].'-银联';
+                        }else if ($v['pay_type'] == 6){
+                            $v['pay_type_text'] =$chnnel['channel_name'].'-汇付';
                         }
                     }else{
                         $v['pay_type_text']='';
@@ -82,11 +105,11 @@ class SureOrderExceil implements FromCollection, WithHeadings {
                 }else{
                     if(!empty($v['offline_id'])){
                         $offline = OfflinePay::where(['id'=>$v['offline_id']])->first();
-                        if ($v['pay_type'] == 5){
+                        if ($v['pay_type'] == 10){
                             $v['pay_type_text'] = '银行卡支付-'.$offline['account_name'];
-                        }else if ($v['pay_type'] == 6){
+                        }else if ($v['pay_type'] == 11){
                             $v['pay_type_text'] = '对公转账-'.$offline['account_name'];
-                        }else if ($v['pay_type'] == 7){
+                        }else if ($v['pay_type'] == 12){
                             $v['pay_type_text'] = '支付宝账号对公-'.$offline['account_name'];
                         }
                     }else{
@@ -128,12 +151,18 @@ class SureOrderExceil implements FromCollection, WithHeadings {
                 }else if($v['first_pay'] == 4){
                     $v['first_pay_text'] = '最后一笔尾款';
                 }
-                if($v['confirm_status'] == 0){
-                    $v['confirm_status_text'] = '未确认';
+                if(isset($v['status']) && strlen($v['status']) >0 && $v['status'] == 0){
+                    $v['confirm_status_text'] = '待提交';
+                }else if($v['confirm_status'] == 0){
+                    $v['confirm_status_text'] = '待总校财务确认';
                 }else if($v['confirm_status'] == 1){
-                    $v['confirm_status_text'] = '确认';
+                    $v['confirm_status_text'] = '待总校确认';
                 }else if($v['confirm_status'] == 2){
-                    $v['confirm_status_text'] = '驳回';
+                    $v['confirm_status_text'] = '已确认';
+                }else if($v['confirm_status'] == 3){
+                    $v['confirm_status_text'] = '被财务驳回';
+                }else if($v['confirm_status'] == 4){
+                    $v['confirm_status_text'] = '被总校驳回';
                 }
                 //查学校
                 $school = School::where(['id'=>$v['school_id']])->first();
@@ -166,26 +195,26 @@ class SureOrderExceil implements FromCollection, WithHeadings {
             }
         }
         $tuyadan = [];
-        foreach ($order as $k=>$v){
+        foreach ($order as $ks=>$vs){
             $newtuyadan = [
-                'order_number' => ' '.$v['order_no'],
-                'create_time' => $v['create_time'],
-                'name' => $v['name'],
-                'mobile' => $v['mobile'],
-                'school_name' => $v['school_name'],
-                'project_name' => $v['project_name'],
-                'subject_name' => $v['subject_name'],
-                'course_name' => $v['course_name'],
-                'pay_type_text' => $v['pay_type_text'],
-                'course_Price' => $v['course_Price'],
-                'sign_Price' => $v['sign_Price'],
-                'pay_price' => $v['pay_price'],
-                'return_visit_text' => $v['return_visit_text'],
-                'classes_text' => $v['classes_text'],
-                'pay_time' => $v['pay_time'],
-                'confirm_order_type_text' => $v['confirm_order_type_text'],
-                'first_pay_text' => $v['first_pay_text'],
-                'pay_voucher' => $v['pay_voucher'],
+                'order_number' => ' '.$vs['order_no'],
+                'create_time' => $vs['create_time'],
+                'name' => $vs['name'],
+                'mobile' => $vs['mobile'],
+                'school_name' => $vs['school_name'],
+                'project_name' => $vs['project_name'],
+                'subject_name' => $vs['subject_name'],
+                'course_name' => $vs['course_name'],
+                'pay_type_text' => $vs['pay_type_text'],
+                'course_Price' => $vs['course_Price'],
+                'sign_Price' => $vs['sign_Price'],
+                'pay_price' => $vs['pay_price'],
+                'return_visit_text' => $vs['return_visit_text'],
+                'classes_text' => $vs['classes_text'],
+                'pay_time' => $vs['pay_time'],
+                'confirm_order_type_text' => $vs['confirm_order_type_text'],
+                'first_pay_text' => isset($vs['first_pay_text'])?$vs['first_pay_text']:'',
+                'pay_voucher' => $vs['pay_voucher'],
             ];
             $tuyadan[]=$newtuyadan;
         }

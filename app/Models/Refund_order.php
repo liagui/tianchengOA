@@ -176,6 +176,7 @@ class Refund_order extends Model
         //循环查询分类
         if(!empty($order)){
             foreach ($order as $k=>&$v){
+                $v['pay_voucher'] = !empty($v['pay_voucher'])?explode(",",$v['pay_voucher']):'';
                 $tui = explode(',',$v['refund_credentials']);
                 $v['refund_credentials'] = $tui;
                 $zhifu = explode(',',$v['pay_credentials']);
