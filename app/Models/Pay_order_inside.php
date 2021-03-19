@@ -789,7 +789,7 @@ class Pay_order_inside extends Model
         if($data['confirm_status'] == 1){
             $data['comfirm_time'] = date('Y-m-d H:i:s');
             //确认订单  排课  订单是定金 随便排，订单是尾款查询这个课程的订单的定金分配的班主任
-            if($order['first_pay'] == 2 || $order['first_pay']==3){
+            if($order['first_pay'] == 3 || $order['first_pay']==4){
                 $orderone = self::where(['name'=>$order['name'],'mobile'=>$order['mobile'],'course_id'=>$order['course_id'],'project_id'=>$order['project_id'],'subject_id'=>$order['subject_id'],'education_id'=>$order['education_id'],'major_id'=>$order['major_id'],'first_pay'=>1,'confirm_status'=>2,'fee_id'=>$order['fee_id']])->first();
                 if(!empty($orderone)){
                     $data['have_user_id'] = $orderone['id'];
