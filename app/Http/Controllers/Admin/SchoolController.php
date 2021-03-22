@@ -338,7 +338,7 @@ class SchoolController extends Controller {
         $where['is_open'] = 0;
         $where['is_del'] = 0;
         if(isset($data['level']) && !empty($data['level'])){
-            $where['level'] = $data['level'];
+            $where['level'] = $data['level'] - 1;
         }
         $list = School::where('school_name','like','%'.$data['name'].'%')->where($where)->get()->toArray();
         return response()->json(['code' => 200 , 'msg' => '更新成功','data'=>$list]);
