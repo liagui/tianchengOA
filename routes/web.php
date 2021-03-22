@@ -234,6 +234,8 @@ $router->group(['prefix' => 'admin' , 'namespace' => 'Admin','middleware'=> ['jw
     $router->post('documentary', 'StudentController@documentary');
     //获取跟单记录
     $router->post('getdocumentary', 'StudentController@getdocumentary');
+    //班主任备注
+    $router->post('haveremark', 'StudentController@haveremark');
     //转单
     $router->post('transferOrder', 'StudentController@transferOrder');
     //业绩总览

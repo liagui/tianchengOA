@@ -86,4 +86,15 @@ class StudentController extends Controller {
             return response()->json(['code' => 500 , 'msg' => $ex->getMessage()]);
         }
     }
+
+    //班主任新增备注或修改备注
+    public function haveremark(){
+        //获取提交的参数
+        try{
+            $data = Student::haveremark(self::$accept_data);
+            return response()->json($data);
+        } catch (Exception $ex) {
+            return response()->json(['code' => 500 , 'msg' => $ex->getMessage()]);
+        }
+    }
 }

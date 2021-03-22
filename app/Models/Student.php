@@ -808,4 +808,21 @@ class Student extends Model {
             return ['code' => 202 , 'msg' => '更改资料收集状态失败'];
         }
     }
+
+
+    //班主任对订单添加一条备注
+    public static function haveremark($body){
+        //获取登录人员信息
+        $admin = isset(AdminLog::getAdminInfo()->admin_user) ? AdminLog::getAdminInfo()->admin_user: [];
+        $time = date('Y-m-d H:s');
+        $remark = $body['remark'];
+        $haveremark = $admin['username'].'-'.$time.':'.$remark;
+        $up = Pay_order_inside::where(['id'=>$body['id']])->update(['have_user_remark'=>$haveremark]);
+        if($up){
+            return ['code' => 200 , 'msg' => '备注成功'];
+        }else{
+            return ['code' => 202 , 'msg' => '备注失败'];
+        }
+
+    }
 }
