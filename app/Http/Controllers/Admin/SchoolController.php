@@ -26,7 +26,7 @@ class SchoolController extends Controller {
             }
         } catch (Exception $ex) {
             return response()->json(['code' => 500 , 'msg' => $ex->getMessage()]);
-        }      
+        }
     }
 
 
@@ -36,10 +36,10 @@ class SchoolController extends Controller {
             $body = self::$accept_data;
 
             $school_id =  isset(AdminLog::getAdminInfo()->admin_user->school_id) ? AdminLog::getAdminInfo()->admin_user->school_id : 0;
-            if(!isset($body['school_id']) || empty($body['school_id'])){  
+            if(!isset($body['school_id']) || empty($body['school_id'])){
                 $schoolArr = $this->underlingLook($school_id);
                 $body['school_id']   = $schoolArr['data'];
-            }else{  
+            }else{
                 $body['school_id'] = explode(',',$body['school_id']);
             }
             $data = School::getList($body);
@@ -68,7 +68,7 @@ class SchoolController extends Controller {
      * return string
      */
     public function doInsertSchool() {
-     
+
         //获取提交的参数
         try{
             $data = School::doInsertSchool(self::$accept_data);
@@ -81,7 +81,7 @@ class SchoolController extends Controller {
             return response()->json(['code' => 500 , 'msg' => $ex->getMessage()]);
         }
     }
-    
+
     /*
      * @param  description   分校管理-修改分校方法
      * @param  参数说明       body包含以下参数[
@@ -101,7 +101,7 @@ class SchoolController extends Controller {
     public function doUpdateSchool() {
         //获取提交的参数
         try{
-           
+
             $data = School::doUpdateSchool(self::$accept_data);
             if($data['code'] == 200){
                 return response()->json(['code' => 200 , 'msg' => $data['msg']]);
@@ -112,7 +112,7 @@ class SchoolController extends Controller {
             return response()->json(['code' => 500 , 'msg' => $ex->getMessage()]);
         }
     }
-    
+
 
 
     public function getSchoolInfoById(){
@@ -124,12 +124,12 @@ class SchoolController extends Controller {
                 return response()->json(['code' => 200 , 'msg' => '获取详情成功' , 'data' => $data['data']]);
             } else {
                 return response()->json(['code' => $data['code'] , 'msg' => $data['msg']]);
-            }  
+            }
         } catch (Exception $ex) {
             return response()->json(['code' => 500 , 'msg' => $ex->getMessage()]);
         }
     }
-    
+
     /*
      * @param  description   分校管理-上级分校列表方法
      * @param  参数说明       body包含以下参数[
@@ -143,7 +143,7 @@ class SchoolController extends Controller {
     public function getSchoolUpdate(){
         $data = self::$accept_data;
         $validator = Validator::make(
-                $data, 
+                $data,
                 ['school_id' => 'required|integer'],
                 School::message());
         if($validator->fails()) {
@@ -188,7 +188,7 @@ class SchoolController extends Controller {
             return response()->json(['code' => 500 , 'msg' => $ex->getMessage()]);
         }
     }
-    
+
     /*
      * @param  description   分校管理列表接口
      * @param  参数说明       body包含以下参数[
@@ -273,7 +273,7 @@ class SchoolController extends Controller {
                 }else{
                     $is_open = 1;
                 }
-                DB::beginTransaction();         
+                DB::beginTransaction();
                 $res = School::where(['id'=>$data['school_id'],'is_del'=>0])->update(['is_open'=>$is_open,'update_time'=>date('Y-m-d H:i:s')]);
                 if($res){
                     DB::commit();
@@ -288,7 +288,7 @@ class SchoolController extends Controller {
         } catch (Exception $ex) {
             return response()->json(['code' => 500 , 'msg' => $ex->getMessage()]);
         }
-    }    
+    }
     /*
      * @param  description  是否查看下属分校
      * @param  参数说明       body包含以下参数[
@@ -329,7 +329,20 @@ class SchoolController extends Controller {
         } catch (Exception $ex) {
             return response()->json(['code' => 500 , 'msg' => $ex->getMessage()]);
         }
-    }        
+    }
+
+    //下拉框模糊查询学校列表
+    public function schoollist(){
+        //获取分校列表
+        $data = self::$accept_data;
+        $where['is_open'] = 0;
+        $where['is_del'] = 0;
+        if(isset($data['level']) && !empty($data['level'])){
+            $where['level'] = $data['level'];
+        }
+        $list = School::where('school_name','like','%'.$data['name'].'%')->where($where)->get()->toArray();
+        return response()->json(['code' => 200 , 'msg' => '更新成功','data'=>$list]);
+    }
 
 
 
