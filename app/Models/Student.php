@@ -815,8 +815,11 @@ class Student extends Model {
         //获取登录人员信息
         $admin = isset(AdminLog::getAdminInfo()->admin_user) ? AdminLog::getAdminInfo()->admin_user: [];
         $time = date('Y-m-d H:s');
-        $remark = $body['remark'];
-        $haveremark = $admin['username'].'-'.$time.':'.$remark;
+        if(!empty($body['remark'])){
+            $haveremark = $admin['username'].'-'.$time.':'.$body['remark'];
+        }else{
+            $haveremark='';
+        }
         $up = Pay_order_inside::where(['id'=>$body['id']])->update(['have_user_remark'=>$haveremark]);
         if($up){
             return ['code' => 200 , 'msg' => '备注成功'];
