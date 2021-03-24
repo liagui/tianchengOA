@@ -485,7 +485,7 @@ class Student extends Model {
                 if(isset($data['keyword']) && !empty(isset($data['keyword']))){
                     $query->where('name','like','%'.$data['keyword'].'%')->orWhere('mobile','like','%'.$data['keyword'].'%');
                 }
-            })->count();
+            })->where('confirm_status','<',3)->count();
             //分页数据
             $res = Pay_order_inside::where("seas_status",0)->where(function($query) use ($data,$school_id) {
                 if(isset($data['project_id']) && !empty($data['project_id'])){
@@ -509,7 +509,7 @@ class Student extends Model {
                 if(isset($data['keyword']) && !empty(isset($data['keyword']))){
                     $query->where('name','like','%'.$data['keyword'].'%')->orWhere('mobile','like','%'.$data['keyword'].'%');
                 }
-            })->orderByDesc("id")->get()->toArray();
+            })->orderByDesc("id")->where('confirm_status','<',3)->get()->toArray();
         }else{
             //计算总数
             $count = Pay_order_inside::select()->where("seas_status",0)->where("have_user_id",$user_id)->where(function($query) use ($data,$school_id) {
@@ -534,7 +534,7 @@ class Student extends Model {
                 if(isset($data['keyword']) && !empty(isset($data['keyword']))){
                     $query->where('name','like','%'.$data['keyword'].'%')->orWhere('mobile','like','%'.$data['keyword'].'%');
                 }
-            })->count();
+            })->where('confirm_status','<',3)->count();
             //分页数据
             $res = Pay_order_inside::select()->where("seas_status",0)->where("have_user_id",$user_id)->where(function($query) use ($data,$school_id) {
                 if(isset($data['project_id']) && !empty($data['project_id'])){
@@ -558,7 +558,7 @@ class Student extends Model {
                 if(isset($data['keyword']) && !empty(isset($data['keyword']))){
                     $query->where('name','like','%'.$data['keyword'].'%')->orWhere('mobile','like','%'.$data['keyword'].'%');
                 }
-            })->orderByDesc("id")->get()->toArray();
+            })->orderByDesc("id")->where('confirm_status','<',3)->get()->toArray();
         }
         foreach($res as $k => &$v){
 
