@@ -204,7 +204,9 @@ class Pay_order_inside extends Model
                     if(strpos($v['pay_voucher'],',') !== false){
                         $v['pay_voucher'] = explode(",",$v['pay_voucher']);
                     }else{
-                        $v['pay_voucher'][0] = $v['pay_voucher'];
+                        $imgs = [];
+                        array_push($imgs,$v['pay_voucher']);
+                        $v['pay_voucher'] = $imgs;
                     }
                 }
                 //查学校
