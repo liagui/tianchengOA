@@ -634,16 +634,14 @@ class Pay_order_inside extends Model
         //循环查询分类
         if(!empty($order)){
             foreach ($order as $k=>&$v){
-                $pay_voucher = $v['pay_voucher'];
-                unset($v['pay_voucher']);
-                if(!empty($pay_voucher)){
-                    if(strstr($pay_voucher,',') != false){
-                        $v['pay_voucher'] = explode(",",$pay_voucher);
+                if(!empty($v['pay_voucher'])){
+                    if(strpos($v['pay_voucher'],',') !== false){
+                        $v['pay_voucher'] = explode(",",$v['pay_voucher']);
                     }else{
-                        $v['pay_voucher'] = $pay_voucher;
+                        $imgs = [];
+                        array_push($imgs,$v['pay_voucher']);
+                        $v['pay_voucher'] = $imgs;
                     }
-                }else{
-                    $v['pay_voucher'] = [];
                 }
                 //查学校
                 $school = School::where(['id'=>$v['school_id']])->first();
@@ -1109,16 +1107,14 @@ class Pay_order_inside extends Model
         //循环查询分类
         if(!empty($order)){
             foreach ($order as $k=>&$v){
-                $pay_voucher = $v['pay_voucher'];
-                unset($v['pay_voucher']);
-                if(!empty($pay_voucher)){
-                    if(strstr($pay_voucher,',') != false){
-                        $v['pay_voucher'] = explode(",",$pay_voucher);
+                if(!empty($v['pay_voucher'])){
+                    if(strpos($v['pay_voucher'],',') !== false){
+                        $v['pay_voucher'] = explode(",",$v['pay_voucher']);
                     }else{
-                        $v['pay_voucher'] = $pay_voucher;
+                        $imgs = [];
+                        array_push($imgs,$v['pay_voucher']);
+                        $v['pay_voucher'] = $imgs;
                     }
-                }else{
-                    $v['pay_voucher'] = [];
                 }
                 if($v['pay_type'] <= 9){
                     if(!empty($v['offline_id'])){
@@ -1620,16 +1616,14 @@ class Pay_order_inside extends Model
         //循环查询分类
         if(!empty($order)){
             foreach ($order as $k=>&$v){
-                $pay_voucher = $v['pay_voucher'];
-                unset($v['pay_voucher']);
-                if(!empty($pay_voucher)){
-                    if(strstr($pay_voucher,',') != false){
-                        $v['pay_voucher'] = explode(",",$pay_voucher);
+                if(!empty($v['pay_voucher'])){
+                    if(strpos($v['pay_voucher'],',') !== false){
+                        $v['pay_voucher'] = explode(",",$v['pay_voucher']);
                     }else{
-                        $v['pay_voucher'] = $pay_voucher;
+                        $imgs = [];
+                        array_push($imgs,$v['pay_voucher']);
+                        $v['pay_voucher'] = $imgs;
                     }
-                }else{
-                    $v['pay_voucher'] = [];
                 }
                 if($v['pay_type'] <= 9){
                     if(!empty($v['offline_id'])){
@@ -1969,16 +1963,14 @@ class Pay_order_inside extends Model
             ->offset($offset)->limit($pagesize)
             ->get()->toArray();
         foreach ($order as $k=>&$v){
-            $pay_voucher = $v['pay_voucher'];
-            unset($v['pay_voucher']);
-            if(!empty($pay_voucher)){
-                if(strstr($pay_voucher,',') != false){
-                    $v['pay_voucher'] = explode(",",$pay_voucher);
+            if(!empty($v['pay_voucher'])){
+                if(strpos($v['pay_voucher'],',') !== false){
+                    $v['pay_voucher'] = explode(",",$v['pay_voucher']);
                 }else{
-                    $v['pay_voucher'] = $pay_voucher;
+                    $imgs = [];
+                    array_push($imgs,$v['pay_voucher']);
+                    $v['pay_voucher'] = $imgs;
                 }
-            }else{
-                $v['pay_voucher'] = [];
             }
             //查学校
             if(empty($v['school_id']) || $v['school_id'] == 0){
