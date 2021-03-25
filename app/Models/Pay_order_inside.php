@@ -200,16 +200,10 @@ class Pay_order_inside extends Model
         }
         if(!empty($res)){
             foreach ($res as $k=>&$v){
-                $pay_voucher = $v['pay_voucher'];
-                unset($v['pay_voucher']);
-                if(!empty($pay_voucher)){
-                    if(strstr($pay_voucher,',') != false){
-                        $v['pay_voucher'] = explode(",",$pay_voucher);
-                    }else{
-                        $v['pay_voucher'] = $pay_voucher;
-                    }
+                if(strstr($v['pay_voucher'],',') != false){
+                    $v['pay_voucher'] = explode(",",$v['pay_voucher']);
                 }else{
-                    $v['pay_voucher'] = [];
+                    $v['pay_voucher'][] = $v['pay_voucher'];
                 }
                 //查学校
                 if(!isset($v['school_id']) || empty($v['school_id']) || $v['school_id'] == 0){
