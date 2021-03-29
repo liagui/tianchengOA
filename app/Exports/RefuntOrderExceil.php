@@ -9,7 +9,7 @@ use App\Models\Refund_order;
 use App\Models\School;
 use Maatwebsite\Excel\Concerns\FromCollection;
 use Maatwebsite\Excel\Concerns\WithHeadings;
-class RefuntOrdersoujiExceil implements FromCollection, WithHeadings {
+class RefuntOrderExceil implements FromCollection, WithHeadings {
 
     protected $where;
     protected $schools;
