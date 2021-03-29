@@ -212,6 +212,7 @@ class SureOrderExceil implements FromCollection, WithHeadings {
                 'return_visit_text' => $vs['return_visit_text'],
                 'classes_text' => $vs['classes_text'],
                 'pay_time' => $vs['pay_time'],
+                'sure_time' => $vs['sure_time'],
                 'confirm_order_type_text' => $vs['confirm_order_type_text'],
                 'first_pay_text' => isset($vs['first_pay_text'])?$vs['first_pay_text']:'',
                 'pay_voucher' => $vs['pay_voucher'],
@@ -238,6 +239,7 @@ class SureOrderExceil implements FromCollection, WithHeadings {
             '是否回访',
             '是否开课',
             '支付成功时间',
+            '订单确认时间',
             '订单类型',
             '缴费类型',
             '凭证'
