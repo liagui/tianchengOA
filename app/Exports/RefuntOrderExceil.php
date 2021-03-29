@@ -22,20 +22,20 @@ class RefuntOrderExceil implements FromCollection, WithHeadings {
         $schoolarr = $this->schools;
         //退费状态
         $where=[];
-        if(isset($data['confirm_status'])){
+        if(isset($data['confirm_status']) && !empty($data['confirm_status'])){
             $where['confirm_status'] = $data['confirm_status'];
         }
         //打款状态
-        if(isset($data['refund_plan'])){
+        if(isset($data['refund_plan']) && !empty($data['refund_plan'])){
             $where['refund_plan'] = $data['refund_plan'];
         }
         //学校id
         $school_id=[];
-        if(isset($data['school_name'])){
+        if(isset($data['school_name'])&& !empty($data['school_name'])){
             $school_id = School::select('id')->where('school_name','like','%'.$data['school_name'].'%')->where('is_del',0)->get();
         }
         //科目id&学科id
-        if(!empty($data['project_id'])){
+        if(isset($data['project_id']) && !empty($data['project_id'])){
             $parent = json_decode($data['project_id'], true);
             if(!empty($parent[0])){
                 $where['project_id'] = $parent[0];
@@ -44,7 +44,7 @@ class RefuntOrderExceil implements FromCollection, WithHeadings {
                 }
             }
         }
-        if(isset($data['course_id'])){
+        if(isset($data['course_id']) && !empty($data['course_id'])){
             $where['course_id'] = $data['course_id'];
         }
         //判断时间
