@@ -421,7 +421,7 @@ class Pay_order_inside extends Model
             ];
         }
         //根据条件查询订单 有就不扣报名费
-        $order = self::where(['mobile'=>$data['mobile'],'course_id'=>$data['course_id'],'school_id'=>$data['school_id'],'project_id'=>$data['project_id'],'subject_id'=>$data['subject_id']])->whereIn('confirm_status',[1,2])->first();
+        $order = self::where(['mobile'=>$data['mobile'],'course_id'=>$data['course_id'],'school_id'=>$data['school_id'],'project_id'=>$data['project_id'],'subject_id'=>$data['subject_id']])->where($chaxunm)->whereIn('confirm_status',[1,2])->first();
         if(!empty($order)){
             $data['pay_price'] = $data['course_Price'];
             $data['sign_Price'] = 0;
@@ -1842,15 +1842,18 @@ class Pay_order_inside extends Model
         //清空信息
         Pay_order_inside::where(['id'=>$data['id']])->update(['sign_Price'=>0,'pay_price'=>0,'course_Price'=>0]);
         //修改信息
-        if($data['confirm_order_type'] == 1){
-            $data['sign_Price'] = 0;
-            $data['pay_price'] = $data['course_Price'];
-        }else if($data['confirm_order_type'] == 2){
-            $data['course_Price'] = 0;
-            $data['pay_price'] = $data['sign_Price'];
-        }else if($data['confirm_order_type'] == 3){
-            $data['pay_price'] = $data['course_Price'] + $data['sign_Price'];
-        }
+        $data['pay_price'] = $data['course_Price'];
+        $data['course_Price'] = $data['course_Price'] - $data['sign_Price'];
+
+//        if($data['confirm_order_type'] == 1){
+//            $data['sign_Price'] = 0;
+//            $data['pay_price'] = $data['course_Price'];
+//        }else if($data['confirm_order_type'] == 2){
+//            $data['course_Price'] = 0;
+//            $data['pay_price'] = $data['sign_Price'];
+//        }else if($data['confirm_order_type'] == 3){
+//            $data['pay_price'] = $data['course_Price'] + $data['sign_Price'];
+//        }
         $up = Pay_order_inside::where(['id'=>$data['id']])->update($data);
         if($up){
             return ['code' => 200 , 'msg' => '提交成功'];
