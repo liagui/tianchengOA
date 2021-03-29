@@ -1837,7 +1837,7 @@ class Pay_order_inside extends Model
             return ['code' => 201 , 'msg' => '未选择缴费类型'];
         }
         $data['confirm_status'] = 0;
-        $data['pay_type'] = '';
+        $data['pay_type'] = null;
         $data['pay_status'] = 0;
         $data['check_remark'] = '';
         $data['update_time'] = date('Y-m-d H:i:s');
