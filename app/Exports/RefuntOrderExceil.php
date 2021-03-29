@@ -56,7 +56,7 @@ class RefuntOrderExceil implements FromCollection, WithHeadings {
         $end_time = $endtime." 23:59:59";
         //列表
         $order = Refund_order::where($where)->where(function($query) use ($data,$schoolarr,$school_id) {
-            if(isset($data['confirm_order_type'])){
+            if(isset($data['confirm_order_type']) && !empty($data['confirm_order_type'])){
                 $query->where('confirm_order_type',$data['confirm_order_type']);
             }
             if(isset($data['order_on']) && !empty($data['order_on'])){
