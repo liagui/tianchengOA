@@ -1839,7 +1839,6 @@ class Pay_order_inside extends Model
         $data['confirm_status'] = 0;
         $data['pay_type'] = 0;
         $data['pay_status'] = 0;
-        $data['sure_time'] = '';
         $data['check_remark'] = '';
         $data['update_time'] = date('Y-m-d H:i:s');
         $data['resubmit_time'] = date('Y-m-d H:i:s');
