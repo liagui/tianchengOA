@@ -130,29 +130,29 @@ class RefuntOrderExceil implements FromCollection, WithHeadings {
             }
         }
         $tuyadan = [];
-        foreach ($order as $k=>$v){
+        foreach ($order as $ks=>$vs){
             $newtuyadan = [
-                'refund_no' => ' '.$v['refund_no'],
-                'create_time' => $v['create_time'],
-                'student_name' => $v['student_name'],
-                'phone' => $v['phone'],
-                'project_name' => $v['project_name'],
-                'subject_name' => $v['subject_name'],
-                'course_name' => $v['course_name'],
-                'school_name' => $v['school_name'],
-                'refund_Price' => $v['refund_Price'],
-                'sing_price' => $v['sing_price'],
-                'reality_price' => $v['reality_price'],
-                'reality_sing_price' => $v['reality_sing_price'],
-                'bank_card' => $v['bank_card'],
-                'bank_name' => $v['bank_name'],
-                'openbank_name' => $v['openbank_name'],
-                'refund_reason' => $v['refund_reason'],
-                'refund_cause' => $v['refund_cause'],
-                'confirm_status_text' => $v['confirm_status_text'],
-                'finance_text' => $v['finance_text'],
-                'refund_plan_text' => $v['refund_plan_text'],
-                'remit_remark' => $v['remit_remark'],
+                'refund_no' => ' '.$vs['refund_no'],
+                'create_time' => $vs['create_time'],
+                'student_name' => $vs['student_name'],
+                'phone' => $vs['phone'],
+                'project_name' => $vs['project_name'],
+                'subject_name' => $vs['subject_name'],
+                'course_name' => $vs['course_name'],
+                'school_name' => $vs['school_name'],
+                'refund_Price' => $vs['refund_Price'],
+                'sing_price' => $vs['sing_price'],
+                'reality_price' => $vs['reality_price'],
+                'reality_sing_price' => $vs['reality_sing_price'],
+                'bank_card' => $vs['bank_card'],
+                'bank_name' => $vs['bank_name'],
+                'openbank_name' => $vs['openbank_name'],
+                'refund_reason' => $vs['refund_reason'],
+                'refund_cause' => $vs['refund_cause'],
+                'confirm_status_text' => $vs['confirm_status_text'],
+                'finance_text' => $vs['finance_text'],
+                'refund_plan_text' => $vs['refund_plan_text'],
+                'remit_remark' => $vs['remit_remark'],
             ];
             $tuyadan[]=$newtuyadan;
         }
