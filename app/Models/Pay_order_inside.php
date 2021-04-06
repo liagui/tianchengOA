@@ -4302,18 +4302,18 @@ class Pay_order_inside extends Model
                     $onlev = (array)$onlev;
                     //二级分校查询出上级
                     if($onlev['level'] == 2) {
-                        $yijischool = School::where(['id'=>$onlev['parent_id'],'is_open'=>0,'is_del'=>0])->first();
-                        if(!in_array($yijischool['id'],$onleschool)){
+                        if(!in_array($onlev['parent_id'],$onleschool)){
+                            $yijischool = School::where(['id'=>$onlev['parent_id'],'is_open'=>0,'is_del'=>0])->first();
                             array_push($xinschoolarr,$yijischool['id']);
                         }
                     }
                     //三级查询二级和一级
                     if($onlev['level'] == 3){
-                        $erjischool = School::where(['id'=>$onlev['parent_id'],'is_open'=>0,'is_del'=>0])->first();
-                        if(!in_array($erjischool['id'],$onleschool)){
+                        if(!in_array($onlev['parent_id'],$onleschool)){
+                            $erjischool = School::where(['id'=>$onlev['parent_id'],'is_open'=>0,'is_del'=>0])->first();
                             array_push($xinschoolarr,$erjischool['id']);
-                            $yijischool = School::where(['id'=>$erjischool['parent_id'],'is_open'=>0,'is_del'=>0])->first();
-                            if(!in_array($yijischool['id'],$onleschool)){
+                            if(!in_array($erjischool['parent_id'],$onleschool)){
+                                $yijischool = School::where(['id'=>$erjischool['parent_id'],'is_open'=>0,'is_del'=>0])->first();
                                 array_push($xinschoolarr,$yijischool['id']);
                             }
                         }
@@ -4321,7 +4321,7 @@ class Pay_order_inside extends Model
                 }
                 if(!empty($xinschoolarr)){
                     foreach ($xinschoolarr as $xinschoolarrk=>$xinschoolarrv){
-                            $xinschoolarrarr = DB::table('school')->selectRaw('
+                            $xinschoolIdarr = DB::table('school')->selectRaw('
                                any_value(school.id) as school_id ,
                                any_value(count(school.id)) as t_count ,
                                any_value(school.one_extraction_ratio) as one_extraction_ratio ,
@@ -4341,13 +4341,12 @@ class Pay_order_inside extends Model
                                any_value(0) as education_id,
                                any_value(0) as major_id,
                                any_value(0) as sign_Price'
-                                )->where('id',$xinschoolarrv['id'])->get()->toArray();
-                            $list = array_merge($list,$xinschoolarrarr);
+                                )->where('id',$xinschoolarrv)->get()->toArray();
+                            $list = array_merge($list,$xinschoolIdarr);
                         }
                 }
                 //循环获取相关信息
                 foreach ($list as $k => $v) {
-
                     $v = (array)$v;
                     //获取是几级分校
                     if ($v['level'] == 1) {
