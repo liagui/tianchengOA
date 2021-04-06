@@ -4318,9 +4318,9 @@ class Pay_order_inside extends Model
                         }
                     }
                 }
-                if(!empty($onleschool)){
-                    foreach ($onleschool as $onleschoolks=>$onleschoolvs){
-                            $onleschoolarr = DB::table('school')->selectRaw('
+                if(!empty($xinschoolarr)){
+                    foreach ($xinschoolarr as $xinschoolarrk=>$xinschoolarrv){
+                            $xinschoolarrarr = DB::table('school')->selectRaw('
                                any_value(school.id) as school_id ,
                                any_value(count(school.id)) as t_count ,
                                any_value(school.one_extraction_ratio) as one_extraction_ratio ,
@@ -4340,8 +4340,8 @@ class Pay_order_inside extends Model
                                any_value(0) as education_id,
                                any_value(0) as major_id,
                                any_value(0) as sign_Price'
-                                )->where('id',$onleschoolvs['id'])->get()->toArray();
-                            $list = array_merge($list,$onleschoolarr);
+                                )->where('id',$xinschoolarrv['id'])->get()->toArray();
+                            $list = array_merge($list,$xinschoolarrarr);
                         }
                 }
                 //循环获取相关信息
