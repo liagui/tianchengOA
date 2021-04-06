@@ -4299,6 +4299,7 @@ class Pay_order_inside extends Model
 //                //查看三个级别分校是否都在里面
                 $xinschoolarr=[];
                 foreach ($list as $onlek=>$onlev){
+                    $onlev = (array)$onlev;
                     //二级分校查询出上级
                     if($onlev['level'] == 2) {
                         $yijischool = School::where(['id'=>$onlev['parent_id'],'is_open'=>0,'is_del'=>0])->first();
