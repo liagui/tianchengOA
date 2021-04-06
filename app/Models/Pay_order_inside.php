@@ -4602,7 +4602,8 @@ class Pay_order_inside extends Model
                         'second_out_of_amount' => $second_out_of_amount,
                         'second_out_of_money' => $second_out_of_money,
                         'actual_commission_refund' => $actual_commission_refund,
-                        'returnschoolprice' => $returnschoolprice
+                        'returnschoolprice' => $returnschoolprice,
+                        'parent_id' => $v['parent_id']
                     ];
                 }
                 foreach($array as $k => $v){
@@ -4619,6 +4620,8 @@ class Pay_order_inside extends Model
                         $array[$k]['level'] = 3;
                     }
                 }
+
+                //递归分类
                 $last_names = array_column($array,'level');
                 array_multisort($last_names,SORT_ASC,$array);
                 return ['code' => 200, 'msg' => '获取列表成功', 'data' => ['list' => $array, 'total' => $count, 'pagesize' => $pagesize, 'page' => $page]];
