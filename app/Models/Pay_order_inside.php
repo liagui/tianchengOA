@@ -4644,7 +4644,7 @@ class Pay_order_inside extends Model
                         }
                     }
                 }
-                return ['code' => 200, 'msg' => '获取列表成功', 'data' => ['list' => $array, 'total' => $count, 'pagesize' => $pagesize, 'page' => $page]];
+                return ['code' => 200, 'msg' => '获取列表成功', 'data' => ['list' => $newarr, 'total' => $count, 'pagesize' => $pagesize, 'page' => $page]];
             }
         }
         return ['code' => 200 , 'msg' => '获取列表成功' , 'data' => ['list' => [] , 'total' => 0 , 'pagesize' => $pagesize , 'page' => $page]];
