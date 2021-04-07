@@ -4634,8 +4634,8 @@ class Pay_order_inside extends Model
                     }
                     if($arrayv['level'] > 1){
                         //查询上级学校是否存在newarr中，存在的话位置是第几个
-                        if(in_array($arrayv['school_id'],$newarrschoolid)){
-                            $keys = array_search($arrayv['school_id'],$newarrschoolid);
+                        if(in_array($arrayv['parent_id'],$newarrschoolid)){
+                            $keys = array_search($arrayv['parent_id'],$newarrschoolid);
                             array_splice($newarr,$keys,0,$array[$arrayk]);
                             array_splice($newarrschoolid,$keys,0,$arrayv['school_id']);
                         }else{
