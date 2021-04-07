@@ -4603,27 +4603,47 @@ class Pay_order_inside extends Model
                         'second_out_of_money' => $second_out_of_money,
                         'actual_commission_refund' => $actual_commission_refund,
                         'returnschoolprice' => $returnschoolprice,
-                        'parent_id' => $v['parent_id']
+                        'parent_id' => $v['parent_id'],
+                        'level' => $v['level'],
+                        'school_id' => $v['school_id'],
                     ];
                 }
-                foreach($array as $k => $v){
-                    $array[$k]['commission_rebate'] = sprintf("%01.2f", $v['commission_rebate']).'%';//返佣比例
-                    $array[$k]['first_out_of_amount'] = sprintf("%01.2f", $v['first_out_of_amount']).'%';//抽离比例（一级）
-                    $array[$k]['second_out_of_amount'] = sprintf("%01.2f", $v['second_out_of_amount']).'%';//抽离比例（二级）
-                    if(!empty($array[$k]['first_school_name'])){
-                        $array[$k]['level'] = 1;
+//                foreach($array as $k => $v){
+//                    $array[$k]['commission_rebate'] = sprintf("%01.2f", $v['commission_rebate']).'%';//返佣比例
+//                    $array[$k]['first_out_of_amount'] = sprintf("%01.2f", $v['first_out_of_amount']).'%';//抽离比例（一级）
+//                    $array[$k]['second_out_of_amount'] = sprintf("%01.2f", $v['second_out_of_amount']).'%';//抽离比例（二级）
+//                    if(!empty($array[$k]['first_school_name'])){
+//                        $array[$k]['level'] = 1;
+//                    }
+//                    if(!empty($array[$k]['two_school_name'])){
+//                        $array[$k]['level'] = 2;
+//                    }
+//                    if(!empty($array[$k]['three_school_name'])){
+//                        $array[$k]['level'] = 3;
+//                    }
+//                }
+                //递归分类
+//                $last_names = array_column($array,'level');
+//                array_multisort($last_names,SORT_ASC,$array);
+                $newarr=[];
+                $newarrschoolid=[];
+                foreach ($array as $arrayk=>$arrayv){
+                    if($arrayv['level'] == 1){
+                        array_push($newarr,$array[$arrayk]);
+                        array_push($newarrschoolid,$arrayv['school_id']);
                     }
-                    if(!empty($array[$k]['two_school_name'])){
-                        $array[$k]['level'] = 2;
-                    }
-                    if(!empty($array[$k]['three_school_name'])){
-                        $array[$k]['level'] = 3;
+                    if($array['level'] > 1){
+                        //查询上级学校是否存在newarr中，存在的话位置是第几个
+                        if(in_array($arrayv['school_id'],$newarrschoolid)){
+                            $keys = array_search($arrayv['school_id'],$newarrschoolid);
+                            array_splice($newarr,$keys,0,$array[$arrayk]);
+                            array_splice($newarrschoolid,$keys,0,$arrayv['school_id']);
+                        }else{
+                            array_push($newarr,$array[$arrayk]);
+                            array_push($newarrschoolid,$arrayv['school_id']);
+                        }
                     }
                 }
-
-                //递归分类
-                $last_names = array_column($array,'level');
-                array_multisort($last_names,SORT_ASC,$array);
                 return ['code' => 200, 'msg' => '获取列表成功', 'data' => ['list' => $array, 'total' => $count, 'pagesize' => $pagesize, 'page' => $page]];
             }
         }
