@@ -4637,7 +4637,8 @@ class Pay_order_inside extends Model
                         if(in_array($arrayv['parent_id'],$newarrschoolid)){
                             $keys = array_search($arrayv['parent_id'],$newarrschoolid);
                             $start  = $keys + 1;
-                            array_splice($newarr,$start,0,$array[$arrayk]);
+                            $addarray = [$start=>$array[$arrayk]];
+                            array_splice($newarr,$start,0,$addarray);
                             array_splice($newarrschoolid,$start,0,$arrayv['school_id']);
                         }else{
                             array_push($newarr,$array[$arrayk]);
