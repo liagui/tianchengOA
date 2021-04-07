@@ -4627,19 +4627,19 @@ class Pay_order_inside extends Model
                 array_multisort($last_names,SORT_ASC,$array);
                 $newarr=[];
                 $newarrschoolid=[];
-                foreach ($last_names as $arrayk=>$arrayv){
+                foreach ($array as $arrayk=>$arrayv){
                     if($arrayv['level'] == 1){
-                        array_push($newarr,$last_names[$arrayk]);
+                        array_push($newarr,$array[$arrayk]);
                         array_push($newarrschoolid,$arrayv['school_id']);
                     }
                     if($arrayv['level'] > 1){
                         //查询上级学校是否存在newarr中，存在的话位置是第几个
                         if(in_array($arrayv['school_id'],$newarrschoolid)){
                             $keys = array_search($arrayv['school_id'],$newarrschoolid);
-                            array_splice($newarr,$keys,0,$last_names[$arrayk]);
+                            array_splice($newarr,$keys,0,$array[$arrayk]);
                             array_splice($newarrschoolid,$keys,0,$arrayv['school_id']);
                         }else{
-                            array_push($newarr,$last_names[$arrayk]);
+                            array_push($newarr,$array[$arrayk]);
                             array_push($newarrschoolid,$arrayv['school_id']);
                         }
                     }
