@@ -4632,7 +4632,7 @@ class Pay_order_inside extends Model
                         array_push($newarr,$array[$arrayk]);
                         array_push($newarrschoolid,$arrayv['school_id']);
                     }
-                    if($array['level'] > 1){
+                    if($arrayv['level'] > 1){
                         //查询上级学校是否存在newarr中，存在的话位置是第几个
                         if(in_array($arrayv['school_id'],$newarrschoolid)){
                             $keys = array_search($arrayv['school_id'],$newarrschoolid);
