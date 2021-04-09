@@ -421,6 +421,9 @@ class Pay_order_inside extends Model
             ];
         }
         //根据条件查询订单 有就不扣报名费
+        if(!isset($data['sign_Price']) || empty($data['sign_Price'])){
+            $data['sign_Price'] = 0;
+        }
         $order = self::where(['mobile'=>$data['mobile'],'course_id'=>$data['course_id'],'school_id'=>$data['school_id'],'project_id'=>$data['project_id'],'subject_id'=>$data['subject_id']])->where($chaxunm)->whereIn('confirm_status',[1,2])->first();
         if(!empty($order)){
             $data['pay_price'] = $data['course_Price'];
