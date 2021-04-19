@@ -4129,9 +4129,9 @@ class Pay_order_inside extends Model
      */
     public static function getAchievementSchoolList($body=[]) {
         //每页显示的条数
-        $pagesize = isset($body['pagesize']) && $body['pagesize'] > 0 ? $body['pagesize'] : 20;
-        $page     = isset($body['page']) && $body['page'] > 0 ? $body['page'] : 1;
-        $offset   = ($page - 1) * $pagesize;
+//        $pagesize = isset($body['pagesize']) && $body['pagesize'] > 0 ? $body['pagesize'] : 20;
+//        $page     = isset($body['page']) && $body['page'] > 0 ? $body['page'] : 1;
+//        $offset   = ($page - 1) * $pagesize;
 
         //学校id
         $school_id = [];
@@ -4230,7 +4230,9 @@ class Pay_order_inside extends Model
                             $end_time = $create_time[1] . " 23:59:59";
                             $query->whereBetween('pay_order_inside.comfirm_time', [$state_time, $end_time]);
                         }
-                    })->orderByDesc('school.create_time')->groupBy(DB::raw('school.id'))->offset($offset)->limit($pagesize)->get()->toArray();
+                    })->orderByDesc('school.create_time')->groupBy(DB::raw('school.id'))
+//                    ->offset($offset)->limit($pagesize)
+                    ->get()->toArray();
                 if(empty($list)){
                     $list = DB::table('school')->selectRaw('
                            any_value(school.id) as school_id ,
@@ -4267,7 +4269,9 @@ class Pay_order_inside extends Model
                                 $end_time = $create_time[1] . " 23:59:59";
                                 $query->whereBetween('refund_order.refund_time', [$state_time, $end_time]);
                             }
-                        })->orderByDesc('school.create_time')->groupBy(DB::raw('school.id'))->offset($offset)->limit($pagesize)->get()->toArray();
+                        })->orderByDesc('school.create_time')->groupBy(DB::raw('school.id'))
+//                        ->offset($offset)->limit($pagesize)
+                        ->get()->toArray();
                 }
                 //如果此学校没有数据，则都使0
                 $idarr = array_column($list,'school_id');
@@ -4649,10 +4653,10 @@ class Pay_order_inside extends Model
                         }
                     }
                 }
-                return ['code' => 200, 'msg' => '获取列表成功', 'data' => ['list' => $newarr, 'total' => $count, 'pagesize' => $pagesize, 'page' => $page]];
+                return ['code' => 200, 'msg' => '获取列表成功', 'data' => ['list' => $newarr, 'total' => $count,]];
             }
         }
-        return ['code' => 200 , 'msg' => '获取列表成功' , 'data' => ['list' => [] , 'total' => 0 , 'pagesize' => $pagesize , 'page' => $page]];
+        return ['code' => 200 , 'msg' => '获取列表成功' , 'data' => ['list' => [] , 'total' => 0]];
     }
 
     public static function paylistarr(){
