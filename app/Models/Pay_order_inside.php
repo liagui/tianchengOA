@@ -1972,7 +1972,6 @@ class Pay_order_inside extends Model
             ->offset($offset)->limit($pagesize)
             ->get()->toArray();
         foreach ($order as $k=>&$v){
-            $v['pay_type'] = $v['pay_type'] -5;
             if(!empty($v['pay_voucher'])){
                 if(strpos($v['pay_voucher'],',') !== false){
                     $v['pay_voucher'] = explode(",",$v['pay_voucher']);
@@ -2108,6 +2107,7 @@ class Pay_order_inside extends Model
             }
             $pay_voucher_name = Admin::where(['id'=>$v['pay_voucher_user_id']])->first();
             $v['pay_voucher_name'] = $pay_voucher_name['username'];
+            $v['pay_type'] = $v['pay_type'] -5;
         }
         $page=[
             'pagesize'=>$pagesize,
