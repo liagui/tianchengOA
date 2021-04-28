@@ -2123,7 +2123,7 @@ class Pay_order_inside extends Model
          * return  array
          */
     public static function offlinepay($data){
-        if($data['pay_type'] == 5){ //银行卡支付
+        if($data['pay_type'] == 5 || $data['pay_type'] == 10){ //银行卡支付
             $type = 2;
         }
         if($data['pay_type'] == 6){ //对公转账
