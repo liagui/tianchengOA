@@ -1972,6 +1972,7 @@ class Pay_order_inside extends Model
             ->offset($offset)->limit($pagesize)
             ->get()->toArray();
         foreach ($order as $k=>&$v){
+            $v['pay_type'] = $v['pay_type'] -5;
             if(!empty($v['pay_voucher'])){
                 if(strpos($v['pay_voucher'],',') !== false){
                     $v['pay_voucher'] = explode(",",$v['pay_voucher']);
@@ -2126,10 +2127,10 @@ class Pay_order_inside extends Model
         if($data['pay_type'] == 5 || $data['pay_type'] == 10){ //银行卡支付
             $type = 2;
         }
-        if($data['pay_type'] == 6){ //对公转账
+        if($data['pay_type'] == 6 || $data['pay_type'] == 11){ //对公转账
             $type = 1;
         }
-        if($data['pay_type'] == 7){ //支付宝账号对公
+        if($data['pay_type'] == 7 || $data['pay_type'] == 12){ //支付宝账号对公
             $type = 3;
         }
         $list = OfflinePay::where(['type'=>$type,'is_show'=>1,'is_del'=>1])->get()->toArray();
