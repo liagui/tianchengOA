@@ -267,6 +267,7 @@ class OrderExport implements FromCollection, WithHeadings {
                 'confirm_order_type_text' => $vs['confirm_order_type_text'],
                 'first_pay_text' => $vs['first_pay_text'],
                 'confirm_status_text' => $vs['confirm_status_text'],
+                'check_remark' => $vs['check_remark'],
             ];
             $tuyadan[]=$newtuyadan;
         }
@@ -296,6 +297,7 @@ class OrderExport implements FromCollection, WithHeadings {
             '订单类型',
             '缴费类型',
             '订单状态',
+            '财务备注',
         ];
     }
 }
