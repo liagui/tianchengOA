@@ -93,9 +93,11 @@ class Refund_order extends Model
          * @param  state_time   开始时间
          * @param  end_time   结束时间
          * @param  order_on   订单号/手机号/姓名
+         * @param  return_state_time   开始时间
+         * @param  return_end_time   结束时间
+         * return  array
          * @param  author  苏振文
          * @param  ctime   2020/9/9 14:48
-         * return  array
          */
     public static function returnOrder($data,$schoolarr){
         //退费状态
@@ -119,6 +121,13 @@ class Refund_order extends Model
         $endtime = !empty($data['end_time'])?$data['end_time']:$enddate;
         $state_time = $statetime." 00:00:00";
         $end_time = $endtime." 23:59:59";
+        //判断确认时间是否为空
+        $begindata="2020-03-04";
+        $enddate = date('Y-m-d');
+        $returnstatetime = !empty($data['return_state_time'])?$data['return_state_time']:$begindata;
+        $returnendtime = !empty($data['return_end_time'])?$data['return_end_time']:$enddate;
+        $return_state_time = $returnstatetime." 00:00:00";
+        $return_end_time = $returnendtime." 23:59:59";
         //每页显示的条数
         $pagesize = (int)isset($data['pagesize']) && $data['pagesize'] > 0 ? $data['pagesize'] : 20;
         $page     = isset($data['page']) && $data['page'] > 0 ? $data['page'] : 1;
@@ -153,6 +162,7 @@ class Refund_order extends Model
             $query->whereIn('school_id',$schoolarr);
         })
         ->whereBetween('create_time', [$state_time, $end_time])
+        ->whereBetween('refund_time', [$return_state_time, $return_end_time])
         ->count();
 
         //列表
@@ -171,6 +181,7 @@ class Refund_order extends Model
             $query->whereIn('school_id',$schoolarr);
         })
         ->whereBetween('create_time', [$state_time, $end_time])
+        ->whereBetween('refund_time', [$return_state_time, $return_end_time])
         ->orderByDesc('id')
         ->offset($offset)->limit($pagesize)->get()->toArray();
         //循环查询分类
