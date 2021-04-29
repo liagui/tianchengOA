@@ -162,7 +162,7 @@ class Refund_order extends Model
             $query->whereIn('school_id',$schoolarr);
         })
         ->whereBetween('create_time', [$state_time, $end_time])
-        ->whereBetween('refund_time', [$return_state_time, $return_end_time])
+//        ->whereBetween('refund_time', [$return_state_time, $return_end_time])
         ->count();
 
         //列表
@@ -181,7 +181,7 @@ class Refund_order extends Model
             $query->whereIn('school_id',$schoolarr);
         })
         ->whereBetween('create_time', [$state_time, $end_time])
-        ->whereBetween('refund_time', [$return_state_time, $return_end_time])
+//        ->whereBetween('refund_time', [$return_state_time, $return_end_time])
         ->orderByDesc('id')
         ->offset($offset)->limit($pagesize)->get()->toArray();
         //循环查询分类
