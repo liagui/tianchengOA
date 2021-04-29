@@ -216,6 +216,7 @@ class SureOrderExceil implements FromCollection, WithHeadings {
                 'confirm_order_type_text' => $vs['confirm_order_type_text'],
                 'first_pay_text' => isset($vs['first_pay_text'])?$vs['first_pay_text']:'',
                 'pay_voucher' => $vs['pay_voucher'],
+                'remark' => $vs['remark'],
             ];
             $tuyadan[]=$newtuyadan;
         }
@@ -242,7 +243,8 @@ class SureOrderExceil implements FromCollection, WithHeadings {
             '订单确认时间',
             '订单类型',
             '缴费类型',
-            '凭证'
+            '凭证',
+            '备注'
         ];
     }
 }
