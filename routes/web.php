@@ -35,7 +35,8 @@ $router->group(['prefix' => 'admin' , 'namespace' => 'Admin','middleware'=> 'cor
     $router->post('SubjectToCourse', 'CoursesubjectController@SubjectToCourse');//根据学科查询课程
     //项目管理部分(dzj)
     $router->group(['prefix' => 'project'], function () use ($router) {
-        $router->post('getProjectSubjectList', 'ProjectController@getProjectSubjectList');       //项目筛选学科列表接口
+        $router->post('getProjectSubjectList', 'ProjectController@getProjectSubjectList');       //其他调用这个
+        $router->post('getProjectSubjectLists', 'ProjectController@getProjectSubjectLists');       //扫码、支付调用接口
         $router->post('getCourseList', 'ProjectController@getCourseList');                       //课程列表接口
     });
     $router->post('paylist', 'OrderController@paylist');//支付通道

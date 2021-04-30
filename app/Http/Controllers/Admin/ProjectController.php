@@ -188,6 +188,27 @@ class ProjectController extends Controller {
     }
 
     /*
+   * @param  description   项目管理-项目筛选学科列表接口
+   * @param author    dzj
+   * @param ctime     2020-09-03
+   * return string
+   */
+    public function getProjectSubjectLists(){
+        //获取提交的参数
+        try{
+            //获取全部项目列表
+            $data = Project::getProjectSubjectLists(self::$accept_data);
+            if($data['code'] == 200){
+                return response()->json(['code' => 200 , 'msg' => '获取列表成功' , 'data' => $data['data']]);
+            } else {
+                return response()->json(['code' => $data['code'] , 'msg' => $data['msg']]);
+            }
+        } catch (Exception $ex) {
+            return response()->json(['code' => 500 , 'msg' => $ex->getMessage()]);
+        }
+    }
+
+    /*
      * @param  description   项目管理-根据项目id获取学科列表
      * @param  参数说明       body包含以下参数[
      *     project_id        项目id
