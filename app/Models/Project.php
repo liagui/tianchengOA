@@ -331,7 +331,7 @@ class Project extends Model {
         }
 
         //学科列表
-        $subject_list = self::select('id','name','id as value','name as label','is_del','is_hide')->where('parent_id' , $body['project_id'])->where('is_del' , 0)->orderByDesc('create_time')->get()->toArray();
+        $subject_list = self::select('id','name','id as value','name as label','is_del','is_hide')->where('parent_id' , $body['project_id'])->where('is_del' , 0)->where('is_hide' , 0)->orderByDesc('create_time')->get()->toArray();
 
         //判断是否为空
         if($subject_list && !empty($subject_list)){
