@@ -35,6 +35,13 @@ class SureOrderExceil implements FromCollection, WithHeadings {
                 }
             }
         }
+        //判断确认时间是否为空
+        $begindata="2020-03-04";
+        $enddate = date('Y-m-d');
+        $returnstatetime = !empty($data['return_state_time'])?$data['return_state_time']:$begindata;
+        $returnendtime = !empty($data['return_end_time'])?$data['return_end_time']:$enddate;
+        $return_state_time = $returnstatetime." 00:00:00";
+        $return_end_time = $returnendtime." 23:59:59";
         //学校id
         $school_id=[];
         if(isset($data['school_name'])){
@@ -79,6 +86,7 @@ class SureOrderExceil implements FromCollection, WithHeadings {
         })
             ->where('pay_status','<',2)
             ->where($where)
+            ->whereBetween('comfirm_time', [$return_state_time, $return_end_time])
             ->orderByDesc('id')->get()->toArray();
         //循环查询分类
         if(!empty($order)){
