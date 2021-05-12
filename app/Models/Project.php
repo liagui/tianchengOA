@@ -45,7 +45,7 @@ class Project extends Model {
             if(isset($body['is_hide']) && !in_array($body['is_hide'] , [0,1])){
                 return ['code' => 202 , 'msg' => '展示方式不合法'];
             }
-        
+
             //判断学科名称是否存在
             $is_exists = self::where('name' , $body['name'])->where('parent_id' , $body['project_id'])->where('is_del' , 0)->count();
             if($is_exists && $is_exists > 0){
@@ -61,17 +61,17 @@ class Project extends Model {
             if(isset($body['is_hide']) && !in_array($body['is_hide'] , [0,1])){
                 return ['code' => 202 , 'msg' => '展示方式不合法'];
             }
-        
+
             //判断项目名称是否存在
             $is_exists = self::where('name' , $body['name'])->where('parent_id' , 0)->where('is_del' , 0)->count();
             if($is_exists && $is_exists > 0){
                 return ['code' => 203 , 'msg' => '此项目名称已存在'];
             }
         }
-        
+
         //获取后端的操作员id
         $admin_id = isset(AdminLog::getAdminInfo()->admin_user->id) ? AdminLog::getAdminInfo()->admin_user->id : 0;
-        
+
         //组装项目数组信息
         $project_array = [
             'parent_id'     =>   isset($body['project_id']) && $body['project_id'] > 0 ? $body['project_id'] : 0 ,
@@ -80,7 +80,7 @@ class Project extends Model {
             'admin_id'      =>   $admin_id ,
             'create_time'   =>   date('Y-m-d H:i:s')
         ];
-        
+
         //开启事务
         DB::beginTransaction();
 
@@ -95,7 +95,7 @@ class Project extends Model {
             return ['code' => 203 , 'msg' => '添加失败'];
         }
     }
-    
+
     /*
      * @param  description   项目管理-修改项目/学科方法
      * @param  参数说明       body包含以下参数[
@@ -113,12 +113,12 @@ class Project extends Model {
         if(!$body || !is_array($body)){
             return ['code' => 202 , 'msg' => '传递数据不合法'];
         }
-        
+
         //判断项目/学科id是否合法
         if(!isset($body['prosub_id']) || empty($body['prosub_id']) || $body['prosub_id'] <= 0){
             return ['code' => 202 , 'msg' => 'id不合法'];
         }
-        
+
         //判断项目/学科名称是否为空
         if(!isset($body['name']) || empty($body['name'])){
             return ['code' => 201 , 'msg' => '请输入名称'];
@@ -128,13 +128,13 @@ class Project extends Model {
         if(isset($body['is_hide']) && !in_array($body['is_hide'] , [0,1])){
             return ['code' => 202 , 'msg' => '展示方式不合法'];
         }
-        
+
         //根据id获取信息
         $info = self::where('id' , $body['prosub_id'])->first();
         if(!$info || empty($info)){
             return ['code' => 203 , 'msg' => '此信息不存在'];
         }
-        
+
         //判断是项目还是学科
         if($info['parent_id'] && $info['parent_id'] > 0){
             //判断学科名称是否存在
@@ -175,10 +175,10 @@ class Project extends Model {
                 ];
             }
         }
-        
+
         //开启事务
         DB::beginTransaction();
-        
+
         //判断此项目学科是否删除
         if(isset($body['is_del']) && $body['is_del'] == 1){
             //根据id获取详情
@@ -189,7 +189,7 @@ class Project extends Model {
                 if($course_count && $course_count > 0){
                     Course::where('category_one_id' , $parent_id)->where('category_tow_id' , $body['prosub_id'])->update(['is_del' => 1 , 'update_time' => date('Y-m-d H:i:s')]);
                 }
-                
+
                 //删除学科下面所有得院校
                 $education_count = Education::where('parent_id' , $parent_id)->where('child_id' , $body['prosub_id'])->where('is_del' , 0)->count();
                 if($education_count && $education_count > 0){
@@ -201,7 +201,7 @@ class Project extends Model {
                 if($subject_count && $subject_count > 0){
                     self::where('parent_id' , $body['prosub_id'])->update(['is_del' => 1 , 'update_time' => date('Y-m-d H:i:s')]);
                 }
-                
+
                 //删除项目下面所有得地区报名费
                 $region_count = RegionFee::where('category_id' , $body['prosub_id'])->where('is_del' , 0)->count();
                 if($region_count && $region_count > 0){
@@ -213,19 +213,19 @@ class Project extends Model {
                 if($course_count && $course_count > 0){
                     Course::where('category_one_id' , $body['prosub_id'])->update(['is_del' => 1 , 'update_time' => date('Y-m-d H:i:s')]);
                 }
-                
+
                 //删除学科下面所有得院校
                 $education_count = Education::where('parent_id' , $body['prosub_id'])->where('is_del' , 0)->count();
                 if($education_count && $education_count > 0){
                     Education::where('parent_id' , $body['prosub_id'])->update(['is_del' => 1 , 'update_time' => date('Y-m-d H:i:s')]);
                 }
-                
+
                 //删除地区关联项目的所有信息
                 $category_region = CategoryRegion::where('parent_id' , $body['prosub_id'])->where('is_del' , 0)->count();
                 if($category_region && $category_region > 0){
                     CategoryRegion::where('parent_id' , $body['prosub_id'])->update(['is_del' => 1 , 'update_time' => date('Y-m-d H:i:s')]);
                 }
-                
+
                 //删除学历成本项目关联所有信息
                 $category_education = CategoryEducation::where('parent_id' , $body['prosub_id'])->where('is_del' , 0)->count();
                 if($category_education && $category_education > 0){
@@ -245,7 +245,7 @@ class Project extends Model {
             return ['code' => 203 , 'msg' => '修改失败'];
         }
     }
-    
+
     /*
      * @param  description   项目管理-项目/学科详情方法
      * @param  参数说明       body包含以下参数[
@@ -260,12 +260,12 @@ class Project extends Model {
         if(!$body || !is_array($body)){
             return ['code' => 202 , 'msg' => '传递数据不合法'];
         }
-        
+
         //判断项目/学科id是否合法
         if(!isset($body['info_id']) || empty($body['info_id']) || $body['info_id'] <= 0){
             return ['code' => 202 , 'msg' => '项目或学科id不合法'];
         }
-        
+
         //根据id获取项目或者学科的详情
         $info = self::select('name','is_hide','is_del')->where('id' , $body['info_id'])->where('is_del' , 0)->first();
         if($info && !empty($info)){
@@ -274,7 +274,7 @@ class Project extends Model {
             return ['code' => 203 , 'msg' => '此项目不存在或已删除'];
         }
     }
-    
+
     /*
      * @param  description   项目管理-项目筛选学科列表接口
      * @param  参数说明       body包含以下参数[
@@ -309,7 +309,33 @@ class Project extends Model {
             return ['code' => 200 , 'msg' => '获取列表成功' , 'data' => []];
         }
     }
-    
+
+    public static function getProjectSubjectLists($body=[]) {
+        //判断项目名称是否传递
+        if(isset($body['project_name']) && !empty($body['project_name'])){
+            //项目列表
+            $project_list = self::select('id','name','id as value','name as label','is_del','is_hide')->where('name','like','%'.$body['project_name'].'%')->where('parent_id' , 0)->where('is_del' , 0)->orderByDesc('create_time')->get()->toArray();
+        } else {
+            //项目列表
+            $project_list = self::select('id','name','id as value','name as label','is_del','is_hide')->where('parent_id' , 0)->where('is_del' , 0)->orderByDesc('create_time')->get()->toArray();
+        }
+
+        //判断是否为空
+        if($project_list && !empty($project_list)){
+            foreach($project_list as $k=>$v){
+                //获取学科得列表
+                $subject_list = self::select('id','name','id as value','name as label','is_del','is_hide')->where('parent_id' , $v['id'])->where('is_del' , 0)->where('is_hide' , 0)->orderByDesc('create_time')->get()->toArray();
+                if($subject_list && !empty($subject_list)){
+                    //根据项目得id获取学科得列表
+                    $project_list[$k]['subject_list'] = $subject_list && !empty($subject_list) ? $subject_list : [];
+                }
+            }
+            return ['code' => 200 , 'msg' => '获取列表成功' , 'data' => $project_list];
+        } else {
+            return ['code' => 200 , 'msg' => '获取列表成功' , 'data' => []];
+        }
+    }
+
     /*
      * @param  description   项目管理-根据项目id获取学科列表
      * @param  参数说明       body包含以下参数[
@@ -324,7 +350,7 @@ class Project extends Model {
         if(!$body || !is_array($body)){
             return ['code' => 202 , 'msg' => '传递数据不合法'];
         }
-        
+
         //判断项目id是否合法
         if(!isset($body['project_id']) || empty($body['project_id']) || $body['project_id'] <= 0){
             return ['code' => 202 , 'msg' => '项目id不合法'];
